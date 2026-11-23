@@ -15,11 +15,11 @@ function render(extra:Partial<ComponentProps<typeof ComposeForm>>={}) {
 }
 it('puts writing before delivery and requires audience review before any publication action',()=>{
  const html=render();expect(html.indexOf('id="communication-title"')).toBeLessThan(html.indexOf('id="communication-type"'));
- expect(html).toContain('Preview audience');expect(html).not.toContain('>Publish update<');
+ expect(html).toContain('>Next<');expect(html).not.toContain('>Publish update<');
  for(const field of ['communication-type','communication-location','communication-requirement'])expect(html).toContain(`id="${field}"`);
  for(const type of ['LOCATION_ANNOUNCEMENT','SHIFT_NOTE','OPERATIONAL_UPDATE','TODAYS_TEAM'])expect(html).toContain(`value="${type}"`);
- // Quiet (v4): the expiry is the Expires row (Never until a date is chosen).
- expect(html).toContain('<b>Expires</b>');
+ // Phase 2 (package Messages): Expires is an optional outlined date and time field; empty means it never expires.
+ expect(html).toContain('for="communication-expiration">Expires</label>');expect(html).toContain('Empty means it never expires.');
 });
 it('keeps employee authorship limited to today’s team without management requirements',()=>{
  const html=render({context:{...context,management:false},mode:'employee'});expect(html).toContain('Today’s team');

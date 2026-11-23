@@ -182,13 +182,13 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
       {/* Review B5 (NV-259): Phone follows Email's pattern: an Owner edits it on their team page (a chevron); otherwise it is
         read-only and says so with a lock. */}
       <li data-row="phone" style={rowStyle('phone')}>{identity.owner
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Phone, edit"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
         // Review Nov 11 (MG-013): a Manager's read-only value says who can change it, in a grey line under it (it was a bare lock).
         // Phase 8 (B #33): the value keeps the 16px lock beside it, as Company profile's locked values do (B5).
         : <div className="q-row q-row--one pmp-fixed"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l"><span className="pmp-fixed__value"><span className="pmp-fixed__text">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span><LockSimpleIcon weight="bold" className="pmp-fixed__lock" aria-hidden="true" /><span className="sr-only">{`, ${changeLine}`}</span></span></span></div>}</li>
       <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
         // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Email, not added. Add an email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link>
         // MG-013: on a phone the address sits under its label with the row's whole width (manager-profile rules in
         // owner-b-settings.css), so it stays on one line; if it must break, it still breaks only after the @ or before a
         // dot (TC-02). A Manager's says who can change it, and is laid out as their locked Phone is (Phase 8, B #33).

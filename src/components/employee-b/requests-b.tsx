@@ -40,7 +40,7 @@ export type BRequestRow = {key: string; href: string; kind: BRequestKind; title:
 /** One request: its type icon, name, dates, then the status chip and a chevron, all one link. */
 export function RequestRowB({row}: {row: BRequestRow}) {
   return <BRow href={row.href} lead={<RequestTypeIcon kind={row.kind}/>} title={row.title} sub={<Dotted text={row.sub}/>}
-    end={<BChip tone={row.chip.tone}>{row.chip.text}</BChip>} chevron label={`${row.title}, ${row.sub}, ${row.chip.text}`}/>;
+    end={<BChip tone={row.chip.tone}>{row.chip.text}</BChip>} chevron/>;
 }
 
 /** The read's state in a card: what is happening, then Sign in or Try again (never both, nothing while it checks). */

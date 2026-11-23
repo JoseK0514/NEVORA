@@ -1,16 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import type { ConfigurationResult } from "./configuration-form";
 import { FormDiscardGuard } from "./kit/discard-dialog";
 import { lower } from "@/lib/workspace-presentation/words";
-import { Notice } from "@/app/app/settings/wave-c-kit";
-import { Field,FieldErrors,FormActions,useFieldErrors } from "@/app/app/settings/wave-c-form";
+import { CorpButtonLink, CorpFormFooter, CorpLink } from "./corp/corp";
+import { FieldB, ResultB } from "@/app/app/settings/settings-b-form";
+import { ButtonLabel, FieldErrors, useFieldErrors } from "@/app/app/settings/wave-c-form";
 import { ReturnToNext } from "./team/return-to-next";
 
-/** Wave C: Add location on the kit form pattern. One request per tap; an unconfirmed save says
+/** Add location in Settings' Direction B form. One request per tap; an unconfirmed save says
  * to check Locations first, so a lost answer never becomes a duplicate. */
 export function NewLocationForm({
   action, words = { location: "Location", locations: "Locations" },
@@ -78,52 +78,45 @@ export function NewLocationForm({
     requestAnimationFrame(() => nameInput.current?.focus());
   }
 
+  // Phase 2 (Nov 23, 2026): Settings' Direction B form. The form is the white card itself (a direct child of the page, so
+  // the page's card rhythm applies): three outlined fields, and on tablets and desktop Cancel and Add in its footer.
+  // Phones add from the band (the page's Add). The outcome stands under the card and takes focus; once added, the next
+  // steps are two equal buttons under it.
   return (
-    <form ref={form} id="new-location-form" noValidate onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Add ${place}`} {...handlers}>
-      {/* P9: Return moves to the next field and never submits; the page's Add submits. */}
-      <ReturnToNext />
-      {/* Review F4 (NV-102): on tablets and desktop the fields are one card with Cancel and Add in its footer, as Add employee
-        * (phones keep them in the top bar). */}
-      <div className="wc-savecard">
-      <fieldset disabled={pending || success} className="q-fieldset">
-        <FieldErrors errors={errors}>
-          {/* Quiet (v4, approved Oct 23): three fields and one line under them. The page's Add (top right) submits. */}
-          <Field label="Name" fieldClassName="q-first" inputRef={nameInput} id="new-location-name" name="name" required pattern=".*\S.*" maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
-            placeholder="e.g. Harbor Point" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
-          <Field label="Short name" id="new-location-short-name" name="shortName" required pattern=".*\S.*" maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
-            placeholder="e.g. Harbor" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
-          <Field label="Clocker key" helpId="location-clocker-help"
-            help={`The Clocker key can’t be changed later.`}
-            id="new-location-clocker-key" name="clockerKey" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={64}
-            placeholder="Created for you" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" />
-        </FieldErrors>
-      </fieldset>
-      {success ? null : <div className="wc-savefoot wc-savefoot--wide">
-        <Link className="q-btn q-btn--sec b-rowact b-rowact--quiet" href="/app/settings/locations">Cancel</Link>
-        <button type="submit" className="q-btn" disabled={pending}>Add</button>
-      </div>}
-      </div>
-      <p className="nv-sr" role="status">{pending ? `Saving your ${place}.` : ""}</p>
-      {result.error ? (
-        <div ref={feedback} className="wc-feedback" role="alert" tabIndex={-1}>
-          <Notice tone="urgent" title={unconfirmed ? "Not saved yet" : `${words.location} not added`}
-            action={<Link className="q-btn q-btn--quiet" href="/app/settings/locations">Check {Places}</Link>}>{result.error}</Notice>
-        </div>
-      ) : null}
-      {success ? (
-        <div ref={feedback} className="wc-feedback" role="status" tabIndex={-1}>
-          <Notice tone="done" title={`${words.location} added`}
-            action={<Link className="q-btn q-btn--quiet" href="/app/schedule/settings">Next: staffing</Link>}>
-            {null}
-          </Notice>
-        </div>
-      ) : null}
-      {success ? <FormActions>
-        <Link className="q-btn" href="/app/settings/locations">View {lower(Places)}</Link>
-        <button className="q-btn q-btn--sec" type="button" onClick={addAnother}>Add another {place}</button>
-      </FormActions> : <button type="submit" className="q-sr" disabled={pending} tabIndex={-1}>{`Add ${place}`}</button>}
-      {/* Leaving with typed entries that are not added asks first (Nov 21, 2026); not once it is added. */}
-      <FormDiscardGuard off={success} />
-    </form>
+    <>
+      <form ref={form} id="new-location-form" noValidate onSubmit={submit} aria-busy={pending} className="c-card c-setb-form" aria-label={`Add ${place}`}
+        data-done={success ? "" : undefined} {...handlers}>
+        {/* P9: Return moves to the next field and never submits; the page's Add submits. */}
+        <ReturnToNext />
+        <fieldset disabled={pending || success} className="c-setb-fieldset">
+          <FieldErrors errors={errors}>
+            <div className="c-card__body c-setb-fields">
+              <FieldB label="Name" inputRef={nameInput} id="new-location-name" name="name" required pattern=".*\S.*" maxLength={160} value={name} onChange={(event) => setName(event.target.value)}
+                placeholder="e.g. Harbor Point" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
+              <FieldB label="Short name" id="new-location-short-name" name="shortName" required pattern=".*\S.*" maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
+                placeholder="e.g. Harbor" autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
+              <FieldB label="Clocker key" helpId="location-clocker-help" help="The Clocker key can’t be changed later."
+                id="new-location-clocker-key" name="clockerKey" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={64}
+                placeholder="Created for you" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" />
+            </div>
+          </FieldErrors>
+        </fieldset>
+        {success ? null : <CorpFormFooter>
+          <CorpButtonLink href="/app/settings/locations" kind="secondary">Cancel</CorpButtonLink>
+          <button type="submit" className="c-btn" disabled={pending}><ButtonLabel pending={pending} idle="Add" busy="Adding…" /></button>
+        </CorpFormFooter>}
+        <p className="c-sr" role="status">{pending ? `Saving your ${place}.` : ""}</p>
+        {/* Leaving with typed entries that are not added asks first (Nov 21, 2026); not once it is added. */}
+        <FormDiscardGuard off={success} />
+      </form>
+      {result.error ? <ResultB innerRef={feedback} tone="urgent" title={unconfirmed ? "Not saved yet" : `${words.location} not added`}
+        action={<CorpLink large href="/app/settings/locations">{`Check ${Places}`}</CorpLink>}>{result.error}</ResultB> : null}
+      {success ? <ResultB innerRef={feedback} tone="done" title={`${words.location} added`}
+        action={<CorpLink large href="/app/schedule/settings">Next: staffing</CorpLink>} /> : null}
+      {success ? <div className="c-setb-acts">
+        <button className="c-btn c-btn--secondary" type="button" onClick={addAnother}>{`Add another ${place}`}</button>
+        <CorpButtonLink href="/app/settings/locations">{`View ${lower(Places)}`}</CorpButtonLink>
+      </div> : null}
+    </>
   );
 }

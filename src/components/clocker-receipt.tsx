@@ -4,13 +4,13 @@ import { useState, type ReactNode } from 'react';
 import { durationSentence } from '../lib/duration-format';
 import { formatClockTime, wholeTime } from '../lib/date-utils';
 import type { PunchAction, PunchReceipt, PunchSnapshot } from '../lib/clocker/punch-types';
-import { useClockerCopy, useClockerPresentation } from './clocker-language';
-import { clockerSpanishHour } from './clocker-copy';
+import { useClockerCopy } from './clocker-language';
 import { ClockerIcon } from './clocker-icon';
 import styles from './clocker.module.css';
 
 /* The one Clocker receipt (Direction B, Nov 8, 2026; shared by the normal and photo paths since the Nov 10 review, NV-054):
- * the recorded time as the hero figure, the approved line, "Saved …", the eight-second bar and the action reference. */
+ * the recorded time as the hero figure, the approved line, the countdown line ("Saved …" only for another day), the
+ * eight-second bar and the action reference. */
 export const receiptTitles: Record<PunchAction, string> = { CLOCK_IN: 'Clock in recorded', START_BREAK: 'Break start recorded', END_BREAK: 'Break end recorded', CLOCK_OUT: 'Clock out recorded' };
 const goodbyes: Record<PunchAction, string> = { CLOCK_IN: 'Have a good shift, {first}.', CLOCK_OUT: 'See you next time, {first}.', START_BREAK: 'Enjoy your break.', END_BREAK: 'Welcome back.' };
 /* Phase 6 (Nov 17, 2026): the two break lines carry the first name too, so every receipt says whose it is. Without a name
@@ -70,15 +70,13 @@ export function ClockerReceipt({ action, performedAt, commandId, timeZone, local
   /** Notes between the approved line and "Saved …" (the photo outcome). */
   children?: ReactNode;
 }) {
-  const t = useClockerCopy(), { locale: language } = useClockerPresentation();
+  const t = useClockerCopy();
   const [now] = useState(() => Date.now());
   const recordedAt = receiptTime(performedAt, timeZone, locale);
-  // One sentence with a placeholder (NV-173). The date shows only when it isn't today (NV-303). Spanish times end in
-  // "p. m.", so the sentence doesn't add a second full stop. Phase 8: "Saved at 10:30 PM." as approved, and in Spanish
-  // "Guardado a las 10:30 p. m." ("a la 1:05"), with "Se borra en 8 segundos." short enough to keep the line whole.
+  // One sentence with a placeholder (NV-173), only for a receipt from another day (NV-303): "Saved Nov 9 · 10:47 PM."
+  // Spanish times end in "p. m.", so the sentence doesn't add a second full stop.
   const savedAt = shortTime(performedAt, timeZone, now, locale), dated = savedAt !== recordedAt;
-  const sentence = t(dated ? 'Saved {time}. This screen clears in 8 seconds.' : 'Saved at {time}. This screen clears in 8 seconds.', { time: '\u0000' });
-  const [before, after = ''] = (language === 'es' && !dated ? clockerSpanishHour(sentence.replace('\u0000', savedAt)).replace(savedAt, '\u0000') : sentence).split('\u0000');
+  const [before, after = ''] = t('Saved {time}. This screen clears in 8 seconds.', { time: '\u0000' }).split('\u0000');
   const rest = savedAt.endsWith('.') && after.startsWith('.') ? after.slice(1) : after;
   // The second sentence stays whole (Phase 8, #11): two lines break between the sentences, never inside the second.
   const [, lead = '', clears = ''] = /^([.\s]*)([\s\S]*)$/.exec(rest) ?? [];
@@ -88,7 +86,10 @@ export function ClockerReceipt({ action, performedAt, commandId, timeZone, local
     {facts.length ? <dl className={styles.facts} data-clocker-receipt-facts="">{facts.map(fact => <div key={fact.label}><dt>{t(fact.label)}</dt>
       <dd>{fact.dateTime ? <time dateTime={fact.dateTime}>{fact.value}</time> : fact.translate ? t(fact.value, fact.params) : fact.value}</dd></div>)}</dl> : null}
     {children}
-    <p role="status" className={styles.saved}>{before}<time dateTime={performedAt}>{savedAt}</time>{lead}{clears ? <span className={styles.clearsIn}>{clears}</span> : null}</p>
+    {/* K11 (Nov 23, 2026): the time is said once. When it was saved today the large time above already says when, so
+      * the line is only the countdown; a receipt from another day still says "Saved Nov 9 · 10:47 PM" (the date is new). */}
+    {dated ? <p role="status" className={styles.saved}>{before}<time dateTime={performedAt}>{savedAt}</time>{lead}{clears ? <span className={styles.clearsIn}>{clears}</span> : null}</p>
+      : <p role="status" className={styles.saved}>{t('This screen clears in {seconds} seconds.', { seconds: 8 })}</p>}
     <span className={styles.countdown} aria-hidden="true"><i/></span>
     {commandId ? <details className={styles.reference}><summary>{t('Reference')}<ClockerIcon name="caret" size={16}/></summary><code>{commandId}</code></details> : null}
   </>;

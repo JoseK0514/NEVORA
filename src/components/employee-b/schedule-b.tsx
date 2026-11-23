@@ -37,7 +37,7 @@ export type ScheduleBProps = {
   swap: {title: string; detail: string; doneHref: string} | null;
   error: ReactNode;
   receipt: ReactNode;
-  open: {count: number | null; detail: string; label: string; href: string} | null;
+  open: {count: number | null; detail: string; href: string} | null;
   unavailable: {retryHref: string} | null;
   list: {label: string; wholeWeekHref: string | null; rows: ReactNode; empty: string | null;
     /** Phase 4 (EM-013): on desktop the card beside "This week" shows one day (today, else the week's first shift day)
@@ -51,7 +51,8 @@ export type ScheduleBProps = {
   /** The week is confirmed: a green card where Confirm was (review B6, NV-152). */
   done?: {title: string; detail: string; /** Names this week's confirmation ("week:2026-11-16"), for BDoneArrival. */ occurrence: string; /** Phones: the line without the week's dates (the strip above shows them). */ detailShort?: string} | null;
 };
-export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode; label: string; lead?: boolean;
+export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode;
+  /** Gaps G66: what the block doesn't show (its date, "shift lead" when no chip says so), read after what it shows. */ rest: string; lead?: boolean;
   /** The chip is "Tomorrow" (a tablet's narrow day leaves it out: the next column is tomorrow). */
   tomorrow?: boolean};
 export type WeekCardDay = {date: string; short: string; day: number; today: boolean; selected: boolean; href: string; label: string; shifts: WeekCardShift[];
@@ -65,7 +66,7 @@ function WeekCard({days, summary, leadNote}: {days: WeekCardDay[]; summary: Reac
     <ol className="eb-wk">{days.map(day => <li key={day.date} className={['eb-wd', day.today ? 'is-today' : '', day.selected ? 'is-on' : '', day.wide ? 'is-wide' : ''].filter(Boolean).join(' ')}>
       <span className="eb-wd__h" aria-hidden="true"><span>{day.short}</span><b>{day.day}</b></span>
       {/* One stop per shift (a day off is one stop too), each opening that day. */}
-      {day.shifts.length ? day.shifts.map(shift => <Link key={shift.key} className={`eb-wsh eb-wsh--${shift.kind}`} href={day.href} scroll={false} aria-label={shift.label}>
+      {day.shifts.length ? day.shifts.map(shift => <Link key={shift.key} className={`eb-wsh eb-wsh--${shift.kind}`} href={day.href} scroll={false}>
         {/* Phase 4 (EM-014): each half of the range stays whole; if the block is too narrow the line breaks before the dash.
           * Phase 8 (review C, row 24): the Employee screens' one range helper, and the place line wraps between whole
           * segments, never leaving a "·" at a line's end. */}
@@ -74,6 +75,7 @@ function WeekCard({days, summary, leadNote}: {days: WeekCardDay[]; summary: Reac
           * tablet's day is narrow). */}
         {shift.chip || shift.lead ? <span className={shift.tomorrow ? 'eb-wsh__chips eb-wsh__chips--tomorrow' : 'eb-wsh__chips'}>{shift.chip}
           {shift.lead ? <span className="b-chip b-chip--grey eb-wsh__lead"><span className="eb-wsh__lead-l">Shift lead</span><span className="eb-wsh__lead-s">Lead</span></span> : null}</span> : null}
+        <span className="b-sr">{`, ${shift.rest}`}</span>
       </Link>) : <Link className="eb-wsh eb-wsh--off" href={day.href} scroll={false} aria-label={day.label}/>}
     </li>)}</ol>
     {/* Phase 4 (EM-018): what isn't published yet qualifies this card, so it is the card's footer note. What changed
@@ -138,10 +140,10 @@ export function ScheduleB(props: ScheduleBProps) {
         {/* Phase 8 (review C, row 9): the card says what it holds; its open shifts can be next week's. */}
         <div className="b-card__h es-tw__h"><h2 id="b-this-week-h">{open && changes ? t.openAndChanges : open ? t.openShifts : t.scheduleChanges}</h2></div>
         <ul className="b-list">
-          {open ? open.count ? <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title={`${open.count} open ${open.count === 1 ? 'shift' : 'shifts'} to pick up`} sub={open.detail}/>
+          {open ? open.count ? <BRow href={open.href} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title={`${open.count} open ${open.count === 1 ? 'shift' : 'shifts'} to pick up`} sub={open.detail}/>
             // Review B2 (NV-275): none to pick up is a fact, not a row to open (grey: it doesn't open, EM-017).
             : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title={t.noOpenShifts}/>
-            : <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/> : null}
+            : <BRow href={open.href} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/> : null}
           {/* Round 2 (S4): under 360px the row's title reads "What changed" (the long one left a word alone on a second
             * line). The disclosure's own title stays in the page for screen readers; this short one is drawn in its place. */}
           {changes ? <li className="b-li"><div className="es-chg"><BIcon tone="teal"><ClockCounterClockwiseIcon weight="bold"/></BIcon>{changes}<span className="es-chg__short" aria-hidden="true">{t.whatChanged}</span></div></li> : null}
@@ -177,7 +179,7 @@ export function OpenShiftsB({backHref, rows, empty, blocked, unavailableHref, no
         <BButtonLink href={unavailableHref} kind="quiet" full>Open shift requests</BButtonLink></div></BCard>
         : empty ? <BCard label="Open shifts"><OpenShiftsEmptyB/></BCard>
         : <BCard title="You can pick up" count={rows.filter(row => !row.requested).length || undefined}>
-          <BList>{rows.map(row => <BRow key={row.id} lead={<BDay date={row.date}/>} title={row.hours} label={row.label}
+          <BList>{rows.map(row => <BRow key={row.id} lead={<BDay date={row.date} spoken/>} title={row.hours}
             chip={row.requested ? <BChip tone="amber">Waiting</BChip> : undefined}
             sub={<><span className="eb-line"><Dotted text={row.facts}/></span><span className="eb-line"><Dotted text={row.nextWeek ? `${row.place} · Next week` : row.place}/></span></>}
             trail={<BButtonLink href={row.href} kind="ghost" label={row.label} prefetch={false}>{row.requested ? 'View' : 'Pick up'}</BButtonLink>}/>)}</BList>

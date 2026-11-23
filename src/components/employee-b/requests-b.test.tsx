@@ -40,7 +40,7 @@ it('draws the Requests tab: the white Request time off, what waits on the manage
     decided={[{key: 'd', href: '/app/exchange?tab=requests&requestId=d', kind: 'callout', title: 'Can’t work', sub: 'Mon, Sep 28', chip: {tone: 'red', text: 'Declined'}}]}/></div>);
   expect(html).toMatch(/class="b-btn b-btn--white b-btn--full" href="\/app\/requests\?tab=new">.*Request time off</);
   expect(html).toContain('Waiting for your manager<span class="b-pill">1</span>');
-  expect(html).toContain('aria-label="Time off, Nov 12–14 · 3 days, Waiting"');expect(html).toContain('b-chip--amber">Waiting<');
+  expect(html).not.toContain('aria-label="Time off, Nov 12–14 · 3 days, Waiting"');expect(html).toContain('b-chip--amber">Waiting<');
   expect(html).toContain('href="/app/requests?filter=decided"');expect(html).toContain('b-chip--red">Declined<');
   const empty = renderToStaticMarkup(<RequestsHubB sub="Time off you’ve asked for" newHref={null} forManager decidedHref={null} waiting={[]} decided={[]}/>);
   expect(empty).toContain('Nothing waiting right now');expect(empty).not.toContain('Request time off');expect(empty).not.toContain('Decided');
@@ -52,9 +52,10 @@ it('draws Time off’s list on the phone with the same rows, links and empty wor
   expect(b).toContain('>Time off</h1>');expect(b).toContain('aria-current="page" href="/app/requests"');expect(b).toContain(`href="/app/requests?requestId=${PENDING}"`);
   expect(b).toContain('aria-hidden="true">·</span>Thu – Sat</span>');expect(b).toContain('<span class="b-sr">, </span>3 days</span>');expect(b).toContain('href="/app/requests?tab=new"');
   // Phase 4 (EM-023): a waiting row ends with the amber Waiting chip, and the Waiting tab carries its count.
-  expect(b).toContain('b-chip--amber">Waiting<');expect(b).toContain('3 days, Waiting"');
+  expect(b).toContain('b-chip--amber">Waiting<');expect(b).not.toContain('3 days, Waiting"'); // the row's name is its visible text (rule 7)
   expect(b).toContain('Waiting<span class="eb-segn"><span class="b-sr">, </span>1</span>');expect(b).toContain('>Decided</a>');
-  expect(b).toContain('Open a request to see its details or withdraw it.');
+  // Phase 2 gate (Nov 23): no line that explains how the list works.
+  expect(b).not.toContain('Open a request to see its details');
   expect(withoutB(html)).toContain('c-meta">Waiting<');
   fixture.read = {view: 'timeoff', enabled: true, timeZone: 'America/New_York', data: {requests: []}};
   const decided = onlyB(plain(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="decided"/>)));

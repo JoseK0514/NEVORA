@@ -19,16 +19,17 @@ it("authorizes the Owner before reading the full catalog", async () => {
   const html = renderToStaticMarkup(await PositionsPage());
   expect(mocks.requireRoles).toHaveBeenCalledWith(["OWNER"]);
   expect(mocks.listPositions).toHaveBeenCalledWith({ includeInactive: true });
-  expect(html).toContain('name="id" value="support"');
-  expect(html).toContain('name="id" value="retired"');
+  expect(html).toContain("Customer support");
   expect(html).toContain("Retired qualification");
-  // Release 1 (board O-Positions): active positions, then an Archived card; each position is a row that opens its editor.
-  expect(html).toContain('aria-label="Edit Retired qualification, archived"');
-  expect(html).toContain('Archived (1)');
-  expect(html).toContain('maxLength="80"');
-  expect(html).toContain('aria-labelledby="position-support-active-label"');
-  expect(html).toContain('id="position-support-active-label">Active');
-  expect(html).toContain("Archived positions can’t be newly assigned. They stay on past shifts and timecards.");
+  // J8 in Direction B: the shared Settings frame, an Active card and an Archived card; each position is a row that opens
+  // its editor (a dialog), so no edit form is drawn until one is chosen.
+  expect(html).toContain('class="c-page c-page--narrow c-setb"');
+  expect(html).toMatch(/<h2 class="c-card__label" id="positions-active-label">Active.*1<\/span><\/h2>/);
+  expect(html).toMatch(/<h2 class="c-card__label" id="positions-archived-label">Archived.*1<\/span><\/h2>/);
+  expect(html).toContain('id="position-row-retired"');
+  // Screen-reader names match the visible text: no aria-label on the rows.
+  expect(html).not.toMatch(/id="position-row-[^"]+"[^>]*aria-label/);
+  expect(html).not.toContain('name="name"');
 });
 it("does not read or render private configuration when authorization fails", async () => {
   mocks.requireRoles.mockRejectedValue(new Error("Access denied"));
@@ -41,15 +42,16 @@ it("keeps an unavailable read distinct from an empty catalog and offers a retry"
   expect(html).toContain("Couldn’t load positions.");
   expect(html).toContain("Try again");
   expect(html).not.toContain("Private database details");
-  expect(html).not.toContain('name="name"');
-  expect(html).not.toContain("No positions configured.");
+  expect(html).not.toContain('positions-active');
+  expect(html).not.toContain("No positions yet");
 });
 it("explains optional positions and guards forms before hydration", async () => {
   mocks.listPositions.mockResolvedValue([]);
   const html = renderToStaticMarkup(await PositionsPage());
   expect(html).toContain("Shifts can still be added without a position.");
   expect(html).toContain("JavaScript is required to add or edit positions.");
-  expect(html).toMatch(/<fieldset(?=[^>]*disabled="")(?=[^>]*class="q-fieldset wc-fieldset")[^>]*>/);
-  expect(html).toMatch(/<button type="button" class="q-btn" disabled="">Add position<\/button>/);
+  expect(html).toContain("No positions yet");
+  // Before hydration the Add button is off, so nothing opens an editor that cannot save.
+  expect(html).toMatch(/<button id="position-add" type="button" class="c-btn" disabled="">Add position<\/button>/);
   expect(html).not.toContain("Couldn’t load positions.");
 });

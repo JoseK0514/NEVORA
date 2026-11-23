@@ -14,7 +14,9 @@ import { keepWhole } from "@/lib/keep-whole";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { communicationAuthority } from "@/lib/communications/service.server";
 import { dateRange } from "@/lib/duration-format";
-import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow, weekLabel } from "./quiet/quiet";
+import { weekLabel } from "./quiet/quiet";
+import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "./corp/corp";
+import "@/app/app/schedule/schedule-tools.css";
 
 /** Phase 3.5 Wave A: Team availability on the kit. The week in the band, the counts and the deadline in one card,
  * then everyone's submission, people who haven't submitted first. */
@@ -36,7 +38,6 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   });
   if(source.state==='unavailable')return <OperationalUnavailable title="Team availability unavailable" reason={source.reason}/>;
   const {selectedWeek,settings,statuses,windows,employees,locations}=source.data;
-  const notSubmitted = statuses.filter(item => !item.submitted).length;
 
   const locationNames = new Map(locations.map(location => [location.id, location.shortName]));
   const employeeLocations = new Map(employees.map(employee => [employee.id, locationNames.get(employee.primaryLocationId)]));
@@ -60,20 +61,24 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
   const deadlineAt = settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
   const remind = authority && deadlineAt && Number.isFinite(deadlineAt.getTime()) && !locked && (proof.employee.role === "OWNER" || proof.employee.role === "MANAGER")
     ? { authority, timeZone, actor: proof.employee.role, weekStart: selectedWeek, expectedDeadline: deadlineAt.toISOString(), week: keepWhole(dateRange(selectedWeek, selectedWeek, { year: "never" })) } : null;
+  // Phase 2 (Schedule tools, C10, Nov 23, 2026): Direction B for real. The Corp page the B layer draws as the band (the
+  // title and the week); then the deadline row and one card of people with Not sent and Sent as its filter chips, as on
+  // Team. Same reads, links, reminders and deep link as before.
+  const weekLine = keepWhole(`Week of ${weekLabel(selectedWeek)}`);
   return (<ScopedReadFrame observation={source}>
-    <QuietPage className="q-availability">
-      <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
-      <QuietHeader title="Availability" sub={`${keepWhole(weekLabel(selectedWeek))} · ${statuses.length - notSubmitted} of ${statuses.length} sent`} />
-      {/* Closing F1 (NV-261): Not sent / Sent sit right under the title (in the band); the notice and the deadline follow. */}
+    <CorpPage className="c-avteam c-page--narrow" labelledBy="avteam-title">
+      <CorpNav back={{ href: "/app/inbox", label: "Things to do" }} title="Availability" titleId="avteam-title" phoneOnly />
+      <p className="c-phone-sub" aria-hidden="true">{weekLine}</p>
+      <CorpTitle title="Availability" sub={weekLine} wide />
       <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} remind={remind} needsDeadline={!deadlineAt} before={<>
-        {invalidWeek ? <p className="q-error q-first" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
-        <QuietList style={{ marginTop: 16 }}>
+        {invalidWeek ? <p className="c-st__msg c-st__msg--error form-error" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
+        <CorpCard ariaLabel="Deadline"><CorpRows>
           {/* Phase 3 (MG-016): the row says what a deadline does. The reminder goes out 24 hours before the deadline
               (notifications/policy.ts), so the line shows only where the workplace's alerts are on. */}
-          <QuietRow title="Deadline" detail={remindersOn ? "People are reminded the day before." : undefined} value={deadlineDay ?? "Not set"} tone="l" href="/app/schedule/settings"
-            label={locked ? `Deadline passed ${deadline}` : deadline ? `Deadline ${deadline}` : "No deadline set. Set one in Scheduling rules"} />
-        </QuietList>
+          {/* Phase 2 (C10): the row is read by what it shows; a passed deadline says so in words, not only to screen readers. */}
+          <li><CorpRow title="Deadline" detail={locked ? `Passed ${deadline}` : remindersOn && deadline ? "People are reminded the day before." : undefined} value={deadlineDay ?? "Not set"} href="/app/schedule/settings" /></li>
+        </CorpRows></CorpCard>
       </>} />
-    </QuietPage>
+    </CorpPage>
   </ScopedReadFrame>);
 }

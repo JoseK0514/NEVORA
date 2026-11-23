@@ -240,7 +240,7 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
               * "…" never lands right after a hyphen. */}
             <p className="eb-upd__body">{item.body.replace(/\s*\n+\s*/g, ' ').trim().replace(/(\w)-(?=\w)/g, '$1\u2011')}</p>
             <div className="eb-upd__acts">
-              <Link id={'b-message-' + item.id} className="b-btn b-btn--quiet b-rowact b-rowact--quiet" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
+              <Link id={'b-message-' + item.id} className="b-btn b-btn--ghost" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
               <BButton kind="ghost" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Acknowledge ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Acknowledge</BButton>
             </div>
           </div></li>)}</ul>
@@ -282,8 +282,10 @@ export function EmployeeUpdateB({back, item, busy, onAction, withdraw, onWithdra
       {returnHref ? <BReturnCard href={returnHref} /> : null}
       {status ? <BStatusCard status={status} /> : notice ? <BStatusCard status={notice} /> : item ? <>
         <article className="b-card eb-update" aria-label="Update content" data-update-revision={item.revisionId}>
-          <div className="eb-update__head"><h2>{item.title}</h2>{required ? <BChip tone="amber">{A.actionNeeded}</BChip> : null}</div>
-          <p className="eb-update__meta">{item.authorContext} · {messageTime(item.publishedAt, item.timeZone)}{item.editedAt ? ' · Edited ' + messageTime(item.editedAt, item.timeZone) : ''}</p>
+          {/* The band already says the title, author and time (review B7, NV-284); the card says each fact once: the chip,
+            * when it was edited, its audience, then the text. */}
+          {required ? <div className="eb-update__head"><BChip tone="amber">{A.actionNeeded}</BChip></div> : null}
+          {item.editedAt ? <p className="eb-update__meta">Edited {messageTime(item.editedAt, item.timeZone)}</p> : null}
           {item.sentCount !== undefined ? <p className="eb-update__meta">Original audience: {item.sentCount} {item.sentCount === 1 ? 'recipient' : 'recipients'}</p> : null}
           <p className="eb-update__body">{item.body}</p>
         </article>

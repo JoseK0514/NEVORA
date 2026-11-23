@@ -1,23 +1,35 @@
-/* Photo review on the corporate kit (Codex A2): kit cards with the same 16px inner edge as every settings card, a 13px
- * lede, rows with one small secondary Review, and the record detail as a second card with its actions on one line. */
-:is(#c-root, html) .c-photo-review { display: flex; flex-direction: column; gap: 12px; }
+/* Photo review in Settings (Phase 2, Nov 23, 2026): Direction B. Kit cards with the card's one text edge, kit rows with a
+ * white Review on the right, the result in the kit's notice card under the list, and the record as a second card with its
+ * two actions side by side (equal width on a phone). Sizes in rem so 200% text scales; spacing on the 4/8 scale. */
+:is(#c-root, html) .c-photo-review { display: flex; flex-direction: column; gap: var(--b-space-12, 12px); min-width: 0; }
 :is(#c-root, html) .c-photo-review .c-card__label:focus { outline: none; }
-:is(#c-root, html) .c-photo-review .c-card__label:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; border-radius: 4px; }
-:is(#c-root, html) .c-photo-review__lede { margin: 0; padding: 12px 16px; font-size: 13px; line-height: 18px; color: var(--c-grey); box-shadow: inset 0 -1px 0 var(--c-line); }
-:is(#c-root, html) .c-photo-review__msg { margin: 0; padding: 12px 16px; font-size: 13px; line-height: 18px; color: var(--c-ink); box-shadow: inset 0 -1px 0 var(--c-line); }
-:is(#c-root, html) .c-photo-review__msg[data-tone="error"] { color: var(--c-red); }
-:is(#c-root, html) .c-photo-review__empty { display: flex; flex-direction: column; gap: 2px; padding: 16px; }
-:is(#c-root, html) .c-photo-review__empty h3 { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-photo-review__empty p { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-photo-review .c-card__label:focus-visible { outline: var(--b-focus-width, 2px) solid var(--b-focus, var(--c-teal)); outline-offset: 2px; border-radius: 4px; }
+:is(#c-root, html) .c-photo-review__lede { margin: 0; padding: 0 var(--b-inset, 16px) var(--b-space-12, 12px); font-size: 0.8125rem; line-height: 1.38; color: var(--c-grey); }
 :is(#c-root, html) .c-photo-review .c-rows > li + li > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-photo-review__row { align-items: center; }
 :is(#c-root, html) .c-photo-review__row .c-row__main { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
-:is(#c-root, html) .c-photo-review__row > .c-btn { flex: none; }
-:is(#c-root, html) .c-photo-review__body { display: flex; flex-direction: column; gap: 8px; padding: 16px; font-size: 15px; line-height: 20px; color: var(--c-ink); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-photo-review__row .c-row__detail > span { white-space: normal; }
+:is(#c-root, html) .c-photo-review__row > .c-row__trail { flex: none; }
+:is(#c-root, html) .c-photo-review__result { outline: none; }
+:is(#c-root, html) .c-photo-review__body { display: flex; flex-direction: column; gap: var(--b-space-8, 8px); padding: 0 var(--b-inset, 16px) var(--b-space-16, 16px); font-size: 0.9375rem; line-height: 1.34; color: var(--c-ink); overflow-wrap: anywhere; }
 :is(#c-root, html) .c-photo-review__body > p { margin: 0; }
-:is(#c-root, html) .c-photo-review__fine { font-size: 13px; line-height: 18px; color: var(--c-grey); }
-:is(#c-root, html) .c-photo-review__acts { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
-:is(#c-root, html) .c-photo-review__confirm { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; background: var(--c-red-bg); }
-:is(#c-root, html) .c-photo-review__confirm p { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) .c-photo-review__state { color: var(--c-grey); }
+:is(#c-root, html) .c-photo-review__fine { font-size: 0.8125rem; line-height: 1.38; color: var(--c-grey); }
+:is(#c-root, html) .c-photo-review__acts { display: flex; flex-wrap: wrap; gap: var(--b-space-8, 8px); padding-top: var(--b-space-4, 4px); }
+:is(#c-root, html) .c-photo-review__acts > .c-btn { height: auto; min-height: 44px; white-space: normal; text-align: center; }
+:is(#c-root, html) .c-photo-review__confirm { display: flex; flex-direction: column; gap: var(--b-space-4, 4px); padding: var(--b-space-12, 12px); border-radius: 12px; background: var(--c-red-bg); }
+:is(#c-root, html) .c-photo-review__confirm strong { font-size: 0.9375rem; line-height: 1.34; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-photo-review__confirm p { margin: 0; font-size: 0.8125rem; line-height: 1.38; color: var(--c-ink2); }
 @media (max-width: 767px) {
-  :is(#c-root, html) .c-photo-review__acts > .c-btn { flex: 1 1 0; }
+  :is(#c-root, html) .c-photo-review__acts > .c-btn { flex: 1 1 0; min-width: 0; }
+}
+/* From 768px the card's text takes the kit's wide inset (22px), the edge of its label and rows. */
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(.c-photo-review__lede, .c-photo-review__body) { padding-left: var(--b-inset-wide, 22px); padding-right: var(--b-inset-wide, 22px); }
+}
+/* 200% text (end sweep, Nov 23): the kit's buttons and the card's text link are fixed px; here they take rem sizes and grow
+ * with their text (44px stays the minimum). */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-photo-review :is(.c-btn, .c-link):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { font-size: 0.9375rem !important; line-height: 1.34 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-photo-review .c-btn:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { height: auto !important; min-height: 44px !important; padding-block: 0.5rem !important; }
 }

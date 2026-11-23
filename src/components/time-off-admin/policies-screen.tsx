@@ -4,8 +4,11 @@ import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
-import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
-import { BCallout, BChip, BFilters, BNote, BState } from "@/components/owner-b/b-kit";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { CorpCard, CorpFormFooter, CorpRow, CorpRows } from "@/components/corp/corp";
+import { BChip, BState } from "@/components/owner-b/b-kit";
+import { SettingsPageB } from "@/app/app/settings/settings-b";
+import { FieldB, RadioRowB, ResultB, SwitchRowB } from "@/app/app/settings/settings-b-form";
 import { hoursInput, minutesFromHours, policyOrder, readPolicies, sendSettings, type PolicyCommand, type PtoPolicy } from "@/lib/workforce/pto-client";
 import { hoursText, ptoCopy, type PtoCopy, type PtoLang } from "./copy";
 
@@ -24,8 +27,9 @@ type Problem = "label" | "code" | "codeTaken" | "day" | "rate" | "cap";
 export type PoliciesScreenProps = { lang?: PtoLang; initial?: { load?: Load; draft?: Draft; custody?: Custody; issue?: Issue } };
 const TITLE_ID = "pto-pol-title";
 
+/** Settings in Direction B (Nov 23, 2026): the kit's buttons; teal is the one main action, everything else secondary. */
 function Act({ kind, children, onClick, disabled, busy, label }: { kind: "teal" | "ghost" | "quiet" | "text"; children: ReactNode; onClick?: () => void; disabled?: boolean; busy?: boolean; label?: string }) {
-  const cls = kind === "text" ? "b-btn b-btn--quiet b-rowact b-rowact--quiet" : `b-btn b-btn--${kind} rs-act`;
+  const cls = kind === "teal" ? "c-btn" : "c-btn c-btn--secondary";
   return <button type="button" className={cls} aria-label={label} aria-busy={busy || undefined} disabled={disabled || busy} onClick={onClick}>{children}</button>;
 }
 
@@ -123,79 +127,83 @@ export function PoliciesScreen({ lang = "en", initial }: PoliciesScreenProps) {
     <span className="rs-acts"><Act kind="ghost" onClick={() => { setIssue(null); setDraft(null); setLoad({ state: "loading" }); void reload(); }}>{t.reload}</Act></span></BState>;
   else if (issue === "invalid") attention = <BState alert kind="failed" title={t.invalidTitle} line={t.invalidBodyPolicy}><span className="rs-acts"><Act kind="text" onClick={() => setIssue(null)}>{t.close}</Act></span></BState>;
   else if (issue) attention = <BState alert kind="locked" title={issue === "denied" ? t.deniedTitle : t.signedOutTitle} line={issue === "denied" ? t.deniedBody : t.signedOutBody} action={issue === "signed_out" ? { label: t.signIn, href: "/login" } : undefined} />;
-  const attentionCard = attention ? <div className="rs-issue" ref={issueRef} tabIndex={-1}><CorpCard ariaLabel={t.unknownTitle}>{attention}</CorpCard></div> : null;
+  // Settings in Direction B (Nov 23, 2026): the attention card is a direct child of the page, like every other card.
+  const attentionCard = attention ? <section className="c-card c-setb-attn" ref={issueRef as never} tabIndex={-1} aria-label={t.unknownTitle}>{attention}</section> : null;
 
   let body: ReactNode;
+  let phoneSave: ReactNode = null;
   const title = draft ? (draft.revision ? t.editPolicy : t.newPolicy) : t.policiesTitle;
-  if (load.state === "loading") body = <CorpCard ariaLabel={t.policiesCard}><div className="rs-skel" role="status" aria-busy="true"><span className="rs-sr">{t.loadingPolicies}</span>
+  if (load.state === "loading") body = <CorpCard ariaLabel={t.policiesCard}><div className="rs-skel" role="status" aria-busy="true"><span className="c-sr">{t.loadingPolicies}</span>
     <span className="rs-skel__bar rs-skel__bar--head" aria-hidden="true" />{[46, 38].map((w, i) => <span key={i} className="rs-skel__row" aria-hidden="true"><span className="rs-skel__bar rs-skel__bar--day" /><span className="rs-skel__bar" style={{ width: `${w}%` }} /></span>)}</div></CorpCard>;
-  else if (load.state !== "ready") body = <div className="rs-state"><CorpCard ariaLabel={t.policiesTitle}>{
+  else if (load.state !== "ready") body = <CorpCard ariaLabel={t.policiesTitle}>{
     load.state === "failed" ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
     : load.state === "signed_out" ? <BState alert kind="locked" title={t.signedOutTitle} line={t.signedOutBody} action={{ label: t.signIn, href: "/login" }} />
-    : <BState kind="locked" title={t.deniedTitle} line={t.deniedBody} />}</CorpCard></div>;
+    : <BState kind="locked" title={t.deniedTitle} line={t.deniedBody} />}</CorpCard>;
   else if (draft) {
     const set = (patch: Partial<Draft>) => { const next = { ...draft, ...patch }; setDraft(next); if (problems.length) setProblems(policyProblems(next, policies)); };
-    const err = (p: Problem[], id: string, text: string) => p.some(x => problems.includes(x)) ? <p className="rs-err" id={id}><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{text}</p> : null;
-    const field = (id: string, label: string, help: string, value: string, onChange: (v: string) => void, bad: Problem[], errText: string, extra?: { inputMode?: "decimal" | "text"; maxLength?: number; disabled?: boolean; upper?: boolean }) => {
-      const invalid = bad.some(x => problems.includes(x));
-      return <div className="rs-field"><label className="rs-field__l" htmlFor={id}>{label}</label>
-        <input id={id} className={`c-in rs-in${extra?.inputMode === "decimal" ? " pto-num" : ""}`} type="text" inputMode={extra?.inputMode ?? "text"} autoComplete="off" spellCheck={false} maxLength={extra?.maxLength}
-          value={value} disabled={busy || extra?.disabled} aria-invalid={invalid || undefined} aria-describedby={invalid ? `${id}-h ${id}-e` : `${id}-h`}
-          onChange={event => onChange(extra?.upper ? event.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "") : event.target.value)} />
-        <p className="rs-field__h" id={`${id}-h`}>{help}</p>{err(bad, `${id}-e`, errText)}</div>;
-    };
+    const field = (id: string, label: string, help: string, value: string, onChange: (v: string) => void, bad: Problem[], errText: string, extra?: { inputMode?: "decimal" | "text"; maxLength?: number; disabled?: boolean; upper?: boolean }) =>
+      <FieldB id={id} label={label} help={help} helpId={`${id}-h`} error={bad.some(x => problems.includes(x)) ? errText : undefined} className={extra?.inputMode === "decimal" ? "pto-num" : undefined}
+        type="text" inputMode={extra?.inputMode ?? "text"} autoComplete="off" spellCheck={false} maxLength={extra?.maxLength} value={value} disabled={busy || extra?.disabled}
+        onChange={event => onChange(extra?.upper ? event.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "") : event.target.value)} />;
     const codeErr = problems.includes("codeTaken") ? t.codeTaken : t.needCode;
+    const saving = custody?.status === "sending";
+    const saveButton = (cls: string) => <button type="button" className={cls} aria-busy={saving || undefined} disabled={busy || !!custody} onClick={save}>{saving ? t.saving : t.save}</button>;
+    phoneSave = saveButton("c-setb-save");
+    const cancel = () => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setIssue(null); });
+    // The card's footer holds Cancel and Save on tablets and desktop; phones stack them full width at the card's end (the
+    // band has no Back while a policy is open, so Cancel is the way out).
     body = <>
       {attentionCard}
-      <CorpCard id="pto-pol-edit" ariaLabel={title}>
-        <div className="rs-fields">
-          {draft.revision === 0 ? <div className="rs-field"><span className="rs-field__l">{t.kindLabel}</span>
-            <BFilters label={t.kindLabel} items={(["VACATION", "SICK", "OTHER"] as Kind[]).map(kind => ({ key: kind, label: kind === "VACATION" ? t.kindVacation : kind === "SICK" ? t.kindSick : t.kindOther,
-              current: draft.kind === kind, onSelect: () => set({ kind, code: kind === "OTHER" ? "" : kind, label: kind === "VACATION" ? t.vacation : kind === "SICK" ? t.sick : "" }) }))} /></div> : null}
+      <section className="c-card c-setb-form" id="pto-pol-edit" aria-label={title}>
+        {draft.revision === 0 ? <fieldset className="c-setb-fieldset c-setb-choice">
+          <legend className="c-field__label c-setb-legend">{t.kindLabel}</legend>
+          <ul className="c-rows">{(["VACATION", "SICK", "OTHER"] as Kind[]).map(kind => <li key={kind}><RadioRowB name="pto-kind" value={kind} checked={draft.kind === kind} disabled={busy}
+            title={kind === "VACATION" ? t.kindVacation : kind === "SICK" ? t.kindSick : t.kindOther}
+            onChange={() => set({ kind, code: kind === "OTHER" ? "" : kind, label: kind === "VACATION" ? t.vacation : kind === "SICK" ? t.sick : "" })} /></li>)}</ul>
+        </fieldset> : null}
+        <div className="c-setb-fields">
           {field("pto-label", t.name, t.nameHelp, draft.label, v => set({ label: v }), ["label"], t.needName, { maxLength: 80 })}
           {draft.kind === "OTHER" || draft.revision ? field("pto-code", t.code, t.codeHelp, draft.code, v => set({ code: v }), ["code", "codeTaken"], codeErr, { maxLength: 32, disabled: draft.revision > 0, upper: true }) : null}
           {field("pto-day", t.dayHours, t.dayHoursHelp, draft.day, v => set({ day: v }), ["day"], t.needDay, { inputMode: "decimal", maxLength: 6 })}
           {field("pto-rate", t.earnRate, t.earnRateHelp, draft.rate, v => set({ rate: v }), ["rate"], t.needRate, { inputMode: "decimal", maxLength: 6 })}
           {field("pto-cap", t.carryover, t.carryoverHelp, draft.cap, v => set({ cap: v }), ["cap"], t.needCap, { inputMode: "decimal", maxLength: 7 })}
-          <label className="pto-switch" htmlFor="pto-enabled">
-            <span className="pto-switch__tx"><b>{t.enabled}</b><span id="pto-enabled-h">{t.enabledHelp}</span></span>
-            <input id="pto-enabled" type="checkbox" role="switch" className="c-switch" checked={draft.enabled} disabled={busy} aria-describedby="pto-enabled-h" onChange={event => set({ enabled: event.target.checked })} />
-          </label>
         </div>
-      </CorpCard>
-      {problems.length ? <p className="rs-err rs-err--sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
-      <div className="rs-foot"><Act kind="text" disabled={busy || !!custody} onClick={() => leaveWithDiscardGuard(() => { setDraft(null); setProblems([]); setIssue(null); })}>{t.cancel}</Act>
-        <Act kind="teal" busy={custody?.status === "sending"} disabled={busy || !!custody} onClick={save}>{custody?.status === "sending" ? t.saving : t.save}</Act></div>
+        <ul className="c-rows"><li><SwitchRowB id="pto-enabled" label={t.enabled} description={t.enabledHelp} checked={draft.enabled} disabled={busy} onChange={on => set({ enabled: on })} /></li></ul>
+        {problems.length ? <p className="c-error c-setb-sum" ref={problemRef} tabIndex={-1} role="alert"><WarningCircleIcon weight="bold" aria-hidden="true" />{t.problems(problems.length)}</p> : null}
+        <CorpFormFooter><Act kind="text" disabled={busy || !!custody} onClick={cancel}>{t.cancel}</Act>{saveButton("c-btn")}</CorpFormFooter>
+        {/* Final fixes S2 (G85): a phone saves from the band, as every Settings form does; Cancel stays at the card's end. */}
+        <div className="c-only-phone c-setb-phoneacts"><Act kind="text" disabled={busy || !!custody} onClick={cancel}>{t.cancel}</Act></div>
+      </section>
     </>;
   } else {
     const has = (code: string) => policies.some(p => p.code === code);
+    // Adding is one kind of row, whatever is missing (QA A1-05: the empty state had three button styles).
+    const adds: { key: string; label: string; kind: Kind }[] = [
+      ...(!has("VACATION") ? [{ key: "v", label: t.addVacation, kind: "VACATION" as Kind }] : []),
+      ...(!has("SICK") ? [{ key: "s", label: t.addSick, kind: "SICK" as Kind }] : []),
+      { key: "o", label: t.addOther, kind: "OTHER" as Kind },
+    ];
     body = <>
       {attentionCard}
+      {/* Final polish (finding 24): a save's result stands at the top: the done mark, what is now true, the fact. */}
+      {landed && !attention ? <ResultB innerRef={doneRef as never} tone="done" title={t.policySaved}>{landed.line}</ResultB> : null}
       <CorpCard id="pto-policies" label={t.policiesCard}>
-        {/* Final polish (finding 24): a save's result opens the card it changed: the done mark, what is now true, the fact. */}
-        {landed && !attention ? <BState kind="done" titleRef={doneRef} title={t.policySaved} line={landed.line} /> : null}
         {policies.length ? <CorpRows label={t.policiesCard}>{policies.map(policy => <li key={policy.code}>
           <CorpRow onClick={() => open(policy, "OTHER")} chevron title={policy.label}
             detail={[t.dayLine(hoursText(policy.fullDayMinutes)), policy.earnedMinutesPer100Hours ? t.earnsLine(hoursText(policy.earnedMinutesPer100Hours)) : t.earnsNone,
               policy.carryoverCapMinutes ? t.capLine(hoursText(policy.carryoverCapMinutes)) : t.capNone].join(" · ")}
             trail={<BChip tone={policy.enabled ? "green" : "grey"}>{policy.enabled ? t.on : t.off}</BChip>} /></li>)}</CorpRows>
-          : <div className="pto-empty"><BCallout tone="grey" icon="empty" title={t.emptyTitle}>{t.emptyBody}</BCallout></div>}
-        <div className="rs-main pto-adds">
-          {!has("VACATION") ? <Act kind={policies.length ? "ghost" : "teal"} disabled={busy} onClick={() => open(null, "VACATION")}>{t.addVacation}</Act> : null}
-          {!has("SICK") ? <Act kind={has("VACATION") && policies.length === 1 ? "teal" : "ghost"} disabled={busy} onClick={() => open(null, "SICK")}>{t.addSick}</Act> : null}
-          <span className="pto-adds__other"><Act kind="text" disabled={busy} onClick={() => open(null, "OTHER")}>{t.addOther}</Act></span>
-        </div>
+          : <div className="c-empty c-empty--card"><span className="c-empty__title">{t.emptyTitle}</span><span className="c-empty__body">{t.emptyBody}</span></div>}
+        <ul className="c-rows c-setb-adds">{adds.map(add => <li key={add.key}><CorpRow onClick={busy ? undefined : () => open(null, add.kind)} disabled={busy} icon={<PlusIcon weight="bold" />} title={add.label} chevron={false} /></li>)}</ul>
+        <p className="c-setb-cardnote">{t.policiesNote}</p>
       </CorpCard>
-      <BNote>{t.policiesNote}</BNote>
     </>;
   }
 
-  return <CorpPage className="c-page--narrow rs rs--c pto" labelledBy={TITLE_ID} lang={lang}>
-    <CorpNav back={draft ? undefined : { href: "/app/settings", label: t.settingsBack }} title={title} titleId="pto-pol-nav" phoneOnly />
-    <CorpTitle id={TITLE_ID} title={title} wide focusTarget />
-    <p className="rs-sr" role="status" aria-live="polite">{said}</p>
+  return <SettingsPageB title={title} titleId={TITLE_ID} back={draft ? null : { href: "/app/settings", label: t.settingsBack }} className="pto" lang={lang} phoneRight={phoneSave}>
+    <p className="c-sr" role="status" aria-live="polite">{said}</p>
     {body}
     {/* Leaving with policy edits that are not saved asks first (Nov 21, 2026); a save that is being checked keeps its own hold. */}
     <DiscardGuard dirty={!!draft && !custody && JSON.stringify(draft) !== opened} lang={lang} />
-  </CorpPage>;
+  </SettingsPageB>;
 }

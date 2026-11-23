@@ -29,6 +29,7 @@ import { CreditCardIcon } from "@phosphor-icons/react/dist/ssr/CreditCard";
 import { commerceEnabled } from "@/lib/commerce/access";
 import type { ReactNode } from "react";
 import "./settings-corp.css";
+import "./settings-b.css";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
 export const metadata = { title: "Settings" };
@@ -66,7 +67,9 @@ export default async function SettingsPage() {
     ? <li key={href}><CorpRow href={href} title={title} icon={icons[href]} one value={tone === "amber" || value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone="soft"
       trail={tone === "amber" && value !== null && value !== undefined ? <CorpPill tone="amber">{String(value)}</CorpPill> : undefined} chevron /></li> : null;
   return (
-    <CorpPage className="c-settings c-page--narrow" labelledBy="settings-title">
+    // Settings in Direction B (Nov 23, 2026): c-setb gives the hub the Settings pages' rules (one column on tablets, so a
+    // row's title and its value are never cut).
+    <CorpPage className="c-settings c-page--narrow c-setb" labelledBy="settings-title">
       <CorpNav back={{ href: "/app/more", label: "More" }} title="Settings" titleId="settings-nav-title" phoneOnly />
       <CorpTitle id="settings-title" title="Settings" wide />
       <CorpSection id="settings-company" label="Company"><CorpCard as="div">

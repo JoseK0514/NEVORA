@@ -19,7 +19,7 @@ export function TemplateFeedback({ children }: { children: ReactNode }) {
   const container = useRef<HTMLDivElement>(null);
   // IS-B15: a success shows as the toast and needs no focus; an error or warning takes it so it is read first.
   useEffect(() => { if (container.current?.querySelector(".form-error, .form-warning")) container.current.focus({ preventScroll: true }); }, []);
-  return <div className="wb-feedback" tabIndex={-1} ref={container}>{children}</div>;
+  return <div className="c-tpl__feedback" tabIndex={-1} ref={container}>{children}</div>;
 }
 
 export function TemplateNameLink({ children }: { children: ReactNode }) {
