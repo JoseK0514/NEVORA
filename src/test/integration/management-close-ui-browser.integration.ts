@@ -52,7 +52,12 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     // Release the fixture's initial Home document only after its actual startup reads finish.
     const homePaths=['/api/notifications','/api/manager/inbox-count','/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor'];
     if(actor==='QAOWNER')homePaths.push('/api/commerce/status','/api/setup/first-week');
-    const signedInReads=Promise.all(homePaths.map(path=>page.waitForResponse((response:{url():string;status():number})=>new URL(response.url()).pathname===path&&response.status()===200).then(async(response:{finished():Promise<unknown>})=>expect(await response.finished(),path).toBeNull())));
+    const signedInReads=Promise.all(homePaths.map(async path=>{
+     const response=await page.waitForResponse((response:{url():string})=>new URL(response.url()).pathname===path);
+     // Commerce is disabled in this owned fixture.
+     expect(response.status(),path).toBe(path==='/api/commerce/status'?404:200);
+     expect(await response.finished(),path).toBeNull();
+    }));
     await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
     surfacePhase='timecards';await mark('timecards:start');
     // Use the supported person deep link from the Inbox so recovery after a blur
