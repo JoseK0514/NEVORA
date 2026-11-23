@@ -77,3 +77,21 @@ Captures: `shots/kit-final/` (webp, quality 80) and `rows.json`.
 | `15521816` | Things to do: card headings and the band's filter counts use `CorpCount`, so they read "Open shifts 1" and "All 5". The filters' `aria` ("All, 5") is dropped: their name is their visible words. |
 | `57fe9ba7` | `BLiveItem` has no `aria` field any more; Employee Home's figures drop the unread names (and the unused `boardDuration` import). Nothing changes on screen or in what is read. |
 Every test that asserts BLive markup (`b-live__v`) passes: b-kit-labels, employee home-large-text, payroll-premium, scoped-home, owner-home-corp, and all of `src/components/employee-b`. Typecheck is clean.
+
+## Follow-up 2: segmented tabs at 200% text (13:45 UTC)
+`cd348986`: in the kit, `.b-seg`, `.q-seg`, `.c-seg` and Payroll's `nav.c-pay-tabs` tracks and items have `height: auto`
+(min 44px track, 36px pill, 44px hit area kept), `padding-block: 4px`, `line-height: 1.25rem`, and wrap between words
+(`white-space: normal; overflow-wrap: break-word`, centred). These are the values the Employee and Lead band tabs use on
+`claude-codex-collab-nevora-staff` (4fb23cbe, 27186f09), so whichever rule wins draws the same. The rule is in the
+`nv-b` layer with id steps, so it outranks the per-page rules that pin a segment's height.
+- **Default size, before and after:** identical at 390 and 768 on Payroll, Time off, Shift requests and Things to do,
+  and on Employee Time off and Schedule. At 1440 the segment strips on every Owner page are identical. The other
+  differences are live data: minutes, "1 min ago", and the seeded staffing hours on Home.
+- **200% text:** the Owner's segment labels are a fixed 14px (`--b-seg-fs`), so they don't grow and didn't overlap
+  before or after. On Employee Time off the "Waiting 2" pill now grows with its count instead of squeezing inside the
+  track (`img/seg-timeoff-employee-390-200pct-before.webp` → `…-200pct.webp`).
+- **Seen, not mine (proposed rows):** (a) at 768 with 200% text, the band's subtitle lines overlap on Payroll ("Calculate
+  pay and share statements…") and Timecards ("Nov 23–29 · 12 people" over "Approval opens…"), because the title band's
+  sub line-height is fixed. (b) On Employee Time off at 390 with 200% text, a row's time reads "9:00 AM – :00 PM", with
+  the hour cut. (c) If segment labels should grow with text, `--b-seg-fs` would need to move to rem; that is a visible
+  change at 200% and needs a decision.
