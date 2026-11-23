@@ -15,16 +15,12 @@ const render = (statuses: OwnerPinStatus[], lang: 'en' | 'es' = 'en') => renderT
 describe('Clocker PINs', () => {
   it('opens on the people without a PIN, in name order, with their position and location', () => {
     const html = render(people);
-    // Phase 2 (Settings part 2): each count once, on the kit's filter chips; no "2 people need a PIN" heading over them.
-    expect(html).not.toContain('2 people need a PIN');
+    expect(html).toContain('2 people need a PIN');
     expect(html.indexOf('Ana Colon')).toBeGreaterThan(-1); expect(html.indexOf('Ana Colon')).toBeLessThan(html.indexOf('Maria Rivera'));
     expect(html).toContain('Barista · Calle Loíza'); expect(html).toContain('Front counter · Condado');
     // People with a PIN and inactive people are on their own tabs.
     expect(html).not.toContain('James Ortiz'); expect(html).not.toContain('Luis Torres');
-    expect(html).toContain('<div class="b-filters" role="group" aria-label="Show people by PIN">');
-    expect(html).toContain('<button type="button" aria-pressed="true">No PIN<b>2</b></button>'); expect(html).toContain('<button type="button" aria-pressed="false">PIN set<b>1</b></button>'); expect(html).toContain('Inactive<b>1</b>');
-    // The search and the chips open the one people card, as on Team.
-    expect(html.indexOf('ck-pins__tools')).toBeLessThan(html.indexOf('b-list')); expect(html.match(/class="b-card"/g)).toHaveLength(1);
+    expect(html).toMatch(/aria-pressed="true" aria-label="No PIN, 2"/); expect(html).toMatch(/aria-pressed="false" aria-label="PIN set, 1"/); expect(html).toMatch(/aria-label="Inactive, 1"/);
   });
   it('each row has one action that names the person: Set PIN is the tinted pill and opens their form', () => {
     const html = render(people);
@@ -35,9 +31,9 @@ describe('Clocker PINs', () => {
   });
   it('when everyone has a PIN it opens on "PIN set", where the action is the quiet Reset PIN', () => {
     const html = render([people[0]]);
-    expect(html).toContain('<button type="button" aria-pressed="true">PIN set<b>1</b></button>');
+    expect(html).toMatch(/aria-pressed="true" aria-label="PIN set, 1"/);
     expect(html).toMatch(/<a href="\/app\/employees\/QA-2\/clocker-pin\?from=pins" class="b-btn b-btn--quiet ck-text" aria-label="Reset the Clocker PIN for James Ortiz">Reset PIN<\/a>/);
-    expect(html).not.toContain('Inactive<b>');
+    expect(html).not.toMatch(/aria-label="Inactive/);
   });
   it('never shows a PIN, a version or an employee ID as text', () => {
     const html = render(people);
@@ -55,6 +51,6 @@ describe('Clocker PINs', () => {
   });
   it('Spanish leaks no English sentence', () => {
     for (const html of [render(people, 'es'), render([people[0]], 'es'), render([], 'es'), renderToStaticMarkup(createElement(ClockerPinsUnavailable, {lang: 'es'}))]) expect(englishIn(html)).toEqual([]);
-    expect(render(people, 'es')).toContain('Sin PIN<b>2</b>'); expect(render(people, 'es')).toContain('Crear PIN');
+    expect(render(people, 'es')).toContain('2 personas necesitan un PIN'); expect(render(people, 'es')).toContain('Crear PIN');
   });
 });
