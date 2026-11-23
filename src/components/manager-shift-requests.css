@@ -1,0 +1,62 @@
+/* Shift requests, Owner and Manager (Phase 2, queue C12, Nov 23, 2026). The Corp frame with Direction B cards and rows
+ * (b-kit). A request is a row that opens in place (details) to show its shifts in full, with its decision under it.
+ * Every line inside a request starts on the row's text edge (the inset, the 36px face and its 12px gap); text sizes in
+ * rem so 200% text scales. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq { --sr-x: var(--b-inset, 18px); --sr-text: calc(var(--sr-x) + 48px); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq :is(.c-title h1, .c-nav__title) { text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .b-card + .b-card { margin-top: var(--b-space-12, 12px); }
+
+/* The row: no disclosure marker; a CaretDown that turns when the request is open. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__details > summary { list-style: none; cursor: pointer; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__details > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__row { padding-inline: var(--sr-x); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__caret { transition: rotate var(--b-dur-hover, 160ms) var(--b-ease-out, ease-out); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__details[open] > summary .c-sreq__caret { rotate: 180deg; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__caret { transition: none; } }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__row:focus-visible { outline: var(--b-focus-width, 2px) solid var(--b-focus, #0B6E69); outline-offset: -2px; border-radius: var(--b-radius-card, 16px); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .b-row__tt { font-size: 1rem; line-height: 1.375rem; font-weight: 600; color: var(--b-ink, #14181B); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .b-row__s { font-size: 0.875rem; line-height: 1.25rem; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__ago, :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__state { font-size: 0.875rem; line-height: 1.25rem; color: var(--b-grey, #5E666C); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* Phones show a request's age under its line only once it is over a day old (OW-011); from 768px it is the row's value. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__ago { display: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__age { display: block; }
+
+/* What opens: the shifts as label and value, then the grey consequence lines. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__body { padding: 0 var(--sr-x) var(--b-space-12, 12px) var(--sr-text); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__body .b-req-facts { display: grid; gap: var(--b-space-8, 8px); margin: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__body .b-req-facts > div { min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__body .b-req-facts dt { margin: 0; font-size: 0.8125rem; line-height: 1.125rem; color: var(--b-grey, #5E666C); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__body .b-req-facts dd { margin: 0; font-size: 0.9375rem; line-height: 1.375rem; color: var(--b-ink, #14181B); overflow-wrap: anywhere; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__help { display: flex; flex-direction: column; gap: var(--b-space-4, 4px); margin: var(--b-space-8, 8px) 0 0; font-size: 0.875rem; line-height: 1.25rem; color: var(--b-grey, #5E666C); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__body .shift-change-history, :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__body > :not(p, dl) { margin-top: var(--b-space-8, 8px); }
+
+/* The decision under the row: Decline and Approve (or Close request), equal width from the text edge to the card's
+ * edge on a phone, 44px high, labels centred; the question that replaces them keeps the same edges. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts { padding: 0 var(--sr-x) var(--b-space-12, 12px) var(--sr-text); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__form { display: block; margin: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts { display: flex; gap: var(--b-space-8, 8px); padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts::after { display: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts > .q-bs { flex: 1 1 0; min-width: 0; height: auto; min-height: 44px; padding: 0 var(--b-space-16, 16px); font-size: 0.9375rem; line-height: 1.25rem; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .b-ask { margin: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__note { margin: 0 0 var(--b-space-8, 8px); font-size: 0.875rem; line-height: 1.25rem; color: var(--b-grey, #5E666C); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__note a { color: var(--b-teal, #0B6E69); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+/* A request picked from a link (?requestId=) is marked by its tint, not a second outline. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq[data-selected="true"] { background: var(--b-press-tint, rgb(11 110 105 / 0.06)); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:focus-visible { outline: var(--b-focus-width, 2px) solid var(--b-focus, #0B6E69); outline-offset: -2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq > .b-callout { margin-bottom: var(--b-space-12, 12px); }
+
+@media (min-width: 768px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq { --sr-x: var(--b-inset-wide, 22px); }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__ago { display: block; }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__age { display: none; }
+  /* Tablets: the buttons sit under the row at the card's right edge, at their own width, the same height. */
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts { justify-content: flex-end; }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq__acts .q-acts > .q-bs { flex: 0 0 auto; min-width: 7.5rem; }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop: the decision sits on the row's own line at the right (centred on the 64px row); an open request's shifts
+   * unfold under the row's text. */
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:has(> .c-sreq__acts):not(:has(.c-sreq__note)) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-shiftreq .c-sreq:not(:has(.c-sreq__note)) > .c-sreq__acts { max-width: 22rem; padding: 10px var(--sr-x) 10px 0; }
+}
