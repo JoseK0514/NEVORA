@@ -238,7 +238,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   // leave", opening the schedule with the person and the repair (or Things to do's Shifts to fill for several).
   const repairs = value.now.filter(isStaffingRepair);
   if (repairs.length) {
-    const first = repairs[0], presented = presentItem(first, c.fillShift), person = itemPerson(first);
+    const first = repairs[0], presented = presentItem(first, c.fillShift, undefined, lang), person = itemPerson(first);
     // Signed-in Spanish: the repair's title is built from the person here (present.ts writes it in English).
     const shown = lang === "es" ? { ...presented, title: person ? c.fillPersonShift(person) : c.fillShift } : presented;
     rows.push(<BRow key="repairs" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}

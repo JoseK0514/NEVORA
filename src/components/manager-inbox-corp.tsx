@@ -75,7 +75,7 @@ function requestDetail(item: ActionItem, fallback: string, w: W) {
 function itemRow(item: ActionItem, timeZone: string, calm = false, w: W = EN): Row {
   const { c, t } = w;
   const entry = itemEntry(item, calm, "all", timeZone, w.lang);
-  const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, actionCenterNavigation(item, w.lang).label, timeZone);
+  const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, actionCenterNavigation(item, w.lang).label, timeZone, w.lang);
   const request = item.category === "requests";
   // Nov 14, 2026 inspection (BR-7): a shift request names both people when the read carries the other one. Phase 3
   // (MG-012): the two names are joined by the swap sign.

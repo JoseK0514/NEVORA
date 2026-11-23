@@ -148,7 +148,7 @@ export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, 
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
   const action = actionCenterNavigation(item, lang);
-  const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
+  const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone, lang);
   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
   return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
     // Review B6 (NV-105): a person keeps one face tint on every screen (the B kit's faceTint).
