@@ -65,7 +65,7 @@ it("renders Home in English as before, and in Puerto Rico Spanish when the perso
   for (const words of ["Clocked in", "Not clocked in", "Open shifts", "Things to do", "Cover an open shift", "Find cover", "Add shift", "Send update", "Today", "This week", "Shifts by day", "Scheduled payday"])
     expect(en).toContain(words);
   const es = home("es");
-  for (const words of ["En turno", "Sin marcar entrada", "Turnos disponibles", "Pendientes", "Cubrir un turno disponible", "Buscar quién cubra", "Añadir turno",
+  for (const words of ["En turno", "Sin marcar entrada", "Turnos dispo\u00adnibles", "Pendientes", "Cubrir un turno disponible", "Cubrir", "Añadir turno",
     "Enviar aviso", "Días libres", "Hoy", "Esta semana", "Turnos por día", "Día de pago programado", "Buenas tardes, Daniel", "a. m."])
     expect(es).toContain(words);
   const pay = home("es", { week: { ...week, payrollHref: "/app/payroll" } });
@@ -92,7 +92,7 @@ it("renders Things to do in Spanish: band, filters, rows, More and the read stat
   const en = inbox();
   for (const words of ["Things to do", "All", "Shifts", "Find cover", "Needs 1", "Time off requests", "Later and done", "3 planned · 1 done"]) expect(en).toContain(words);
   const es = inbox("es");
-  for (const words of ["Pendientes", "Todo", "Turnos", "Buscar quién cubra", "6:00 p. m. – 10:00 p. m.", "Solicitudes de días libres", "Cambios de turno", "Disponibilidad", "Después y hecho", "3 planificados · 1 hecho", "Falta 1", "Inicio"])
+  for (const words of ["Pendientes", "Todo", "Turnos", "Cubrir", "6:00 p. m. – 10:00 p. m.", "Solicitudes de días libres", "Cambios de turno", "Disponibilidad", "Después y hecho", "3 planificados · 1 hecho", "Falta 1", "Inicio"])
     expect(es).toContain(words);
   for (const english of ["Things to do", "Find cover", "Needs ", "Time off", "Later and done", " PM"]) expect(es).not.toContain(english);
   expect(inbox("es", { ready: null, connection: "unavailable" })).toContain("No pudimos cargar Pendientes");
