@@ -81,3 +81,17 @@ Each at 320, 390, 768, 1024 and 1440: 100 views per side, 200 in all.
 | Left (accepted spacing group) | | sidebar links at 1440 (40–42 tall), Help at 1440 (40), the rail's top Home and Team at 1024 (42 and 41 tall, 44 wide: the rail's edge and the Team count badge), the 320 week strip (39–40 wide), Team "All" at 1024 (41 wide) |
 
 Everything left is in the group the lead accepted under WCAG 2.5.8 spacing. The shots are `shots/final-*`.
+
+## Last batch (QA's reach test: elementFromPoint at ±21.5px, production build, 390, mouse and touch emulation)
+Tip `22293552`, merged at `4ed588b1`.
+
+- **Team filters "All" and "On the clock" (`/app/employees`):** fixed.
+  - **Cause:** the 2×2 grid already has an 8px row gap (4 + 36 + 8 + 36 + 4), so the row-gap change agreed as option (a) wasn't needed. The two rows' 4px rings meet at the gap's midline, and the second row, later in the DOM, won that boundary, so the first row fell a sub-pixel short below its centre.
+  - **Fix:** the first row now sits above the second (`z-index: 1`, `owner-b-home.css`).
+  - **After:** 0 misses for all four pills. Nothing drawn moves: the 390 pixel diff shows only a live figure further down the page.
+  - **Shots:** `shots/team-filters-390-before.webp` and `-after.webp`.
+- **Time off segments, Waiting / Approved / Declined (`/app/requests`):** all eight points hit for the Owner, both before and after. Not reproduced; the lead is asking QA for the role and state used.
+- **"What this measures" on `/app/schedule/publish`:** can't be measured with the fixture. It only shows while the week is a draft, and the fixture week is published. It uses the same centred ring (`b-review-details.css`, 36 + 2 × 4 = 44) that measured 44 on Schedule.
+- **Sidebar links at 1440 (still under the spacing exception):** `aside.sidebar .nav-link::after` does render, and the release-batch rule overrides the `display: none` in `owner-b-desktop.css`. The links are only about 2px apart, so each ring runs into its neighbour's in the gap and the later link paints over the earlier. Reach stops at about 42, and 40 for the first and last links where the nav's own edge clips. There's no free space for 44 without overlapping targets or moving the links.
+
+**Checks:** the `src/components` and `src/app` suites had 4951 passed and 0 failed; tsc passed.
