@@ -166,12 +166,12 @@
 /* Final fixes K (Nov 23, 2026): two fields to a row only while a field is at least 8.5rem wide, so at 200% text "Period
  * start" and "Period end" stack and show "Mon, Nov 23" whole instead of cutting it (at most two columns; at the default
  * size each half is wider than 8.5rem, so nothing moves). */
-@media (min-width: 360px) and (max-width: 559px) { :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fit, minmax(max(8.5rem, calc((100% - var(--b-space-12)) / 2)), 1fr)); } }
+@media (min-width: 360px) and (max-width: 559px) { :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fill, minmax(max(8.5rem, calc((100% - var(--b-space-12)) / 2)), 1fr)); } }
 :is(#c-root, html) .oa .oa-fields > :is(:only-child, :nth-child(3)) { grid-column: 1 / -1; }
 @media (min-width: 560px) {
   :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   /* Final fixes K: three to a row only while each is at least 8.5rem wide (two, then one, at large text). */
-  :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fit, minmax(max(8.5rem, calc((100% - 2 * var(--b-space-12)) / 3)), 1fr)); }
+  :is(#c-root, html) .oa .oa-fields { grid-template-columns: repeat(auto-fill, minmax(max(8.5rem, calc((100% - 2 * var(--b-space-12)) / 3)), 1fr)); }
   :is(#c-root, html) .oa .oa-fields > :is(:only-child, :nth-child(3)) { grid-column: auto; }
 }
 @media (max-width: 359px) { :is(#c-root, html) .oa .oa-fields { grid-template-columns: minmax(0, 1fr); } }
