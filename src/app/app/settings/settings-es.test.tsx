@@ -69,7 +69,7 @@ it('renders Positions and Break types in Spanish', () => {
   const failed = es(createElement(PositionCatalog, {positions: [], available: false, createAction: rs.fn(), updateAction: rs.fn()}));
   expect(failed).toContain('No pudimos cargar los puestos.');expect(failed).toContain('Intentar de nuevo');
   const types = es(createElement(ClockerBreakTypes, {initialTypes: [{id: 'b1', name: 'Almuerzo', category: 'MEAL', targetMinutes: 30, active: true, version: 1}] as never, action: rs.fn()}));
-  for (const word of ['Activos', 'Comida', '30 min', 'Añadir tipo de descanso', 'Los cambios aplican solo a descansos nuevos.']) expect(types).toContain(word);
+  for (const word of ['Activos', 'Comida', '30 min', 'Añadir descanso', 'Los cambios aplican solo a descansos nuevos.']) expect(types).toContain(word);
   expect(types).not.toContain('Add break type');
 });
 

@@ -11,7 +11,7 @@ import "./settings-b.css";
 
 export type SettingsBack = { href: string; label: string };
 
-export function SettingsPageB({ title, wideTitle, titleId = "settings-page-title", back = { href: "/app/settings", label: "Settings" }, sub, phoneRight, actions, className, lang, children }: {
+export function SettingsPageB({ title, wideTitle, titleId = "settings-page-title", back: givenBack, sub, phoneRight, actions, className, lang, children }: {
   title: ReactNode;
   /** Tablets and desktop only: the band's title when it differs from the phone's (a section with tabs names the section,
    * and the selected tab names the page). Defaults to `title`. */
@@ -31,6 +31,8 @@ export function SettingsPageB({ title, wideTitle, titleId = "settings-page-title
   lang?: string;
   children: ReactNode;
 }) {
+  // Signed-in Spanish: the default way back is named in the page's language.
+  const back = givenBack === undefined ? { href: "/app/settings", label: lang === "es" ? "Configuración" : "Settings" } : givenBack;
   return (
     <CorpPage className={className ? `c-page--narrow c-setb ${className}` : "c-page--narrow c-setb"} labelledBy={titleId} lang={lang}>
       <CorpNav back={back ?? undefined} title={title} titleId={`${titleId}-nav`} right={phoneRight} phoneOnly />
