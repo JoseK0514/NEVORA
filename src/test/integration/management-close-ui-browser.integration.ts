@@ -53,10 +53,12 @@ it('offers an audited management close in real desktop/mobile timecards with rec
     const homePaths=['/api/notifications','/api/manager/inbox-count','/api/manager/today','/api/manager/action-center','/api/manager/clock-monitor'];
     if(actor==='QAOWNER')homePaths.push('/api/commerce/status','/api/setup/first-week');
     const signedInReads=Promise.all(homePaths.map(async path=>{
-     const response=await page.waitForResponse((response:{url():string})=>new URL(response.url()).pathname===path);
+     // Dev navigation can cancel an early request after headers arrive. Wait
+     // for a completed request for each fixture read within the normal timeout.
+     const request=await page.waitForEvent('requestfinished',(request:{url():string})=>new URL(request.url()).pathname===path);
+     const response=await request.response();
      // Commerce is disabled in this owned fixture.
-     expect(response.status(),path).toBe(path==='/api/commerce/status'?404:200);
-     expect(await response.finished(),path).toBeNull();
+     expect(response?.status(),path).toBe(path==='/api/commerce/status'?404:200);
     }));
     await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await signedInReads;
     surfacePhase='timecards';await mark('timecards:start');
