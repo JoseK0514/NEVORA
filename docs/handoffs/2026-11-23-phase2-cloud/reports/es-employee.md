@@ -172,3 +172,49 @@ Pages: Home, Schedule, Time (`/app/my-time`), Pay (`/app/my-pay`), Requests, Upd
 ## Proposed end-sweep rows
 - **`employee-b-work.css` `.b-live__m`:** let the Home hours line wrap at 390 (Spanish "trabajadas esta semana").
 - **Desktop back links under 36px:** "Inicio" on More, "Solicitudes" on Requests, "Schedule" on Availability.
+
+## Second release (lead, 18:43): time corrections queue and the lang-aware helpers
+Staff's tip (`836964e4`) was merged first. Code: `198cea83`, `bb17dd9e`, `04d3cae5`. Shots: `es2-*.webp` in `shots/es-employee/img/` (this commit).
+
+**What changed:**
+- **Manager time corrections queue** (`manager-time-corrections.tsx`):
+  - New table `manager-time-corrections-copy.ts` (about 40 keys and a 7-entry `modes` group), with a key-set test and Spanish render tests. The tests cover the queue, a request's review, the empty, loading, failed and no-access states, approved and declined results, and conflicts.
+  - The component is a client component that reads `usePortalLang()`; no page edit was needed.
+  - `time-correction-context.tsx` and `correction-time-ticket.tsx` were already bilingual.
+  - The Employee side (`employee-time-corrections.tsx`) was done in `8d42c8db`.
+- **Time (`time-b.tsx`)** now takes its words in the person's language from es-mobile's `hours-model` helpers: dates, times, status words, request kinds, timecard notes and the tablet's name.
+  - The `esDate`/`esTime` rewriting is gone.
+  - The English word maps in `time-copy.ts` are gone: `statusWords`, `kinds`, `issues`, `tablet` and `timeWord`.
+  - States are told by flags and status codes (`open`, `REJECTED`), never by the word.
+  - A test checks that the model returns Spanish and that the maps stay gone.
+- **Home and Updates** do the same with `dayWord`, `clock`, `weekRange` and `messageTime`.
+- **Still uses `esTime`, deliberately:** wall-clock times from `formatTime` (`src/lib/date-utils.ts`) on Schedule, the Requests card and `wallTime`. The shared library has no language-aware form of that function yet.
+
+**Browser check:** the language was a **saved Spanish profile choice** (`user_language_preferences`), not the cookie. Widths 390, 390 with 200% text and 1440, with axe.
+
+| Role | Pages | Sideways scroll | axe |
+|---|---|---|---|
+| Employee | Home, Time, Past timecards, Your correction requests, Updates | none | no findings |
+| Owner (queue with 2 requests) | `/app/timecards/corrections` | none | no findings |
+| Manager Elena | `/app/timecards/corrections` | none | no findings |
+
+- Elena has no correction permission in the fictional data, so her capture shows the Spanish no-access state ("No tienes acceso a las correcciones de tiempo").
+- Fixed in the browser pass: the band's zone read "Horas en hora de Puerto Rico". It now reads "Hora de Puerto Rico".
+
+**For Jose to review (approval and timecard wording):**
+- Correction approved. The original recorded punch remains unchanged. → Corrección aprobada. La marcación original registrada no cambia.
+- Correction declined. The original recorded punch remains unchanged. → Corrección rechazada. La marcación original registrada no cambia.
+- The timecard shows the new times. The original clock times stay in its history. → La tarjeta de tiempo muestra las horas nuevas. Las horas originales del reloj quedan en su historial.
+- The timecard keeps its recorded times. → La tarjeta de tiempo conserva sus horas registradas.
+- Approving changes the timecard; the original clock times stay in the history → Al aprobar, cambia la tarjeta de tiempo; las horas originales del reloj quedan en el historial
+- This period is finalized. Reopen it in Timecards before reviewing this correction. → Este período está finalizado. Reábrelo en Tarjetas de tiempo antes de revisar esta corrección.
+- Fixes to past clock times wait here for your decision. The original Clocker record is kept. → Las correcciones de horas pasadas esperan aquí tu decisión. El registro original del Clocker se guarda.
+- Fixes your team asked for. Original times are always kept. Times in {zone}. → Correcciones que pidió tu equipo. Las horas originales siempre se guardan. Hora de {lugar}.
+- We couldn’t confirm your decision. Try again; it won’t be applied twice. → No pudimos confirmar tu decisión. Inténtalo de nuevo; no se aplicará dos veces.
+- Another manager or an Owner reviews your own request. → Otro gerente o el dueño revisa tu propia solicitud.
+
+**Checks:**
+- tsc: 0 errors.
+- oxlint: no errors.
+- `src/components` + `src/app/app` suite: 4794 passed, 0 failed (at `bb17dd9e`).
+- After `04d3cae5`, the corrections tests: 30 passed.

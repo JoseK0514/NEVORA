@@ -4,7 +4,7 @@ import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
 import {weekRange, type HomeWeek} from '../employee-home-quiet';
 import {workCopy} from './work-copy';
-import {esDate, LOCALE, type FormatLang} from './es-format';
+import {LOCALE, type FormatLang} from './es-format';
 
 /* Home's "Your week" (Nov 21, 2026): the week's hours day by day, one bar per day. A day's bar is as tall as its hours;
  * the solid part is time worked (the Time tab's own records read), the tint is what the published schedule still holds.
@@ -64,7 +64,7 @@ export function HomeWeekCard({week, hours, time, lang = 'en'}: {week: HomeWeek; 
   const worked = workedByDay(hours);
   const days = weekDays(week, worked);
   if (!days.some(day => day.scheduled || day.worked)) return null;
-  const t = workCopy(lang), range = esDate(weekRange(week.weekStart), lang);
+  const t = workCopy(lang), range = weekRange(week.weekStart, lang);
   const top = Math.max(...days.map(day => Math.max(day.scheduled, day.worked ?? 0)), 60);
   return <BCard title={t.yourWeek} id="b-home-week" link={time ? {href: '/app/my-time', label: t.timecard, aria: t.openTimecard} : undefined} meta={range}>
     <div className="eb-hw">
