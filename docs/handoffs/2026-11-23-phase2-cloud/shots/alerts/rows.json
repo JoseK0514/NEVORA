@@ -1,0 +1,426 @@
+[
+ {
+  "id": "l1-ready-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Off",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-ready-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-ready-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-enabled-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "On",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-enabled-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-enabled-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-denied-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Permission blocked",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-denied-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-denied-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-revoked-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Setup changed",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-revoked-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-revoked-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-error-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Needs a check",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-error-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-error-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-loading-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Checking",
+  "note": "The line under the title says what is being confirmed without repeating “Checking”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-loading-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-loading-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-paused-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Paused",
+  "note": "One way forward, Check now.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-paused-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-paused-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-confirm-turn-off-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Confirm turn off",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-confirm-turn-off-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-confirm-turn-off-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-confirm-use-for-account-owner",
+  "row": "L1",
+  "page": "Phone app Alerts (Owner Device settings)",
+  "section": "Confirm use for this account",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-confirm-use-for-account-owner-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-confirm-use-for-account-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-ready-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Off",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-ready-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-ready-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-enabled-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "On",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-enabled-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-enabled-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-denied-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Permission blocked",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-denied-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-denied-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-revoked-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Setup changed",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-revoked-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-revoked-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-error-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Needs a check",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-error-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-error-employee-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Phone, keyboard focus on Check again",
+    "after": "img/l1-error-employee-focus-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-loading-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Checking",
+  "note": "The line under the title says what is being confirmed without repeating “Checking”.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-loading-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-loading-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-paused-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Paused",
+  "note": "One way forward, Check now.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-paused-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-paused-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-confirm-turn-off-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Confirm turn off",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-confirm-turn-off-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-confirm-turn-off-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "l1-confirm-use-for-account-employee",
+  "row": "L1",
+  "page": "Phone app Alerts (Employee and Lead)",
+  "section": "Confirm use for this account",
+  "note": "One solid main action; the other actions are white secondaries and Turn off alerts has red words. No line repeats the title or a button.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/l1-confirm-use-for-account-employee-390.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/l1-confirm-use-for-account-employee-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k12-kept-punches",
+  "row": "K12",
+  "page": "Clocker kept-punches help",
+  "section": "Kept-punches help",
+  "note": "Back sits 8px under “Ask Owner to check” and Reference directly under Back; both keep 56px targets.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k12-kept-punches-clocker-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k12-kept-punches-reference",
+  "row": "K12",
+  "page": "Clocker kept-punches help",
+  "section": "Reference open",
+  "note": "Back sits 8px under “Ask Owner to check” and Reference directly under Back; both keep 56px targets.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k12-kept-punches-reference-clocker-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k12-kept-punches-asked",
+  "row": "K12",
+  "page": "Clocker kept-punches help",
+  "section": "Request sent",
+  "note": "Back sits 8px under “Ask Owner to check” and Reference directly under Back; both keep 56px targets.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k12-kept-punches-asked-clocker-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k12-check-last",
+  "row": "K12",
+  "page": "Clocker kept-punches help",
+  "section": "Check last punch",
+  "note": "The way into the help, unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k12-check-last-clocker-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
