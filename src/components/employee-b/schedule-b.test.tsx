@@ -70,11 +70,11 @@ it('round 2 (S2, S4): Confirm this week carries Home’s amber chip when the man
   expect(draw()).not.toContain('es-chg__short');
 });
 
-it('Phase 4: a day block prints the compact range in two whole halves, so no dash hangs at a line end (EM-014)', () => {
+it('Phase 4, Nov 23: a day block prints the range in two whole halves that break only after the dash (EM-014)', () => {
   const day = {date: '2026-11-17', short: 'Tue', day: 17, today: true, selected: true, href: '/app/schedule?week=2026-11-16&day=2026-11-17', label: 'Tuesday, November 17, today',
     shifts: [{key: 's1', time: '9\u00a0AM – 5\u00a0PM', position: 'Barista', place: 'Main Office · 8 h', kind: 'now' as const, chip: null, label: 'Tuesday'}]};
   const html = draw({weekCard: {summary: '', days: [day]}});
-  expect(html).toContain('<b><span class="eb-nb">9\u00a0AM</span> <span class="eb-nb">–\u00a05\u00a0PM</span></b>');
+  expect(html).toContain('<b><span class="eb-nb">9\u00a0AM\u00a0–</span> <span class="eb-nb">5\u00a0PM</span></b>');
 });
 
 

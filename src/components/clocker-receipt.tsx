@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { durationSentence } from '../lib/duration-format';
+import { formatClockTime, wholeTime } from '../lib/date-utils';
 import type { PunchAction, PunchReceipt, PunchSnapshot } from '../lib/clocker/punch-types';
 import { useClockerCopy, useClockerPresentation } from './clocker-language';
 import { clockerSpanishHour } from './clocker-copy';
@@ -47,18 +48,19 @@ export function receiptFacts(receipt: Pick<PunchReceipt, 'action' | 'performedAt
   return [];
 }
 
+/** A time on the receipt in the one time format ("10:47 PM"; Spanish "10:47 p. m."), kept whole on its line. */
+const receiptTime = (value: string, timeZone: string, locale: string) => wholeTime(formatClockTime(value, timeZone, locale));
 /** "Nov 9 · 10:47 PM"; in Spanish "9 nov · 10:47 p. m.". Intl orders the date for each language (Nov 10 review, NV-183). */
 export function clockTime(value: string, timeZone: string, locale = 'en-US'): string {
   const date = new Date(value);
   const day = new Intl.DateTimeFormat(locale, { timeZone, month: 'short', day: 'numeric' }).format(date);
-  const time = new Intl.DateTimeFormat(locale, { timeZone, hour: 'numeric', minute: '2-digit', hour12: true }).format(date);
-  return `${day} · ${time}`;
+  return `${day} · ${receiptTime(value, timeZone, locale)}`;
 }
 function dayKey(value: Date, timeZone: string) { return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(value); }
 /** "8:02 AM" today, "Oct 19 · 10:02 PM" on another day. */
 export function shortTime(value: string, timeZone: string, now: number, locale = 'en-US'): string {
   if (dayKey(new Date(value), timeZone) !== dayKey(new Date(now), timeZone)) return clockTime(value, timeZone, locale);
-  return new Intl.DateTimeFormat(locale, { timeZone, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(value));
+  return receiptTime(value, timeZone, locale);
 }
 
 export function ClockerReceipt({ action, performedAt, commandId, timeZone, locale, firstName, facts = [], children }: {
@@ -70,7 +72,7 @@ export function ClockerReceipt({ action, performedAt, commandId, timeZone, local
 }) {
   const t = useClockerCopy(), { locale: language } = useClockerPresentation();
   const [now] = useState(() => Date.now());
-  const recordedAt = new Intl.DateTimeFormat(locale, { timeZone, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(performedAt));
+  const recordedAt = receiptTime(performedAt, timeZone, locale);
   // One sentence with a placeholder (NV-173). The date shows only when it isn't today (NV-303). Spanish times end in
   // "p. m.", so the sentence doesn't add a second full stop. Phase 8: "Saved at 10:30 PM." as approved, and in Spanish
   // "Guardado a las 10:30 p. m." ("a la 1:05"), with "Se borra en 8 segundos." short enough to keep the line whole.

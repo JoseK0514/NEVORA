@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {useRef,useState,type ReactNode} from 'react';
 import type {OperationalShiftEditorData} from '@/lib/company-access/model';
-import {addDays,formatDayLabel,formatTime,formatWeekRange,isDateInWeek} from '@/lib/date-utils';
+import {addDays,formatDayLabel,formatTime,formatWeekRange,isDateInWeek,joinTimeRange} from '@/lib/date-utils';
 import {ConfigurationForm,type ConfigurationResult} from '@/components/configuration-form';
 import {SelectField} from '@/components/select-field';
 import {RootChrome} from '@/components/root-chrome';
@@ -39,7 +39,7 @@ function ScopedManualShiftEditor({data,action,deleteAction,locationName,prefill=
  const retainedPosition=!!position&&!choices.some(p=>p.id===position);
  const retainedPerson=!!person&&!data.employeeOptions.some(p=>p.id===person);
  const back='/app/schedule?'+new URLSearchParams({week:data.weekStart,location:data.locationId});
- const recordedPeriod=shift?`${formatDayLabel(shift.date).weekday}, ${formatDayLabel(shift.date).day}, ${formatTime(shift.startTime)}–${formatTime(shift.endTime)}${shift.endTime==='24:00'||shift.endTime<shift.startTime?' the following day':''}`:'';
+ const recordedPeriod=shift?`${formatDayLabel(shift.date).weekday}, ${formatDayLabel(shift.date).day}, ${joinTimeRange(formatTime(shift.startTime),formatTime(shift.endTime))}${shift.endTime==='24:00'||shift.endTime<shift.startTime?' the following day':''}`:'';
  async function perform(fields:FormData,submit:(fields:FormData)=>Promise<unknown>=action):Promise<ConfigurationResult>{
   if(busy.current||uncertain)return {error:'Review the original save before making another change.'};
   busy.current=true;setWorking(true);let timer:ReturnType<typeof setTimeout>|undefined;

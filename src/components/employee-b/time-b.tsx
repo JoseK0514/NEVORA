@@ -75,15 +75,11 @@ export function HoursRecoveryB({href}:{href:string}){
 function Dur({value}:{value:number}){
  return <><span aria-hidden="true">{compactDuration(value)}</span><span className="b-sr">{boardDuration(value)}</span></>;
 }
-/** Final polish, round 2 (T1): a day row's range on Time. It is the Employee screens' `Range` (each half whole, the break
- * before the dash) at every width from 360px. Under 360px the title column cannot hold a range with minutes on one line
- * (measured: 118px against 127px), and every row of the week then started its second line with a dash; there the dash
- * ends the first line instead ("8:58 AM –" over "5:28 PM"). Both dashes are in the markup and time.css shows one, so
- * nothing shifts after hydration; the row's link keeps its spoken label. Anything that is not a two-part range is `Range`'s. */
+/** Final polish, round 2 (T1): a day row's range on Time. Nov 23, 2026 (one time format): it is the Employee screens'
+ * `Range` at every width, which breaks only after the dash ("8:58 AM –" over "5:28 PM") where the title column cannot hold
+ * the range on one line (under 360px, measured 118px against 127px). The row's link keeps its spoken label. */
 function DayRange({text}:{text:string}){
- const halves=text.split(/[\s\u00a0]+–[\s\u00a0]+/);
- if(halves.length!==2||!halves[0]||!halves[1])return <Range text={text}/>;
- return <><span className="eb-nb">{halves[0]}<span className="eb-dayrange__trail">{'\u00a0–'}</span></span> <span className="eb-nb"><span className="eb-dayrange__lead">{'–\u00a0'}</span>{halves[1]}</span></>;
+ return <Range text={text}/>;
 }
 const M=momentsCopy(),W=workCopy();
 const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{status.word}</BChip>;

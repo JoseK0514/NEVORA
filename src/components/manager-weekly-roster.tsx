@@ -23,7 +23,8 @@ import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
-import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
+import { addDays, formatDayLabel, formatTime, formatTimeRange } from "../lib/date-utils";
+import { keepWhole } from "../lib/keep-whole";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { faceTint } from "@/lib/face-tint";
@@ -47,16 +48,12 @@ function compactTime(time: string) {
 }
 /** The Quiet list's clock: "6:00 AM". */
 const clock = (time: string) => formatTime(time).replace(" ", " ");
-/** Quiet (v4): "12:30 – 4:00 PM", one AM/PM when both ends share it. */
-const span = (start: string, end: string) => { const a = clock(start), b = clock(end); const ma = a.slice(-2), mb = b.slice(-2); return /[AP]M/.test(ma) && ma === mb ? `${a.slice(0, -3)} – ${b}` : `${a} – ${b}`; };
-/** The roster block's clock: "6a", "2p", "6:30a", "12a". */
-function brief(time: string) {
-  const [hour, minute] = time.slice(0, 5).split(":").map(Number);
-  const h = hour % 24, shown = h % 12 || 12;
-  return `${shown}${minute ? `:${String(minute).padStart(2, "0")}` : ""}${h >= 12 ? "p" : "a"}`;
-}
-/** "6a – 2p"; a block that covers the whole day reads "All day" ("12a – 12a" was ambiguous — QA 48 and 50 of 50). */
-const range = (start: string, end: string) => { const h = (t: string) => t.slice(0, 5); return h(start) === "00:00" && (h(end) === "24:00" || h(end) === "00:00") ? "All day" : `${brief(start)} – ${brief(end)}`; };
+/** Quiet (v4): the open shift's range, in the one time format (Nov 23, 2026): "12:30 PM – 4:00 PM", each time whole. */
+const span = (start: string, end: string) => keepWhole(formatTimeRange(start, end));
+/** The roster block's range in the one time format (Nov 23, 2026; it was "6a – 2p"): "6:00 AM – 2:00 PM"; a block that
+ * covers the whole day reads "All day" ("12a – 12a" was ambiguous: QA 48 and 50 of 50). Where a grid cell is too
+ * narrow for the range on one line, CorpTime breaks it after the dash. */
+const range = (start: string, end: string) => formatTimeRange(start, end);
 const longWeekday = (date: string) => new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 const narrowWeekday = (date: string) => new Intl.DateTimeFormat("en-US", { weekday: "narrow", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 const initials = (name: string) => name.split(" ").filter(Boolean).slice(0, 2).map(part => part[0]).join("");
@@ -417,7 +414,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
           {visibleDates.map(date => { const hours = durationRow(assignedMinutes(scheduled.flatMap(shown).filter(shift => shift.date === date)), "0 h"); // The day view's column head is the day axis; the day and its hours (said in the card's head and the corner) are read out.
             if (axis) return <th scope="col" key={date} className="cm-axis-head" data-today={date === today || undefined}>
               <span className="sr-only">{`${formatDayLabel(date).weekday} ${Number(date.slice(8))}${date === today ? ", today" : ""}, ${hours}`}</span>
-              <span className="cm-axis" aria-hidden="true">{axis.ticks.map(tick => <em key={tick.at} style={{ left: `${tick.at}%` }}>{tick.label}</em>)}</span>
+              <span className="cm-axis" aria-hidden="true">{axis.ticks.map(tick => <em key={tick.at} style={tick.at === 100 ? { right: 0 } : { left: `${tick.at}%` }}>{keepWhole(tick.label)}</em>)}</span>
             </th>;
             return <th scope="col" key={date} data-today={date === today || undefined}>
             <span>{formatDayLabel(date).weekday}</span> <b>{Number(date.slice(8))}</b>{date === today ? <span className="sr-only">, today</span> : null}

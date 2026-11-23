@@ -64,18 +64,18 @@ it('round 2 (H2, H4): a request that waits for your answer is amber with Request
   expect(card.slice(card.indexOf('item=fyi'), card.indexOf('item=req'))).toContain('b-ico--teal');
   // H4: 1:00 PM UTC is 9:00 AM in Puerto Rico. Both forms are in the row; the short one is not read aloud.
   expect(text(row)).toContain('Respond by Nov 23, 9:00 AM');
-  expect(row).toMatch(/<span class="eb-dl">Respond by Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span><span class="eb-dl-s" aria-hidden="true">By Nov[ \u00a0]23,[ \u00a0]9[ \u00a0\u202f]AM<\/span>/);
+  expect(row).toMatch(/<span class="eb-dl">Respond by Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span><span class="eb-dl-s" aria-hidden="true">By Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span>/);
   // The hour loses ":00"; any other minute stays.
-  expect(todoDeadline('2026-11-24T16:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12 PM');
+  expect(todoDeadline('2026-11-24T16:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12:00 PM');
   expect(todoDeadline('2026-11-24T16:30:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12:30 PM');
-  expect(todoDeadline('2026-11-24T14:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 10 AM');
+  expect(todoDeadline('2026-11-24T14:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 10:00 AM');
   expect(todoDeadline('2026-11-24T16:00:00Z', zone).full.replace(/[\u00a0\u202f]/g, ' ')).toBe('Respond by Nov 24, 12:00 PM');
 });
 
 it('EM-007, EM-025: the hours read as one sentence, the payday is one format, and the shift ahead is the first figure', () => {
   const html = draw(), strip = html.slice(html.indexOf('class="b-live b-glass"'), html.indexOf('</ul>', html.indexOf('class="b-live b-glass"')));
   const plain = text(strip);
-  expect(plain).toContain('Next shift Tomorrow 9 AM Customer Support · Main Office');
+  expect(plain).toContain('Next shift Tomorrow 9:00 AM Customer Support · Main Office');
   expect(strip).toContain('aria-label="Next shift, Tomorrow, 9:00 AM to 5:00 PM"'.replace(/ /g, strip.includes('9:00 AM') ? ' ' : ' '));
   // No hours read in this render: scheduled hours stand alone with their caption.
   expect(plain).toContain('Hours 32 h scheduled this week');
@@ -134,7 +134,7 @@ it('Phase 9: the shift card says its time fact as header meta, your clock state 
   expect(html).not.toContain('id="b-home-now"');
   expect(lateCard).toContain('<div class="b-callout" data-tone="amber" role="status">');
   expect(lateCard).toContain('<p class="b-callout__t">Still clocked in since 9:02 AM</p>');
-  expect(text(lateCard)).toContain('Your 9 AM – 5 PM shift has ended. Clock out on the Main Office tablet.');
+  expect(text(lateCard)).toContain('Your 9:00 AM – 5:00 PM shift has ended. Clock out on the Main Office tablet.');
   expect(lateCard).not.toContain('b-ico--amber');expect(lateCard).not.toContain('eb-tint');
   // Clocked in during a shift: the state leads the line with the green live dot (final review C, row 9: the first line,
   // ink 600), over where to clock as the grey second line (no green tint, no callout). "Main Office" stays whole.

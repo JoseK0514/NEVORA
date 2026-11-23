@@ -66,7 +66,7 @@ it("keeps signed replacement review links and selected requirements intact", () 
 it("labels overnight context and empty results without an assignment action", () => {
   // Dates and times are kept whole with no-break spaces; compare the words.
   // R2: the time is the kit's CorpTime (thin and narrow spaces, AM/PM in spans), so compare the words without tags.
-  const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/[\u00a0\u2009\u202f]/g, " ").replace(/<span class="c-ampm">([^<]*)<\/span>/g, "$1");
+  const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/\u2060/g, "").replace(/[\u00a0\u2009\u202f]/g, " ").replace(/<span class="c-ampm">([^<]*)<\/span>/g, "$1");
   expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("10:00 PM – 6:00 AM");
   // Owner premium R14 / copy table 29–31: words for zero, and no "lead" (the role is on hold).
   // Nov 1 upscale: the empty body says it once ("No one is free"); the header no longer repeats "No one free".

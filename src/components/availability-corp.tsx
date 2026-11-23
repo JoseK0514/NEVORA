@@ -34,7 +34,7 @@ function bar(period: {startTime: string; endTime: string}) {
 export function AvailabilityDayRows({days}: {days: AvailabilityDayRow[]}) {
   const bars = days.some(day => day.periods);
   return <ul className="c-avail__days" aria-label="Availability by day">
-    {bars ? <li className="c-avail__axis" aria-hidden="true"><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>12 AM</span></li> : null}
+    {bars ? <li className="c-avail__axis" aria-hidden="true"><span>6:00 AM</span><span>12:00 PM</span><span>6:00 PM</span><span>12:00 AM</span></li> : null}
     {days.map(day => <li key={day.key}>
       <button type="button" className="c-avail__day" aria-haspopup="dialog" aria-label={day.label} onClick={day.onOpen}>
         <span className="c-avail__name">{day.name}</span>

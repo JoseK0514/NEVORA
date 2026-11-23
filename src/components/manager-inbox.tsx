@@ -1,5 +1,6 @@
 "use client";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
+import { formatTime } from "@/lib/date-utils";
 import { isStaffingRepair, repairOwnerLine } from "@/lib/time-off-staffing/present";
 
 import Link from "next/link";
@@ -122,7 +123,8 @@ const categoryNote: Record<ActionItem["category"], string> = {
 /** Codex's optional request facts (arrive with the backend merge): dates, partial-day times, length, location, note. */
 type RequestFacts = { startDate: string; endDate: string; partialDay?: { start: string; end: string }; lengthText: string; locationName: string; note?: string; reviewHref?: string };
 const dayText = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T00:00:00Z`));
-const timeText = (hhmm: string) => { const [h, m] = hhmm.split(":").map(Number); if (h === 24 || (h === 0 && m === 0)) return "midnight"; return `${(h % 12) || 12}:${String(m).padStart(2, "0")}\u00a0${h < 12 ? "AM" : "PM"}`; };
+/** "7:00 AM", kept whole; midnight at either end is "12:00 AM" (the one time format, Nov 23, 2026). */
+const timeText = (hhmm: string) => formatTime(hhmm).replace(" ", "\u00a0");
 const wholeDays = (start: string, end: string) => { const days = Math.round((Date.parse(`${end}T12:00:00Z`) - Date.parse(`${start}T12:00:00Z`)) / 86_400_000) + 1; return days === 1 ? "Full day" : `${days} full days`; };
 function requestFacts(facts: RequestFacts): [string, ReactNode][] {
   // Each day stays whole; at large text a range breaks only after the dash.

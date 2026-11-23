@@ -60,21 +60,65 @@ export function formatDayLabel(date: string) {
   };
 }
 
+/* Jose (Nov 23, 2026): the one way a person reads a time, on every screen and at every width.
+ * - A time: "7:00 AM". Minutes always, AM or PM always, no leading zero. Midnight is "12:00 AM", noon "12:00 PM".
+ * - A range: "7:00 AM – 3:00 PM". AM or PM on both ends and a spaced en dash; never "7–3 PM", "7 AM – 3 PM" or "6a".
+ *   An overnight range is "10:00 PM – 6:00 AM"; an end at midnight is "12:00 AM" (the hours beside it say how long).
+ * - A whole day (00:00 to 24:00): "All day".
+ * These return plain text with ordinary spaces. The display layer keeps each time whole and lets a range break only after
+ * its dash (keepWhole, CorpTime/timeParts, BWhen), so a narrow cell shows "7:00 AM –" over "3:00 PM", never "7:00" over
+ * "AM". Stored values, CSV and export files and payroll documents keep their own forms. */
+
+/** The spaced en dash between the two times of a range. */
+export const TIME_RANGE_DASH = " \u2013 ";
+
+/** A stored wall time ("07:00", "15:30:00", "24:00") as "7:00 AM", "3:30 PM", "12:00 AM". */
 export function formatTime(time: string) {
   const [hourString, minute] = time.slice(0, 5).split(":");
   const hour = Number(hourString) % 24;
   const suffix = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 || 12;
-  return `${displayHour}:${minute} ${suffix}`;
+  return `${displayHour}:${minute ?? "00"} ${suffix}`;
 }
 
-/** A stored time range for display. 24:00 is the end of the day, so 00:00–24:00
- * reads "All day" and an end at 24:00 reads "midnight" rather than a second
- * 12:00 AM, which looks like zero hours (O3). Stored values are unchanged. */
+/** Two already formatted times as one range: "7:00 AM – 3:00 PM". */
+export function joinTimeRange(start: string, end: string) {
+  return `${start}${TIME_RANGE_DASH}${end}`;
+}
+
+/** A stored time range for display: "7:00 AM – 3:00 PM"; overnight "10:00 PM – 6:00 AM"; an end at 24:00 (or 00:00)
+ * reads "12:00 AM"; 00:00 to 24:00 reads "All day". Stored values are unchanged. */
 export function formatTimeRange(startTime: string, endTime: string) {
-  const endOfDay = endTime.slice(0, 5) === "24:00";
-  if (endOfDay && startTime.slice(0, 5) === "00:00") return "All day";
-  return `${formatTime(startTime)} – ${endOfDay ? "midnight" : formatTime(endTime)}`;
+  const start = startTime.slice(0, 5), end = endTime.slice(0, 5);
+  if (start === "00:00" && (end === "24:00" || end === "00:00")) return "All day";
+  return joinTimeRange(formatTime(start), formatTime(end));
+}
+
+const clockFormats = new Map<string, Intl.DateTimeFormat>();
+/** An instant as a time in the given zone (the device's when none): "7:02 AM". `locale` other than English (US) keeps
+ * that language's own form ("7:02 a. m."). The narrow no-break space some engines put before AM/PM is written as a plain
+ * space, so the server and the browser print the same text and the display layer decides where a line may break. */
+export function formatClockTime(at: string | number | Date, timeZone?: string, locale = "en-US") {
+  const key = `${locale}|${timeZone ?? ""}`;
+  let format = clockFormats.get(key);
+  if (!format) {
+    format = new Intl.DateTimeFormat(locale, { ...(timeZone ? { timeZone } : {}), hour: "numeric", minute: "2-digit", hour12: true });
+    clockFormats.set(key, format);
+  }
+  const text = format.format(at instanceof Date ? at : new Date(at));
+  return locale === "en-US" ? text.replace(/[\u00a0\u202f]/g, " ") : text;
+}
+
+/** A formatted time kept whole where nothing else does it: a narrow no-break space between the minutes and AM/PM
+ * ("7:00 AM" never breaks before AM), as browsers print it. */
+export function wholeTime(text: string) {
+  return text.replace(/(\d) ([AP]M)/g, "$1\u202f$2");
+}
+
+/** Two instants as one range in the given zone: "9:00 AM – 5:00 PM". An entry with no end yet reads "9:00 AM – now"
+ * (or the word passed as `open`). */
+export function formatClockRange(startAt: string | number | Date, endAt: string | number | Date | null, timeZone?: string, open = "now") {
+  return joinTimeRange(formatClockTime(startAt, timeZone), endAt === null ? open : formatClockTime(endAt, timeZone));
 }
 
 /**

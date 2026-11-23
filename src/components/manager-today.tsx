@@ -6,6 +6,7 @@ import { ArrowClockwiseIcon, CalendarCheckIcon, ClockIcon, HourglassMediumIcon, 
 import { createPrivateSnapshotController } from "@/lib/private-snapshot-client";
 import { parseToday, STATUS_TEXT, START_GRACE_MINUTES, type Today, type TodayShift } from "@/lib/today/project";
 import { offlineListener } from "@/lib/offline-hold";
+import { formatClockRange, formatClockTime } from "@/lib/date-utils";
 
 /** Today on the floor (B4): Home tiles and the Inbox's missed punches share one
  * read-only snapshot of published shifts against recorded punches. */
@@ -31,7 +32,7 @@ export function useToday() {
   return { snapshot, refreshing, refresh: () => controller.current?.refresh() };
 }
 
-const time = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+const time = (iso: string, timeZone: string) => formatClockTime(iso, timeZone);
 
 export function ManagerTodayTiles() {
   const { snapshot, refreshing, refresh } = useToday();
@@ -70,7 +71,7 @@ function MissedRow({ shift, timeZone }: { shift: TodayShift; timeZone: string })
   return <li className="missed-row" data-status={shift.status}>
     <div className="missed-row-copy">
       <strong>{shift.employeeName}</strong>
-      <span>{STATUS_TEXT[shift.status]} · {running ? `started ${time(shift.startAt, timeZone)}` : `${time(shift.startAt, timeZone)}–${time(shift.endAt, timeZone)}`} · {shift.locationName}</span>
+      <span>{STATUS_TEXT[shift.status]} · {running ? `started ${time(shift.startAt, timeZone)}` : formatClockRange(shift.startAt, shift.endAt, timeZone)} · {shift.locationName}</span>
     </div>
     <Link className="missed-row-action" href={running ? `/app/employees/${encodeURIComponent(shift.employeeId)}` : `/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`}>
       {running ? "Contact" : "Review timecard"} <span aria-hidden="true">›</span><span className="sr-only"> for {shift.employeeName}</span>

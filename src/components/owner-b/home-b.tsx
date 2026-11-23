@@ -31,6 +31,7 @@ import { HomeSetupProgress } from "@/components/owner-setup-card";
 import type { HomePayrollStatus } from "@/lib/payroll/backlog-read";
 import { payDay, periodRange } from "@/components/payroll/payroll-format";
 import { keepWhole } from "@/lib/keep-whole";
+import { formatClockTime, wholeTime } from "@/lib/date-utils";
 import { workCopy } from "@/components/employee-b/work-copy";
 import { notClockedInText } from "@/components/team-live";
 import { BAvatar, BButtonLink, BCard, BChip, BFaces, BGlyph, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BStatusText, BSwapNames, BWhen, partOfDay, type BLiveItem } from "./b-kit";
@@ -104,7 +105,8 @@ const requestWord: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Ti
 const kindWord = (item: ActionItem) => item.type === "EXCHANGE" && item.request?.exchangeKind === "COVERAGE" ? t.coverRequest : requestWord[item.type];
 /** Phase 3 (MG-011): On now shows up to six people. */
 const ON_NOW_ROWS = 6;
-const clockText = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+/** "7:02 AM", kept whole (the one time format). */
+const clockText = (iso: string, timeZone: string) => wholeTime(formatClockTime(iso, timeZone));
 /** Phase 8 (a.md #11, #36): Team's live word, and Employee Home's sentence for a punch that runs past the shift's end. */
 const CLOCKED_IN = "Clocked in";
 const stillOn = (time: string | null) => time ? workCopy().stillClockedIn(time) : "Still clocked in";
@@ -336,7 +338,8 @@ export function dayHours(shifts: TodayShift[], observedAt: string) {
 function DayChart({ shifts, timeZone, observedAt }: { shifts: TodayShift[]; timeZone: string; observedAt: string }) {
   const day = dayHours(shifts, observedAt);
   if (!day) return null;
-  const hourText = (at: number) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric" }).format(new Date(at)).replace(" ", "\u00a0");
+  // The one time format (Nov 23, 2026): "7:00 AM", kept whole (it was "7 AM").
+  const hourText = (at: number) => keepWhole(formatClockTime(at, timeZone));
   const max = Math.max(1, day.peak.people);
   // A label under the first hour, then every third (every fourth on a long day), so the labels never touch.
   const every = day.hours.length > 15 ? 4 : 3;

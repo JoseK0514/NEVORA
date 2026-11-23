@@ -54,7 +54,7 @@ it('shows a Spanish tablet an unknown message in English, marked as English, nev
 // Nov 10 review (NV-183, NV-173, NV-303): Intl orders the date, one sentence carries the time, and today's date isn't repeated.
 it('orders the receipt date for each language and writes one Saved sentence',()=>{
  const at='2026-11-10T02:47:00Z';
- expect(clockTime(at,'America/Puerto_Rico','en-US')).toBe('Nov 9 · 10:47 PM');
+ expect(clockTime(at,'America/Puerto_Rico','en-US')).toBe('Nov 9 · 10:47\u202fPM');
  expect(clockTime(at,'America/Puerto_Rico','es-PR')).toMatch(/^9 nov\.? · 10:47\sp\.\sm\.$/);
  const es=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerReceipt action="CLOCK_IN" performedAt={at} commandId="c1" timeZone="America/Puerto_Rico" locale="es-PR" firstName="Ana"/></ClockerPresentation>);
  expect(es).toContain('Que tengas un buen turno, Ana.');expect(es).toMatch(/Guardado el <time[^>]*>[^<]*p\.\sm\.<\/time> <span[^>]*>Se borra en 8 segundos\.<\/span>/);

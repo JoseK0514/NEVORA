@@ -1,4 +1,5 @@
 import { NUVORA_BRAND } from "../brand";
+import { formatTimeRange } from "../date-utils";
 export type NotificationEvent = {
   employeeId: string;
   type: string;
@@ -144,6 +145,6 @@ export function buildSelfTestNotification(employeeId: string, sourceId: string):
 
 /** Peer invitation uses reviewed shift context only, never an absence reason. */
 export function buildCoverageInvitationNotification(input:{employeeId:string;date:string;startTime:string;endTime:string;locationName:string;positionName?:string;isDesignatedLead?:boolean}):NotificationEvent {
- const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Shift lead':undefined].filter(Boolean).join(' · ');
+ const context=[input.date,formatTimeRange(input.startTime,input.endTime),input.locationName,input.positionName,input.isDesignatedLead?'Shift lead':undefined].filter(Boolean).join(' · ');
  return {employeeId:input.employeeId,type:'COVERAGE_INVITATION',title:'Coverage available',body:`${context}. View shift details before volunteering.`,eventKey:''};
 }

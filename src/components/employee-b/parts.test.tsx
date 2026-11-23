@@ -6,13 +6,13 @@ import {compactRange} from '../owner-b/b-kit';
 
 /* Phase 8 (Nov 17, 2026; final review C, rows 10, 14 and 24). Fictional data only. */
 describe('Range: one rule for a time range on the Employee screens', () => {
-  it('keeps each half whole and puts the break before the dash, whatever form the range arrives in', () => {
+  it('keeps each half whole and puts the break after the dash, whatever form the range arrives in (Nov 23, 2026)', () => {
     for (const text of ['9:00 AM – 5:00 PM', keepWhole('9:00 AM – 5:00 PM'), compactRange('9:00 AM – 5:00 PM')]) {
       const html = renderToStaticMarkup(<Range text={text}/>);
-      expect(html).toMatch(/^<span class="eb-nb">9(:00)?[ \u00a0]AM<\/span> <span class="eb-nb">–\u00a05(:00)?[ \u00a0]PM<\/span>$/);
+      expect(html).toMatch(/^<span class="eb-nb">9:00[ \u00a0]AM\u00a0–<\/span> <span class="eb-nb">5:00[ \u00a0]PM<\/span>$/);
     }
-    // An open entry ("9:02 AM – now") breaks the same way, so "now" never sits alone after a hanging dash.
-    expect(renderToStaticMarkup(<Range text={keepWhole('9:02 AM – now')}/>)).toBe('<span class="eb-nb">9:02 AM</span> <span class="eb-nb">– now</span>');
+    // An open entry ("9:02 AM – now") breaks the same way: the dash ends the first line, never starts the second.
+    expect(renderToStaticMarkup(<Range text={keepWhole('9:02 AM – now')}/>)).toBe('<span class="eb-nb">9:02\u00a0AM\u00a0–</span> <span class="eb-nb">now</span>');
   });
   it('draws anything that is not a range as it is', () => {
     expect(renderToStaticMarkup(<Range text="12–8 PM"/>)).toBe('12–8 PM');

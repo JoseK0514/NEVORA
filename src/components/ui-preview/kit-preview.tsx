@@ -97,7 +97,7 @@ export function KitReviewSample() {
         <Card title="Shifts that week" meta="Oct 26–Nov 1">
           <Rows label="Scheduled shifts">
             <Row leading={<Tile><CalendarCheckIcon size={20} weight="bold" /></Tile>} title="Tue · 9:00 AM – 5:00 PM" meta="Main Office" trailing={<Duration minutes={480} />} />
-            <Row leading={<Tile><ArrowsLeftRightIcon size={20} weight="bold" /></Tile>} title="Thu · 4:00 PM – midnight" meta="Main Office" trailing={<Duration minutes={480} />} />
+            <Row leading={<Tile><ArrowsLeftRightIcon size={20} weight="bold" /></Tile>} title="Thu · 4:00 PM – 12:00 AM" meta="Main Office" trailing={<Duration minutes={480} />} />
           </Rows>
         </Card>
         <ActionBar label="Decision">

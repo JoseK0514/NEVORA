@@ -26,16 +26,16 @@ export function periodText(start: string, end: string, lang: Lang = "en", year?:
   return dateRange(start, end, { year: withYear ? "each" : "never", locale: LOCALE[lang] });
 }
 
-/** "8:00 AM – 12:00 PM" from stored "08:00" and "12:00", by the app's own helper: an end at 24:00 reads "midnight" and
+/** "8:00 AM – 12:00 PM" from stored "08:00" and "12:00", by the app's own helper: an end at 24:00 reads "12:00 AM" and
  * 00:00–24:00 reads "All day". */
 export function clockRange(start: string, end: string) {
   return formatTimeRange(start, end);
 }
 
-/** One person's shift. Unlike clockRange it never reads "All day": a 00:00–24:00 shift is "12:00 AM – midnight", so
- * a 24-hour assignment reads as hours someone works (QA S-09). Its length is shiftLength ("24 h", "4 h 30 min"). */
+/** One person's shift in the one time format (Nov 23, 2026): "6:45 PM – 12:00 AM"; a 00:00–24:00 shift reads "All day".
+ * Its length is shiftLength ("24 h", "4 h 30 min"), shown beside it, so a shift never reads as zero hours (QA S-09). */
 export function shiftRange(start: string, end: string) {
-  return start.slice(0, 5) === "00:00" && end.slice(0, 5) === "24:00" ? `${formatTime(start)} – midnight` : formatTimeRange(start, end);
+  return formatTimeRange(start, end);
 }
 export function shiftLength(start: string, end: string) {
   return durationSentence(durationMinutes(start, end));

@@ -1,12 +1,14 @@
 /* The Schedule day view's timeline (Jose's pick "A: a timeline", Nov 21, 2026). Presentation only: where a shift's capsule
  * sits on the day's axis. All figures are minutes from the day's midnight. */
 
+import { formatTime } from "../date-utils";
+
 export type DayAxis = {
   /** First and last minute of the axis, both on whole hours. */
   start: number; end: number;
   /** Hours between labels (and gridlines). */
   stepHours: number;
-  /** A label every `stepHours` from the start: where it sits (0–100) and what it says ("6a", "2p", "12a"). */
+  /** A label every `stepHours` from the start: where it sits (0–100) and what it says ("6:00 AM", "2:00 PM", "12:00 AM"). */
   ticks: { at: number; label: string }[];
 };
 export type AxisPlace = { left: number; width: number; /** The shift runs past midnight: its capsule is cut flat at the axis end. */ cut: boolean };
@@ -24,8 +26,9 @@ export function shiftSpan(startTime: string, endTime: string): { start: number; 
   return rawEnd <= start ? { start, end: DAY, cut: true } : { start, end: rawEnd, cut: false };
 }
 
-/** "6a", "2p", "12p"; midnight at either end reads "12a". */
-export function axisHour(hour: number) { const h = hour % 24; return `${h % 12 || 12}${h >= 12 ? "p" : "a"}`; }
+/** "6:00 AM", "2:00 PM", "12:00 PM"; midnight at either end reads "12:00 AM" (the one time format, Nov 23, 2026; it was
+ * "6a"). */
+export function axisHour(hour: number) { return formatTime(`${String(hour % 24).padStart(2, "0")}:00`); }
 
 /** The day's axis: from the earliest start to the latest end among the day's shifts, rounded out to whole hours and at
  * least eight hours wide (a short day grows evenly on both sides, inside the day). No shifts: 8a to 4p. */

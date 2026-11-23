@@ -1,10 +1,11 @@
 "use client";
 
-import { formatBusinessClock } from "../lib/business-time";
+import { formatClockTime } from "../lib/date-utils";
 import { useEffect, useState } from "react";
 
+/** The clock face in the one time format (Nov 23, 2026): "12:14 PM", the workplace's time. */
 export function formatTimeClockDisplay(value: Date, timeZone: string) {
-  return formatBusinessClock(value, timeZone);
+  return formatClockTime(value, timeZone);
 }
 
 export function formatActiveShiftDuration(startedAt: number, now: number) {
@@ -51,7 +52,7 @@ export function TimeClockWidget({ timeZone }: { timeZone: string }) {
 
       <div className="time-clock-body">
         <time className="time-clock-display" aria-live="off">
-          {now ? formatTimeClockDisplay(now, timeZone) : "--:--:-- --"}
+          {now ? formatTimeClockDisplay(now, timeZone) : "--:-- --"}
         </time>
 
         <div className="time-clock-actions">

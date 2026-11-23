@@ -185,7 +185,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(out).toContain('aria-label="Find cover: Barista 1:00 PM – 3:00 PM">Find cover</a>');
     // B7 wording (NV-068): outside the dense week grid, ranges keep full times with a spaced en dash.
     // Jose (Nov 15, 2026, item 5): the short form shows on a phone, the full one from 768px (b-foundation.css picks).
-    expect(out).toMatch(/>Next: today, <span class="b-when-s">Barista 1–3\s?PM<\/span><span class="b-when-f">Barista 1:00\s?PM\s–\s3:00\s?PM</);
+    expect(out).toMatch(/>Next: today, Barista 1:00\s?PM\s–\s3:00\s?PM</);
     // Phase 8 (a.md #13): the row's title is the person; the line under it says what and when.
     expect(out).toMatch(/>Missed clock-in\s·\sshift\sended\s\d{1,2}:\d{2}\s?[AP]M</);
   });
@@ -299,7 +299,7 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(card).toMatch(/9:00\sAM\s–\s5:00\sPM/);
     expect(card).not.toMatch(/Person b|Person c/);
     // Nobody on: the card says so and names the next start; it never lists a shift that hasn't begun.
-    expect(phone({ today: today([shift("b", "upcoming")]), monitor: monitor([]) })).toContain("Nobody is working right now. Next shift starts 9:00 AM.");
+    expect(phone({ today: today([shift("b", "upcoming")]), monitor: monitor([]) })).toContain("Nobody is working right now. Next shift starts 9:00\u202fAM.");
     // A correction that waits on this person is counted and has its row; their own is not.
     const fix = (id: string, title: string, name: string, own=false) => item(id, "TIME_CORRECTION", "REVIEW", "timekeeping", { title, detail: `${name} · Recorded time correction.`, review:reviewFacts(own,own,'TIME_CORRECTION') });
     const counted = phone({ value: needsYou([fix("f1", "Time correction waiting for review", "James Ortiz"), fix("f2", "Your correction needs another reviewer", "Carmen Ruiz",true)], "2026-10-30", []) });

@@ -40,10 +40,10 @@ const t = reviewCopy();
  * no line starts with " · " (keepWhole); the words between them still wrap, so a long line folds between its parts. */
 const S = "[\\s\\u00a0\\u2009\\u202f]*";
 const RANGE = new RegExp(`(\\d{1,2}(?::\\d{2})?)${S}([AP]M)${S}–${S}(\\d{1,2}(?::\\d{2})?)${S}([AP]M)`, "g");
-// The word joiner after the dash: an en dash allows a break after it even before a no-break space.
+// Nov 23, 2026 (one time format): each time stays whole and a range breaks only after its dash when the line is too short.
 // Premium pass FA (final verification A #10, B #8): a row's facts wrap whole (BSegsText), so no line starts or ends on a
 // "·" ("Cover request · Tue, Nov 24 · / 12:00 PM – 8:00 PM"); a time range stays one fact.
-const keepParts = (text?: string): ReactNode => text === undefined ? text : <BSegsText text={keepWhole(text).replace(RANGE, "$1\u00a0$2\u00a0–\u2060\u00a0$3\u00a0$4")} />;
+const keepParts = (text?: string): ReactNode => text === undefined ? text : <BSegsText text={keepWhole(text).replace(RANGE, "$1\u00a0$2\u00a0– $3\u00a0$4")} />;
 /** Phase 4 (U09): a row's further lines (the other shift of a swap, a cover request's result, who reviews it). */
 const subOf = (row: Row): ReactNode => row.lines?.length ? <>{keepParts(row.detail)}{row.lines.map(line => <span key={line} className="b-row__more">{keepParts(line)}</span>)}</> : keepParts(row.detail);
 /** Final polish (Nov 20, 2026): a time correction on a phone was five lines with "was" hanging at a line's end. Under 768px
@@ -55,7 +55,7 @@ function correctionSub(row: Row): ReactNode {
   const was = times?.match(/^(.+?), (was .+)$/);
   // Only the server's correction line is taken apart: a short date, then at least one clock time.
   if (!day || !times || rest.length > 1 || !/^[A-Z][a-z]{2},[\s\u00a0][A-Z][a-z]{2}[\s\u00a0]\d/.test(day) || !/\d{1,2}:\d{2}/.test(times)) return subOf(row);
-  const range = (text: string) => keepWhole(compactRange(text)).replace(RANGE, "$1\u00a0$2\u00a0–\u2060\u00a0$3\u00a0$4").replace(/ /g, "\u00a0");
+  const range = (text: string) => keepWhole(compactRange(text)).replace(/ /g, "\u00a0").replace(RANGE, "$1\u00a0$2\u00a0– $3\u00a0$4");
   const more = row.lines?.map(line => <span key={line} className="b-row__more">{keepParts(line)}</span>);
   return <><span className="b-when-s"><BSegs parts={[day, rest[0]]} /><span className="b-row__more"><BSegs parts={was ? [range(was[1]), range(was[2])] : [range(times)]} /></span></span>
     <span className="b-when-f">{keepParts(row.detail)}</span>{more}</>;
@@ -192,9 +192,9 @@ function GroupCard({ group, items, staffing, checked, quiet }: { group: Group; i
     {group.note ? <p className="b-card__note">{group.note}</p> : null}
     <BList label={group.title}>{group.rows.map((row) => {
       if (group.id === "open") {
-        // Final polish (Nov 20, 2026): the title is the time range alone, on one line ("11:30 PM – 12 AM"); the day, the
+        // Final polish (Nov 20, 2026): the title is the time range alone, on one line ("11:30 PM – 12:00 AM"); the day, the
         // place and the need are the facts under it ("Today · Calle Loíza · Needs 1"). The day sat in the title and broke
-        // after "Today," on a phone, alone on the first line. Phones write the short range, 768px and up the full one (BWhen).
+        // after "Today," on a phone, alone on the first line. Every width writes the full range (BWhen, Nov 23).
         const parts = (row.detail ?? "").split(" · ").map(part => part.replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1"));
         return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={<span className="b-keep"><BWhen text={row.title} /></span>} sub={<BSegs parts={parts} />} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Find cover: ${row.title}`}>Find cover</BButtonLink>} />;

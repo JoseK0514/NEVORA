@@ -69,9 +69,9 @@ describe("the words", () => {
     }
   });
   it("writes clock times and dates the same way everywhere", () => {
-    expect(clockText(480, en)).toBe("8:00 AM"); expect(clockText(1350, en)).toBe("10:30 PM"); expect(clockText(0, en)).toBe("midnight"); expect(clockText(1440, en)).toBe("midnight");
-    expect(spanText({ start: 1320, end: 1440 }, en)).toBe("10:00 PM – midnight");
-    expect(clockText(480, es)).toBe("8:00 a. m."); expect(spanText({ start: 0, end: 360 }, es)).toBe("medianoche – 6:00 a. m.");
+    expect(clockText(480, en)).toBe("8:00 AM"); expect(clockText(1350, en)).toBe("10:30 PM"); expect(clockText(0, en)).toBe("12:00 AM"); expect(clockText(1440, en)).toBe("12:00 AM");
+    expect(spanText({ start: 1320, end: 1440 }, en)).toBe("10:00 PM – 12:00 AM");
+    expect(clockText(480, es)).toBe("8:00 a. m."); expect(spanText({ start: 0, end: 360 }, es)).toBe("12:00 a. m. – 6:00 a. m.");
     expect(dayText("2030-10-21", en)).toBe("Mon, Oct 21");
     expect(dayText("2030-10-21", es)).toMatch(/lun, 21 (de )?oct/);
     // 03:30 UTC on the 14th is still the 13th at the workplace.
@@ -127,8 +127,8 @@ describe("management side (Owner, Manager)", () => {
     expect(words).toContain("The first agreement starts Mon, Oct 21.");
     expect(words).toContain("Starts later");
     expect(words).toContain("Starts Mon, Oct 21");
-    expect(words).toContain("10:00 PM – midnight continues into Tuesday");
-    expect(words).toContain("midnight – 6:00 AM from Monday night");
+    expect(words).toContain("10:00 PM – 12:00 AM continues into Tuesday");
+    expect(words).toContain("12:00 AM – 6:00 AM from Monday night");
     expect(words).not.toContain("In effect since");
   });
   it("a waiting request shows what it changes against the agreement, with Approve tinted and Decline quiet", () => {

@@ -93,7 +93,7 @@ function daysAway(payday: string, today: string) {
 
 /** A Lead's current shift as the first figure ("On shift now", the range, "Shift lead · Barista"). */
 export type OnShiftFigure = {range: string; line: string | null; aria: string};
-/** Phase 4 (EM-025): the shift ahead as the strip's first figure where the hero has room ("Next shift", "Tomorrow 9 AM").
+/** Phase 4 (EM-025): the shift ahead as the strip's first figure where the hero has room ("Next shift", "Tomorrow 9:00 AM").
  * Phones leave it out: the shift card is the next thing on the screen (the stylesheet finds it by its link to the card's
  * heading, #b-home-shift-h). */
 export type NextShiftFigure = {label: string; value: string; line: string | null; aria: string};
@@ -270,7 +270,7 @@ export const needsAnswer = (item: AttentionItem) => item.ref.kind === 'EXCHANGE'
  * no "Respond", and no ":00" on the hour; "12:30 PM" keeps its minutes). */
 export function todoDeadline(at: string, zone: string) {
   const when = fmt(zone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(at));
-  return {full: `Respond by ${keepWhole(when)}`, short: `By ${keepWhole(when.replace(/:00(?=\D)/, ''))}`};
+  return {full: `Respond by ${keepWhole(when)}`, short: `By ${keepWhole(when)}`};
 }
 
 function TodoIcon({item}: {item: AttentionItem}) {
@@ -317,7 +317,7 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
   const nextShift: NextShiftFigure | null = ahead && snapshot ? snapshot.currentShift
     ? {label: t.onShiftUntil, value: clock(ahead.endAt, snapshot.timeZone), line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
       aria: `On shift until ${clock(ahead.endAt, snapshot.timeZone)}`}
-    : {label: t.nextShift, value: `${dayWord(ahead, snapshot)} ${clock(ahead.startAt, snapshot.timeZone).replace(/:00(?=\D)/, '')}`,
+    : {label: t.nextShift, value: `${dayWord(ahead, snapshot)} ${clock(ahead.startAt, snapshot.timeZone)}`,
       line: [ahead.positionLabel, ahead.locationLabel].filter(Boolean).join(' · ') || null,
       aria: `Next shift, ${dayWord(ahead, snapshot)}, ${clock(ahead.startAt, snapshot.timeZone)} to ${clock(ahead.endAt, snapshot.timeZone)}`} : null;
   const note = snapshot?.publicationState === 'partial' ? unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations)) : null;

@@ -5,7 +5,7 @@ import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpField,CorpNote,CorpPill,CorpRow,CorpRows,CorpSegments,CorpStats,CorpTitle} from '../corp/corp';
 import {BState} from '../owner-b/b-kit';
 import {momentsCopy} from '../owner-b/moments-copy';
-import {addDays,weekStartFor} from '@/lib/date-utils';
+import {addDays,formatTime,weekStartFor} from '@/lib/date-utils';
 import type {EmployeeTimeEntry} from '@/lib/employee-time';
 import type {EmployeeHoursSnapshot,HoursView,HoursDecision,HoursCorrectionPayload} from '@/lib/employee-hours';
 import type {PrivatePanelState} from '@/lib/private-snapshot-client';
@@ -276,7 +276,8 @@ export function parseClock(text:string){
  if(half){if(hour<1||hour>12)return null;hour=hour%12+(half.startsWith('p')?12:0);}else if(hour>23)return null;
  return String(hour).padStart(2,'0')+':'+String(minute).padStart(2,'0');
 }
-export function formatClock(value:string){const [h,m]=value.split(':').map(Number);return `${h%12||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`;}
+/** A stored time in the field: "7:00 AM" (the one time format; 24:00 is "12:00 AM"). */
+export function formatClock(value:string){return formatTime(value);}
 function TimeInput({id,name,value,onValue,invalid,describedBy,placeholder}:{id:string;name:string;value:string;onValue:(value:string)=>void;invalid:boolean;describedBy?:string;placeholder:string}){
  const [text,setText]=useState(()=>value?formatClock(value):''),[seen,setSeen]=useState(value);
  // A value set from outside (Use current times) replaces what is typed unless the typing already means it.

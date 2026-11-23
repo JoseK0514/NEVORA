@@ -187,5 +187,5 @@ it.each(['APPROVED','DENIED'] as const)('persists can’t-work wording for %s no
 });
 
 it('keeps coverage invitation context and uses Shift lead without absence details',()=>{
- expect(buildCoverageInvitationNotification({employeeId:'E-1',date:'2030-01-01',startTime:'09:00',endTime:'17:00',locationName:'Fictional',positionName:'Server',isDesignatedLead:true})).toEqual({employeeId:'E-1',type:'COVERAGE_INVITATION',title:'Coverage available',body:'2030-01-01 · 09:00–17:00 · Fictional · Server · Shift lead. View shift details before volunteering.',eventKey:''});
+ expect(buildCoverageInvitationNotification({employeeId:'E-1',date:'2030-01-01',startTime:'09:00',endTime:'17:00',locationName:'Fictional',positionName:'Server',isDesignatedLead:true})).toEqual({employeeId:'E-1',type:'COVERAGE_INVITATION',title:'Coverage available',body:'2030-01-01 · 9:00 AM – 5:00 PM · Fictional · Server · Shift lead. View shift details before volunteering.',eventKey:''});
 });

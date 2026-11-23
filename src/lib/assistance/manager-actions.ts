@@ -1,10 +1,11 @@
 import { coverageRepairUrl, reportedCoverageState } from '../scheduling/coverage-repair';
-import { addDays, formatDisplayDate, formatTime } from '../date-utils';
+import { addDays, formatDisplayDate, formatTimeRange } from '../date-utils';
 
-/** "Mon, Oct 12 · 8:00 AM–4:00 PM" for people; ids and links keep ISO values. */
+/** "Mon, Oct 12 · 8:00 AM – 4:00 PM" for people (the one time format; an end at 24:00 reads 12:00 AM); ids and links
+ * keep ISO values. A whole day stays "all day", the words the Action Center and Requests rows look for. */
 function gapWhen(gap: { date: string; startTime: string; endTime: string }) {
   const start = gap.startTime.slice(0, 5), end = gap.endTime.slice(0, 5);
-  const when = start === "00:00" && end === "24:00" ? "all day" : `${formatTime(start)}–${end === "24:00" ? "midnight" : formatTime(end)}`;
+  const when = start === "00:00" && end === "24:00" ? "all day" : formatTimeRange(start, end);
   return `${formatDisplayDate(gap.date)} · ${when}`;
 }
 

@@ -304,7 +304,7 @@ export function CorpFormFooter({ children, danger }: { children: ReactNode; dang
 // No lookbehind: Safari before 16.4 cannot parse it, and this module loads on every page.
 const DASH_PATTERN = /\s+[–—-]\s+|([0-9apmAPM.])[–—](?=[0-9])/g;
 const AMPM = /(\d)(\s?)(AM|PM|am|pm|a\.m\.|p\.m\.|a|p)(?![A-Za-z])/g;
-const THIN = "\u2009", NARROW = "\u202F";
+const THIN = "\u2009", NARROW = "\u202F", JOIN = "\u2060";
 
 /** R2: "8:00 AM – 4:00 PM" as text, with thin spaces round the en dash (for aria-labels, titles and plain strings). */
 export function timeRangeText(start: string, end: string) {
@@ -315,7 +315,9 @@ export function timeRangeText(start: string, end: string) {
  * #4A4F54 joined to its digits by a narrow no-break space, and thin spaces round the en dash. The words never change; only
  * spacing and size do, so a page passes the string it already shows. */
 export function timeParts(text: string): ReactNode[] {
-  const spaced = text.replace(DASH_PATTERN, (_match, before?: string) => `${before ?? ""}${THIN}–${THIN}`);
+  // Nov 23, 2026: word joiners hold the thin space before the dash to the first time, so a range that does not fit breaks
+  // only after its dash ("7:00 AM –" over "3:00 PM"), never before it.
+  const spaced = text.replace(DASH_PATTERN, (_match, before?: string) => `${before ?? ""}${JOIN}${THIN}${JOIN}–${THIN}`);
   const parts: ReactNode[] = [];
   let last = 0, key = 0;
   for (const match of spaced.matchAll(AMPM)) {

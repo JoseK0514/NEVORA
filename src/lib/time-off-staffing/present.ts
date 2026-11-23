@@ -1,10 +1,11 @@
 import type {ActionItem} from '../action-center/project';
 import type {StaffingConflict} from './model';
 import {durationSentence} from '../duration-format';
+import {formatTime} from '../date-utils';
 
 /* Words for leave and staffing (Direction B, Nov 9, 2026). Display only: the action center item, the conflict and the
  * read's numbers are shown as they are, never recomputed into a different meaning. Copy rules as elsewhere: the person's
- * name first, times whole ("9:00 AM – 5:00 PM"), "midnight" at the day's end, no blame. */
+ * name first, times whole ("9:00 AM – 5:00 PM"), "12:00 AM" at the day's end, no blame. */
 
 const NBSP='\u00a0';
 
@@ -14,7 +15,9 @@ export function isStaffingRepair(item:Pick<ActionItem,'type'|'id'>&{purpose?:str
  return item.type==='TIME_OFF'&&item.purpose==='STAFFING_REPAIR'&&item.id.startsWith('LEAVE_STAFFING:');
 }
 
-export const clockText=(hhmm:string,end=false)=>{const [h,m]=hhmm.split(':').map(Number);if(end&&(h===24||(h===0&&m===0)))return 'midnight';return `${(h%12)||12}:${String(m).padStart(2,'0')}${NBSP}${h<12?'AM':'PM'}`;};
+/** "7:00 AM", kept whole; an end at midnight is "12:00 AM" like every other time (the one time format, Nov 23, 2026). */
+// `end` is kept for callers; midnight no longer reads as a word at either end.
+export const clockText=(hhmm:string,_end=false)=>formatTime(hhmm).replace(' ',NBSP);
 export const dayText=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
 export const rangeText=(start:string,end:string)=>start==='00:00'&&(end==='00:00'||end==='24:00')?'All day':`${clockText(start)}${NBSP}– ${clockText(end,true)}`;
 const possessive=(name:string)=>`${name}’${/s$/i.test(name)?'':'s'}`;

@@ -93,14 +93,14 @@ it("says hours in plain words, without planning jargon, and keeps the no-save tr
   expect(html).not.toMatch(/ledger|configured coverage minutes|planning hours?|hypothetical|allocation|blocks? remain/i);
 });
 
-it("shows a 24-hour assignment as hours someone works and says why, never as \"All day\"", () => {
+it("shows a 24-hour assignment as All day beside its 24 hours, and says why (one time format, Nov 23, 2026)", () => {
   const plans = ownerCoveragePlan(), plan = plans.alternatives[0];
   plans.baseline!.requiredMinutes = plan.coverage.requiredMinutes = plan.coverage.coveredMinutes = plan.coverage.requiredObligationMinutes = plan.coverage.fulfilledObligationMinutes = plan.addedMinutes = 1440;
   plans.baseline!.requiredObligationMinutes = 1440;
   Object.assign(plan.assignments[0], { startTime: "00:00", endTime: "24:00" });
   const html = text(renderToStaticMarkup(<WorkflowResults answer={{ text: "Review", sources: [], coveragePlans: plans }} />));
-  expect(html).toContain("12:00 AM – midnight · 24 h");
-  expect(html).not.toContain("All day");
+  expect(html).toContain("All day · 24 h");
+  expect(html).not.toContain("midnight ·");
   expect(html).toContain("Coverage at North is set for the whole day, so this plan has one person work all 24 hours.");
 });
 

@@ -45,8 +45,8 @@ const hm = (value: string) => { const [h, m] = value.split(":").map(Number); ret
 const shortDay = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T12:00:00Z`));
 /** Final polish (Nov 20, 2026; confirmations review A #19): a held change's facts, each whole and none said twice. The
  * chip already says Added or Removed, so those rows read "Wed, Nov 4 · 8:00 AM – 4:00 PM"; a changed shift names what
- * changed ("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM"). A time range is short on phones and
- * full from 768px (`BWhen`) and never splits inside a time. */
+ * changed ("Tue, Nov 3 · Time changed · 12:00 PM – 8:00 PM → 2:00 PM – 8:00 PM"). A time range is full at every
+ * width (`BWhen`, Nov 23, 2026) and never splits inside a time. */
 function ChangeDetail({ change }: { change: SchedulePendingChange }) {
   const span = (value: SchedulePendingChange["before"]) => value ? `${hm(value.startTime)} – ${hm(value.endTime)}` : "";
   const what = change.kind === "CHANGED" ? change.fields.map(field => FIELD_TEXT[field]).join(", ") : null;
