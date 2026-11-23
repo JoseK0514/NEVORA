@@ -33,7 +33,7 @@ export function FormHeadBack({ onClick, children }: { onClick: () => void; child
 export function PhoneField({ id, name, defaultValue = "", required, autoComplete, enterKeyHint, missing, preserveLegacy = false }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string; enterKeyHint?: "next" | "done";
   /** The sentence shown when it is left empty (form-validation.tsx reads data-missing). */
   missing?: string; preserveLegacy?: boolean }) {
-  const [legacy] = useState(() => preserveLegacy && normalizePhoneNumber(defaultValue) === null ? defaultValue : null);
+  const [legacy] = useState(() => preserveLegacy && defaultValue.trim() !== "" && normalizePhoneNumber(defaultValue) === null ? defaultValue : null);
   const [value, setValue] = useState(() => legacy ?? phoneTyping(defaultValue));
   const unchangedLegacy = legacy !== null && value === legacy;
   return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required && !unchangedLegacy}

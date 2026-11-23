@@ -92,4 +92,8 @@ describe('placeholder contrast (release batch)', () => {
     expect(read('./owner-b-requests.css')).toContain('.q-page > .q-emptycard:not(:is(nav.c-seg, .c-seg, .q-seg) + *):not(#pg1):not(#pg2):not(#pg3):not(#pg4):not(#pg5):not(#pg6):not(#pg7) { margin-top:0 !important; }');
     expect(css).toContain('.c-pub .b-explain > summary:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { z-index: 2 !important; }');
   });
+
+  it('keeps closed Start from controls out of Publish hit-test geometry', () => {
+    expect(read('./owner-b-pages.css')).toContain('.c-pub details.c-pub__start:not([open]) > :not(summary):not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { display: none !important; }');
+  });
 });

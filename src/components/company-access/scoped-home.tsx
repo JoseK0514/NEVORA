@@ -54,7 +54,7 @@ export function ScopedHomeLive({ weekStart, actorId, locationId, ...props }: Sco
   const { snapshot: today, refreshing, refresh } = useToday();
   const { monitor, refreshing: monitorRefreshing, paused: monitorPaused } = useClockMonitor();
   const online = useSyncExternalStore(onlineSubscribe, () => navigator.onLine, () => true);
-  const read = useActionCenter(weekStart, actorId);
+  const read = useActionCenter(weekStart, actorId, false, true);
   const actions = read.connection === "ready" ? read.snapshot : null;
   // Gaps G41 (Nov 23, 2026): with one place chosen, Who's working opens on that place too (it dropped ?location=).
   const homeB = locationId ? { ...props.homeB, attendanceHref: `/app?view=attendance&location=${encodeURIComponent(locationId)}` } : props.homeB;

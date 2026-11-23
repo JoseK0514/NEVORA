@@ -9,12 +9,15 @@ import { onlyB } from "@/components/owner-b/test-support";
 
 // The location Manager's Home is the company Manager's Direction B Home (HomeB) fed by the scoped reads; these fixtures
 // stand in for /api/manager/today, the clock monitor and the scoped action center. Fictional data only.
-const reads = rs.hoisted(() => ({ today: null as unknown, monitor: null as unknown, actions: null as unknown }));
+const reads = rs.hoisted(() => ({ today: null as unknown, monitor: null as unknown, actions: null as unknown, assigned: undefined as boolean | undefined }));
 rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push: () => {}, replace: () => {} }), usePathname: () => "/app" }));
 rs.mock("@/components/manager-today", () => ({ useToday: () => ({ snapshot: reads.today, refreshing: false, refresh: () => {} }) }));
 rs.mock("@/components/clean/use-clock-monitor", () => ({ useClockMonitor: () => ({ monitor: reads.monitor, refreshing: false, paused: false }) }));
-rs.mock("@/components/manager-action-center", () => ({ ...actualActionCenter, useActionCenter: () => ({ snapshot: reads.actions, connection: reads.actions ? "ready" : "loading", refresh: () => {} }) }));
+rs.mock("@/components/manager-action-center", () => ({ ...actualActionCenter, useActionCenter: (_week: string, _actor: string, _pause: boolean, assigned?: boolean) => {
+  reads.assigned = assigned;
+  return { snapshot: reads.actions, connection: reads.actions ? "ready" : "loading", refresh: () => {} };
+} }));
 const { ScopedHomeLive, ScopedWhosWorking, actionsAt, todayAt } = await import("./scoped-home");
 
 const shift = (id: string, status: TodayShift["status"], locationId = "loc-2"): TodayShift => ({
@@ -58,6 +61,7 @@ it("is the company Manager's Direction B Home: the band names the place, three l
 
 it("keeps only the chosen location's shifts, clock-ins and open shifts", () => {
   const html = render({ locationId: "loc-2" });
+  expect(reads.assigned).toBe(true);
   expect(html).toContain("Person A");
   expect(html).not.toContain("Person C");
   expect(html).toMatch(/Open shifts<\/span>(?: |<span class="b-sr">[ \u00a0]<\/span>)<span class="b-live__v">1</);
