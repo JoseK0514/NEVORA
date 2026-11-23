@@ -52,7 +52,7 @@ describe('44px targets on tablets and desktop', () => {
 
   it('release batch: the small controls get a centred 44px ring that never shrinks a side already 44px or more', () => {
     const css = read('./owner-b-pages.css');
-    const at = css.indexOf('Target size, release batch');
+    const at = css.indexOf('aside.sidebar .nav-link:not(#r44a)');
     expect(at).toBeGreaterThan(-1);
     const block = css.slice(at);
     for (const target of ['aside.sidebar .nav-link', '.portal-notification-bell', '.b-week__arrow', '.c-sched-week__today', '.c-sched-actions :is(button, a)', '.eb-avail-req', '.c-shift__cancel', ':is(.c-card__aside, .q-sec__aside) .c-link', '.b-search__go', '.b-card__a', '.b-row__hit', '.q-nav > .q-nav__l']) {
