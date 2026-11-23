@@ -11,42 +11,42 @@
 :is(#c-root, html) .c-sched .c-sched-week__nav { display: flex; align-items: center; margin-left: -18px; }
 :is(#c-root, html) .c-sched .c-sched-week__arrow { display: grid; place-items: center; width: 44px; height: 44px; margin: 0 -4px; border-radius: 8px; color: var(--c-teal); }
 :is(#c-root, html) .c-sched .c-sched-week__arrow .c-ic { width: 18px; height: 18px; }
-:is(#c-root, html) .c-sched .c-sched-week__label { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); white-space: nowrap; }
+:is(#c-root, html) .c-sched .c-sched-week__label { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); white-space: nowrap; }
 :is(#c-root, html) .c-sched .c-sched-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); padding: 8px 8px 10px; }
 :is(#c-root, html) .c-sched .c-sched-days button { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; color: var(--c-ink); cursor: pointer; }
-:is(#c-root, html) .c-sched .c-sched-days small { font-size: 13px; line-height: 18px; color: var(--c-grey); }
-:is(#c-root, html) .c-sched .c-sched-days b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#c-root, html) .c-sched .c-sched-days small { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
+:is(#c-root, html) .c-sched .c-sched-days b { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; }
 :is(#c-root, html) .c-sched .c-sched-days [data-today] small { color: var(--c-teal); font-weight: 600; }
 :is(#c-root, html) .c-sched .c-sched-days [data-today] b { color: var(--c-teal); }
 :is(#c-root, html) .c-sched .c-sched-days [aria-pressed="true"] small { color: var(--c-teal); font-weight: 600; }
 :is(#c-root, html) .c-sched .c-sched-days [aria-pressed="true"] b { background: var(--c-teal); color: #FFFFFF; }
 
 /* Day card: a 60px time column, the avatar, name and role, and one state on the right. */
-:is(#c-root, html) .c-sched .c-sched-day__count { font-size: 13px; line-height: 18px; color: var(--c-grey); white-space: nowrap; }
+:is(#c-root, html) .c-sched .c-sched-day__count { font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); white-space: nowrap; }
 :is(#c-root, html) .c-sched .c-sched-row { min-height: 54px; padding-top: 7px; padding-bottom: 7px; }
 :is(#c-root, html) .c-sched .c-sched-row__time { flex: none; display: flex; flex-direction: column; width: 68px; white-space: nowrap; }
-:is(#c-root, html) .c-sched .c-sched-row__time b { font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); }
-:is(#c-root, html) .c-sched .c-sched-row__time span { font-size: 13px; line-height: 16px; color: var(--c-grey); }
+:is(#c-root, html) .c-sched .c-sched-row__time b { font-size: 0.9375rem; line-height: 1.25rem; font-weight: 500; color: var(--c-ink); }
+:is(#c-root, html) .c-sched .c-sched-row__time span { font-size: 0.8125rem; line-height: 1rem; color: var(--c-grey); }
 :is(#c-root, html) .c-sched .c-sched-row--open { min-height: 56px; }
 /* R3: a row's state (and the week's) is trailing 13/500 text, never a pill: grey; amber for Draft, Changed or held
  * changes; red only for the day's one problem. */
-:is(#c-root, html) .c-sched :is(.c-sched-state, .c-sched-weekstate) { flex: none; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-grey); white-space: nowrap; }
+:is(#c-root, html) .c-sched :is(.c-sched-state, .c-sched-weekstate) { flex: none; font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; color: var(--c-grey); white-space: nowrap; }
 :is(#c-root, html) .c-sched :is(.c-sched-state, .c-sched-weekstate)[data-tone="amber"] { color: var(--c-amber); }
 :is(#c-root, html) .c-sched .c-sched-state[data-tone="red"] { color: var(--c-red); }
 :is(#c-root, html) .c-sched .c-sched-row__open { color: var(--c-red); }
 :is(#c-root, html) .c-sched .c-sched-row__cover { flex: none; display: inline-flex; align-items: center; min-height: 44px; }
-:is(#c-root, html) .c-sched .c-sched-day__more { display: flex; align-items: center; justify-content: center; width: 100%; height: 44px; margin: 0; padding: 0; border: 0; background: none; box-shadow: inset 0 1px 0 var(--c-line); color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; cursor: pointer; }
-:is(#c-root, html) .c-sched .c-sched-day__empty, :is(#c-root, html) .c-sched .c-sched-day__note { margin: 0; padding: 14px 16px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
-:is(#c-root, html) .c-sched .c-sched-day__note { padding-top: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-sched .c-sched-day__more { display: flex; align-items: center; justify-content: center; width: 100%; height: 44px; margin: 0; padding: 0; border: 0; background: none; box-shadow: inset 0 1px 0 var(--c-line); color: var(--c-teal); font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; cursor: pointer; }
+:is(#c-root, html) .c-sched .c-sched-day__empty, :is(#c-root, html) .c-sched .c-sched-day__note { margin: 0; padding: 14px 16px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); }
+:is(#c-root, html) .c-sched .c-sched-day__note { padding-top: 0; font-size: 0.8125rem; line-height: 1.125rem; color: var(--c-grey); }
 :is(#c-root, html) .c-sched .c-sched-day__off { box-shadow: inset 0 1px 0 var(--c-line); }
-:is(#c-root, html) .c-sched .c-sched-day__add { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px; box-shadow: inset 0 1px 0 var(--c-line); color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#c-root, html) .c-sched .c-sched-day__add { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 16px; box-shadow: inset 0 1px 0 var(--c-line); color: var(--c-teal); font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; }
 :is(#c-root, html) .c-sched .c-sched-day__add .c-av { display: grid; place-items: center; }
 
 /* Published receipt and the Build and publish card. */
-:is(#c-root, html) .c-sched .c-sched-done h2 { font-size: 17px; line-height: 22px; font-weight: 600; }
-:is(#c-root, html) .c-sched .c-sched-done p { margin-top: 4px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-sched .c-sched-done h2 { font-size: 1.0625rem; line-height: 1.375rem; font-weight: 600; }
+:is(#c-root, html) .c-sched .c-sched-done p { margin-top: 4px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); }
 :is(#c-root, html) .c-sched .c-sched-done__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 14px; }
-:is(#c-root, html) .c-sched .c-sched-plan__intro { margin: 0 0 12px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-sched .c-sched-plan__intro { margin: 0 0 12px; font-size: 0.9375rem; line-height: 1.25rem; color: var(--c-ink2); }
 :is(#c-root, html) .c-sched .mws-print-title { display: none; }
 
 @container c-sched (min-width: 560px) {
@@ -106,7 +106,7 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
  * the Open shifts row's icon. (Prefixed past the legacy clean-manager rules it replaces.) */
 @container c-sched (min-width: 560px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid { font-family: inherit; color: var(--c-ink); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th { height: 52px; padding-top: 7px; padding-bottom: 7px; vertical-align: top; border-bottom: 1px solid var(--c-line); border-left: 1px solid var(--c-line); background: #FAFAFA; font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th { height: 52px; padding-top: 7px; padding-bottom: 7px; vertical-align: top; border-bottom: 1px solid var(--c-line); border-left: 1px solid var(--c-line); background: #FAFAFA; font: 600 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink2); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { border-left: 0; font-weight: 400; color: var(--c-grey); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th > b { color: var(--c-ink); font-weight: 600; }
   /* R11: today's header is teal text (no filled badge) and its whole column carries a faint tint. */
@@ -118,14 +118,14 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   /* R11: chips share a top edge (a single chip still sits centred in a 56px row). */
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid tbody td { padding: 14px 6px 6px; border-left: 1px solid var(--c-line); vertical-align: top; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid__open > th.cm-person { padding-top: 9px; vertical-align: top; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-open-past { display: block; padding: 5px 2px; font: 500 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-open-past { display: block; padding: 5px 2px; font: 500 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person { padding: 8px 16px; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person .nv-avatar { width: 32px; height: 32px; margin-right: 12px; border-radius: 16px; background: var(--c-neutral-bg) !important; color: var(--c-ink2) !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person .nv-avatar { width: 32px; height: 32px; margin-right: 12px; border-radius: 16px; background: var(--c-neutral-bg) !important; color: var(--c-ink2) !important; font: 600 0.8125rem/1 Inter, "Inter Fallback", -apple-system, sans-serif; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__text { max-width: calc(100% - 44px); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__name { font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__sub { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__name { font: 500 0.9375rem/1.25rem Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__sub { font: 400 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__sub em { color: var(--c-amber); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { min-height: 28px; padding: 4px 8px; border: 0; border-radius: 8px; background: #F1F3F4; color: var(--c-ink); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; transition: background-color 120ms ease-out; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { min-height: 28px; padding: 4px 8px; border: 0; border-radius: 8px; background: #F1F3F4; color: var(--c-ink); font: 600 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; transition: background-color 120ms ease-out; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block:hover { background: #E7E9EA; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block.draft { padding: 3px 7px; border: 1px dashed var(--c-faint); background: #FFFFFF; }
   /* R11: open shifts are dashed chips in grey ink (8.6:1); no red tile. */
@@ -133,9 +133,9 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block.open:hover { background: #F7F8F8; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block__lead { color: var(--c-ink2); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 1px; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-add { border-radius: 8px; color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-add { border-radius: 8px; color: var(--c-teal); font: 600 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid td:hover > .cm-add { background: #F7F8F8; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid__toggle button { color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid__toggle button { color: var(--c-teal); font: 600 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .wb-note { font: 400 var(--b-fs-meta)/var(--b-lh-meta) Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--b-grey); } /* Phase 9: the meta role (13.5/18), not 13px */
   /* Link colours need the kit's weight (its :where(a) inherit rule carries an id). */
   :is(#c-root, html) .c-sched .cm-sched-slot .cm-block.open { color: var(--c-ink2); }
@@ -160,7 +160,7 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   :is(#c-root, html) .c-sched > .c-title .c-title__actions > .nevora-action-menu { grid-row: 2; grid-column: 2; justify-self: end; margin-top: 4px; }
   :is(#c-root, html) .c-sched > .c-title > .c-title__sub { grid-row: 2; grid-column: 1; align-self: center; margin-top: 4px; }
   /* The quieter control: 36px, 15/500 ink, a 16px grey caret; its hit area stays 44px. */
-  :is(#c-root, html) .c-page .c-select-btn.c-sched-loc { height: 36px; min-height: 36px; padding: 0 12px; gap: 6px; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); }
+  :is(#c-root, html) .c-page .c-select-btn.c-sched-loc { height: 36px; min-height: 36px; padding: 0 12px; gap: 6px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 500; color: var(--c-ink); }
   :is(#c-root, html) .c-page .c-select-btn.c-sched-loc::before { content: ""; position: absolute; inset: -4px; }
   :is(#c-root, html) .c-page .c-select-btn.c-sched-loc .c-ic { width: 16px; height: 16px; color: var(--c-grey); }
 }
@@ -179,7 +179,7 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
 :is(#c-root, html) .c-sched .c-sched-row--open > .c-meta { flex: none; margin-left: auto; }
 
 /* The week bar's "Today" (only off the current week): teal 13/600 text with a 44px target. */
-:is(#c-root, html) .c-sched .c-sched-week__today { display: inline-flex; align-items: center; min-height: 44px; margin: 0 0 0 4px; padding: 0 8px; border-radius: 8px; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-sched .c-sched-week__today { display: inline-flex; align-items: center; min-height: 44px; margin: 0 0 0 4px; padding: 0 8px; border-radius: 8px; color: var(--c-teal); font-size: 0.8125rem; line-height: 1.125rem; font-weight: 600; white-space: nowrap; }
 @media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-sched .c-sched-week__today:hover { background: #F2F4F4; } }
 
 /* The grid at any content width from 760px (M3/M8): the name column 168–220px, the seven days share the rest (84px and
@@ -189,7 +189,7 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
 @container c-sched (min-width: 560px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid { min-width: 0; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { width: clamp(168px, 22cqi, 220px); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th > .cm-grid__dayhours { display: block; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th > .cm-grid__dayhours { display: block; font: 400 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; color: var(--c-grey); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid :is(.cm-block, .cm-open-past) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
 @container c-sched (min-width: 560px) and (max-width: 959px) {
@@ -205,7 +205,7 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
 html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item {
   position: relative; display: flex !important; align-items: center !important; gap: 8px; width: 100%; min-height: 48px !important; margin: 0 !important; padding: 0 16px !important;
   border: 0 !important; border-radius: 0 !important; background: none; box-shadow: none !important; text-align: left;
-  font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: #1A1C1E !important; }
+  font: 500 0.9375rem/1.25rem Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: #1A1C1E !important; }
 html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item::before { content: ""; position: absolute; left: 16px; right: 16px; bottom: 0; height: 1px; background: #EDEEEF; }
 html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .c-menu-card > :last-child .nevora-action-menu-item::before,
 html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .c-menu-card > .nevora-action-menu-item:last-child::before { display: none; }
@@ -219,11 +219,11 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
 html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item[aria-current="true"]::after { right: 16px; }
 html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .nevora-action-menu-item > strong { flex: 1 1 auto; min-width: 0; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: inherit !important; color: inherit !important; }
 html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .nevora-action-menu-item > :not(strong):not(.c-menu-value):not(.c-menu-chev) { display: none !important; }
-html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-value { flex: none; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; white-space: nowrap; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-value { flex: none; font: 400 0.9375rem/1.25rem Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; white-space: nowrap; }
 html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-chev { flex: none; width: 16px; height: 16px; color: #A7ACB1; }
-html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-label { margin: 16px 16px 8px; font: 500 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -0.04px; color: #6B7075; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-label { margin: 16px 16px 8px; font: 500 0.8125rem/1.125rem Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -0.04px; color: #6B7075; }
 html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > div { margin: 0; }
-html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > div > p { margin: 0 16px 8px; font-size: 13px; line-height: 18px; color: #6B7075; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > div > p { margin: 0 16px 8px; font-size: 0.8125rem; line-height: 1.125rem; color: #6B7075; }
 @media (hover: hover) and (pointer: fine) {
   html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item:hover { background: #F2F4F4; }
 }
@@ -253,3 +253,10 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
  * button; it sits on the actions' line, centred with them. */
 :is(#c-root, html) .c-page .c-sched-place { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; white-space: nowrap; color: inherit; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-page > header.c-title .c-sched-place { color: var(--b-on-band); }
+/* Desktop at 200% text (DS-6, Nov 23): the kit's .c-btn is 15/20px; the same size in rem on the Schedule. */
+:is(#c-root, html) .c-sched .c-btn { font-size: 0.9375rem; line-height: 1.25rem; }
+/* The location menu on tablets and desktop is the kit's 15px (corp.css); the same 15/20px in rem. */
+:is(#c-root, html) .c-page.c-sched .c-select-btn.c-sched-loc { font-size: 0.9375rem; line-height: 1.25rem; }
+/* At large text the day card's "13 shifts · 61 h" drops under the day title instead of running under it (it fits
+ * beside the title at the default size, so nothing moves there). */
+:is(#c-root, html) .app-shell[data-nv-b] .c-sched .b-card__h:has(> .b-card__meta) { flex-wrap: wrap; }

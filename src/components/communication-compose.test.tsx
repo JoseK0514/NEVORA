@@ -43,3 +43,9 @@ it('preserves the blocked state without showing private form content or publicat
  const html=render({action:{...action,notice:'blocked'}});expect(html).toContain('Your current permission does not allow publication.');
  expect(html).toContain('Return to updates');expect(html).not.toContain('communication-title');expect(html).not.toContain('Preview audience');
 });
+it('names the confirmation rule the DEC6 way in review and in the Manager list',async()=>{
+ const {readFileSync}=await import('node:fs');
+ for(const f of ['communication-compose.tsx','messages-manager-b.tsx','communication-detail.tsx']){const src=readFileSync(new URL('./'+f,import.meta.url),'utf8');expect(src).not.toContain('Must be read');}
+ const compose=readFileSync(new URL('./communication-compose.tsx',import.meta.url),'utf8');
+ expect(compose).toContain("'Must be confirmed':'Confirming is optional'");
+});

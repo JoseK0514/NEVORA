@@ -100,3 +100,42 @@ describe('sweep follow-up: B7 and C4 at 200% text', () => {
     expect(desk).toMatch(/\.c-shift__titles \.c-shift__sub \{ font-size: var\(--b-fs-body\) !important; line-height: 1\.25rem !important;/);
   });
 });
+
+describe('gap closure (Nov 23): Home, kit buttons, skip link, sign-in footer', () => {
+  it('full and big buttons, live figures and the ink chip are rem; the ink header wraps', () => {
+    const kit = css('components/owner-b/owner-b.css');
+    expect(kit).toContain('.b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; }');
+    expect(kit).toContain('.b-btn--big { min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; font-weight: 600; }');
+    expect(kit).toContain('.b-ink__top { display: flex; flex-wrap: wrap;');
+    expect(kit).toMatch(/\.b-ink__due \{[^}]*font-size: 0\.75rem;/);
+    expect(css('app/app/b-foundation.css')).toContain('--bs-fig-fs: 1.375rem; --bs-fig-lh: 1.75rem;');
+    expect(css('app/app/owner-b-desktop.css')).toContain('b-live__v { font-size: var(--bs-fig-fs, 1.75rem) !important; line-height: var(--bs-fig-lh, 2.125rem) !important; }');
+  });
+  it('the skip link is real text in rem', () => {
+    expect(css('app/app/premium-desktop.css')).toContain('font: 600 0.9375rem/1 Inter');
+  });
+});
+
+describe('corp shell type tokens', () => {
+  it('are rem (13–24px at the default size), so the skip link and every token user grow with text', () => {
+    const shell = css('app/app/corp-shell.css');
+    expect(shell).toContain('--nv-t-label: 600 0.8125rem/1rem var(--nv-font);');
+    expect(shell).toContain('--nv-t-title-1: 600 1.5rem/1.875rem var(--nv-font);');
+    expect(shell).not.toMatch(/--nv-t-[a-z0-9-]+: \d+ \d+px\//);
+  });
+});
+
+describe('kit checkbox, corp buttons, tab fallback and sheet band (Nov 23, evening)', () => {
+  it('the checkbox is 20px in rem (1.25rem) with a 14px (0.875rem) check', () => {
+    expect(css('app/app/b-foundation.css')).toContain('width: 1.25rem !important; height: 1.25rem !important; min-width: 1.25rem !important; min-height: 1.25rem !important;');
+    expect(css('app/app/b-foundation.css')).toContain('background: #FFFFFF none center / 0.875rem 0.875rem no-repeat !important;');
+  });
+  it('corp buttons and the sheet back link are rem; a three-item band tab row falls back to the capped segment size', () => {
+    expect(css('components/corp/corp.css')).toContain('font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; text-decoration: none; white-space: nowrap;');
+    expect(css('components/team/team-forms.css')).toMatch(/\.c-formhead__link \{[^}]*font-size: 0\.9375rem;/);
+    expect(css('components/owner-b/owner-b.css')).toContain('.b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: var(--b-radius-small); font-size: min(0.875rem, 20px);');
+  });
+  it("a sheet page's band reaches the screen edge with the gutter, not 2px past it", () => {
+    expect(css('app/app/owner-b-pages.css')).toContain(':is(.c-sheetpage, .c-shift-page) :is(.c-shift__head, .c-formhead):not(#sg1):not(#sg2) { margin-left: calc(-1 * var(--b-gutter)) !important; margin-right: calc(-1 * var(--b-gutter)) !important; padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }');
+  });
+});
