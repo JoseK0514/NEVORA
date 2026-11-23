@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import { requireSession } from "@/lib/auth/session";
 import { OwnerOnlyNotice } from "@/components/owner-only-notice";
 import type { UserRole } from "@/lib/domain";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import type { PortalLang } from "@/lib/i18n/portal-lang";
+import { ROUTE_PAGES_COPY } from "../route-pages-copy";
 
 /** A Manager only lands here from an Owner's page; an Employee or Lead from an Owner's or Manager's page. */
-function restrictedTitle(role: UserRole) {
-  return role === "MANAGER" ? "That page is for Owners" : "That page is for Owners and Managers";
+function restrictedTitle(role: UserRole, lang: PortalLang = "en") {
+  const t = ROUTE_PAGES_COPY[lang].restricted;
+  return role === "MANAGER" ? t.managerTitle : t.otherTitle;
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: restrictedTitle((await requireSession()).role) };
+  return { title: restrictedTitle((await requireSession()).role, await readPageLang()) };
 }
 
 /** Review Nov 14 (AR-18, RA-7): where `requireRoles` sends a signed-in person whose role cannot open a page (an old link,
@@ -18,7 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
  * rendered. */
 export default async function RestrictedPage() {
   const session = await requireSession();
+  const lang = await readPageLang(), t = ROUTE_PAGES_COPY[lang].restricted;
   // Phase 3 (MG-015): a Manager sees the one state screen at every width. Phase 4 (EM-019): an Employee or Lead does too,
   // so the way on is the tinted pill on every closed page.
-  return <OwnerOnlyNotice state title={restrictedTitle(session.role)} help="Ask your Owner if you need access." next={{ href: "/app", label: "Go to Home" }} />;
+  return <OwnerOnlyNotice state title={restrictedTitle(session.role, lang)} help={t.help} next={{ href: "/app", label: t.home }} />;
 }

@@ -6,6 +6,8 @@ import { unstable_rethrow } from "next/navigation";
 import { revealFeedback } from "@/lib/reveal-feedback";
 import { Notice } from "./parts";
 import { ShiftReviewRecovery, shiftDraftText } from "../shift-review-recovery";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { WAVE_A_COPY } from "./wave-a-copy";
 
 /** A form for a server action that redirects when it's done (Approve, Decline, Delete).
  * If the request fails (offline, blocked, server down) the page stays, and a notice under the buttons says the
@@ -19,6 +21,7 @@ export function ActionForm({ action, children, className, label, failure, review
   reviewedShiftVersion?: string;
   shiftDraftFormId?: string;
 }) {
+  const t = WAVE_A_COPY[usePortalLang()];
   const [shiftVersion] = useState(reviewedShiftVersion);
   const [refusal, setRefusal] = useState<{ error: string; conflict: boolean; draft: string } | null>(null);
   const [failed, setFailed] = useState(0);
@@ -54,7 +57,7 @@ export function ActionForm({ action, children, className, label, failure, review
         // render that could discard it. Re-entry is an explicit review.
         unknownOutcome.current = true;
         setUncertain(true);
-        setRefusal({ error: 'This change could not be confirmed. Review the current schedule before making another change; it may already have completed.', conflict: true, draft });
+        setRefusal({ error: t.unconfirmed, conflict: true, draft });
       }
       setFailed(++failures.current);
     }
@@ -62,6 +65,6 @@ export function ActionForm({ action, children, className, label, failure, review
   return <form ref={form} action={run} className={className} aria-label={label} aria-busy={busy}>
     {shiftVersion !== undefined ? <fieldset disabled={busy || uncertain} className="configuration-fields">{children}</fieldset> : children}
     {shiftVersion !== undefined ? <input type="hidden" name="expectedReviewVersion" value={shiftVersion} /> : null}
-    {failed ? <div ref={notice} tabIndex={-1} className="wa-target"><Notice tone="urgent" title={uncertain ? 'Deletion outcome unknown' : failure.title}>{refusal?.error ?? failure.body}</Notice>{refusal?.conflict ? <ShiftReviewRecovery draft={refusal.draft} /> : null}</div> : null}
+    {failed ? <div ref={notice} tabIndex={-1} className="wa-target"><Notice tone="urgent" title={uncertain ? t.deletionUnknown : failure.title}>{refusal?.error ?? failure.body}</Notice>{refusal?.conflict ? <ShiftReviewRecovery draft={refusal.draft} /> : null}</div> : null}
   </form>;
 }

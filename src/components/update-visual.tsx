@@ -6,6 +6,8 @@ import {NotePencilIcon} from '@phosphor-icons/react/dist/ssr/NotePencil';
 import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
 import {MapPinLineIcon} from '@phosphor-icons/react/dist/ssr/MapPinLine';
 import type {CommunicationDraft} from '@/lib/communications/types';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {SMALL_PARTS_COPY} from './small-parts-copy';
 
 export const updateKinds = {
  TODAYS_TEAM: {label: "Today's team", Icon: UsersThreeIcon},
@@ -15,7 +17,7 @@ export const updateKinds = {
 };
 
 export function UpdateKind({type, iconOnly = false}: {type: CommunicationDraft['type']; iconOnly?: boolean}) {
- const {label, Icon} = updateKinds[type];
+ const {label: english, Icon} = updateKinds[type], lang = usePortalLang(), label = lang === 'es' ? SMALL_PARTS_COPY.es.updateKinds[type] ?? english : english;
  return <span className={iconOnly ? 'update-kind-icon' : 'update-kind'}>
   <Icon size={22} weight="bold" aria-hidden="true" focusable="false" />
   {iconOnly ? null : <span>{label}</span>}

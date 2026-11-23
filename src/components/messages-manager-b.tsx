@@ -8,6 +8,8 @@ import {BButtonLink, BCard, BHero, BIcon, BList, BRow, BScreen, BSegs, BState, t
 import {CorpButtonLink, CorpNav, CorpPage, CorpTitle} from './corp/corp';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
 import './messages-manager-b.css';
+import {usePortalLang, type PortalLang} from '@/lib/i18n/portal-lang';
+import {MESSAGES_MANAGER_COPY} from './messages-manager-copy';
 
 /* Messages for Owners and Managers, Direction B (Phase 2, package Messages, Nov 23, 2026). The same reads, links and
  * commands as before; the screens are drawn with the kit the Lead's and Employee's Updates use (employee-b/messages-b.tsx):
@@ -17,7 +19,7 @@ import './messages-manager-b.css';
 export type ReadyUpdate = Extract<CommunicationRead, {state: 'ready'}>;
 
 /** "Mon, Nov 23", the Lead's and Employee's day on an update row. */
-export const updateDay = (at: string, timeZone: string) => new Intl.DateTimeFormat('en-US', {timeZone, weekday: 'short', month: 'short', day: 'numeric'}).format(new Date(at));
+export const updateDay = (at: string, timeZone: string, lang: PortalLang = 'en') => new Intl.DateTimeFormat(MESSAGES_MANAGER_COPY[lang].locale, {timeZone, weekday: 'short', month: 'short', day: 'numeric'}).format(new Date(at));
 /** "Nov 23, 7:38 AM" (the year only when it isn't this year), the band's line on an update. */
 export function updateStamp(at: string, timeZone: string, now = new Date()) {
   const d = new Date(at), year = (date: Date) => new Intl.DateTimeFormat('en-US', {timeZone, year: 'numeric'}).format(date);
@@ -25,9 +27,9 @@ export function updateStamp(at: string, timeZone: string, now = new Date()) {
 }
 /** Who confirmed it. A recipient's receipt records an acknowledgement only (a "Mark as read" is not sent back), so the
  * count says acknowledged, the word the person's own button uses; it never claims who has read it. */
-export function acknowledgedLine(item: ReadyUpdate) {
+export function acknowledgedLine(item: ReadyUpdate, lang: PortalLang = 'en') {
   const people = item.management?.recipients;
-  return people?.length ? `${people.filter(person => person.acknowledgedAt).length} of ${people.length} acknowledged` : null;
+  return people?.length ? MESSAGES_MANAGER_COPY[lang].acknowledged(people.filter(person => person.acknowledgedAt).length, people.length) : null;
 }
 /** The update's place, when the person manages more than one (one place is always the same, so it isn't repeated). */
 export function updatePlace(item: ReadyUpdate, places: Record<string, string> | null) {
@@ -70,23 +72,24 @@ export function ManagerStateCard({status}: {status: ManagerListStatus}) {
 export function ManagerUpdatesView({list, status, partial, places}: {
   list: Extract<CommunicationListRead, {state: 'complete' | 'partial'}> | null; status: ManagerListStatus | null; partial: boolean; places: Record<string, string> | null;
 }) {
+  const lang = usePortalLang(), t = MESSAGES_MANAGER_COPY[lang];
   const items = list?.items.filter((item): item is ReadyUpdate => item.state === 'ready') ?? [];
   const required = items.filter(item => item.acknowledgement === 'REQUIRED'), other = items.filter(item => item.acknowledgement !== 'REQUIRED');
   const row = (item: ReadyUpdate) => {
     const people = item.management?.recipients, waiting = item.acknowledgement === 'REQUIRED' && !!people?.some(person => !person.acknowledgedAt);
     return <BRow key={item.id} href={'/app/updates/' + item.id} lead={<BIcon tone={waiting ? 'amber' : 'grey'}><MegaphoneIcon weight="bold" /></BIcon>}
-      title={item.title} sub={<BSegs parts={[updatePlace(item, places), updateDay(item.publishedAt, item.timeZone), acknowledgedLine(item)]} />} />;
+      title={item.title} sub={<BSegs parts={[updatePlace(item, places), updateDay(item.publishedAt, item.timeZone, lang), acknowledgedLine(item, lang)]} />} />;
   };
   const cards = status ? <ManagerStateCard status={status} /> : <>
-    {partial ? <p className="b-note mb-note" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
-    {required.length ? <BCard title="Must be read" id="updates-required"><BList label="Must be read">{required.map(row)}</BList></BCard> : null}
-    {other.length ? <BCard title={required.length ? 'Other updates' : undefined} label={required.length ? undefined : 'Updates'} id="updates-other"><BList label={required.length ? 'Other updates' : 'Updates'}>{other.map(row)}</BList></BCard> : null}
-    {!items.length ? <BCard label="Updates"><BState kind="empty" icon={<MegaphoneIcon weight="bold" />} title={partial ? 'No updates available in this view' : 'No updates yet'}
-      line={partial ? 'Some updates couldn’t be checked. Try again to check for the rest.' : 'Tell your team about hours, menus or events.'} /></BCard> : null}
+    {partial ? <p className="b-note mb-note" role="status">{t.partial}</p> : null}
+    {required.length ? <BCard title={t.mustBeRead} id="updates-required"><BList label={t.mustBeRead}>{required.map(row)}</BList></BCard> : null}
+    {other.length ? <BCard title={required.length ? t.otherUpdates : undefined} label={required.length ? undefined : t.updates} id="updates-other"><BList label={required.length ? t.otherUpdates : t.updates}>{other.map(row)}</BList></BCard> : null}
+    {!items.length ? <BCard label={t.updates}><BState kind="empty" icon={<MegaphoneIcon weight="bold" />} title={partial ? t.noneInView : t.noneYet}
+      line={partial ? t.partialLine : t.emptyLine} /></BCard> : null}
   </>;
-  return <ManagerMessagesPage className="mb-updates" titleId="updates-title" title="Updates" back={{href: '/app/more', label: 'More'}}
-    phoneRight={<BButtonLink href="/app/updates/compose" kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true" />New update</BButtonLink>}
-    action={<CorpButtonLink href="/app/updates/compose" size="md"><PlusIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />New update</CorpButtonLink>}
+  return <ManagerMessagesPage className="mb-updates" titleId="updates-title" title={t.updates} back={{href: '/app/more', label: t.more}}
+    phoneRight={<BButtonLink href="/app/updates/compose" kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true" />{t.newUpdate}</BButtonLink>}
+    action={<CorpButtonLink href="/app/updates/compose" size="md"><PlusIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />{t.newUpdate}</CorpButtonLink>}
     cards={cards} />;
 }
 

@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "./toaster";
-import { MODULES, MODULE_IDS, blockerText, type ModuleBlockers, type ModuleId } from "@/lib/workspace-presentation/modules";
+import { MODULES, MODULE_IDS, type ModuleBlockers, type ModuleId } from "@/lib/workspace-presentation/modules";
 import { WORD_PRESETS, type WordPresetId } from "@/lib/workspace-presentation/words";
 import { CorpSection } from "@/components/corp/corp";
 import { RadioRowB, ResultB, SwitchRowB } from "@/app/app/settings/settings-b-form";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { FEATURES_EDITOR_COPY } from "./features-editor-copy";
 
 /** Owner editor for company words and modules (B2), Settings in Direction B. The server re-checks
  * every rule; a module with requests still waiting cannot be turned off. */
@@ -21,6 +23,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   updatesHeld?: boolean;
 }) {
   const router = useRouter();
+  const lang = usePortalLang(), t = FEATURES_EDITOR_COPY[lang];
   const [words, setWords] = useState<WordPresetId>(preset);
   const [off, setOff] = useState<ModuleId[]>(disabled);
   const [busy, setBusy] = useState(false);
@@ -53,19 +56,19 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
       for (const [index, command] of pending.current.entries()) {
         const response = await fetch("/api/workspace-presentation", { method: "POST", cache: "no-store", headers: { "content-type": "application/json", "x-nevora-presentation": "1" }, body: JSON.stringify(command) });
         const body = await response.json().catch(() => null) as { state?: string; message?: string } | null;
-        if (response.status === 401 || response.status === 403) { pending.current = null; setNotice({ tone: "error", text: "Sign in again to change features." }); return; }
-        if (response.status === 409 && body?.state === "busy") { pending.current = null; setNotice({ tone: "error", text: `${index ? "Words saved. " : ""}${body.message ?? "Requests are still waiting."}` }); if (index) router.refresh(); return; }
-        if (response.status === 409) { pending.current = null; setNotice({ tone: "error", text: "Settings changed somewhere else. Reload to see the latest before editing." }); return; }
+        if (response.status === 401 || response.status === 403) { pending.current = null; setNotice({ tone: "error", text: t.signInAgain }); return; }
+        if (response.status === 409 && body?.state === "busy") { pending.current = null; setNotice({ tone: "error", text: `${index ? t.wordsSaved : ""}${body.message ?? t.stillWaiting}` }); if (index) router.refresh(); return; }
+        if (response.status === 409) { pending.current = null; setNotice({ tone: "error", text: t.changedElsewhere }); return; }
         if (!response.ok) throw Error();
       }
       pending.current = null;
       // The page reloads with the saved state ("Saved"); the toast confirms it.
       setNotice(null);
-      toast("Features saved");
+      toast(t.saved);
       focusSavedOnMount = true;
       router.refresh();
     } catch {
-      setNotice({ tone: "error", text: "It may not have saved. Save again to retry safely, or reload to check." });
+      setNotice({ tone: "error", text: t.mayNotHaveSaved });
     } finally { sending.current = false; setBusy(false); }
   }
 
@@ -79,35 +82,35 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   // Settings in Direction B (Nov 23, 2026): two Settings sections, each one white card of rows (a radio row per word set, a
   // switch row per feature), as on Settings itself.
   return <>
-    <CorpSection id="features-words" label="What to call people and places">
+    <CorpSection id="features-words" label={t.wordsLabel}>
       {/* Codex B-03: the group wraps the list, so the list keeps its items and the radios keep their group name. */}
       <div className="c-card" role="radiogroup" aria-labelledby="features-words-label" data-revision={revision}><ul className="c-rows">
         {WORD_PRESETS.map(p => <li key={p.id}><RadioRowB name="word-preset" value={p.id} checked={words === p.id} disabled={busy}
-          onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} title={p.name} detail={`${p.en.people}, ${p.en.locations.toLowerCase()}`} /></li>)}
+          onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} title={t.presets?.[p.id] ?? p.name} detail={`${p[lang].people}, ${p[lang].locations.toLowerCase()}`} /></li>)}
       </ul></div>
     </CorpSection>
 
-    <CorpSection id="features" label="Features">
+    <CorpSection id="features" label={t.features}>
       <div className="c-card"><ul className="c-rows" aria-labelledby="features-label">
         {MODULES.map(m => {
           const on = !off.includes(m.id), waiting = blockers[m.id] ?? 0;
           const held = m.id === "updates" && updatesHeld;
           const unavailable = (m.requires === "payroll" && !payrollEnabled) || held;
           const locked = on && waiting > 0 && !disabled.includes(m.id);
-          const note = held ? "Coming in a later release." : unavailable ? "Available when payroll is on." : locked ? blockerText(m.id, waiting) : null;
+          const note = held ? t.comingLater : unavailable ? t.needsPayroll : locked ? t.blocker(m.id, waiting) : null;
           // Review B5 (NV-248): a feature that can't be turned off right now (requests still waiting) reads as on and locked.
           // Review Nov 11 (OW-025): the reason is the row's own sub-line, right under the label it explains.
           return <li key={m.id} data-on={on && !unavailable} data-locked={locked || undefined}>
-            <SwitchRowB id={`module-${m.id}`} label={m.name} description={note ?? undefined} checked={on && !unavailable} locked={locked}
+            <SwitchRowB id={`module-${m.id}`} label={t.modules?.[m.id] ?? m.name} description={note ?? undefined} checked={on && !unavailable} locked={locked}
               disabled={busy || unavailable || locked} onChange={() => toggle(m.id)} />
           </li>;
         })}
       </ul></div>
     </CorpSection>
 
-    <p className="c-sr" role="status">{busy ? "Saving…" : changed ? "" : "Saved"}</p>
-    {notice ? <ResultB innerRef={feedback} tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text.startsWith("Sign in again") ? "Your session ended" : notice.text.startsWith("It may not have saved") ? "Not saved yet" : "Not saved") : undefined}
-      action={notice.text.startsWith("Sign in again") ? <Link className="c-btn c-btn--secondary" href="/login">Sign in</Link> : <button type="button" className="c-btn c-btn--secondary" onClick={() => { setNotice(null); void save(); }}>Try again</button>}>{notice.text}</ResultB> : null}
-    <span className="c-sr" ref={savedLine} tabIndex={-1}>{changed ? "" : "Saved"}</span>
+    <p className="c-sr" role="status">{busy ? t.saving : changed ? "" : t.savedLine}</p>
+    {notice ? <ResultB innerRef={feedback} tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text === t.signInAgain ? t.sessionEnded : notice.text === t.mayNotHaveSaved ? t.notSavedYet : t.notSaved) : undefined}
+      action={notice.text === t.signInAgain ? <Link className="c-btn c-btn--secondary" href="/login">{t.signIn}</Link> : <button type="button" className="c-btn c-btn--secondary" onClick={() => { setNotice(null); void save(); }}>{t.tryAgain}</button>}>{notice.text}</ResultB> : null}
+    <span className="c-sr" ref={savedLine} tabIndex={-1}>{changed ? "" : t.savedLine}</span>
   </>;
 }
