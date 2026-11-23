@@ -68,6 +68,17 @@ it("keeps only the chosen location's shifts, clock-ins and open shifts", () => {
   expect(all).toContain("Santurce");
 });
 
+it("opens Who's working on the chosen place (gaps G41): See everyone, the faces row and the band's Clocked in keep ?location=", () => {
+  const one = render({ locationId: "loc-2" });
+  expect(one).toContain('href="/app?view=attendance&amp;location=loc-2" class="b-card__a"');
+  expect(one).toContain('<a href="/app?view=attendance&amp;location=loc-2" class="b-live__a">');
+  expect(one).not.toContain('href="/app?view=attendance"');
+  // All of this Manager's places: the company view's link, with no place.
+  const all = render();
+  expect(all).toContain('href="/app?view=attendance" class="b-card__a"');
+  expect(all).not.toContain("location=");
+});
+
 it("leaves This week out when the week's schedule couldn't be read", () => {
   expect(render({ homeB: homeB({ thisWeek: false }) })).not.toContain("This week");
 });

@@ -56,7 +56,9 @@ export function ScopedHomeLive({ weekStart, actorId, locationId, ...props }: Sco
   const online = useSyncExternalStore(onlineSubscribe, () => navigator.onLine, () => true);
   const read = useActionCenter(weekStart, actorId);
   const actions = read.connection === "ready" ? read.snapshot : null;
-  return <PremiumHomeSurface {...props} corporate today={todayAt(today, locationId)} monitor={monitorAt(monitor, locationId)}
+  // Gaps G41 (Nov 23, 2026): with one place chosen, Who's working opens on that place too (it dropped ?location=).
+  const homeB = locationId ? { ...props.homeB, attendanceHref: `/app?view=attendance&location=${encodeURIComponent(locationId)}` } : props.homeB;
+  return <PremiumHomeSurface {...props} homeB={homeB} corporate today={todayAt(today, locationId)} monitor={monitorAt(monitor, locationId)}
     monitorPending={monitor === null && monitorRefreshing && !monitorPaused} todayRefreshing={refreshing} onRetryToday={refresh}
     actions={actionsAt(actions, locationId)} actionsConnection={read.connection} onRetryActions={read.refresh}
     nextPay={null} payrollStatus={null} liveReaders="today actions" offline={!online} />;

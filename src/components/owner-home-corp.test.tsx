@@ -161,27 +161,36 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
   const phone = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => onlyB(renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />)).replace(/ /g, " ");
   // BR-16 with the backend's clockerRegistered (Nov 15, 2026).
   it("with no time clock registered, one tile says so in place of the attendance tiles; unknown or registered keeps them", () => {
-    const shifts = [shift("a", "clocked_in"), shift("b", "upcoming"), shift("c", "no_punches")];
-    const none = phone({ today: { ...today(shifts), clockerRegistered: false } as Today, setup: <span>setup</span> });
-    expect(none).toContain('<a href="/app/settings/clocker" class="b-live__a" aria-label="Time clock not set up. Set up your time clock">');
-    expect(none).toContain('>Time clock</span><span class="b-live__v">Not set up</span>');
-    expect(none).not.toContain("Clocked in: ");
-    expect(none).not.toContain('aria-label="Missed clock-ins: 1"');
+    const quiet = [shift("b", "upcoming"), shift("c", "no_punches")];
+    const none = phone({ today: { ...today(quiet), clockerRegistered: false } as Today, monitor: monitor([]), setup: <span>setup</span> });
+    // Gaps G39 (Nov 23, 2026): the tile is named by what it shows, with no label that words it differently.
+    expect(none).toContain('<a href="/app/settings/clocker" class="b-live__a"><span class="b-live__l">Time clock</span><span class="b-live__v">Not set up</span>');
+    expect(none).not.toContain('href="/app?view=attendance" class="b-live__a"');
+    expect(none).not.toContain('href="/app/inbox#todo-missed" class="b-live__a"');
     expect(none).toContain("Open shifts");
     // A Manager's Home (no setup card) says the same, without a link.
-    expect(phone({ today: { ...today(shifts), clockerRegistered: false } as Today })).not.toContain('href="/app/settings/clocker"');
-    for (const registered of [true, undefined]) {
-      const out = phone({ today: { ...today(shifts), ...(registered === undefined ? {} : { clockerRegistered: registered }) } as Today });
-      expect(out).toContain('aria-label="Clocked in: 1 of 3. Who’s working"');
+    expect(phone({ today: { ...today(quiet), clockerRegistered: false } as Today, monitor: monitor([]) })).not.toContain('href="/app/settings/clocker"');
+    // Gaps G38 (Nov 23, 2026): someone clocked in without a tablet (a phone clock-in) means the band shows the live figures,
+    // never "Not set up" beside Today's list of who is clocked in.
+    const shifts = [shift("a", "clocked_in"), ...quiet];
+    for (const registered of [true, undefined, false]) {
+      const out = phone({ today: { ...today(shifts), ...(registered === undefined ? {} : { clockerRegistered: registered }) } as Today, setup: <span>setup</span> });
+      expect(out).toContain('<a href="/app?view=attendance" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--live" aria-hidden="true"></span>Clocked in</span><span class="b-live__v">1<small>/3</small></span>');
       expect(out).not.toContain(">Time clock<");
+      expect(out).not.toContain("Not set up");
     }
+    // A clock-in whose shift is over (done) counts too.
+    const ended = phone({ today: { ...today([{ ...shift("a", "done"), firstClockInAt: "2026-10-30T13:01:00Z" }, ...quiet]), clockerRegistered: false } as Today, monitor: monitor([]) });
+    expect(ended).not.toContain("Not set up");
   });
   it("leads with the shared needs-you count as a sentence and three live figures that open their lists", () => {
     const out = phone();
     expect(out).toMatch(/<h1>5 things need you<\/h1>/);
-    expect(out).toContain('<a href="/app?view=attendance" class="b-live__a" aria-label="Clocked in: 1 of 3. Who’s working">');
+    // Gaps G39 (Nov 23, 2026): each figure's spoken name is its visible text (no aria-label).
+    expect(out).toContain('<a href="/app?view=attendance" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--live" aria-hidden="true"></span>Clocked in</span>');
     // B7 wording (NV-123): the stat and the row use one name ("Missed", as on the corporate Home).
-    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a" aria-label="Missed clock-ins: 1">');
+    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Missed</span><span class="b-live__v">1</span>');
+    expect(out).not.toMatch(/class="b-live__a" aria-label=/);
     expect(out).toContain('aria-label="Find cover: Barista 1:00 PM – 3:00 PM">Find cover</a>');
     // B7 wording (NV-068): outside the dense week grid, ranges keep full times with a spaced en dash.
     // Jose (Nov 15, 2026, item 5): the short form shows on a phone, the full one from 768px (b-foundation.css picks).
@@ -192,17 +201,19 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
   it("uses Jose's attendance words: a shift still running is Not clocked in, and only an ended shift is Missed", () => {
     // Nov 11, 2026 decision; Nov 14 inspection (BR-9). A shift that began and has no punch is never called missed.
     const running = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in")]) });
-    expect(running).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a" aria-label="Not clocked in: 1">');
+    expect(running).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a">');
     expect(running).toContain('>Not clocked in</span><span class="b-live__v">1</span>');
     expect(running).toMatch(/>Not clocked in\s·\sshift\sbegan\s\d{1,2}:\d{2}\s?[AP]M</);
     expect(running).not.toMatch(/Missed|missed/);
     // Both kinds: the live tile counts who is waiting to clock in, and each kind has its own row.
     const both = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in"), shift("c", "no_punches")]) });
-    expect(both).toContain('aria-label="Not clocked in: 1. Missed clock-ins: 1"');
+    expect(both).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Not clocked in</span><span class="b-live__v">1</span>');
+    // Gaps G39: the two rows are named by what they show (the person, then what and when), with no aria-label.
+    expect(both).not.toMatch(/aria-label="(Not clocked in|Missed clock-ins):/);
     expect(both).toMatch(/>Not clocked in\s·\sshift\sbegan\s/);
     expect(both).toMatch(/>Missed clock-in\s·\sshift\sended\s/);
     // Nobody waiting and nothing missed: the tile keeps its name with a zero.
-    expect(phone({ value: needsYou(items, "2026-10-30", []) })).toContain('aria-label="Not clocked in: 0"');
+    expect(phone({ value: needsYou(items, "2026-10-30", []) })).toContain('>Not clocked in</span><span class="b-live__v">0</span>');
   });
   it("names both people on a shift request, says which timecards Payday counts, and leads with setup until it is done", () => {
     // Nov 14 inspection (BR-7): the other person in a swap or cover, when the read carries them.
@@ -214,7 +225,9 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     expect(out).toContain('class="b-swapnames"');
     expect(out).not.toContain("⇄");
     expect(out).toContain(">Shift swap · Nov 21<");
-    expect(out).toContain('aria-label="Shift request, Ana Colon and James Ortiz"');
+    // Gaps G39 (Nov 23, 2026): the row is named by what it shows ("Ana Colon and James Ortiz, Shift swap · Nov 21").
+    expect(out).not.toContain('aria-label="Shift request, Ana Colon and James Ortiz"');
+    expect(out).toContain('<span class="b-sr"> and </span>');
     expect(out).toMatch(/<span class="b-av" style="--s:36px;[^"]*" aria-hidden="true">AC<\/span>/);
     // Payday counts only timecards whose pay period has ended, and says so (Things to do also lists the open period's).
     const cards = [item("c1", "TIMECARD", "REVIEW", "timekeeping", { href: "/app/timecards?start=2026-10-19&end=2026-10-25" }), item("c2", "TIMECARD", "REVIEW", "timekeeping", { href: "/app/timecards?start=2026-10-26&end=2026-11-01" })];

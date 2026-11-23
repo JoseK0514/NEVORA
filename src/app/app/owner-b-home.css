@@ -376,4 +376,8 @@
   /* Gaps G13 (Nov 23, 2026): Team's empty search on phones and tablets: Clear search under the sentence, on the card's
    * inset, as the desktop card offers it. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-card > .b-team-clear:not(#g13a):not(#g13b) { margin: 0 !important; padding: 0 var(--b-inset) var(--b-space-16) !important; }
+  /* Gaps G40 (Nov 23, 2026): the band's figures (Clocked in, Not clocked in, Open shifts) draw their focus ring as a real
+   * 2px white outline inside the tile. The transparent outline with an inset shadow read as no ring where the tile's
+   * own rules drop the shadow. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-hero .b-live__a:focus-visible:not(#g40a):not(#g40b) { outline: var(--b-focus-width) solid var(--b-focus-on-band) !important; outline-offset: calc(-1 * var(--b-focus-width)) !important; box-shadow: none !important; }
 }
