@@ -389,4 +389,4 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-steps .b-step__n { width: 1.75rem; height: 1.75rem; }
 /* The overdue period's button ("Prepare Nov 9–15") wraps inside its card instead of running past it at 320 with 200%
  * text; at the default size it stays on one line. */
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-notice > .b-btn { max-width: 100%; height: auto; white-space: normal; text-align: center; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-pay .b-notice > .b-btn { flex: 0 1 auto; min-width: 0; height: auto; white-space: normal; text-align: center; }
