@@ -702,7 +702,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Phase 8 (b.md #27): each part stays whole ("Approval opens Mon, Nov 23" never splits); the line breaks only after " · ".
     // Premium pass FA (final verification B #8): one line of facts (BSegs): each part whole, and no line starts or ends on
     // a "·" ("12 people · / Approval opens Mon, Nov 23" left the dot at the end of the first line).
-    const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null].map(part=>part?part.replace(/ /g,'\u00a0'):part):[rangeText(period)]}/>;
+    // G52 (Nov 23, 2026): a part keeps its date whole (BSegs' keepWhole) but is no longer one unbreakable run, so at 200%
+    // text on a 320px phone "Approval opens Mon, Nov 30" wraps after "opens" instead of running off the screen. A part
+    // still moves to the next line whole whenever it fits there.
+    const subtitle=<BSegs parts={ready?[rangeText(period),`${cards.length} ${cards.length===1?'person':'people'}`,folded&&cards.length?`Approval opens ${approveFrom(period)}`:null]:[rangeText(period)]}/>;
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
@@ -797,7 +800,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               // Premium pass FA (final verification A #25, B #31): the breaks fitted on some rows and were left out of others by
               // an invisible rule, so a phone row says its status only; the breaks are in the row's sheet and the wide table.
               const parts=[tone||liveDot?null:row.text].filter(Boolean) as string[];
-              return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,isOwn(item)?'You':null,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
+              // G47 (Nov 23, 2026): the row is named by what it shows (name, "You", status, hours), never a label that
+              // rewrites it; the face's initials are aria-hidden.
+              return <BRow key={id} onClick={()=>setOpenId(id)} lead={<BAvatar name={name}/>}
                 title={name} chip={isOwn(item)?youChip:undefined}
                 sub={tone||liveDot||parts.length?<span className="c-tc-sub">{tone?<BChip tone={tone}>{NARROW_STATUS[row.text]?<><span className="c-tc-chip-full">{row.text}</span><span className="c-tc-chip-short" aria-hidden="true">{NARROW_STATUS[row.text]}</span></>:row.text}</BChip>:liveDot?<BStatusText dot={liveDot}>{row.text}</BStatusText>:null}{parts.map((part,index)=><span key={part}>{index||tone||liveDot?' · ':''}{part}</span>)}</span>:undefined}
                 end={hours?<b className="c-num c-tc-hours">{hours}</b>:undefined} chevron/>;
@@ -833,7 +838,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               return <li key={id} id={`timecard-${id}`} tabIndex={-1}>{picking?<label className="c-row c-tc-pick" data-off={pickDisabled(item)||undefined}>
                 <input type="checkbox" className="c-tc-box" aria-label={`Select ${name}`} title={exclusionShort(item)??undefined} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/>
                 <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span>{excluded??row.text}</span></span></span>{hours?<span className="c-row__value"><CorpDuration>{hours}</CorpDuration></span>:null}
-              </label>:<button type="button" className="c-row" onClick={()=>setOpenId(id)} aria-label={[name,row.text,hours].filter(Boolean).join(', ')}>
+              </label>:<button type="button" className="c-row" onClick={()=>setOpenId(id)}>
                 <CorpAvatar name={name} initials={initialsOf(name)}/>
                 <span className="c-row__main"><span className="c-row__title c-row__title--b">{name}</span><span className="c-row__detail"><span><span className="c-tc-cue" data-act={row.act||undefined}>{row.text}</span></span></span></span>
                 {hours?<span className="c-row__value"><CorpDuration>{hours}</CorpDuration></span>:null}

@@ -472,6 +472,25 @@ it('phone: the tile names the step under way, the steps are said once and a fina
  expect(after).toContain('Every timecard for Sep 21–27 is finalized.');expect(after).not.toContain('Approve each timecard');
 });
 
+// G47 (Nov 23, 2026): a Team row on a phone is named by what it shows. No aria-label rewrites it ("Ana Colon, No time
+// yet" over a row that also drew the face's initials failed axe's label-content-name-mismatch on 12 rows); the initials
+// stay aria-hidden, so the spoken name starts with the person's name, then "You", the status and the hours.
+it('phone (G47): each Team row is named by its visible words, with no label that rewrites them',async()=>{
+ phoneWindow();rs.stubGlobal('fetch',async()=>Response.json({...ready(),cards:[worked('E1',8*60+6),card('E2'),card('OWNER')]}));await mountAll();
+ const markup=html();
+ const rows=[...markup.matchAll(/<button type="button" class="(?:b-row b-row--link|c-row)"([^>]*)>([\s\S]*?)<\/button>/g)];
+ expect(rows.length).toBeGreaterThanOrEqual(3);
+ for(const [,attrs] of rows)expect(attrs).not.toContain('aria-label');
+ const spoken=(inner:string)=>inner.replace(/<span[^>]*aria-hidden="true"[^>]*>[^<]*<\/span>/g,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+ const team=rows.filter(([,,inner])=>inner.includes('b-row__tt')).map(([,,inner])=>spoken(inner));
+ expect(team).toHaveLength(3);
+ expect(team).toContain('PRIVATE E2 No time yet');
+ expect(team.find(name=>name.startsWith('PRIVATE OWNER'))).toBe('PRIVATE OWNER You No time yet');
+ expect(team.find(name=>name.startsWith('PRIVATE E1'))).toMatch(/^PRIVATE E1 .+ 8 h 06$/);
+ // The initials are drawn but never spoken.
+ expect(markup).toMatch(/<span class="b-av"[^>]*aria-hidden="true">PE<\/span>/);
+});
+
 it('after an approval the reviewer moves on when they choose: Next timecard, never on a timer (Jose, Nov 15, 2026)',async()=>{
  transport();await mount();openFirstSheet();
  const focus=rs.fn();
