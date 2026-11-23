@@ -94,27 +94,27 @@ grants except where noted; the company-wide Manager was Elena without grants.
 
 | # | Page | Was → on screen |
 |---|---|---|
-| B4 | Things to do (manager inbox) | Mℓ: ✓ → n (notice); Mℓ ✓ (Jose, Nov 23) |
-| B6 | Updates (messages) | Mℓ: ✓* → n (notice); M O ✓ (Jose, Nov 23) |
-| B7 | Update detail | Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
-| B8 | Compose an update | Mℓ: ✓ → n (notice); L: – → ✓ (opens); E: – → ✓ (opens); ✓ (Jose, Nov 23) |
-| C3 | Find cover: Review replacement | Mℓ: – → n (notice); ✓ (Jose, Nov 23) |
-| C7 | Templates (copy a week) | Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
-| C8 | Copy receipt | Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
-| C9 | Scheduling rules | Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
-| C10 | Availability | Mℓ: ✓* → n (notice); M ✓ (Jose, Nov 23) |
-| C11 | Availability agreement | O: ✓ → → (redirects); M: ✓ → → (redirects); Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
+| B4 | Things to do (manager inbox) | Mℓ: ✓ → n (notice) |
+| B6 | Updates (messages) | Mℓ: ✓* → n (notice) |
+| B7 | Update detail | Mℓ: ✓ → n (notice) |
+| B8 | Compose an update | Mℓ: ✓ → n (notice); L: – → ✓ (opens); E: – → ✓ (opens) |
+| C3 | Find cover: Review replacement | Mℓ: – → n (notice) |
+| C7 | Templates (copy a week) | Mℓ: ✓ → n (notice) |
+| C8 | Copy receipt | Mℓ: ✓ → n (notice) |
+| C9 | Scheduling rules | Mℓ: ✓ → n (notice) |
+| C10 | Availability | Mℓ: ✓* → n (notice) |
+| C11 | Availability agreement | O: ✓ → → (redirects); M: ✓ → → (redirects); Mℓ: ✓ → n (notice) |
 | C12 | Shift changes (swaps and call-outs) | Mℓ: ✓* → n (notice) |
-| C13 | Open shifts | Mℓ: ✓* → n (notice); E L M O ✓ (Jose, Nov 23) |
-| C14 | Ask for a swap | Mℓ: – → n (notice); ✓ (Jose, Nov 23) |
-| C15 | Can't work (call out) | Mℓ: – → n (notice); ✓ (Jose, Nov 23) |
-| D1 | Timecards | Mℓ: ✓* → n (notice); L: ✓* → → (redirects); E: ✓* → → (redirects); M O ✓ (Jose, Nov 23) |
-| D3 | Fix someone's time (delegated correction) | Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
-| E1 | Time off | Mℓ: ✓* → n (notice); O ✓ (Jose, Nov 23) |
-| F2 | Add person | Mℓ: – → n (notice); ✓ (Jose, Nov 23) |
+| C13 | Open shifts | Mℓ: ✓* → n (notice) |
+| C14 | Ask for a swap | Mℓ: – → n (notice) |
+| C15 | Can't work (call out) | Mℓ: – → n (notice) |
+| D1 | Timecards | Mℓ: ✓* → n (notice); L: ✓* → → (redirects); E: ✓* → → (redirects) |
+| D3 | Fix someone's time (delegated correction) | Mℓ: ✓ → n (notice) |
+| E1 | Time off | Mℓ: ✓* → n (notice) |
+| F2 | Add person | Mℓ: – → n (notice) |
 | F3 | Import a staff list | O: ✓ → n (notice) |
-| F4 | Person (profile, role, access) | Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
-| F6 | When they can be scheduled (restrictions) | Mℓ: ✓ → n (notice); ✓ (Jose, Nov 23) |
+| F4 | Person (profile, role, access) | Mℓ: ✓ → n (notice) |
+| F6 | When they can be scheduled (restrictions) | Mℓ: ✓ → n (notice) |
 | F9 | Help someone sign in | Mℓ: – → n (notice) |
 | G1 | Payroll | M: ✓ → n (notice); Mℓ: ✓ → n (notice); L: – → n (notice); E: – → n (notice) |
 | G2 | Prepare payroll | M: ✓ → n (notice); Mℓ: ✓ → n (notice) |
@@ -128,8 +128,8 @@ grants except where noted; the company-wide Manager was Elena without grants.
 | G10 | My pay (statements) | Mℓ: – → ✓ (opens) |
 | H5 | Insights | Mℓ: ✓ → n (notice) |
 | H6 | Christmas bonus | Mℓ: ✓ → n (notice) |
-| I2 | Policy document | O: ✓ → → (redirects); M: ✓ → → (redirects); Mℓ: ✓ → → (redirects); ✓ (Jose, Nov 23) |
-| I6 | Delete my account | M: – → ✓ (opens); Mℓ: – → ✓ (opens); ✓ (Jose, Nov 23) |
+| I2 | Policy document | O: ✓ → → (redirects); M: ✓ → → (redirects); Mℓ: ✓ → → (redirects) |
+| I6 | Delete my account | M: – → ✓ (opens); Mℓ: – → ✓ (opens) |
 
 Not corrected: rows where the outcome depends on a grant or a module the sweep didn't turn on (C5, C6, C13, D2, E1
 without grants; H1–H4 with Rondo AI off; I4 Device alerts and I5 Passkeys, which redirect to Profile or show a notice when their switches are off; C11 failing for the Lead), and B10/B11,
@@ -292,27 +292,27 @@ route with these screens (DESIGN.MD "Clocker Direction B"; English and Spanish).
 
 | # | Screen | Built with | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|
-| K1 | Tablet setup: not connected / enter setup code | Own (Clocker setup) | Redeem the Owner's code | B 119w 3b | ✓ (Jose, Nov 23) |
-| K2 | Tablet connected (ready) | Own |  | B 51w 3b | ✓ (Jose, Nov 23) |
+| K1 | Tablet setup: not connected / enter setup code | Own (Clocker setup) | Redeem the Owner's code | B 119w 3b | ☐ |
+| K2 | Tablet connected (ready) | Own |  | B 51w 3b | ☐ |
 | K3 | Enter Employee ID | Own |  | B 51w 3b | ☐ |
-| K4 | PIN keypad | Own | Masked | B 66w 3b | ✓ (Jose, Nov 23) |
-| K5 | Choose an action (clock in / out, break) | Own |  | B 78w 4b | ✓ (Jose, Nov 23) |
-| K6 | Choose a break (rest or meal) | Own |  | B 66w 4b | ✓ (Jose, Nov 23) |
-| K7 | Confirm clock out | Own |  | B 75w 3b | ✓ (Jose, Nov 23) |
-| K8 | Photo (camera, local preview) | Own | When photos are on | B 74w 2b (dev build) | ✓ (Jose, Nov 23) |
-| K9 | Review the current punch | Own |  | B 82w 4b (dev build) | ✓ (Jose, Nov 23) |
-| K10 | Sending | Own |  | B 46w 1b | ✓ (Jose, Nov 23) |
-| K11 | Recorded (receipt) | Own |  | B 73w 2b · clock-out receipt: B 62w 2b (dev build) | ✓ (Jose, Nov 23) |
-| K12 | Not confirmed / check status (recovery and retry) | Own | Lost reply | B 65w 3b (dev build) | ✓ (Jose, Nov 23) |
+| K4 | PIN keypad | Own | Masked | B 66w 3b | ☐ |
+| K5 | Choose an action (clock in / out, break) | Own |  | B 78w 4b | ☐ |
+| K6 | Choose a break (rest or meal) | Own |  | B 66w 4b | ☐ |
+| K7 | Confirm clock out | Own |  | B 75w 3b | ☐ |
+| K8 | Photo (camera, local preview) | Own | When photos are on | B 74w 2b (dev build) | ☐ |
+| K9 | Review the current punch | Own |  | B 82w 4b (dev build) | ☐ |
+| K10 | Sending | Own |  | B 46w 1b | ☐ |
+| K11 | Recorded (receipt) | Own |  | B 73w 2b · clock-out receipt: B 62w 2b (dev build) | ☐ |
+| K12 | Not confirmed / check status (recovery and retry) | Own | Lost reply | B 65w 3b (dev build) | ☐ |
 | K13 | Someone else's punch in progress | Own |  | B 60w 2b (dev build) | ☐ |
-| K14 | Sign-in / access changed; unavailable; storage problem | Own | Error states | B 58w 2b (dev build) | ✓ (Jose, Nov 23) |
+| K14 | Sign-in / access changed; unavailable; storage problem | Own | Error states | B 58w 2b (dev build) | ☐ |
 | K15 | Clocker paused | Own | `/clocker/access/paused` | B 49w 1b | ☐ |
 
 ## L. Phone app (native)
 
 | # | Screen | Where | Notes | On screen | Reviewed |
 |---|---|---|---|---|---|
-| L1 | Alerts (device notifications on/off) | `native/capability-ui` | States: off, asking, on, blocked; the rest of the phone app shows the web pages above | E B 84w 2b | ✓ (Jose, Nov 23) |
+| L1 | Alerts (device notifications on/off) | `native/capability-ui` | States: off, asking, on, blocked; the rest of the phone app shows the web pages above | E B 84w 2b | ☐ |
 
 ## M. Development only (not shipped)
 
