@@ -790,3 +790,11 @@ body { --nv-rem: 1rem; }
 @layer nv-b {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub .b-explain > summary:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { z-index: 2 !important; }
 }
+
+/* Dev integration B, leftover (Nov 23): with this week's draft already holding shifts, "Start from" opens closed. Its content
+ * (the build controls and "What this measures") isn't drawn, focusable or hit-testable, but the browser still reports its
+ * geometry, so a reach probe found a 36px summary "under" the Publish form. Closed, that content now takes no layout, so it
+ * measures 0x0 like any hidden content. Nothing drawn changes, and opening "Start from" shows it as before. */
+@layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub details.c-pub__start:not([open]) > :not(summary):not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { display: none !important; }
+}
