@@ -1,0 +1,56 @@
+[
+ {
+  "id": "j8-owner",
+  "row": "J8",
+  "page": "Positions",
+  "section": "Settings",
+  "note": "Positions now uses the shared Settings frame: an Active card with the Add row, an Archived card, and one dialog to rename or archive.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "j8-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "j8-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "j8-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit fixed px text at 200% (band title, row values, field labels, buttons)",
+   "Band back link 96x32 at 768 and 1440"
+  ]
+ },
+ {
+  "id": "j9-owner",
+  "row": "J9",
+  "page": "Break types",
+  "section": "Settings",
+  "note": "Break types now uses the shared Settings frame with Active and Archived cards; every approved break sentence is unchanged.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "j9-owner-390.webp"
+   },
+   {
+    "label": "Tablet",
+    "after": "j9-owner-768.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "j9-owner-1440.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "Kit fixed px text at 200% (band title, row values, field labels, buttons)",
+   "Band back link 96x32 at 768 and 1440"
+  ]
+ }
+]
