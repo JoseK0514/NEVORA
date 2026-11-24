@@ -50,7 +50,15 @@
     /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible count (teal: a
      * count is not an alarm; Phase 3, OW-028 and MG-006). */
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.96) !important; -webkit-backdrop-filter: blur(24px) saturate(1.4) !important; backdrop-filter: blur(24px) saturate(1.4) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
-    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: var(--b-space-8) !important; color: var(--b-grey) !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: var(--b-space-8) !important; color: var(--b-grey) !important; font: 500 min(0.65625rem, 13px)/min(0.8125rem, 16px) Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    /* Final fixes K (release follow-ups, Nov 24): the labels are rem (10.5/13px at the default size) and grow with the
+     * reader's text up to 13/16px. A tab is 64px wide at 320 and a one-word label ("Schedule", "Requests") can't wrap, so
+     * it stops where the widest still fits, as a tab bar's labels do (Apple HIG). Once text is enlarged a label may take two
+     * lines and the bar grows with it: nothing is cut. */
+    @container not style(--nv-rem: 16px) {
+      html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link:not(#tb1):not(#tb2) { height: auto !important; min-height: 56px !important; padding-bottom: var(--b-space-4) !important; }
+      html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link:not(#tb1):not(#tb2) > span:not(.b-tab-badge) { max-width: 100% !important; white-space: normal !important; text-align: center !important; overflow: visible !important; text-overflow: clip !important; }
+    }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link::before { content: "" !important; display: block !important; position: absolute !important; top: 5px !important; left: 50% !important; width: 56px !important; height: 30px !important; margin-left: -28px !important; border-radius: var(--b-radius-pill) !important; background: transparent !important; z-index: 0 !important; }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active::before { background: var(--b-teal-50) !important; }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link > :not(.b-tab-badge) { position: relative !important; z-index: 1 !important; }
