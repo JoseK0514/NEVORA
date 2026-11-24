@@ -6,7 +6,7 @@ import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope,isOperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
-import {createTimeOffRequest,reviewTimeOffRequest,withdrawTimeOffRequest,getTimeOffRequest} from '../../lib/data/requests';
+import {createTimeOffRequest,reviewTimeOffRequest,withdrawTimeOffRequest,getTimeOffRequest,listWorkforceLeave} from '../../lib/data/requests';
 import {commitRequestTransition,requestSnapshot} from '../../lib/data/request-notifications';
 import {withdrawalIdentity} from '../../lib/time-off-withdrawal';
 const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
@@ -37,6 +37,22 @@ async function close(f:Fixture){ctx.ex=null;ctx.proof=null;await f.db.dispose();
 const command=(f:Fixture,p=f.manager,id=f.requestId)=>({requestId:id,managerId:p.employee.id,proof:p,status:'APPROVED' as const});
 async function snapshot(f:Fixture){return f.q(`SELECT jsonb_build_object('requests',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM time_off_requests t),'notifications',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM notifications t),'deliveries',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM push_deliveries t)) AS state`);}
 async function denied(work:()=>Promise<unknown>){let error:unknown;try{await work();}catch(e){error=e;}expect(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error)).toBe(true);}
+it('lists local waiting requests while withholding a request captured for another location too',async()=>{
+ const f=await setup();try{
+  await choose(f,'LOCATIONS');
+  expect(await listWorkforceLeave(f.manager,'PENDING',f.db.executor))
+   .toMatchObject({state:'ready',data:[],coverage:{kind:'LOCATIONS',locationIds:['loc-1']}});
+  await f.q("DELETE FROM employee_location_eligibility WHERE employee_id='target' AND location_id='loc-2'");
+  const local=randomUUID();
+  await createTimeOffRequest({requestId:local,employeeId:'target',proof:f.employee,startDate:'2030-10-23',endDate:'2030-10-23',reason:'Local request'},f.db.executor);
+  const scoped=await listWorkforceLeave(f.manager,'PENDING',f.db.executor);
+  expect(scoped.state==='ready'&&scoped.data.map(request=>request.id)).toEqual([local]);
+  const owner=await listWorkforceLeave(f.owner,'PENDING',f.db.executor);
+  expect(owner.state==='ready'&&owner.data.map(request=>request.id)).toEqual([f.requestId,local]);
+  await expect(reviewTimeOffRequest(command(f),f.db.executor)).rejects.toMatchObject({reason:'leave_scope'});
+  expect(await reviewTimeOffRequest(command(f,f.manager,local),f.db.executor)).toBe(true);
+ }finally{await close(f);}
+});
 it.each(['pending','absent','terminal'] as const)('team review denies selected-location access before reading a private %s request',async kind=>{
  const f=await setup();try{
   if(kind==='terminal')expect(await reviewTimeOffRequest(command(f),f.db.executor)).toBe(true);await choose(f,'LOCATIONS');const before=await snapshot(f);let read=false;const base=f.db.executor,ex={...base,query:async<T>(s:SqlStatement,signal?:AbortSignal)=>{if(s.text.includes('SELECT * FROM time_off_requests WHERE id='))read=true;return base.query<T>(s,signal);}};

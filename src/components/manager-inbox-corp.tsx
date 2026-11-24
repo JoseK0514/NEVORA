@@ -297,7 +297,7 @@ export const toDoSentence = (n: number, exact = true, lang: PortalLang = "en") =
 const groupCount = (group: Group) => group.count ?? group.rows.length;
 
 export function ManagerInboxCorp({ weekStart, actorId, timeZone, coverageFirst = false, view = "today", scoped = false }: { weekStart: string; actorId: string; timeZone: string; coverageFirst?: boolean; view?: "today" | "more"; scoped?: boolean }) {
-  const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId, true);
+  const { snapshot, connection, refresh } = useActionCenter(weekStart, actorId, true, scoped);
   const { snapshot: today, refresh: refreshToday } = useToday();
   return <ThingsToDoPage snapshot={snapshot} today={today} connection={connection} onRefresh={() => { refresh(); refreshToday(); }} timeZone={timeZone} coverageFirst={coverageFirst} view={view} scoped={scoped} />;
 }

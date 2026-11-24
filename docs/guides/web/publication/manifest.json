@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-23",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "4597febf3c008083c7b090896b72ebe6dc3b3225",
-  "applicationHash": "028c720f80c91b4474bfb803332caaec10be2bf3fd4a63580db9790a110d1bc4",
+  "sourceSha": "80663281ea3bb0e8aedf98521c9c5e04cde3a4e7",
+  "applicationHash": "6940d467fefc55b15479ee15901866bf53a22530f90f00f74b3cd1ee4cab84a2",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "d0367bb2633dd3849874a9d721f29d13ed6de255f92794be5b0cf55ed192de1a"
@@ -212,7 +212,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "8a9cac6fc1a30740fb8d95105fcca34d8afede5b008211aa54600123c7c823e4",
+        "sha256": "f2a52dcd2c217e87ffaaa26dbd5f967e2faebf352f648954f337db00f226f927",
         "pageCount": 7
       }
     },
@@ -322,7 +322,7 @@
         },
         {
           "path": "src/lib/company-access/employee-profile.server.ts",
-          "sha256": "f7eb3d9be9a4a5090bec9acb3ec14c1bbac88359de0bf5a3e0f865d6e0e8b51a"
+          "sha256": "d1c2f26becfdc6639ab32ae0f285a7550422104b177370f8976f33001f1232e0"
         },
         {
           "path": "src/app/app/reports/christmas-bonus/page.tsx",
@@ -335,7 +335,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "3ca59f469d4acdeab94e7d14387ca3430463903176b6c4a630c622fe8e3db34b",
+        "sha256": "bfad8b0f5a87b8f116cf3b2f8743c761e12c4a026122016ba237697f2102db36",
         "pageCount": 4
       }
     },
@@ -454,7 +454,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "e4b929915add698f0dd9d1263344e467a9bd637cf5bc79ba4d469d2f47b4441e",
+        "sha256": "f04b277abd532120c3a4503074d7746ee20a5ba90bf4dd6cfc4fe2ddae23afd8",
         "pageCount": 3
       }
     },
@@ -629,7 +629,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "ca060323af59a588c4339fd65505f5c66967e0bcc9e45316c1704716f2c3ba37",
+        "sha256": "171465f3d991436f55ba323ca56eada150f78755e409977e63a8e73b241f4487",
         "pageCount": 5
       }
     },
@@ -892,7 +892,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "10e76e2fc824110b9470e53ae2cf0aed83a189c5d42ab2a9fcde8ae21d5201d5",
+        "sha256": "ed2315f5a4be8b302e71cbdec89a484c9a9d5b37cedb3f7a83c6ca595b0f6dac",
         "pageCount": 7
       }
     },
@@ -1087,7 +1087,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "0df415453efe34f8a8386fd0ecc87fd392ba0840fa47134165fbebd77b334287",
+        "sha256": "cc17c41c68fc8c29fc3f44247d54884acb40cbbc91fcb99a7083f62c256a3c4c",
         "pageCount": 7
       }
     }

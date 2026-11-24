@@ -121,6 +121,8 @@ const en = {
   approvedTitle: "Time off approved", approvedLine: "The person can see it in Time off.",
   declinedTitle: "Time off declined", declinedLine: "The person can see it in Time off.",
   savedTitle: "Decision saved", nothingWaiting: "Nothing else is waiting.",
+  noReviewableRequests: "No requests you can review",
+  scopedReviewDetail: "An Owner can review requests outside your approval permissions.",
 };
 export type PtoCopy = typeof en;
 
@@ -230,6 +232,8 @@ const es: PtoCopy = {
   approvedTitle: "Días libres aprobados", approvedLine: "La persona lo ve en Días libres.",
   declinedTitle: "Días libres rechazados", declinedLine: "La persona lo ve en Días libres.",
   savedTitle: "Decisión guardada", nothingWaiting: "No hay nada más en espera.",
+  noReviewableRequests: "No hay solicitudes que puedas revisar",
+  scopedReviewDetail: "Un dueño puede revisar las solicitudes que quedan fuera de tus permisos de aprobación.",
 };
 
 export const ptoCopy = (lang: PtoLang): PtoCopy => lang === "es" ? es : en;
