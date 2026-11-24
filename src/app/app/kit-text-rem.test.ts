@@ -192,3 +192,15 @@ describe('release follow-ups (Nov 24)', () => {
     expect(css('app/app/b-foundation.css')).toContain('font-size: var(--b-fs-caption) !important; line-height: 1rem !important; font-weight: 600 !important; }');
   });
 });
+
+describe('desktop back link reach (Nov 24)', () => {
+  it("a quiet page's back link is relative from 768px at every pointer, so its 44px ::after is placed on it", () => {
+    const shell = css('app/app/owner-b-shell.css');
+    const rule = ':is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame .q-nav > .q-nav__l { position: relative !important; inset: auto !important; }';
+    const at = shell.indexOf(rule);
+    expect(at).toBeGreaterThan(0);
+    // In a plain min-width: 768px block, not the (pointer: coarse) one.
+    expect(shell.lastIndexOf('@media', at)).toBe(shell.lastIndexOf('@media (min-width: 768px) {', at));
+    expect(css('app/app/owner-b-pages.css')).toContain('.q-nav > .q-nav__l:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after { content: "" !important; display: block !important; position: absolute !important; top: min(0px, calc(50% - 22px))');
+  });
+});

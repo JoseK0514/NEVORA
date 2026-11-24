@@ -145,6 +145,13 @@
    * week arrows (32px) and its Add shift pill (42px), a form's back link (32px) and the Decline and Approve pair in the
    * request lists (40px). Underline tabs (.c-tabs, .c-tc-tabs), card-header links (.b-card__a) and a card's lone
    * link already measure 44px here (b-foundation.css, owner-b.css), and the segments have their own 44px hit area. */
+  /* Release follow-ups (Nov 24): with a mouse, a quiet page's back link from 768px ("‹ Things to do" over the time-off
+   * list) stayed static, so its 44px ::after (owner-b-pages.css, target size) was placed against an ancestor and a press
+   * just above the 32px link landed on the page frame. It is made relative at every pointer, as the touch rule below
+   * does; inset auto keeps it where the static link was drawn. */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame .q-nav > .q-nav__l { position: relative !important; inset: auto !important; }
+  }
   @media (min-width: 768px) and (pointer: coarse) {
     /* Phase 8 (Nov 17, 2026): a control that the frame places absolutely (the band action of a Quiet page with a title,
      * New update) stays absolute (an absolute box holds its ::after too), and a back link made relative here drops the
