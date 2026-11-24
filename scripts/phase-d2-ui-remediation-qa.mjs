@@ -256,8 +256,11 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    await mp.waitForFunction(n=>document.querySelectorAll('.manager-correction-row').length===n,1-i);
   }
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
-  await mp.reload({waitUntil:'networkidle'});
-  await mp.getByText('Nothing to fix',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
+  const emptyPage=await owner.newPage();emptyPage.setDefaultTimeout(15000);
+  try{
+   await emptyPage.goto(app.url+'/app/timecards/corrections',{waitUntil:'networkidle'});
+   await emptyPage.getByText('Nothing to fix',{exact:true}).waitFor();await shots(emptyPage,'.manager-corrections','confirmed-empty');
+  }finally{await emptyPage.close();}
   observations.keyboard.push({decisions:'two declines activated with Enter'});
   stage='completed-history';await ep.goto(app.url+'/app/my-time?view=corrections&filter=decided',{waitUntil:'networkidle'});await hoursPage(ep,'corrections').getByRole('list',{name:'Decisions',exact:true}).getByText('Declined',{exact:true}).first().waitFor();await employeeShots('.c-hours','completed-history');
   // Restore only this disposable version mutation to compare untouched raw evidence.
