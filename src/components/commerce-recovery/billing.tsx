@@ -73,11 +73,13 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled,timeZone}: {l
   {failed?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{t.failed}</p>:null}
   <div className={styles.actions}>
    {notice?.contact?<a className={styles.action} href={`mailto:${supportEmail}`}>{contactLabel(lang)}</a>:null}
+   {/* J18 (Nov 24, 2026): when the status can't be read, Refresh is the filled button and comes first, above the outlined
+     * Open billing, as the filled button does in every other state. */}
+   {state.phase==='unavailable'?<button className={styles.action} type="button" disabled={opening} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
    {state.phase!=='denied'?<button className={notice?.contact||state.phase==='unavailable'?styles.secondary:styles.action} type="button" disabled={opening||state.phase==='loading'} onClick={()=>void openBilling()}>{opening?t.opening:t.billing}</button>:null}
    {/* Phase 2 (Nov 23, 2026): the text links stand one per line, centred, so none wraps beside another at 200% text. */}
    {/* Phase 5 (Nov 17, 2026): one filled button per state. Refresh is that button only when the status could not be
      * read; otherwise it and the ways out of this page are text links, as the links under the sign-in card. */}
-   {state.phase==='unavailable'?<button className={styles.action} type="button" disabled={opening} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
    {state.phase!=='unavailable'||status?.operational||payrollEnabled?<div className={`${styles.links} ${styles.linksStack}`}>
     {state.phase!=='unavailable'?<button className={styles.quiet} type="button" disabled={opening||state.phase==='loading'} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
     {status?.operational?<Link className={styles.quiet} href="/app" prefetch={false}>{t.back}</Link>:null}
