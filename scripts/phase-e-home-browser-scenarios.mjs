@@ -233,7 +233,13 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,'loc-1',$2,'DRAFT','QAOWNER') ON CONFLICT(location_id,week_start) DO NOTHING",['home-current-'+clock.week,clock.week]);
  const [schedule]=await q("SELECT id FROM schedules WHERE location_id='loc-1' AND week_start=$1",[clock.week]);
  await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,$2,$3,$4,$5,$6)",[label+'-ongoing',schedule.id,actor,clock.day,clock.start,clock.finish]);
- await publishScheduleWithRevision({locationId:'loc-1',weekStart:clock.week,managerId:'QAOWNER'},app.database.executor);
+ const [homeClock]=await q('SELECT clock_timestamp()::text AS "observedAt"');
+ details.initialPublicationWeeks=[...new Set([clock.week,ownedBusinessWeek(homeClock.observedAt)])];
+ for(const weekStart of details.initialPublicationWeeks){
+  await ensureSchedule({locationId:'loc-1',weekStart,createdBy:'QAOWNER'},app.database.executor);
+  const publication=await publishScheduleWithRevision({locationId:'loc-1',weekStart,managerId:'QAOWNER'},app.database.executor);
+  assert.equal(publication.published,true,'Initial Home fixture requires actual current-week publication');
+ }
  await q("INSERT INTO clocker_devices(id,location_id,name) VALUES($1,'loc-1','Fictional Home device')",[label+'-device']);
  await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES($1,$2,'loc-1',$3,clock_timestamp()-interval '20 minutes','CLOCKED_IN')",[label+'-time',actor,label+'-device']);
  stage='loading';const loading=gate('**/api/employee/home');await page.route(loading.path,loading.handler);await login(page,actor,{waitForIdle:false});await loading.seen;
@@ -557,7 +563,31 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  await login(page,clearActor);await ready();await allSet().waitFor();assert.equal(await page.locator('[data-home-state="ready"]').count(),1);assert.equal(await items().count(),0);assert.equal(await todo().count(),0);await shot('all-set');
  const clearApi=await page.evaluate(async binding=>{const r=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return r.json();},binding);assert.equal(clearApi.allSet,true);assert.equal(clearApi.snapshot.publicationState,'complete');for(const source of Object.values(clearApi.snapshot.sources))assert.equal(source.state,'complete');
  checks.push('H15 actual new eligible account has no historical communication grants; all six canonical sources/publication complete and zero items yield exact all-set copy');
- if(width===390){stage='communication-source-failure';const blocker=new Client({connectionString:app.database.connectionString});await blocker.connect();try{await blocker.query('BEGIN');await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');await refresh();await todo().locator('a[href="/app/updates"]').filter({hasText:'Couldn’t be checked'}).waitFor();assert.equal(await allSet().count(),0);await shot('communications-unavailable');await blocker.query('COMMIT');await refresh();await allSet().waitFor();checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');}finally{await blocker.query('ROLLBACK');await blocker.end();}}
+ if(width===390){
+  stage='communication-source-failure';
+  const blocker=new Client({connectionString:app.database.connectionString});
+  await blocker.connect();
+  try{
+   await blocker.query('BEGIN');
+   await blocker.query('LOCK TABLE communications IN ACCESS EXCLUSIVE MODE');
+   await refresh();
+   await todo().locator('a[href="/app/updates"]').filter({hasText:'Couldn’t be checked'}).waitFor();
+   assert.equal(await allSet().count(),0);
+   await shot('communications-unavailable');
+   await blocker.query('COMMIT');
+   const [recoveryClock]=await q('SELECT clock_timestamp()::text AS "observedAt"');
+   const recoveryWeek=ownedBusinessWeek(recoveryClock.observedAt);
+   if(recoveryWeek!==ownedBusinessWeek(clearApi.snapshot.observedAt)){
+    await ensureSchedule({locationId:'loc-1',weekStart:recoveryWeek,createdBy:'QAOWNER'},app.database.executor);
+    const publication=await publishScheduleWithRevision({locationId:'loc-1',weekStart:recoveryWeek,managerId:'QAOWNER'},app.database.executor);
+    assert.equal(publication.published,true,'Rollover recovery requires actual current-week publication');
+    details.recoveryPublicationWeek=recoveryWeek;
+   }
+   await refresh();
+   await allSet().waitFor();
+   checks.push('H16 actual communication SQL lock failure suppresses all-clear and Retry restores current complete zero source');
+  }finally{await blocker.query('ROLLBACK');await blocker.end();}
+ }
  stage='axe-diagnostic';await page.addScriptTag({path:axeFile});details.axe=await page.evaluate(async()=>{const result=await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}});return result.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>({target:n.target.map(t=>String(t).replace(/\[[^\]]*\]/g,'[attribute]')),contrast:n.any.filter(a=>a.id==='color-contrast').map(a=>({ratio:a.data?.contrastRatio,foreground:a.data?.fgColor,background:a.data?.bgColor}))}))}));});assert.deepEqual(details.axe,[]);
  details.runtimeErrors=runtimeErrors;assert.deepEqual(runtimeErrors,[]);details.html=await page.locator('.employee-home').innerHTML();await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-checks.json`),JSON.stringify(details,null,2));return {checks};
  }catch(error){details.failedStage=stage;details.failure={name:error.name,code:error.code??null,message:'Browser step failed; see named stage and source location',location:error.stack?.split('\n').find(line=>line.includes('phase-e-home-browser-scenarios.mjs'))};await shot('failure').catch(()=>{});await writeFile(join(evidenceDirectory,`home-task11-${engine}-${width}-failure.json`),JSON.stringify(details,null,2));throw error;}finally{page.off('request',notificationStart);page.off('requestfinished',notificationFinish);page.off('requestfailed',notificationFailed);page.off('pageerror',nativeError);await writeFile(join(evidenceDirectory,`home-lifecycle-${engine}-${width}-report.json`),JSON.stringify({engine,width,events:details.lifecycleTrace},null,2));await managerContext?.close();}

@@ -74,6 +74,7 @@ it("persists private goals and tasks through the real Owner app, preserves delib
         await taskEditor.getByLabel("Period end", { exact: true }).fill("2026-10-07");
         await taskEditor.getByRole("button", { name: "Save task", exact: true }).click();
         await taskEditor.waitFor({ state: "hidden" });
+        await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
         await page.reload();
         await page.getByRole("button", { name: "Add goal", exact: true }).waitFor();
         await page.getByText(goalText, { exact: true }).waitFor();

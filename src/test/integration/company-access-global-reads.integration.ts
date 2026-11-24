@@ -7,7 +7,7 @@ import {assignOperationalScope,readOwnerOperationalScope} from '../../lib/compan
 import {readAttendanceReview} from '../../lib/data/attendance-review.server';
 import {readManagerTimeCorrections} from '../../lib/data/time-corrections.server';
 import {readReports} from '../../lib/reports/service';
-import {readActionCenter} from '../../lib/action-center/service';
+import {readActionCenter,readActionCenterForCurrentScope} from '../../lib/action-center/service';
 import {readTimecards} from '../../lib/timecards/service';
 import {readAttendancePolicies} from '../../lib/business-improvements/attendance-policy/service';
 const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
@@ -86,6 +86,33 @@ const apiReads=[
 ];
 it.each(apiReads)('$name enforces Company at the actual API boundary',async test=>{
  const f=await setup();try{rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');const response=await test.run();expect(response.status).toBe(403);expect(await response.json()).toEqual({state:'unavailable',reason:test.name==='corrections GET'?'permission_required':'access_denied'});expect(response.headers.get('cache-control')).toContain('no-store');}finally{await close(f);}
+});
+it('explicit assigned action-center reads withhold global facts and stop after scope revocation',async()=>{
+ const f=await setup();try{
+  rs.stubEnv('FUEL_PORTAL_ORIGIN','http://127.0.0.1');
+  const before=await f.q('SELECT id,payload FROM attendance_policy_observations ORDER BY id');
+  const read=()=>readActionCenterForCurrentScope(f.manager,period.startDate,f.db.executor);
+  const request=()=>{
+   const input=post('/api/manager/action-center','x-nevora-action-center',{weekStart:period.startDate});
+   input.headers.set('x-nevora-action-center-scope','assigned');
+   return actionCenterPOST(input);
+  };
+  const response=await request();expect(response.status).toBe(200);
+  expect(response.headers.get('cache-control')).toContain('no-store');
+  for(const result of [await read(),await response.json()]){
+   expect(result.state).toBe('ready');
+   expect(result.validForMs).toBeGreaterThan(0);expect(result.validForMs).toBeLessThanOrEqual(15000);
+   expect(result.items).toEqual([]);
+   expect(result.counts).toEqual({total:0,scheduling:0,requests:0,timekeeping:0});
+   expect(JSON.stringify(result)).not.toContain('global-private-b');
+   expect(JSON.stringify(result)).not.toContain('global-entry-b');
+  }
+  expect(await f.q('SELECT id,payload FROM attendance_policy_observations ORDER BY id')).toEqual(before);
+  await choose(f,'REVOKE');
+  expect(await read()).toEqual({state:'unavailable',reason:'access_denied'});
+  const denied=await request();expect(denied.status).toBe(403);
+  expect(await denied.json()).toEqual({state:'unavailable',reason:'access_denied'});
+ }finally{await close(f);}
 });
 it.each(['EMPLOYEE','LEAD'] as const)('mixed timecards API preserves %s own source and canonical complete manager source stays unfiltered',async role=>{
  const f=await setup();try{

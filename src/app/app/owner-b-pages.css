@@ -742,3 +742,59 @@ body { --nv-rem: 1rem; }
 @container not style(--nv-rem: 16px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page:is(.c-team, .c-setb) :is(.c-row__title, .c-row__detail > span:first-child) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 }
+
+/* Target size, release batch (Nov 23, 2026): each control below is drawn under 44px (the sidebar links 40px tall, the bell
+ * 40px, week arrows 36px wide, "Today" 32px tall, the "…" menu 36px, Availability's Requests 42px, the publish page's Done
+ * 42px, Team's See all 41px, Apply search 42px wide, the desktop back link 32px, Home's card links 41–43px at 320). A
+ * transparent ::after makes the tap area 44px, centred: each side is min(0px, 50% - 22px), so a side that is already
+ * 44px or more doesn't grow, and the ring stays inside the gaps around it (4px between sidebar links, 10px around the
+ * bell). Nothing drawn moves. The back link isn't made relative here: on desktop it is already positioned. */
+@layer nv-b {
+    /* The tablet rail's nav scrolls vertically and clips sideways at its edge; 2px of padding that its negative margin gives
+     * back moves that edge out by the ring's 2px, so the 40px icons reach 44px wide. Nothing drawn moves. */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] aside.sidebar nav.sidebar-nav:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { box-sizing: border-box !important; width: calc(100% + 4px) !important; max-width: none !important; padding-inline: 2px !important; margin-inline: -2px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] aside.sidebar .nav-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .portal-notification-bell:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-week__today:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-actions :is(button, a):not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .eb-avail-req:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-shift__cancel:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.c-card__aside, .q-sec__aside) .c-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-search__go:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-card__a:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h),
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-row__hit:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { position: relative !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] aside.sidebar .nav-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .portal-notification-bell:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-week__today:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-sched-actions :is(button, a):not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .eb-avail-req:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-shift__cancel:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.c-card__aside, .q-sec__aside) .c-link:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-search__go:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-card__a:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-row__hit:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after,
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-nav > .q-nav__l:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after { content: "" !important; display: block !important; position: absolute !important; top: min(0px, calc(50% - 22px)) !important; bottom: min(0px, calc(50% - 22px)) !important; left: min(0px, calc(50% - 22px)) !important; right: min(0px, calc(50% - 22px)) !important; width: auto !important; height: auto !important; margin: 0 !important; translate: 0px 0px !important; transform: none !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; opacity: 0 !important; }
+}
+/* The Employee and Lead week arrows: employee-b/schedule.css centres their ring with top and left 50% and a -50% translate,
+ * and the production build keeps that translate over a later reset. So here the 44px ring is placed for that translate:
+ * top and left 50%, max(100%, 44px) square, centred on the 36px arrow. */
+@layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .b-week__arrow:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h):not(#r44i)::after { top: 50% !important; left: 50% !important; right: auto !important; bottom: auto !important; width: max(100%, 44px) !important; height: max(100%, 44px) !important; translate: -50% -50% !important; }
+}
+
+
+/* Target size, release (Nov 23): on Build and publish, "What this measures" sits between its row's text and the Publish form, which covered its centred 44px ring;
+ * the summary (already positioned for that ring) sits above them. z-index only: nothing drawn moves. */
+@layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub .b-explain > summary:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { z-index: 2 !important; }
+}
+
+/* Dev integration B, leftover (Nov 23): with this week's draft already holding shifts, "Start from" opens closed. Its content
+ * (the build controls and "What this measures") isn't drawn, focusable or hit-testable, but the browser still reports its
+ * geometry, so a reach probe found a 36px summary "under" the Publish form. Closed, that content now takes no layout, so it
+ * measures 0x0 like any hidden content. Nothing drawn changes, and opening "Start from" shows it as before. */
+@layer nv-b {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-pub details.c-pub__start:not([open]) > :not(summary):not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h) { display: none !important; }
+}

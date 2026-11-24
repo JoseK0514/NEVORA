@@ -159,7 +159,7 @@
  #mobile-access-page.q-auth .ma-card .q-fl:has(.q-in[aria-invalid="true"]) > label{color:#b42318}
  #mobile-access-page.q-auth .ma-card .q-in{height:3.5rem!important;padding:1.5rem 14px .5rem!important}
  #mobile-access-page.q-auth .ma-card .q-in::placeholder{color:transparent}
- #mobile-access-page.q-auth .ma-card .q-in:focus::placeholder{color:#8a958f}
+ #mobile-access-page.q-auth .ma-card .q-in:focus::placeholder{color:#6B7075}
  #mobile-access-page.q-auth .ma-card .q-auth__fields{gap:16px}
  #mobile-access-page.q-auth .ma-card .q-auth__form .q-btn{margin-top:20px}
  #mobile-access-page.q-auth .ma-card .ma-actions{margin-top:12px}
