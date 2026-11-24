@@ -24,6 +24,7 @@ All data is fictional, and nothing was sent or published.
 | screens-final second pass bfdd3d80 (215fe886, 2479d906 with bcd72494, d96e6831; merges 746074e3, a2617040; report) | fast-forward (it had merged staff) | bfdd3d80 |
 | es-rest second release eced81af (95d99a10, 2a196e30, 2acc7c31, 66e8160d, 772f7ae8, report) | all, no conflicts; `reports.tsx` keeps es-rondo's version plus the `reportText()` wrapping | 71d394d3 |
 | English release candidate 5c713840 (development's history, the action-center scope, legacy phones, the Manager time-off empty state, test waits) | all; the ten conflicting files take screens-final's resolutions (it merged the same candidate), which add only the candidate's fixes; the week grid's "Today, go to this week" name (WCAG 2.5.3) is restored in English and follows it in Spanish ("Hoy, ir a esta semana") | 9c02e264 |
+| English release candidate 4272b902 (billing button order, staff gap and a bilingual slow-check message; large-text and reach follow-ups) | all; one conflict in `commerce-recovery/billing.tsx`'s copy: the candidate's `slow` message, with staff's "período" kept. Whole `src` suite 16,508 passed, only `manual-publication` failing (expected until the Spanish guide rebuild) | e4e2956a2 |
 
 ### How the conflicts were settled
 
@@ -154,6 +155,9 @@ it belongs to the kit owner. The location Manager's scoped views weren't in this
 Spanish mode for them.
 
 ## Checks
+
+- Latest (e4e2956a2, after the 4272b902 merge): tsc clean, no duplicate imports, whole `src` suite 16,508 passed, 1
+  failed (`manual-publication.test.ts`, expected). The Owner Home greeting test fixes its clock (8545c61d).
 
 - Final (026a25af): tsc clean; oxlint 0 errors; whole `src` suite 16,470 passed, 1 failed (`manual-publication.test.ts`,
   expected until the Spanish release gets its own guide rebuild). Manager Home rechecked after 026a25af: no English.
