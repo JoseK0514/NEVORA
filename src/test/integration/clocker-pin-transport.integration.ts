@@ -37,7 +37,7 @@ function call(body:object,headers:Record<string,string|undefined>={},location='2
  {cookies:store,executor:db.executor,security:{production:false},key});
 }
 it('uses an HttpOnly identity cookie and returns no PIN, employee ID or proof',async()=>{
- const response=await call({action:'verify',pin:'0246'});expect(response.status).toBe(200);
+ const response=await call({action:'verify',employeeId:'pin-owner',pin:'0246'});expect(response.status).toBe(200);
  const body=await response.json();expect(body).toMatchObject({state:'verified',firstName:'Private'});
  expect(Object.keys(body).sort()).toEqual(['expiresAt','firstName','state']);
  expect(JSON.stringify(body)).not.toMatch(/0246|nev_pin|hash|pin-owner/);
@@ -48,7 +48,7 @@ it('uses an HttpOnly identity cookie and returns no PIN, employee ID or proof',a
  expect((await (await call({action:'status'})).json()).state).toBe('idle');
 });
 it.each([{Origin:'https://evil.invalid'},{'X-Nevora-Clocker':'0'},{'Content-Type':'text/plain'},{'Sec-Fetch-Site':'cross-site'}])('rejects an unsafe request before any identity or limiter write',async headers=>{
- const result=await call({action:'verify',pin:'0246'},headers);expect(result.status).toBe(403);
+ const result=await call({action:'verify',employeeId:'pin-owner',pin:'0246'},headers);expect(result.status).toBe(403);
  expect(await q('SELECT * FROM clocker_pin_sessions')).toEqual([]);expect(await q('SELECT * FROM clocker_pin_limits')).toEqual([]);
 });
 it.each([{action:'verify',pin:246},{action:'verify',pin:'0246',employeeId:'pin-owner',forged:true},{action:'verify',pin:'0246\n'},{action:'verify',pin:'x'.repeat(5000)},{action:'clear',token:'forged'}])('rejects malformed or forged bodies',async body=>{
@@ -68,24 +68,24 @@ it('accepts normalized Employee ID plus PIN and returns personal wait scope with
  expect(cookies.get('nevora_clocker_identity')).toBe('');
 });
 it('denies a missing or wrong-location device without identifying an employee',async()=>{
- expect((await call({action:'verify',pin:'0246'}, {},'110')).status).toBe(401);
- cookies.clear();expect((await call({action:'verify',pin:'0246'})).status).toBe(401);
+ expect((await call({action:'verify',employeeId:'pin-owner',pin:'0246'}, {},'110')).status).toBe(401);
+ cookies.clear();expect((await call({action:'verify',employeeId:'pin-owner',pin:'0246'})).status).toBe(401);
  expect(await q('SELECT * FROM clocker_pin_limits')).toEqual([]);
 });
 it('returns indistinguishable invalid PIN errors and a persistent 429 budget',async()=>{
- for(let n=0;n<5;n++){const r=await call({action:'verify',pin:'9999'});expect(r.status).toBe(401);expect(await r.json()).toEqual({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});}
- const r=await call({action:'verify',pin:'0246'});expect(r.status).toBe(429);expect(Number(r.headers.get('retry-after'))).toBeGreaterThan(0);
+ for(let n=0;n<5;n++){const r=await call({action:'verify',employeeId:'pin-owner',pin:'9999'});expect(r.status).toBe(401);expect(await r.json()).toEqual({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});}
+ const r=await call({action:'verify',employeeId:'pin-owner',pin:'0246'});expect(r.status).toBe(429);expect(Number(r.headers.get('retry-after'))).toBeGreaterThan(0);
 });
 it('does not expose SQL errors or return idle on a database outage',async()=>{
- await call({action:'verify',pin:'0246'});await q('ALTER TABLE clocker_pin_sessions RENAME TO failed_sessions');
+ await call({action:'verify',employeeId:'pin-owner',pin:'0246'});await q('ALTER TABLE clocker_pin_sessions RENAME TO failed_sessions');
  const response=await call({action:'status'});expect(response.status).toBe(503);
  expect(JSON.stringify(await response.json())).not.toMatch(/failed_sessions|SELECT|token|Private|0246/);
 });
 
 it('returns the database remaining wait consistently in the JSON contract and Retry-After',async()=>{
- await call({action:'verify',pin:'0246'});
- await q("UPDATE clocker_pin_limits SET failures=5,failure_window=clock_timestamp()-interval '4 minutes' WHERE scope='DEVICE'");
- const response=await call({action:'verify',pin:'0246'});const body=await response.json();
+ await call({action:'verify',employeeId:'pin-owner',pin:'0246'});
+ await q("UPDATE clocker_pin_limits SET failures=20,failure_window=clock_timestamp()-interval '4 minutes' WHERE scope='DEVICE'");
+ const response=await call({action:'verify',employeeId:'pin-owner',pin:'0246'});const body=await response.json();
  expect(response.status).toBe(429);expect(body.code).toBe('PIN_LIMITED');
  expect(body.retryAfterSeconds).toBeGreaterThanOrEqual(58);expect(body.retryAfterSeconds).toBeLessThanOrEqual(60);
  expect(response.headers.get('Retry-After')).toBe(String(body.retryAfterSeconds));
@@ -252,4 +252,15 @@ it('records one punch and one receipt through the picker at an explicitly allowe
   expect(await (await punch({ operation: 'execute', command })).json()).toEqual(committed);
   expect(await q('SELECT employee_id,location_id FROM time_entries')).toEqual([{ employee_id: 'local-a', location_id: 'loc-2' }]);
   expect(await q('SELECT count(*)::int AS n FROM clocker_command_ledger')).toEqual([{ n: 1 }]);
+});
+
+it('rejects valid PIN-only HTTP requests in both Owner modes', async () => {
+  for (const mode of ['EMPLOYEE_ID', 'NAME_PICKER']) {
+    if (mode === 'NAME_PICKER') await enablePicker();
+    const response = await call({ action: 'verify', pin: '0246' });
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ code: 'PIN_INPUT_INVALID' });
+  }
+  expect(await q('SELECT device_id FROM clocker_pin_sessions')).toEqual([]);
+  expect(await q('SELECT scope FROM clocker_pin_limits')).toEqual([]);
 });

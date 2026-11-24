@@ -21,16 +21,25 @@ it.each([
  ['location',{}, {},'invalid/key',{production:false},400,'LOCATION_INVALID'],
  ['input',{action:'verify',pin:'abc'}, {},'2',{production:false},400,'PIN_INPUT_INVALID'],
 ] as const)('PIN error %s has a stable code',async(_name,body,headers,location,security,status,code)=>{const response=await pin(body,headers,location,security);expect(response.status).toBe(status);expect(await response.json()).toMatchObject({code,error:expect.any(String)});});
+it('rejects a PIN without an identity and rejects competing identities before any verify',async()=>{
+ for(const body of [{action:'verify',pin:'0123'},{action:'verify',pin:'0123',employeeId:'c2-a',selection:'a'.repeat(64)}]){
+  const response=await pin(body);
+  expect(response.status).toBe(400);
+  expect(await response.json()).toMatchObject({code:'PIN_INPUT_INVALID'});
+ }
+ expect(mocks.authenticate).not.toHaveBeenCalled();
+ expect(mocks.verify).not.toHaveBeenCalled();
+});
 it('keeps missing-device and denied PIN responses private and coded',async()=>{
- mocks.authenticate.mockResolvedValue(null);expect(await (await pin({action:'verify',pin:'0123'})).json()).toMatchObject({state:'device_required',code:'DEVICE_REQUIRED'});
+ mocks.authenticate.mockResolvedValue(null);expect(await (await pin({action:'verify',employeeId:'c2-a',pin:'0123'})).json()).toMatchObject({state:'device_required',code:'DEVICE_REQUIRED'});
  mocks.authenticate.mockResolvedValue({proof:{}});mocks.verify.mockResolvedValue({state:'denied'});
- expect(await (await pin({action:'verify',pin:'0123'})).json()).toEqual({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});
+ expect(await (await pin({action:'verify',employeeId:'c2-a',pin:'0123'})).json()).toEqual({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});
 });
 it('returns the actual PIN wait in both body and Retry-After without restoring identity',async()=>{
  cookies.set('nevora_clocker_identity','old-proof');mocks.authenticate.mockResolvedValue({proof:{}});mocks.verify.mockResolvedValue({state:'limited',retryAfterSeconds:47});
- const response=await pin({action:'verify',pin:'0123'});expect(response.status).toBe(429);expect(response.headers.get('Retry-After')).toBe('47');expect(await response.json()).toMatchObject({state:'limited',code:'PIN_LIMITED',retryAfterSeconds:47});expect(cookies.get('nevora_clocker_identity')).toBe('');
+ const response=await pin({action:'verify',employeeId:'c2-a',pin:'0123'});expect(response.status).toBe(429);expect(response.headers.get('Retry-After')).toBe('47');expect(await response.json()).toMatchObject({state:'limited',code:'PIN_LIMITED',retryAfterSeconds:47});expect(cookies.get('nevora_clocker_identity')).toBe('');
 });
-it('returns only a stable unavailable code and existing safe message on PIN exceptions',async()=>{mocks.authenticate.mockRejectedValue(Error('private SQL'));const response=await pin({action:'verify',pin:'0123'});expect(response.status).toBe(503);expect(await response.json()).toEqual({state:'unavailable',code:'PIN_UNAVAILABLE',error:'PIN verification is unavailable. Check the connection and try again.'});});
+it('returns only a stable unavailable code and existing safe message on PIN exceptions',async()=>{mocks.authenticate.mockRejectedValue(Error('private SQL'));const response=await pin({action:'verify',employeeId:'c2-a',pin:'0123'});expect(response.status).toBe(503);expect(await response.json()).toEqual({state:'unavailable',code:'PIN_UNAVAILABLE',error:'PIN verification is unavailable. Check the connection and try again.'});});
 it('admits Employee ID plus PIN transport and returns the authoritative personal wait without identity data',async()=>{
  mocks.authenticate.mockResolvedValue({proof:{}});mocks.verify.mockResolvedValue({state:'limited',retryAfterSeconds:47,limitScope:'person'});
  const response=await pin({action:'verify',employeeId:' c2-a ',pin:'0123'});
