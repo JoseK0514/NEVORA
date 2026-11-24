@@ -23,6 +23,7 @@ All data is fictional, and nothing was sent or published.
 | es-employee second release 84e8109b (198cea83 time corrections queue and Time on the lang-aware helpers, bb17dd9e Home and Updates on the shared helpers, 04d3cae5 the queue's zone in Spanish, report) | all, no conflicts | 5eb14ec9 |
 | screens-final second pass bfdd3d80 (215fe886, 2479d906 with bcd72494, d96e6831; merges 746074e3, a2617040; report) | fast-forward (it had merged staff) | bfdd3d80 |
 | es-rest second release eced81af (95d99a10, 2a196e30, 2acc7c31, 66e8160d, 772f7ae8, report) | all, no conflicts; `reports.tsx` keeps es-rondo's version plus the `reportText()` wrapping | 71d394d3 |
+| English release candidate 5c713840 (development's history, the action-center scope, legacy phones, the Manager time-off empty state, test waits) | all; the ten conflicting files take screens-final's resolutions (it merged the same candidate), which add only the candidate's fixes; the week grid's "Today, go to this week" name (WCAG 2.5.3) is restored in English and follows it in Spanish ("Hoy, ir a esta semana") | 9c02e264 |
 
 ### How the conflicts were settled
 
@@ -91,7 +92,7 @@ They are integrated here as each lands. Jose's word decisions below wait for his
 - "Informes" for Insights (es-rest, es-rondo); the shell nav should say the same.
 - "empresa" (122 uses) or "compañía" (14, mostly in access and Home lines) for "company". The glossary in
   `docs/design/voice.md` already says **Empresa**, so the 14 "compañía" lines are the ones off the glossary.
-- "Owner" in Spanish sentences: es-rest's second release writes "dueño"; other screens keep "Owner" or "Dueño" as the
+- "Owner" in Spanish sentences: es-rest's second release and Codex's time-off copy ("Un dueño puede revisar las solicitudes…") write "dueño"; other screens keep "Owner" or "Dueño" as the
   role name (the glossary lists Owner → Dueño). One form for Jose to confirm.
 - "Novedades" became "Avisos" (es-rest), as the glossary's word for an update.
 - Insights' "D2" definition ("Actual time uses D2 canonical effective entries…") is internal wording; Jose to decide how

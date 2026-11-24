@@ -4,6 +4,7 @@ import { expect, it, rs } from '@rstest/core';
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ManagerWeeklyRoster } from "./manager-weekly-roster";
+import { ROSTER_COPY } from "./manager-weekly-roster-copy";
 import { assignedHours, filterRoster, type RosterEmployee } from "../lib/scheduling/manager-roster-presentation";
 import { weekDates } from "../lib/date-utils";
 
@@ -266,7 +267,9 @@ it("says one location once and keeps the key for a mixed week", () => {
 
 // Release sweep (Nov 23, WCAG 2.5.3): both "Today" links name themselves starting with the word they show.
 it('names the week Today links starting with their visible word', () => {
+  // Signed-in Spanish (integration): the words live in manager-weekly-roster-copy.ts; each language's name starts with
+  // the link's visible word (WCAG 2.5.3).
   const src = readFileSync(join(__dirname, 'manager-weekly-roster.tsx'), 'utf8');
-  expect(src).not.toContain('aria-label="Go to this week"');
-  expect(src.match(/aria-label="Today, go to this week">Today<\/a>/g)).toHaveLength(2);
+  expect(src.match(/aria-label=\{t\.goToThisWeek\}>\{t\.today\}<\/a>/g)).toHaveLength(2);
+  for (const lang of ['en', 'es'] as const) expect(ROSTER_COPY[lang].goToThisWeek.startsWith(ROSTER_COPY[lang].today)).toBe(true);
 });

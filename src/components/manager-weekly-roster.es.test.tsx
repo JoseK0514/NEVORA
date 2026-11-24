@@ -32,7 +32,7 @@ it("reads the week grid, its open shifts and its people in Spanish", () => {
   for (const words of ["Turnos disponibles", " esta semana", "2 disponibles", "2 turnos disponibles, mar 6 oct, 1 ya pasó", "1 turno disponible, lun 5 oct, el día ya pasó",
     "Editar el turno de Ana Colón, lun 5 oct, 10:00 p. m. a 6:00 a. m., Condado", ", termina el 6 oct", ", Publicado", ", borrador", "Todo el día",
     "4 h por encima del límite de 40 h", " · 4 h sobre 40 h", "asignadas esta semana", "1 persona · ", "Ver 1 sin turnos", ", Sin turnos esta semana",
-    "Cubierto esta semana", "aria-label=\"Semana anterior\"", "aria-label=\"Semana siguiente\"", "aria-label=\"Ir a esta semana\">Hoy</a>",
+    "Cubierto esta semana", "aria-label=\"Semana anterior\"", "aria-label=\"Semana siguiente\"", "aria-label=\"Hoy, ir a esta semana\">Hoy</a>",
     "data-k=\"published\">Publicado", "data-k=\"draft\">Borrador", "data-k=\"open\">Disponible", "Horario del equipo", "Añadir un turno para Ana Colón, jue 8 oct", "+ Añadir"]) expect(out).toContain(words);
   // The phone day card and the Direction B day: today, its open shifts, Draft and the counts.
   for (const words of ["Hoy · mar, 6 oct", "Turno disponible", "Sin asignar", "Sin cubrir", "3 turnos · 8 h", "Añadir turno", "aria-label=\"Turnos del martes\"", "aria-label=\"Día del horario\"",
@@ -70,5 +70,5 @@ it("reads time off, the day view and the empty states in Spanish", () => {
 it("keeps English exactly as it was outside Spanish", () => {
   const out = render({ corp, b, absences: { state: "ready", employeeIds: ["ana", "luis"], rows: [] } }, "en");
   for (const words of ["Today · Tue, Oct 6", "2 open shifts, Tue Oct 6, 1 already over", "Edit Ana Colón’s shift, Mon Oct 5, 10:00\u00a0PM to 6:00\u00a0AM, Condado", ", Ends Oct 6", "4 h over the 40 h limit",
-    "aria-label=\"Go to this week\">Today</a>", "No one assigned", "Covered this week"]) expect(out).toContain(words);
+    "aria-label=\"Today, go to this week\">Today</a>", "No one assigned", "Covered this week"]) expect(out).toContain(words);
 });
