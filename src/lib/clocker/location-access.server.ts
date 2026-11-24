@@ -20,9 +20,11 @@ export type ClockerLocationAccess = {
  * The argument is the SQL parameter index and is never supplied by a request. */
 export function clockerLocationEligible(locationParameter: number): string {
   const location = '$' + locationParameter;
-  return `CASE e.clocker_location_mode
+  // Older company schemas have no override columns. Keep their original scope
+  // while the additive migration is being rolled out.
+  return `CASE COALESCE(to_jsonb(e)->>'clocker_location_mode','ASSIGNED')
     WHEN 'ALL' THEN true
-    WHEN 'SELECTED' THEN ${location}::text = ANY(e.clocker_location_ids)
+    WHEN 'SELECTED' THEN COALESCE((to_jsonb(e)->'clocker_location_ids') ? ${location}::text,false)
     WHEN 'ASSIGNED' THEN EXISTS (
       SELECT 1 FROM employee_location_eligibility el
       WHERE el.employee_id=e.id AND el.location_id=${location}

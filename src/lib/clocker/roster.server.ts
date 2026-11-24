@@ -23,7 +23,7 @@ async function pickerRoster(device: ClockerDeviceWriteProof, executor: SqlExecut
     ) person ON true
     WHERE d.id=$1 AND d.location_id=$2 AND w.id=$3 AND w.active AND w.singleton
       AND l.active AND d.active AND d.revoked_at IS NULL AND d.credential_hash=$4
-      AND d.credential_version=$5 AND d.sign_in_mode='NAME_PICKER'
+      AND d.credential_version=$5 AND to_jsonb(d)->>'sign_in_mode'='NAME_PICKER'
     ORDER BY person.name,person.id`,
   [device.deviceId, device.locationId, device.workspaceId, device.credentialHash, device.credentialVersion]));
   if (!rows.length) return null;

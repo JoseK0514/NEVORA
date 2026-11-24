@@ -112,8 +112,8 @@ export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pi
      WHERE e.id=$1 AND e.active AND e.updated_at::text=$2 AND p.version=$3 AND p.pin_hash=$4 AND p.workspace_id=$5
      AND (${clockerLocationEligible(6)}))
      AND EXISTS(SELECT 1 FROM clocker_pin_limits WHERE scope='DEVICE' AND scope_id=$7 AND latest_attempt=$8)
-     AND ($9::integer IS NULL OR EXISTS(SELECT 1 FROM clocker_devices
-       WHERE id=$7 AND version=$9 AND sign_in_mode='NAME_PICKER'))`,
+     AND ($9::integer IS NULL OR EXISTS(SELECT 1 FROM clocker_devices d
+       WHERE id=$7 AND version=$9 AND to_jsonb(d)->>'sign_in_mode'='NAME_PICKER'))`,
      [row.employeeId,row.employeeUpdatedAt,row.version,row.pinHash,workspace.id,device.locationId,device.deviceId,reservation.attemptId,picked?.deviceVersion??null],'IDENTITY_INVALID'),
    s(`INSERT INTO clocker_pin_sessions(device_id,employee_id,token_hash,pin_version,credential_version,employee_updated_at,expires_at)
      VALUES($1,$2,$3,$4,$5,$6::timestamptz,clock_timestamp()+interval '60 seconds')

@@ -104,7 +104,7 @@ function activeLocation(locationId: string, workspaceId: string) {
   return assertion('EXISTS(SELECT 1 FROM locations WHERE id=$1 AND workspace_id=$2 AND active)', [locationId, workspaceId], 'clocker_location_invalid');
 }
 const projection = `SELECT d.id,d.location_id AS "locationId",l.workspace_id AS "workspaceId",d.name,d.active,
-  d.version,d.sign_in_mode AS "signInMode",d.credential_version AS "credentialVersion",d.last_seen_at::text AS "lastSeenAt",
+  d.version,COALESCE(to_jsonb(d)->>'sign_in_mode','EMPLOYEE_ID') AS "signInMode",d.credential_version AS "credentialVersion",d.last_seen_at::text AS "lastSeenAt",
   d.enrollment_expires_at::text AS "enrollmentExpiresAt",d.enrolled_at::text AS "enrolledAt",d.revoked_at::text AS "revokedAt",
   CASE WHEN NOT d.active OR d.revoked_at IS NOT NULL THEN 'REVOKED'
     WHEN d.credential_hash IS NOT NULL THEN 'ACTIVE'
@@ -212,7 +212,7 @@ export async function revokeClockerDevice(proof: ClockerOwnerProof, input: Devic
 export async function rotateClockerDevice(proof: ClockerOwnerProof, input: DeviceMutation, executor: SqlExecutor = neonNotificationExecutor()): Promise<PendingDevice> {
   const enrollmentToken = token('enrollment');
   const device = await mutate(proof,input,'ROTATION_REQUESTED',{
-    text: `UPDATE clocker_devices SET active=true,credential_hash=NULL,enrolled_at=NULL,revoked_at=NULL,sign_in_mode='EMPLOYEE_ID',
+    text: `UPDATE clocker_devices SET active=true,credential_hash=NULL,enrolled_at=NULL,revoked_at=NULL,
       enrollment_hash=$2,enrollment_expires_at=clock_timestamp()+interval '10 minutes',enrollment_owner_id=$3,enrollment_session_hash=$4,
       version=version+1,updated_at=clock_timestamp() WHERE id=$1`,
     values: [input.deviceId,tokenHash(enrollmentToken,'enrollment'),proof.employeeId,proof.sessionTokenHash],
