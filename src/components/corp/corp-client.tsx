@@ -1,7 +1,7 @@
 "use client";
 
 import "./corp.css";
-import Link from "next/link";
+import { NavigationLink } from "../navigation-link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { BLoadingScreen, BState } from "../owner-b/b-kit";
@@ -41,7 +41,9 @@ export function CorpBackLink({ href, className, children, label }: { href: strin
     event.preventDefault();
     window.history.back();
   };
-  return <Link className={className} href={href} aria-label={label} onClick={onClick}>{children}</Link>;
+  // Gap closure (Nov 23, 2026): the back link sits in every page's title bar, so it prefetches on intent; on sight it fetched
+  // the parent page again after each access renewal (6 reads a minute on Payroll export).
+  return <NavigationLink className={className} href={href} aria-label={label} onClick={onClick} intent="auto">{children}</NavigationLink>;
 }
 
 /** The error card's "Try again": refreshes the current page's server data. */

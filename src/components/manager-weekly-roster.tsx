@@ -263,7 +263,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     <a className="c-sched-week__arrow" href={corp.previousHref} aria-label="Previous week"><CaretLeftIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></a>
     <span className="c-sched-week__label">{corp.weekLabel}</span>
     <a className="c-sched-week__arrow" href={corp.nextHref} aria-label="Next week"><CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></a>
-    {corp.todayHref ? <a className="c-sched-week__today" href={corp.todayHref} aria-label="Go to this week">Today</a> : null}
+    {corp.todayHref ? <a className="c-sched-week__today" href={corp.todayHref} aria-label="Today, go to this week">Today</a> : null}
     {state}
   </span> : null;
   // Phones and tablets: the week card. Desktop (R11) moves the same bar into the grid's card, so this card hides there.
@@ -517,7 +517,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
         {/* Premium pass FA (final verification A #11, B #7): the dates and their state are one block, so at 320px "Published"
           * drops under the dates and the arrows keep the dates' row (they fell to a row of their own). */}
         <div className="b-week__h"><span className="b-week__label"><span className="b-week__date">{corp.weekLabel}</span>{b.weekState ? <span className={`b-chip b-chip--${b.weekState.tone}`} data-icon={b.weekState.tone === "ok" ? "check" : undefined}>{b.weekState.tone === "ok" ? <CheckIcon weight="bold" aria-hidden="true" /> : null}{b.weekState.text}</span> : null}</span>
-          <span>{corp.todayHref ? <a className="b-btn b-btn--glass" href={corp.todayHref} aria-label="Go to this week">Today</a> : null}
+          <span>{corp.todayHref ? <a className="b-btn b-btn--glass" href={corp.todayHref} aria-label="Today, go to this week">Today</a> : null}
             <a className="b-week__arrow" href={corp.previousHref} aria-label="Previous week"><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></a>
             <a className="b-week__arrow" href={corp.nextHref} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></a></span></div>
         <div className="b-week__days" role="group" aria-label="Schedule day">{dates.map(date => {

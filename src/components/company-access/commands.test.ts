@@ -44,3 +44,11 @@ it('adds dates to a new employee only when one is entered',()=>{
  expect(createCommandFromForm(fields(),'OWNER',null,operationId)).not.toHaveProperty('employmentDates');
  expect(createCommandFromForm(withDates({hireDate:'2017-01-26',birthDate:'2001-07-04'}),'MANAGER',null,operationId).employmentDates).toEqual({hireDate:'2017-01-26',terminationDate:null,birthDate:'2001-07-04'});
 });
+
+it('keeps an unchanged legacy phone in an edit and rejects a different incomplete number',()=>{
+ const before={...employee,phone:'555-0126'}, form=fields();
+ form.set('phone',before.phone);
+ expect(coreCommandFromForm(form,before,null,'OWNER',null,operationId).profile.phone).toBe(before.phone);
+ form.set('phone','555-0127');
+ expect(()=>coreCommandFromForm(form,before,null,'OWNER',null,operationId)).toThrow(/valid contact phone/);
+});

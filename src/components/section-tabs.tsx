@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { NavigationLink as Link } from "./navigation-link";
 import { useEffect, useRef } from "react";
 import type { SectionTabGroup } from "@/lib/navigation";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
@@ -41,7 +41,7 @@ export function SectionTabs({ group, pathname }: { group: SectionTabGroup; pathn
     {/* A tab reached with the keyboard comes fully out from under the edge fade (scroll-margin-inline clears it). */}
     <div className="section-tabs-track" ref={track}
       onFocus={event => { const tab = (event.target as HTMLElement).closest(".section-tab"); tab?.scrollIntoView({ block: "nearest", inline: "nearest" }); }}>
-      {group.items.map(item => <Link key={item.href} href={item.href} className="section-tab"
+      {group.items.map(item => <Link key={item.href} href={item.href} intent="auto" className="section-tab"
         aria-current={item.href === pathname ? "page" : undefined}>{navLabel(item.label, lang)}</Link>)}
     </div>
   </nav>;

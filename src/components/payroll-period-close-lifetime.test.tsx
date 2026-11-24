@@ -67,3 +67,30 @@ it('stale in-flight command results cannot revive data or delete the original re
 it('unmount cancels the deferred first read',async()=>{
  transport();render();host.mounted=true;cleanup=host.effects[0]();cleanup?.();cleanup=undefined;await flush();expect(reads).toBe(0);expect(html()).not.toContain('PRIVATE');
 });
+// Gap closure (Nov 23, 2026, QA trace-1, WebKit): someone clocked in makes each READ count their open interval up to its
+// own observedAt (timecards/project.ts), so every early refresh changes the review JSON and its viewKey. Saved runs
+// (PeriodCloseHistory, with its own loaded pages) must keep their place in the tree, so React keeps their state.
+it('keeps saved runs mounted across a background refresh whose open punch has grown',async()=>{
+ const manifest={id:'M1',hash:'c'.repeat(64),current:true,populationRevision:1,totals:{recordedNanoseconds:'0',breakNanoseconds:'0'},exports:[],events:[],eventCoverage:{complete:true,returnedEvents:0,totalEvents:0}};
+ transport(async()=>{const body=ready() as unknown as {result:{manifests:unknown[];members:{recordedNanoseconds:string}[]}};body.result.manifests=[manifest];body.result.members[0].recordedNanoseconds=String(reads*1_000_000_000);return Response.json(body);});
+ await mount();
+ const keyPath=()=>{const path=(v:ReactNode,trail:string[]):string[]|null=>{if(Array.isArray(v)){for(const c of v){const p=path(c,trail);if(p)return p;}return null;}if(!v||typeof v!=='object'||!('props'in v))return null;const n=v as ReactElement<Record<string,unknown>>;const here=[...trail,String(n.key)];if(typeof n.type==='function'&&n.type.name==='PeriodCloseHistory')return here;return path(n.props.children as ReactNode,here);};return path(render(),[]);};
+ const before=keyPath();expect(before).not.toBeNull();
+ await rs.advanceTimersByTimeAsync(10000);expect(reads).toBe(2);
+ expect(keyPath()).toEqual(before);
+});
+// Jose, Nov 23, 2026 (before the release): typed dispositions, reasons, employment text and selected receipts survive an
+// early refresh where only a running total moved; the inputs are uncontrolled, so they survive exactly when the form keeps
+// its place (same key path).
+it('keeps the population form and selected receipts across a refresh where only an open interval grew',async()=>{
+ transport(async()=>{const body=ready();body.result.members[0].recordedNanoseconds=String(reads*1_000_000_000);body.result.members[0].breakNanoseconds=String(reads*1_000);return Response.json(body);});
+ await mount();
+ const formPath=()=>{const path=(v:ReactNode,trail:string[]):string[]|null=>{if(Array.isArray(v)){for(const c of v){const p=path(c,trail);if(p)return p;}return null;}if(!v||typeof v!=='object'||!('props'in v))return null;const n=v as ReactElement<Record<string,unknown>>;const here=[...trail,String(n.key)];if(n.type==='form'&&n.props.className==='employee-form')return here;return path(n.props.children as ReactNode,here);};return path(render(),[]);};
+ const reason=()=>control(n=>n.type==='textarea'&&n.props.name==='PRIVATE-E1.reason'||n.type==='input'&&n.props.name==='PRIVATE-E1.reason');
+ expect(reason()).toBeTruthy();
+ (control(n=>n.type==='input'&&n.props.type==='checkbox').onChange as (e:unknown)=>void)({target:{checked:true}});
+ const before=formPath();expect(before).not.toBeNull();
+ await rs.advanceTimersByTimeAsync(10000);expect(reads).toBe(2);
+ expect(formPath()).toEqual(before);
+ expect(control(n=>n.type==='input'&&n.props.type==='checkbox').checked).toBe(true);
+});
