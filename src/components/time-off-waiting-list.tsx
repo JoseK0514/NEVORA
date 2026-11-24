@@ -38,7 +38,8 @@ export function WholeParts({ text }: { text: string }) {
  * waiting request; each row shows the amber "On the schedule" line when approving would leave a published shift uncovered,
  * then the compact Decline and Approve (the same review action as the request's page; Decline asks once). Approve shows only
  * once the check came back with no overlap; otherwise the teal pill is Review, which opens the request with its shifts. */
-export function TimeOffWaitingList({ requests, result }: { requests: WaitingTimeOff[];
+export function TimeOffWaitingList({ requests, result, empty }: { requests: WaitingTimeOff[];
+  empty?: { title: string; line: string };
   /** Final polish (confirmations A #8, #9): what the last decision left, as the card's first row, so the card keeps its
    * place on the band. */
   result?: ReactNode }) {
@@ -50,7 +51,7 @@ export function TimeOffWaitingList({ requests, result }: { requests: WaitingTime
   const lang = usePortalLang();
   const t = TIME_COPY[lang];
   // #25: nothing waits and nothing was just decided: the kit's empty state, in the list's card.
-  if (!requests.length && !kept) return <div className="q-list q-emptycard"><BState kind="empty" title={t.allCaughtUp} line={t.newShowUpHere} /></div>;
+  if (!requests.length && !kept) return <div className="q-list q-emptycard"><BState kind="empty" title={empty?.title ?? t.allCaughtUp} line={empty?.line ?? t.newShowUpHere} /></div>;
   return <ul className="q-list q-requests" aria-label={t.waitingTimeOff} aria-busy={staffing.status === "loading" || undefined}>{kept ? <li className="q-result">{kept}</li> : null}{requests.map(request => {
     const conflicts = checked.has(request.id) ? conflictsFor(staffing, request.id) : null;
     const clear = conflicts !== null && conflicts.length === 0;

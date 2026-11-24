@@ -74,7 +74,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       runtimeControls.push({ engine, ...control });
       for (const [index, context] of [c0, c1, c2].entries()) {
         const execution = { engine, width: index === 0 ? 390 : 1440, kind: 'readiness-schedule' };
-        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, navigationReadKinds: ['manager-today-read'], routerReadsDuringNavigation: true });
+        const observer = observeBrowserCell(execution, errors, { navigationDiagnosticVerified: control.verified, navigationReadKinds: ['manager-today-read'], navigationCancelledReads: true });
         observer.setStageReader(() => stage);
         await observer.observeContext(context, index === 1 ? 'manager' : 'primary');
         await observeRscCaughtErrors(context, (_page: unknown, metadata: Record<string, unknown>) => trace({ engine, index, event: 'caught-rsc-error', metadata }));
@@ -115,6 +115,8 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         }
       } finally { await controlContext.close(); }
       const pendingRouterReads = [new Set<object>(), new Set<object>(), new Set<object>()];
+      // Development (31d32fa9): each page's own operational-authority reads, finished before it is left.
+      const pendingAuthorityReads = [new Set<object>(), new Set<object>(), new Set<object>()];
       const documentRequests = [0, 0, 0], drainReceipts: { page: number; pending: number }[] = [];
       for (const n of [0, 1, 2]) {
         const p = page(n); p.setDefaultTimeout(20000);
@@ -125,11 +127,18 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         p.on('response', (response: { request(): TracedRequest; status(): number }) => { const metadata = requestMetadata(response.request()); if (metadata) trace({ engine, index: n, event: 'response', status: response.status(), ...metadata }); });
         p.on('requestfinished', (request: TracedRequest) => { pendingRouterReads[n].delete(request); const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'finished', ...metadata }); });
         p.on('requestfailed', (request: TracedRequest) => { pendingRouterReads[n].delete(request); const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'failed', category: requestFailureCategory(request.failure()?.errorText), ...metadata }); });
+        p.on('request', (request: TracedRequest) => { if (kind(request.url()) === 'authority') pendingAuthorityReads[n].add(request); });
+        for (const done of ['requestfinished', 'requestfailed']) p.on(done, (request: TracedRequest) => { pendingAuthorityReads[n].delete(request); });
         p.on('framenavigated', (frame: { url(): string }) => { if (frame === p.mainFrame()) trace({ engine, index: n, event: 'document', resource: kind(frame.url()) }); });
         p.on('pageerror', () => { trace({ engine, index: n, event: 'pageerror' }); if (runtimeFailureTraces.length < 8) runtimeFailureTraces.push({ engine, index: n, events: [...runtimeTrace] }); else failureTracesOmitted++; });
         stage = 'login';
-        await p.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const url = new URL(route.request().url()); if (['http:', 'https:'].includes(url.protocol) && url.origin !== base) await route.abort(); else await route.continue(); });
+        // Development (f24e2002): only foreign requests are routed (and aborted).
+        await p.route((url: URL) => ['http:', 'https:'].includes(url.protocol) && url.origin !== base,
+          (route: { abort(): Promise<void> }) => route.abort());
         await p.goto(base + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(base + '/app');
+        // Development (f24e2002): Home drawn and loaded before the scenario starts.
+        await p.locator('main h1').filter({ visible: true }).first().waitFor();
+        await p.waitForLoadState('load');
       }
       const form = (n: number) => page(n).locator('form').filter({ has: page(n).locator('[name="employeeId"]') });
       const drainRouterReads = async (n: number) => {
@@ -140,7 +149,26 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await expect.poll(() => pendingRouterReads[n].size, { timeout: 20000 }).toBe(0);
         trace({ engine, index: n, event: 'router-reads-drained', pendingAtStart: receipt.pending });
       };
-      const open = async (n: number, id: string) => { const p = page(n); await drainRouterReads(n); await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await p.goto(base + '/app/schedule/edit?shiftId=' + id); await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' }); };
+      // Development (31d32fa9, 7cf538fb, f24e2002): the source page drawn with its authority reads finished, a refresh
+      // queued by retiring private polling settled and drained, and the edit form hydrated (its React submit handler
+      // attached) before the scenario submits it.
+      const open = async (n: number, id: string) => {
+        const p = page(n);
+        await drainRouterReads(n);
+        await p.locator('main h1').filter({ visible: true }).first().waitFor();
+        await expect.poll(() => pendingAuthorityReads[n].size, { timeout: 20000 }).toBe(0);
+        await p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+        await p.waitForLoadState('networkidle');
+        await drainRouterReads(n);
+        await p.goto(base + '/app/schedule/edit?shiftId=' + id);
+        await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' });
+        await expect.poll(() => form(n).evaluate((element: HTMLFormElement) =>
+          Object.getOwnPropertyNames(element).some(key => {
+            if (!key.startsWith('__reactProps')) return false;
+            const props: unknown = Reflect.get(element, key);
+            return props !== null && typeof props === 'object' && typeof Reflect.get(props, 'onSubmit') === 'function';
+          })), { timeout: 20000 }).toBe(true);
+      };
       // Negative control: even a previously idle document must not let a held
       // real Next RSC read be cancelled by the next fixture navigation.
       const probeSource = await seed(), probeDestination = await seed();

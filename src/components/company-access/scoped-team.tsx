@@ -21,8 +21,8 @@ type ScopedDirectory = Extract<OperationalDirectoryData, { mode: "LOCATIONS" }>;
  * Team is the company Manager's Direction B Team (TeamB on a phone, the People card with its filters on tablets and
  * desktop) with the people the scoped read returns: name, role and the places they work. The place is a chip in the band,
  * a filter when there is more than one. Nothing company-wide: no contact details, no Add, no Team tools (each of those
- * pages needs company-wide access). The rows aren't links: a person's page needs company-wide access too, and the
- * schedule has no one-person view to send them to instead. */
+ * pages needs company-wide access). Release sweep (Nov 23): each row opens the person's page, which G17 (4745f4f2) serves
+ * to a location Manager for anyone on this roster (name, role, locations, live state, hours and Shifts). */
 export function ScopedTeam({ data, query, locationId, showAll, words: wordsProp, lang }: {
   data: ScopedDirectory;
   /** The search (?q), already trimmed. */ query: string;
@@ -50,6 +50,7 @@ export function ScopedTeam({ data, query, locationId, showAll, words: wordsProp,
   const detail = (employee: ScopedDirectory["employees"][number]) => [employee.role === "EMPLOYEE" ? null : lang === "es" ? t.roles[employee.role] : employeeRoleLabel(employee.role),
     ...(several && !place && places(employee).length < data.locations.length ? places(employee) : [])].filter(Boolean).join(" · ");
   const name = (employee: ScopedDirectory["employees"][number]) => `${employee.firstName} ${employee.lastName}`;
+  const href = (employee: ScopedDirectory["employees"][number]) => `/app/employees/${encodeURIComponent(employee.id)}`;
   const keep = (extra: Record<string, string>) => { const params = new URLSearchParams(); if (place && several) params.set("location", place.id); for (const [key, value] of Object.entries(extra)) params.set(key, value); const text = params.toString(); return `/app/employees${text ? `?${text}` : ""}`; };
   // "See all", without the count: the band says how many (each count once).
   const seeAll = !all && shown.length > TEAM_SHOWN ? { href: keep({ all: "1" }), label: t.seeAll } : undefined;
@@ -62,7 +63,7 @@ export function ScopedTeam({ data, query, locationId, showAll, words: wordsProp,
         {data.locations.map(location => <Link key={location.id} className="nevora-action-menu-item" href={`/app/employees?location=${encodeURIComponent(location.id)}`} aria-current={place?.id === location.id ? "page" : undefined}><strong>{location.shortName || location.name}</strong></Link>)}
       </ActionMenu>
     : <span className={b ? "b-btn b-btn--glass b-team-place" : "c-select-btn c-team-loc"}><MapPinIcon size={15} weight="bold" className={b ? undefined : "c-ic"} aria-hidden="true" /><span className={b ? "b-sr" : "c-sr"}>{t.locationPrefix}</span>{placeName}</span>;
-  const bPerson = (employee: ScopedDirectory["employees"][number]): TeamBPerson => ({ id: employee.id, name: name(employee), detail: detail(employee), active: true });
+  const bPerson = (employee: ScopedDirectory["employees"][number]): TeamBPerson => ({ id: employee.id, name: name(employee), detail: detail(employee), href: href(employee), active: true });
   return <TeamLiveProvider partial locationId={several ? place?.id : undefined}>
     <CorpPage className="c-team c-team--scoped c-page--narrow" labelledBy="team-title">
       <TeamB people={shown.map(bPerson)} limit={all ? undefined : TEAM_SHOWN} inactive={[]} total={here.length} query={query} filtered={!!query}
@@ -83,7 +84,7 @@ export function ScopedTeam({ data, query, locationId, showAll, words: wordsProp,
       {shown.length ? <CorpSection id="team-people" label={query ? t.matches(shown.length) : t.people}
         aside={seeAll ? <CorpLink href={seeAll.href}>{seeAll.label}</CorpLink> : undefined}>
         <TeamDeskPeople peopleLabel={people} limit={all ? undefined : TEAM_SHOWN} rows={shown.map(employee => ({ id: employee.id, name: name(employee),
-          initials: employeeInitials(employee.firstName, employee.lastName), detail: detail(employee) }))} />
+          initials: employeeInitials(employee.firstName, employee.lastName), detail: detail(employee), href: href(employee) }))} />
       </CorpSection> : <CorpCard as="div" ariaLabel={people}><CorpBody>
         <p className="c-team__empty">{here.length ? t.noMatch(people, query) : place ? t.noneAt(people, placeName) : t.none(people)}</p>
         {here.length ? <CorpButtonLink href={keep({})} kind="secondary" size="md">{t.clearSearch}</CorpButtonLink> : null}

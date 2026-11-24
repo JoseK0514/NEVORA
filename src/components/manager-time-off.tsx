@@ -215,18 +215,21 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
     : await listWorkforceLeave(proof, "PENDING").then(read => read.state === "ready" ? read.data.length : 0).catch(() => 0);
   const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
   const decidedLine = (request: object) => selected.status === "PENDING" ? null : decisionLine(selected.status, request, zone);
+  const limited = source.coverage?.kind === "LOCATIONS";
   let ptoLang: "en" | "es" = "en";
-  if (selected.id === "approved") { try { ptoLang = (await readPortalLanguage(proof)).language; } catch { /* English */ } }
+  if (selected.id === "approved" || limited && selected.id === "pending") { try { ptoLang = (await readPortalLanguage(proof)).language; } catch { /* English */ } }
 
   // Final polish (confirmations A #8): what the last decision left, named. Approved is the done state; a declined or
   // cancelled request is closed, so it is the grey state with the time off glyph (Truth: never the green mark). The
   // flags are the review action's own redirect; nothing new is read.
   const words = ptoCopy(selected.id === "approved" ? ptoLang : "en"), closedIcon = <CalendarMinusIcon weight="bold" />;
-  const next = (line: string) => requests.length ? line : selected.id === "pending" ? words.nothingWaiting : line;
+  const scopedWords = ptoCopy(ptoLang);
+  const nothingWaiting = limited ? scopedWords.noReviewableRequests : words.nothingWaiting;
+  const next = (line: string) => requests.length ? line : nothingWaiting;
   const result = selected.id === "pending" && reviewed
     ? decided === "timeoff-approved" ? <DecisionResult tone="done" title={words.approvedTitle} line={next(words.approvedLine)} />
       : decided === "timeoff-declined" ? <DecisionResult tone="closed" icon={closedIcon} title={words.declinedTitle} line={next(words.declinedLine)} />
-      : <DecisionResult tone="closed" icon={closedIcon} title={words.savedTitle} line={requests.length ? undefined : words.nothingWaiting} />
+      : <DecisionResult tone="closed" icon={closedIcon} title={words.savedTitle} line={requests.length ? undefined : nothingWaiting} />
     : selected.id === "approved" && cancelled ? <DecisionResult tone="closed" icon={closedIcon} title={words.cancelledTitle} line={words.cancelledLine} /> : null;
 
   return (<ScopedReadFrame observation={source}>
@@ -241,7 +244,8 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
         do (this replaces Release 1's "no decision in the list"; the row still opens the request with its shifts).
         Final polish (confirmations A #8, #9, #25): a decision's result is the first row of the list's card (it was a grey
         line on the canvas that pushed the card off the band), and an empty tab is the kit's state card. */}
-      {selected.id === "pending" ? <TimeOffWaitingList result={result} requests={requests.map(request => {
+      {selected.id === "pending" ? <TimeOffWaitingList result={result}
+        empty={limited ? { title: scopedWords.noReviewableRequests, line: scopedWords.scopedReviewDetail } : undefined} requests={requests.map(request => {
         const sent = (request as { createdAt?: string }).createdAt;
         return { id: request.id, employeeName: request.employeeName, avatar: initialsOf(request.employeeName), startDate: request.startDate, endDate: request.endDate,
           when: whenLabel(request), ago: sent ? agoLabel(sent, source.observedAt) : undefined,

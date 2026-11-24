@@ -103,6 +103,14 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2) > .q-rv { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; text-align: left !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2) > .q-rt > i { grid-row: 3 !important; }
   }
+  /* Final fixes K (release sweep, Nov 23): at enlarged text on a phone, "Publish schedules" ran into its value
+   * ("Condado") at 200%. Once the reader enlarges text (--nv-rem, owner-b-pages.css) the value goes under its label,
+   * as below 360px. At the default size nothing changes. */
+  @media (max-width: 767px) { @container not style(--nv-rem: 16px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2t) { grid-template-columns: minmax(0, 1fr) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2t) > .q-rv { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; text-align: left !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2t) > .q-rt > i { grid-row: 3 !important; }
+  } }
 
   @media (min-width: 768px) {
     /* ---------- More on tablets and desktop (OW-032, TB-016; polish Nov 20, 2026): the groups read as one card in the

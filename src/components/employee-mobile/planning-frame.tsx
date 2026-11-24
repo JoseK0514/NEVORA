@@ -1,6 +1,7 @@
 'use client';
 import './timeoff-corp.css';
 import Link from 'next/link';
+import {NavigationLink} from '../navigation-link';
 import {useEffect,useRef,type ReactNode} from 'react';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import type {EmployeePlanningSnapshot} from '@/lib/employee-planning';
@@ -29,7 +30,7 @@ export function PlanningFrame({title,sub,back,backLabel,selection,state,ready,re
   {/* Upscale M2: Request time off reads as a sheet on a phone (grabber, 16px top corners, no tab bar). */}
   {sheet?<div className="tof-grab" aria-hidden="true"/>:null}
   <div className="c-nav">
-   {sheet?<Link href={back} className="c-nav__back tof-cancel">{t.cancel}</Link>:<Link href={back} className="c-nav__back"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{backLabel??t.requests}</Link>}
+   {sheet?<NavigationLink href={back} className="c-nav__back tof-cancel" intent="auto">{t.cancel}</NavigationLink>:<NavigationLink href={back} className="c-nav__back" intent="auto"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{backLabel??t.requests}</NavigationLink>}
    <h1 className="c-nav__title" ref={heading} tabIndex={-1}>{title}</h1><span className="c-nav__right"/>
   </div>
   {sub?<p className="tof-sub">{sub}</p>:null}
