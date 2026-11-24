@@ -50,7 +50,15 @@
     /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible count (teal: a
      * count is not an alarm; Phase 3, OW-028 and MG-006). */
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.96) !important; -webkit-backdrop-filter: blur(24px) saturate(1.4) !important; backdrop-filter: blur(24px) saturate(1.4) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
-    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: var(--b-space-8) !important; color: var(--b-grey) !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: var(--b-space-8) !important; color: var(--b-grey) !important; font: 500 min(0.65625rem, 13px)/min(0.8125rem, 16px) Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    /* Final fixes K (release follow-ups, Nov 24): the labels are rem (10.5/13px at the default size) and grow with the
+     * reader's text up to 13/16px. A tab is 64px wide at 320 and a one-word label ("Schedule", "Requests") can't wrap, so
+     * it stops where the widest still fits, as a tab bar's labels do (Apple HIG). Once text is enlarged a label may take two
+     * lines and the bar grows with it: nothing is cut. */
+    @container not style(--nv-rem: 16px) {
+      html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link:not(#tb1):not(#tb2) { height: auto !important; min-height: 56px !important; padding-bottom: var(--b-space-4) !important; }
+      html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link:not(#tb1):not(#tb2) > span:not(.b-tab-badge) { max-width: 100% !important; white-space: normal !important; text-align: center !important; overflow: visible !important; text-overflow: clip !important; }
+    }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link::before { content: "" !important; display: block !important; position: absolute !important; top: 5px !important; left: 50% !important; width: 56px !important; height: 30px !important; margin-left: -28px !important; border-radius: var(--b-radius-pill) !important; background: transparent !important; z-index: 0 !important; }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active::before { background: var(--b-teal-50) !important; }
     html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link > :not(.b-tab-badge) { position: relative !important; z-index: 1 !important; }
@@ -137,6 +145,13 @@
    * week arrows (32px) and its Add shift pill (42px), a form's back link (32px) and the Decline and Approve pair in the
    * request lists (40px). Underline tabs (.c-tabs, .c-tc-tabs), card-header links (.b-card__a) and a card's lone
    * link already measure 44px here (b-foundation.css, owner-b.css), and the segments have their own 44px hit area. */
+  /* Release follow-ups (Nov 24): with a mouse, a quiet page's back link from 768px ("‹ Things to do" over the time-off
+   * list) stayed static, so its 44px ::after (owner-b-pages.css, target size) was placed against an ancestor and a press
+   * just above the 32px link landed on the page frame. It is made relative at every pointer, as the touch rule below
+   * does; inset auto keeps it where the static link was drawn. */
+  @media (min-width: 768px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame .q-nav > .q-nav__l { position: relative !important; inset: auto !important; }
+  }
   @media (min-width: 768px) and (pointer: coarse) {
     /* Phase 8 (Nov 17, 2026): a control that the frame places absolutely (the band action of a Quiet page with a title,
      * New update) stays absolute (an absolute box holds its ::after too), and a back link made relative here drops the
