@@ -7,6 +7,7 @@ rs.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
 rs.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>true}));
 rs.mock('@/lib/data/workspaces', ()=>({...rstestOriginal0,getWorkspace:state.workspace}));
 rs.mock('next/navigation',()=>({notFound:()=>{throw Error('not_found');},usePathname:()=>state.path}));
+import recoveryStyles from './recovery.module.css';
 import BillingPage,{generateMetadata} from '@/app/app/billing/page';
 import PausedPage from '@/app/clocker/access/paused/page';
 import {billingDestination} from './billing';
@@ -85,3 +86,14 @@ it('explains the bare headcount: upgrade or deactivate up to 30 people, a quote 
 });
 
 afterEach(()=>{ rs.unstubAllEnvs(); });
+// J18 polish (Nov 24, 2026, Jose): on the non-Owner page, "My pay statements" sits in the actions block, so it has the
+// same gap under the paragraph as the Owner's actions (the block's --b-space-20 top margin), with or without Try again.
+it.each(['MANAGER','EMPLOYEE'])('%s: My pay statements sits in the actions block under the paragraph',async role=>{
+ state.role=role;
+ for(const searchParams of [undefined,Promise.resolve({reason:'billing_status_unavailable'})]){
+  const html=renderToStaticMarkup(await BillingPage(searchParams?{searchParams}:undefined));
+  const actions=html.indexOf(`<div class="${recoveryStyles.actions}">`),pay=html.indexOf('href="/app/my-pay"'),paragraph=html.lastIndexOf('</p>',pay);
+  expect(actions).toBeGreaterThan(paragraph);expect(pay).toBeGreaterThan(actions);
+  expect(html.slice(actions,pay)).not.toContain('</p>');
+ }
+});
