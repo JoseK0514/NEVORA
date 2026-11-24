@@ -1,0 +1,317 @@
+[
+ {
+  "id": "J18-export-only",
+  "row": "J18",
+  "page": "Billing (signed in) · Export only (trial ended, access paused)",
+  "section": "Settings",
+  "note": "Owner. Red line “Your free trial ended. Choose a plan to keep using NEVORA.”; Access paused, plan not selected, trial ended date. One teal “Open billing in Velani”; Refresh status and My pay statements are text links; no Return to workspace while access is paused.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/J18-export-only-320-chromium.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/J18-export-only-390-chromium.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-export-only-390-200pct-chromium.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-export-only-1440-chromium.webp",
+    "desk": true
+   },
+   {
+    "label": "WebKit · Phone 320",
+    "after": "img/J18-export-only-320-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone",
+    "after": "img/J18-export-only-390-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone, 200% text",
+    "after": "img/J18-export-only-390-200pct-webkit.webp"
+   },
+   {
+    "label": "WebKit · Desktop",
+    "after": "img/J18-export-only-1440-webkit.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J18-denied-owner",
+  "row": "J18",
+  "page": "Billing (signed in) · Access denied (Owner, status refused)",
+  "section": "Settings",
+  "note": "Owner. The status read answers 403: red line “Sign in with the current workplace Owner account to manage billing.” No Open billing; Refresh status and My pay statements as text links.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/J18-denied-owner-320-chromium.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/J18-denied-owner-390-chromium.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-denied-owner-390-200pct-chromium.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-denied-owner-1440-chromium.webp",
+    "desk": true
+   },
+   {
+    "label": "WebKit · Phone 320",
+    "after": "img/J18-denied-owner-320-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone",
+    "after": "img/J18-denied-owner-390-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone, 200% text",
+    "after": "img/J18-denied-owner-390-200pct-webkit.webp"
+   },
+   {
+    "label": "WebKit · Desktop",
+    "after": "img/J18-denied-owner-1440-webkit.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J18-denied-manager",
+  "row": "J18",
+  "page": "Billing (signed in) · Access denied (Manager)",
+  "section": "Settings",
+  "note": "Manager. Server page for a non-Owner: “Workplace access needs attention” and “Ask your workplace Owner to review billing. Only the Owner account can manage the subscription.” Only My pay statements and Sign out; no status read.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/J18-denied-manager-320-chromium.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/J18-denied-manager-390-chromium.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-denied-manager-390-200pct-chromium.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-denied-manager-1440-chromium.webp",
+    "desk": true
+   },
+   {
+    "label": "WebKit · Phone 320",
+    "after": "img/J18-denied-manager-320-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone",
+    "after": "img/J18-denied-manager-390-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone, 200% text",
+    "after": "img/J18-denied-manager-390-200pct-webkit.webp"
+   },
+   {
+    "label": "WebKit · Desktop",
+    "after": "img/J18-denied-manager-1440-webkit.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J18-denied-employee",
+  "row": "J18",
+  "page": "Billing (signed in) · Access denied (Employee)",
+  "section": "Settings",
+  "note": "Employee. Same page as the Manager’s.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/J18-denied-employee-320-chromium.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/J18-denied-employee-390-chromium.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-denied-employee-390-200pct-chromium.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-denied-employee-1440-chromium.webp",
+    "desk": true
+   },
+   {
+    "label": "WebKit · Phone 320",
+    "after": "img/J18-denied-employee-320-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone",
+    "after": "img/J18-denied-employee-390-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone, 200% text",
+    "after": "img/J18-denied-employee-390-200pct-webkit.webp"
+   },
+   {
+    "label": "WebKit · Desktop",
+    "after": "img/J18-denied-employee-1440-webkit.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J18-slow",
+  "row": "J18",
+  "page": "Billing (signed in) · Status read slow (3.5 s in, no answer)",
+  "section": "Settings",
+  "note": "Owner. “Checking workplace access…” with Open billing and Refresh status shown disabled; neither is a Tab stop until the answer arrives. After 10 s without an answer the page shows the failed state.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/J18-slow-320-chromium.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/J18-slow-390-chromium.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-slow-390-200pct-chromium.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-slow-1440-chromium.webp",
+    "desk": true
+   },
+   {
+    "label": "WebKit · Phone 320",
+    "after": "img/J18-slow-320-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone",
+    "after": "img/J18-slow-390-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone, 200% text",
+    "after": "img/J18-slow-390-200pct-webkit.webp"
+   },
+   {
+    "label": "WebKit · Desktop",
+    "after": "img/J18-slow-1440-webkit.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J18-failed",
+  "row": "J18",
+  "page": "Billing (signed in) · Status read failed (503)",
+  "section": "Settings",
+  "note": "Owner. Amber line “We can’t check billing right now. Try again in a few minutes.” Refresh status is the filled button and now comes first; Open billing in Velani outlined below it.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/J18-failed-320-chromium.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/J18-failed-390-chromium.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-failed-390-200pct-chromium.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-failed-1440-chromium.webp",
+    "desk": true
+   },
+   {
+    "label": "WebKit · Phone 320",
+    "after": "img/J18-failed-320-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone",
+    "after": "img/J18-failed-390-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone, 200% text",
+    "after": "img/J18-failed-390-200pct-webkit.webp"
+   },
+   {
+    "label": "WebKit · Desktop",
+    "after": "img/J18-failed-1440-webkit.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "J18-lapse",
+  "row": "J18",
+  "page": "Billing (signed in) · After a lapse (renewal never answered, 16.5 s)",
+  "section": "Settings",
+  "note": "Owner. The paid details are withdrawn when the 15 s window ends; the page shows the failed state, Refresh status first.",
+  "shots": [
+   {
+    "label": "Phone 320",
+    "after": "img/J18-lapse-320-chromium.webp"
+   },
+   {
+    "label": "Phone",
+    "after": "img/J18-lapse-390-chromium.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/J18-lapse-390-200pct-chromium.webp"
+   },
+   {
+    "label": "Desktop",
+    "after": "img/J18-lapse-1440-chromium.webp",
+    "desk": true
+   },
+   {
+    "label": "WebKit · Phone 320",
+    "after": "img/J18-lapse-320-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone",
+    "after": "img/J18-lapse-390-webkit.webp"
+   },
+   {
+    "label": "WebKit · Phone, 200% text",
+    "after": "img/J18-lapse-390-200pct-webkit.webp"
+   },
+   {
+    "label": "WebKit · Desktop",
+    "after": "img/J18-lapse-1440-webkit.webp",
+    "desk": true
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]
