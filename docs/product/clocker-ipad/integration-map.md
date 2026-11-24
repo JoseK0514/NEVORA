@@ -99,7 +99,7 @@ Historical reference `codex/clocker-photo-monitoring-20261010` / `ecd06408dbc36c
 - Hard verified window is no later than the minimum of server identity expiry and30 seconds after confirmed verification. Warning during final10 seconds; partial PIN clears after20 idle seconds. Success displays for up to8 seconds, bounded by actual authority/privacy clearing.
 - Same-subject continuation requires server clearing followed by fresh PIN/state. Never extend a cookie, hold PIN digits, carry identity through backgrounding, or transfer an unsent confirmation to another actor.
 - iPad Safari and Home Screen web-app mode are both physical acceptance targets across the iPad family matrix. Browser WebKit is an automation approximation, not an iPad certification. Exact model/iPadOS evidence and the supported minimum remain pending on the acceptance sheet.
-- Registered is enrollment state, not current connectivity. No offline clock writes, optimistic success, hidden Owner switch, employee roster before PIN or automatic time correction.
+- Registered is enrollment state, not current connectivity. No offline clock writes, optimistic success, hidden Owner switch or automatic time correction. A pre-PIN roster is available only on an enrolled iPad explicitly opted in by the Owner.
 
 ## Current gates and evidence
 

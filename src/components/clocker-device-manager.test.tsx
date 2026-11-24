@@ -42,7 +42,7 @@ const locations: ClockerLocationView[] = [
 ];
 const shortNames = { main: 'Calle Loíza' };
 const device = (id: string, state: ClockerDeviceView['state'], locationId = 'main', extra: Partial<ClockerDeviceView> = {}): ClockerDeviceView => ({
-  id, name: id, locationId, state, version: 7, lastSeenAt: null, enrollmentExpiresAt: null, ...extra,
+  id, name: id, locationId, state, signInMode: 'EMPLOYEE_ID', version: 7, lastSeenAt: null, enrollmentExpiresAt: null, ...extra,
 });
 const render = (devices: ClockerDeviceView[], available = locations, lang: 'en' | 'es' = 'en') => renderToStaticMarkup(createElement(ClockerDeviceManager, {
   initialDevices: devices, locations: available, shortNames, timeZone: 'America/Puerto_Rico', action: rs.fn(), lang,

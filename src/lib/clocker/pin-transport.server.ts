@@ -4,8 +4,9 @@ import { authenticateClockerDevice } from './devices.server';
 import { clockerOriginFailure, clockerCookieNames, type ClockerCookieStore, type ClockerSecurity } from './setup.server';
 import { verifyEmployeeClockerPin, readClockerIdentity, clearClockerIdentity } from './pins.server';
 import { readPinKey } from './pin-crypto.server';
+import { readClockerRoster } from './roster.server';
 export const pinCookieName=(production:boolean)=>`${production?'__Host-':''}nevora_clocker_identity`;
-type Input={action:'status'}|{action:'clear'}|{action:'verify';pin:string;employeeId?:string};
+type Input={action:'status'}|{action:'clear'}|{action:'roster'}|{action:'verify';pin:string;employeeId?:string;selection?:string};
 async function input(request:Request):Promise<Input>{
  const reader=request.body?.getReader();if(!reader)throw Error('input');
  const decoder=new TextDecoder('utf-8',{fatal:true});let text='',size=0;
@@ -22,8 +23,10 @@ async function input(request:Request):Promise<Input>{
   // Never reinterpret an invalid supplied ID as the legacy PIN-only mode.
   if(Object.keys(row).length===3&&Object.hasOwn(row,'employeeId'))return {action:'verify',pin:row.pin,
    employeeId:typeof row.employeeId==='string'&&row.employeeId.length<=128?row.employeeId:''};
+  if(Object.keys(row).length===3&&Object.hasOwn(row,'selection'))return {action:'verify',pin:row.pin,
+   selection:typeof row.selection==='string'&&row.selection.length===64?row.selection:''};
  }
- if((row.action==='status'||row.action==='clear')&&Object.keys(row).length===1)return {action:row.action};
+ if((row.action==='status'||row.action==='clear'||row.action==='roster')&&Object.keys(row).length===1)return {action:row.action};
  throw Error('input');
 }
 const json=(body:object,status=200,retry?:number)=>Response.json(body,{status,headers:{
@@ -49,13 +52,15 @@ export async function handleClockerPin(request:Request,locationKey:string,deps:{
    await clearClockerIdentity(device.proof,token,deps.executor);deps.cookies.set(name,'',options(0));return json({state:'idle'});
   }
   const key=deps.key??readPinKey();
+  if(data.action==='roster')return json(await readClockerRoster(device.proof,key,deps.executor));
   if(data.action==='status'){
    const identity=await readClockerIdentity(device.proof,token,key,deps.executor);
    return identity?json({state:'verified',firstName:identity.firstName,expiresAt:identity.expiresAt}):json({state:'idle'});
   }
   // Clear the browser proof on any new PIN attempt; never restore stale identity after denial.
   deps.cookies.set(name,'',options(0));
-  const result=await verifyEmployeeClockerPin(device.proof,data.pin,key,deps.executor,data.employeeId);
+  const subject=data.selection===undefined?data.employeeId:{selection:data.selection};
+  const result=await verifyEmployeeClockerPin(device.proof,data.pin,key,deps.executor,subject);
   if(result.state==='denied')return json({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'},401);
   if(result.state==='limited')return json({state:'limited',code:'PIN_LIMITED',error:'Too many attempts. Wait a few minutes before trying again.',retryAfterSeconds:result.retryAfterSeconds,limitScope:result.limitScope},429,result.retryAfterSeconds);
   deps.cookies.set(name,result.token,options(60));
