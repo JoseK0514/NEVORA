@@ -6,7 +6,9 @@ import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 
 /** Server-derived portal proof, never an actor ID supplied by a form. */
 export type ClockerOwnerProof = { employeeId: string; sessionTokenHash: string };
+export type ClockerSignInMode = 'EMPLOYEE_ID' | 'NAME_PICKER';
 export type ClockerDeviceRecord = {
+  signInMode: ClockerSignInMode;
   id: string; locationId: string; workspaceId: string; name: string; active: boolean;
   version: number; credentialVersion: number; lastSeenAt: string | null;
   enrollmentExpiresAt: string | null; enrolledAt: string | null; revokedAt: string | null;
@@ -102,7 +104,7 @@ function activeLocation(locationId: string, workspaceId: string) {
   return assertion('EXISTS(SELECT 1 FROM locations WHERE id=$1 AND workspace_id=$2 AND active)', [locationId, workspaceId], 'clocker_location_invalid');
 }
 const projection = `SELECT d.id,d.location_id AS "locationId",l.workspace_id AS "workspaceId",d.name,d.active,
-  d.version,d.credential_version AS "credentialVersion",d.last_seen_at::text AS "lastSeenAt",
+  d.version,COALESCE(to_jsonb(d)->>'sign_in_mode','EMPLOYEE_ID') AS "signInMode",d.credential_version AS "credentialVersion",d.last_seen_at::text AS "lastSeenAt",
   d.enrollment_expires_at::text AS "enrollmentExpiresAt",d.enrolled_at::text AS "enrolledAt",d.revoked_at::text AS "revokedAt",
   CASE WHEN NOT d.active OR d.revoked_at IS NOT NULL THEN 'REVOKED'
     WHEN d.credential_hash IS NOT NULL THEN 'ACTIVE'
@@ -115,7 +117,7 @@ function one(results: unknown[][]): ClockerDeviceRecord {
   if (rows?.length !== 1) throw new ClockerDeviceError('UNAVAILABLE', 'Clocker device data is unavailable. Please try again.');
   return rows[0] as ClockerDeviceRecord;
 }
-function event(deviceId: string, actorId: string, kind: 'REGISTERED' | 'ENROLLED' | 'RENAMED' | 'ROTATION_REQUESTED' | 'REVOKED'): SqlStatement {
+function event(deviceId: string, actorId: string, kind: 'REGISTERED' | 'ENROLLED' | 'RENAMED' | 'ROTATION_REQUESTED' | 'REVOKED' | 'SIGN_IN_MODE_CHANGED'): SqlStatement {
   return { text: `INSERT INTO clocker_device_events(id,device_id,actor_employee_id,kind,device_version)
     SELECT $1,id,$2,$3,version FROM clocker_devices WHERE id=$4`, values: [randomUUID(), actorId, kind, deviceId] };
 }
@@ -157,7 +159,7 @@ export async function listClockerDevices(proof: ClockerOwnerProof, executor: Sql
 }
 
 async function mutate(
-  proof: ClockerOwnerProof, input: DeviceMutation, kind: 'RENAMED' | 'ROTATION_REQUESTED' | 'REVOKED',
+  proof: ClockerOwnerProof, input: DeviceMutation, kind: 'RENAMED' | 'ROTATION_REQUESTED' | 'REVOKED' | 'SIGN_IN_MODE_CHANGED',
   update: SqlStatement, executor: SqlExecutor,
 ): Promise<ClockerDeviceRecord> {
   validateMutation(input);
@@ -170,6 +172,12 @@ async function mutate(
   if (kind === 'ROTATION_REQUESTED') statements.push(assertion(`EXISTS(SELECT 1 FROM clocker_devices d
     JOIN locations l ON l.id=d.location_id WHERE d.id=$1 AND l.active AND l.workspace_id=$2)`,
     [input.deviceId,workspace.id], 'clocker_location_invalid'));
+  if (kind === 'SIGN_IN_MODE_CHANGED') statements.push(assertion(`EXISTS(
+    SELECT 1 FROM clocker_devices d JOIN locations l ON l.id=d.location_id
+    JOIN employees actor ON actor.id=$3 JOIN locations home ON home.id=actor.primary_location_id
+    WHERE d.id=$1 AND d.active AND d.credential_hash IS NOT NULL AND d.revoked_at IS NULL
+      AND l.active AND l.workspace_id=$2 AND home.workspace_id=$2)`,
+    [input.deviceId,workspace.id,proof.employeeId], 'clocker_device_denied'));
   const results = await transaction(executor, [...statements,update,event(input.deviceId,proof.employeeId,kind),readDevice(input.deviceId),ownerAssertion(proof)]);
   return one(results.slice(0,-1));
 }
@@ -177,6 +185,18 @@ export async function renameClockerDevice(proof: ClockerOwnerProof, input: Devic
   const name = deviceName(input?.name);
   return mutate(proof,input,'RENAMED',{
     text: 'UPDATE clocker_devices SET name=$2,version=version+1,updated_at=clock_timestamp() WHERE id=$1', values: [input.deviceId,name],
+  },executor);
+}
+export async function setClockerDeviceSignInMode(
+  proof: ClockerOwnerProof, input: DeviceMutation & { signInMode: ClockerSignInMode },
+  executor: SqlExecutor = neonNotificationExecutor(),
+) {
+  if (input?.signInMode !== 'EMPLOYEE_ID' && input?.signInMode !== 'NAME_PICKER') {
+    throw new ClockerDeviceError('INPUT_INVALID', 'Choose a Clocker sign-in mode.');
+  }
+  return mutate(proof,input,'SIGN_IN_MODE_CHANGED',{
+    text: 'UPDATE clocker_devices SET sign_in_mode=$2,version=version+1,updated_at=clock_timestamp() WHERE id=$1',
+    values: [input.deviceId,input.signInMode],
   },executor);
 }
 export async function revokeClockerDevice(proof: ClockerOwnerProof, input: DeviceMutation, executor: SqlExecutor = neonNotificationExecutor()) {

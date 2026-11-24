@@ -1,14 +1,14 @@
 import { beforeEach, expect, it, rs } from '@rstest/core';
-const mocks=rs.hoisted(()=>({proof:rs.fn(),headers:rs.fn(),register:rs.fn(),rename:rs.fn(),rotate:rs.fn(),revoke:rs.fn()}));
+const mocks=rs.hoisted(()=>({proof:rs.fn(),headers:rs.fn(),register:rs.fn(),rename:rs.fn(),rotate:rs.fn(),revoke:rs.fn(),signInMode:rs.fn()}));
 rs.mock('server-only',()=>({}));
 rs.mock('next/headers',()=>({headers:mocks.headers}));
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:mocks.proof}));
 rs.mock('@/lib/clocker/devices.server',()=>({
- registerClockerDevice:mocks.register,renameClockerDevice:mocks.rename,rotateClockerDevice:mocks.rotate,revokeClockerDevice:mocks.revoke,
+ registerClockerDevice:mocks.register,renameClockerDevice:mocks.rename,rotateClockerDevice:mocks.rotate,revokeClockerDevice:mocks.revoke,setClockerDeviceSignInMode:mocks.signInMode,
  ClockerDeviceError:class extends Error{constructor(public code:string,message:string){super(message);}},
 }));
 import {manageClockerDeviceAction} from './actions';
-const record={id:'tablet',name:'Front tablet',locationId:'loc-1',workspaceId:'workspace-fuel',active:true,version:2,credentialVersion:1,lastSeenAt:null,enrollmentExpiresAt:'2030-10-07 12:10:00-04',enrolledAt:null,revokedAt:null,state:'PENDING'};
+const record={id:'tablet',name:'Front tablet',locationId:'loc-1',signInMode:'EMPLOYEE_ID',workspaceId:'workspace-fuel',active:true,version:2,credentialVersion:1,lastSeenAt:null,enrollmentExpiresAt:'2030-10-07 12:10:00-04',enrolledAt:null,revokedAt:null,state:'PENDING'};
 const data=(values:Record<string,string>)=>{const form=new FormData();for(const [key,value]of Object.entries(values))form.set(key,value);return form;};
 beforeEach(()=>{
  rs.clearAllMocks();
@@ -54,4 +54,15 @@ it('does not expose internal SQL or credential parameters after a failure',async
  mocks.register.mockRejectedValue(Error('SQL credential_hash=secret-value'));
  const result=await manageClockerDeviceAction(data({operation:'REGISTER',name:'Front',locationId:'loc-1'}));
  expect(result).toMatchObject({ok:false,refresh:true});expect(JSON.stringify(result)).not.toMatch(/SQL|secret-value|credential_hash/);
+});
+
+it('lets only the Owner save an explicit sign-in mode against the reviewed device version', async () => {
+ const form=data({operation:'SET_SIGN_IN_MODE',deviceId:'tablet',expectedVersion:'2',signInMode:'NAME_PICKER'});
+ mocks.signInMode.mockResolvedValue({...record,version:3,state:'ACTIVE',signInMode:'NAME_PICKER'});
+ expect(await manageClockerDeviceAction(form)).toMatchObject({ok:true,device:{id:'tablet',version:3,signInMode:'NAME_PICKER'}});
+ expect(mocks.signInMode).toHaveBeenCalledWith({employeeId:'real-owner',sessionTokenHash:'a'.repeat(64)},
+  {deviceId:'tablet',expectedVersion:2,signInMode:'NAME_PICKER'});
+ mocks.proof.mockResolvedValue({employee:{id:'manager',role:'MANAGER'},sessionTokenHash:'b'.repeat(64)});
+ expect(await manageClockerDeviceAction(form)).toMatchObject({ok:false});
+ expect(mocks.signInMode).toHaveBeenCalledTimes(1);
 });

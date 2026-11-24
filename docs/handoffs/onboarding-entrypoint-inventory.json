@@ -1862,6 +1862,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/app/employees/[employeeId]/clocker-location-actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "CONVERTED",
+      "reason": "A current Owner session and same-origin request are required. The Clocker location policy uses the company-bound application executor and validates the employee and selected locations in that company.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/app/employees/[employeeId]/clocker-pin/actions.ts",
       "tags": [
         "server-action"

@@ -10,6 +10,8 @@ import { pinBatch, pinActorGuards, pinActorAssertion, pinKeyGuard, pinManagement
 import { reservePinAttempt, releasePinReservation, pinCommitGuards, type PinLimitScope } from './pin-limits.server';
 import {normalizeEmployeeNumber} from '../tenancy/identity';
 import { pinSessionHash } from './pin-identity.server';
+import { clockerLocationEligible } from './location-access.server';
+import { resolveClockerRosterSelection } from './roster.server';
 export { readClockerIdentity, clearClockerIdentity, clockerIdentityWriteGuards } from './pin-identity.server';
 export { ClockerPinError } from './pin-authority.server';
 export type EmployeePinView = { employeeId:string; configured:boolean; version:number };
@@ -63,13 +65,15 @@ type PinRow={employeeId:string;pinHash:string;version:number;employeeUpdatedAt:s
 /** Reserve the shared/tablet attempt budget before slow hashing, then issue a
  * 60-second identity only if this remains the tablet’s latest attempt and current
  * device/PIN/employee eligibility still matches. Denials do not release failure credit. */
-export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pin:string,key:Buffer,executor:SqlExecutor=neonNotificationExecutor(),employeeId?:string):Promise<PinVerification>{
+export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pin:string,key:Buffer,executor:SqlExecutor=neonNotificationExecutor(),subject?:string|{selection:string}):Promise<PinVerification>{
  try{validatePin(pin);}catch{throw new ClockerPinError('INVALID');}
  const workspace=await getWorkspace(executor);
  const fingerprint=pinFingerprint(pin,workspace.id,key);
- const identified=employeeId!==undefined;
- let personId:string|undefined;
- if(identified&&typeof employeeId==='string'&&employeeId.length<=128&&!/[\p{Cc}\p{Cf}]/u.test(employeeId)){
+ const identified=subject!==undefined;
+ const picked=typeof subject==='object'?await resolveClockerRosterSelection(device,subject.selection,key,executor):null;
+ const employeeId=typeof subject==='string'?subject:undefined;
+ let personId=picked?.employeeId;
+ if(typeof employeeId==='string'&&employeeId.length<=128&&!/[\p{Cc}\p{Cf}]/u.test(employeeId)){
   const number=normalizeEmployeeNumber(employeeId);
   if(number){
    // Existing Employee ID comparison is JavaScript trim+Unicode uppercase.
@@ -89,8 +93,7 @@ export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pi
   await burnUnknownPin(pin,workspace.id,key);return {state:'denied'};
  }
  const [row]=await executor.query<PinRow>(s(`SELECT p.employee_id AS "employeeId",p.pin_hash AS "pinHash",p.version,
-   e.updated_at::text AS "employeeUpdatedAt",e.active AND EXISTS(SELECT 1 FROM employee_location_eligibility
-   WHERE employee_id=e.id AND location_id=$3) AS eligible
+   e.updated_at::text AS "employeeUpdatedAt",e.active AND (${clockerLocationEligible(3)}) AS eligible
    FROM employee_clocker_pins p JOIN employees e ON e.id=p.employee_id
    WHERE p.workspace_id=$1 AND p.lookup_hash=$2 AND ($4::text IS NULL OR p.employee_id=$4)`,[workspace.id,fingerprint,device.locationId,personId??null]));
  if(!row){await burnUnknownPin(pin,workspace.id,key);return {state:'denied'};}
@@ -107,9 +110,11 @@ export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pi
    ...clockerDeviceWriteGuards(device),pinKeyGuard(workspace.id,key),
    assertPin(`EXISTS(SELECT 1 FROM employees e JOIN employee_clocker_pins p ON p.employee_id=e.id
      WHERE e.id=$1 AND e.active AND e.updated_at::text=$2 AND p.version=$3 AND p.pin_hash=$4 AND p.workspace_id=$5
-     AND EXISTS(SELECT 1 FROM employee_location_eligibility WHERE employee_id=e.id AND location_id=$6))
-     AND EXISTS(SELECT 1 FROM clocker_pin_limits WHERE scope='DEVICE' AND scope_id=$7 AND latest_attempt=$8)`,
-     [row.employeeId,row.employeeUpdatedAt,row.version,row.pinHash,workspace.id,device.locationId,device.deviceId,reservation.attemptId],'IDENTITY_INVALID'),
+     AND (${clockerLocationEligible(6)}))
+     AND EXISTS(SELECT 1 FROM clocker_pin_limits WHERE scope='DEVICE' AND scope_id=$7 AND latest_attempt=$8)
+     AND ($9::integer IS NULL OR EXISTS(SELECT 1 FROM clocker_devices d
+       WHERE id=$7 AND version=$9 AND to_jsonb(d)->>'sign_in_mode'='NAME_PICKER'))`,
+     [row.employeeId,row.employeeUpdatedAt,row.version,row.pinHash,workspace.id,device.locationId,device.deviceId,reservation.attemptId,picked?.deviceVersion??null],'IDENTITY_INVALID'),
    s(`INSERT INTO clocker_pin_sessions(device_id,employee_id,token_hash,pin_version,credential_version,employee_updated_at,expires_at)
      VALUES($1,$2,$3,$4,$5,$6::timestamptz,clock_timestamp()+interval '60 seconds')
      ON CONFLICT(device_id) DO UPDATE SET employee_id=EXCLUDED.employee_id,token_hash=EXCLUDED.token_hash,

@@ -82,6 +82,7 @@ export const BASE_MIGRATIONS = [
   '0075_manager_open_shifts.sql',
   '0076_location_addresses.sql',
   '0077_clocker_face_verification.sql',
+  '0078_clocker_picker.sql',
 ] as const;
 
 /** Applied last, in exactly this order, once the company and Owner exist:
