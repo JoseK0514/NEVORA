@@ -1,0 +1,6 @@
+[
+  {"rule": "target-size", "width": [320], "selector": ".b-week-strip, .c-week-strip, [data-week-strip]", "reason": "320 week strip: seven days must fit at 320; each day is 40px wide (DESIGN.MD week strip refinement)."},
+  {"rule": "reach", "width": [320], "selector": ".b-week-strip, .c-week-strip, [data-week-strip]", "reason": "320 week strip, as above."},
+  {"rule": "target-size", "minWidth": 1024, "selector": "aside.sidebar, .sidebar", "reason": "Desktop sidebar links are 200x40 with a mouse: WCAG 2.5.8 passes (24px); under the 44pt touch goal by design."},
+  {"rule": "reach", "minWidth": 1024, "selector": "aside.sidebar, .sidebar", "reason": "Desktop sidebar links sit 40px apart, as above."}
+]
