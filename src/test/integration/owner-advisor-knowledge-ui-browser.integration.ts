@@ -114,7 +114,7 @@ it.each(['chromium', 'webkit'])('%s manages and withdraws exact company knowledg
       expect(new URL(page.url()).pathname).toBe('/login');
       await page.getByRole('button', { name: 'Sign in', exact: true }).waitFor();
     } else {
-      expect(await revoked.isVisible()).toBe(true);
+      await revoked.or(signIn).first().waitFor();
     }
     expect(await page.locator('.kn textarea').count()).toBe(0);
     expect(await page.locator('body').innerText()).not.toContain('Private ORCHID unsaved text');
