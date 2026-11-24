@@ -55,9 +55,12 @@
       background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
     /* Final fixes K (Insights): the date range line under Insights' title (p.c-ins__range) sits on the same border-image
      * band, so axe read its white words on the canvas (1.08:1) at 1024 and 1440. It has no glass, so it paints the band
-     * itself at its height: --b-band-solid 84% toward black. */
+     * itself at its height: --b-band-solid 84% toward black. Release follow-ups (Nov 24): a flat fill showed as a darker
+     * strip at 200% text, where the band's gradient lightens behind it. The fill is clipped to the glyphs
+     * (background-clip: text), under the 86% white text, so the band shows unchanged around the words at every size;
+     * contrast tools still read the fill as the line's background. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ p.c-ins__range:not(#g48a):not(#g48b) {
-      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; }
+      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; -webkit-background-clip: text !important; background-clip: text !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
@@ -1067,7 +1070,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * circle (the white thumb's teal circle and the amber one beside "For you" read as stickers). A count that waits on the
  * person keeps one small amber dot before it. Supersedes "a 20px count pill" in NV-103; the gap and the type stay. */
 @layer nv-b {
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 1 !important; font-size: var(--b-fs-caption) !important; line-height: 16px !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 1 !important; font-size: var(--b-fs-caption) !important; line-height: 1rem !important; font-weight: 600 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"]) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { content: "" !important; flex: none !important; width: 6px !important; height: 6px !important; margin-inline-end: 5px !important; border-radius: 50% !important; background: #FFC46B !important; }

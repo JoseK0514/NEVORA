@@ -9,10 +9,13 @@ import type {AuthLang} from '@/lib/auth-copy';
 import {accessNotice,contactLabel,supportEmail,unreachableNotice} from './copy';
 import styles from './recovery.module.css';
 const copy={
- en:{title:'Workplace billing',intro:'Review your workplace access and manage your subscription through Velani.',loading:'Checking workplace access…',denied:'Sign in with the current workplace Owner account to manage billing.',status:'Access',plan:'Plan',people:'Active employees',trial:'Trial ends',paid:'Paid through',grace:'Grace period ends',utc:' (UTC)',none:'Not selected',refresh:'Refresh status',billing:'Open billing in Velani',opening:'Opening billing…',failed:'Billing could not be opened. No payment is confirmed. Try again from this page.',back:'Return to workspace',pay:'My pay statements',note:'Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment.',states:{trial:'Trial',paid:'Active',grace:'Payment needs attention',restricted:'Access paused'}},
- es:{title:'Facturación del negocio',intro:'Revisa el acceso de tu negocio y administra tu suscripción en Velani.',loading:'Consultando el acceso del negocio…',denied:'Inicia sesión con la cuenta del propietario actual para administrar la facturación.',status:'Acceso',plan:'Plan',people:'Empleados activos',trial:'La prueba termina',paid:'Pagado hasta',grace:'El período de gracia termina',utc:' (UTC)',none:'Sin seleccionar',refresh:'Actualizar estado',billing:'Abrir facturación en Velani',opening:'Abriendo facturación…',failed:'No se pudo abrir la facturación. No hay ningún pago confirmado. Inténtalo de nuevo desde esta página.',back:'Volver al negocio',pay:'Mis comprobantes de pago',note:'Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago.',states:{trial:'Prueba',paid:'Activo',grace:'El pago requiere atención',restricted:'Acceso pausado'}},
+ en:{title:'Workplace billing',intro:'Review your workplace access and manage your subscription through Velani.',loading:'Checking workplace access…',slow:'Still checking your access. This connection is slow. Your billing details appear when the check finishes.',denied:'Sign in with the current workplace Owner account to manage billing.',status:'Access',plan:'Plan',people:'Active employees',trial:'Trial ends',paid:'Paid through',grace:'Grace period ends',utc:' (UTC)',none:'Not selected',refresh:'Refresh status',billing:'Open billing in Velani',opening:'Opening billing…',failed:'Billing could not be opened. No payment is confirmed. Try again from this page.',back:'Return to workspace',pay:'My pay statements',note:'Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment.',states:{trial:'Trial',paid:'Active',grace:'Payment needs attention',restricted:'Access paused'}},
+ es:{title:'Facturación del negocio',intro:'Revisa el acceso de tu negocio y administra tu suscripción en Velani.',loading:'Consultando el acceso del negocio…',slow:'Seguimos comprobando tu acceso. La conexión está lenta. Los detalles de facturación aparecen cuando termine la comprobación.',denied:'Inicia sesión con la cuenta del propietario actual para administrar la facturación.',status:'Acceso',plan:'Plan',people:'Empleados activos',trial:'La prueba termina',paid:'Pagado hasta',grace:'El periodo de gracia termina',utc:' (UTC)',none:'Sin seleccionar',refresh:'Actualizar estado',billing:'Abrir facturación en Velani',opening:'Abriendo facturación…',failed:'No se pudo abrir la facturación. No hay ningún pago confirmado. Inténtalo de nuevo desde esta página.',back:'Volver al negocio',pay:'Mis comprobantes de pago',note:'Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago.',states:{trial:'Prueba',paid:'Activo',grace:'El pago requiere atención',restricted:'Acceso pausado'}},
 };
 type State={phase:'loading'|'unavailable'|'denied'}|{phase:'ready';status:CommerceStatus};
+/** QA S-01's threshold (scoped-read-frame STUCK_MS): a status check still running after this says it is still checking,
+ * until the answer or the 10 s cut-off (which shows the failed state). */
+export const SLOW_CHECK_MS=2500;
 export function billingDestination(value:unknown,origin:string):string {
  if(!value||typeof value!=='object'||!('url' in value)||typeof value.url!=='string')throw Error('invalid_destination');
  const url=new URL(value.url);
@@ -25,7 +28,8 @@ function usableZone(timeZone:string|null|undefined):string|null {
  try{new Intl.DateTimeFormat('en',{timeZone});return timeZone;}catch{return null;}
 }
 export function BillingRecovery({lang,billingOrigin,payrollEnabled,timeZone}: {lang:AuthLang;billingOrigin:string;payrollEnabled:boolean;timeZone?:string|null}) {
- const t=copy[lang], [state,setState]=useState<State>({phase:'loading'}),[opening,setOpening]=useState(false),[failed,setFailed]=useState(false);
+ const t=copy[lang], [state,setState]=useState<State>({phase:'loading'}),[opening,setOpening]=useState(false),[failed,setFailed]=useState(false),[slow,setSlow]=useState(false);
+ useEffect(()=>{if(state.phase!=='loading')return;const timer=setTimeout(()=>setSlow(true),SLOW_CHECK_MS);return()=>{clearTimeout(timer);setSlow(false);};},[state.phase]);
  const action=useRef<AbortController|null>(null);
  const refresh=useRef<(()=>void)|null>(null);
  useEffect(()=>{
@@ -66,18 +70,20 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled,timeZone}: {l
  const date=(value:string)=>new Intl.DateTimeFormat(lang,{dateStyle:'medium',timeZone:zone??'UTC'}).format(new Date(value));
  return <><h1>{t.title}</h1><p>{t.intro}</p>
   <div aria-live="polite" aria-busy={state.phase==='loading'}>
-   {state.phase==='loading'?<p className={styles.callout} role="status">{t.loading}</p>:state.phase==='denied'?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{t.denied}</p>:state.phase==='unavailable'?<p className={styles.callout} data-tone="amber" role="status"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{unreachableNotice(lang)}</p>:null}
+   {state.phase==='loading'?<p className={styles.callout} role="status">{slow?t.slow:t.loading}</p>:state.phase==='denied'?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{t.denied}</p>:state.phase==='unavailable'?<p className={styles.callout} data-tone="amber" role="status"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{unreachableNotice(lang)}</p>:null}
    {notice?<p className={styles.callout} data-tone={notice.tone} role="status"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{notice.text}</p>:null}
    {status?<dl className={styles.details}><div><dt>{t.status}</dt><dd>{t.states[status.state]}</dd></div><div><dt>{t.plan}</dt><dd>{status.plan===null?t.none:status.plan==='small'?'Small':'Team'}</dd></div><div><dt>{t.people}</dt><dd>{status.activeEmployees} / {status.employeeLimit}</dd></div>{([[t.trial,status.trialEndsAt],[t.paid,status.paidThrough],[t.grace,status.graceEndsAt]] as const).map(([label,value])=>value?<div key={label}><dt>{label}{suffix}</dt><dd>{date(value)}</dd></div>:null)}</dl>:null}
   </div>
   {failed?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{t.failed}</p>:null}
   <div className={styles.actions}>
    {notice?.contact?<a className={styles.action} href={`mailto:${supportEmail}`}>{contactLabel(lang)}</a>:null}
+   {/* J18 (Nov 24, 2026): when the status can't be read, Refresh is the filled button and comes first, above the outlined
+     * Open billing, as the filled button does in every other state. */}
+   {state.phase==='unavailable'?<button className={styles.action} type="button" disabled={opening} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
    {state.phase!=='denied'?<button className={notice?.contact||state.phase==='unavailable'?styles.secondary:styles.action} type="button" disabled={opening||state.phase==='loading'} onClick={()=>void openBilling()}>{opening?t.opening:t.billing}</button>:null}
    {/* Phase 2 (Nov 23, 2026): the text links stand one per line, centred, so none wraps beside another at 200% text. */}
    {/* Phase 5 (Nov 17, 2026): one filled button per state. Refresh is that button only when the status could not be
      * read; otherwise it and the ways out of this page are text links, as the links under the sign-in card. */}
-   {state.phase==='unavailable'?<button className={styles.action} type="button" disabled={opening} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
    {state.phase!=='unavailable'||status?.operational||payrollEnabled?<div className={`${styles.links} ${styles.linksStack}`}>
     {state.phase!=='unavailable'?<button className={styles.quiet} type="button" disabled={opening||state.phase==='loading'} onClick={()=>{setFailed(false);refresh.current?.();}}>{t.refresh}</button>:null}
     {status?.operational?<Link className={styles.quiet} href="/app" prefetch={false}>{t.back}</Link>:null}
