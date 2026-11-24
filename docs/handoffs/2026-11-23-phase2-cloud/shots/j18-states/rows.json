@@ -94,7 +94,7 @@
   "row": "J18",
   "page": "Billing (signed in) · Access denied (Manager)",
   "section": "Settings",
-  "note": "Manager. Server page for a non-Owner: “Workplace access needs attention” and “Ask your workplace Owner to review billing. Only the Owner account can manage the subscription.” Only My pay statements and Sign out; no status read.",
+  "note": "Manager. Server page for a non-Owner: “Workplace access needs attention” and “Ask your workplace Owner to review billing. Only the Owner account can manage the subscription.” Only My pay statements (in the actions block, with the Owner page’s gap under the paragraph) and Sign out; no status read.",
   "shots": [
    {
     "label": "Phone 320",
@@ -184,7 +184,7 @@
   "row": "J18",
   "page": "Billing (signed in) · Status read slow (3.5 s in, no answer)",
   "section": "Settings",
-  "note": "Owner. “Checking workplace access…” with Open billing and Refresh status shown disabled; neither is a Tab stop until the answer arrives. After 10 s without an answer the page shows the failed state.",
+  "note": "Owner. “Checking workplace access…”, and from 2.5 s (S-01’s threshold) “Still checking your access. This connection is slow. Your billing details appear when the check finishes.” in the same status line; Open billing and Refresh status stay disabled and are not Tab stops. After 10 s without an answer the page shows the failed state.",
   "shots": [
    {
     "label": "Phone 320",

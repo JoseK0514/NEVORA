@@ -7,6 +7,13 @@ Branch `claude-codex-collab-nevora-batch-public`, with `claude-codex-collab-nevo
 |---|---|
 | `7c3d1bf9` | Code: `src/components/commerce-recovery/billing.tsx`. When the status can't be read (failed, or after a lapse), the filled “Refresh status” now comes first, above the outlined “Open billing in Velani”, in reading and focus order. Test: `billing-order.test.tsx` (fails before the change). No wording changed. |
 
+| `a19b39a6` | Code: `src/app/app/billing/page.tsx`. On the Manager and Employee page, “My pay statements” (and Try again, when shown) sit in the same actions block as the Owner's, so they have its `--b-space-20` gap under the paragraph. Test in `recovery.test.tsx` (fails before the change). No wording changed. |
+| `c8597c51` | Code: `billing.tsx`. A status check still running after 2.5 s (S-01's threshold, the scoped read frame's `STUCK_MS`) replaces “Checking workplace access…” in the same status line with Jose's wording (option B). EN: “Still checking your access. This connection is slow. Your billing details appear when the check finishes.” ES: “Seguimos comprobando tu acceso. La conexión está lenta. Los detalles de facturación aparecen cuando termine la comprobación.” Test: `billing-slow.test.tsx`. |
+
+The polish commits came after the first capture. The slow, Manager and Employee views were captured again on `c8597c51`
+in both browsers (24 views, replacing the earlier ones): no overflow, overlap or repeats; axe 0; rings and 44px on every
+stop.
+
 The shots commit (this report, `shots/j18-states/rows.json` and 56 webp files at quality 80) comes last.
 
 ## How it was checked
@@ -45,7 +52,7 @@ The shots commit (this report, `shots/j18-states/rows.json` and 56 webp files at
 | Export only | Español › Open billing in Velani (filled) › Refresh status › My pay statements › Sign out › Privacy › Terms › Support |
 | Owner denied | Español › Refresh status › My pay statements › Sign out › footer |
 | Manager, Employee | Español › My pay statements › Sign out › footer |
-| Slow | Español › My pay statements › Sign out › footer (Open billing and Refresh are disabled while it checks) |
+| Slow | Español › My pay statements › Sign out › footer (Open billing and Refresh are disabled while it checks; from 2.5 s the status line says it is still checking) |
 | Failed, Lapse | Español › **Refresh status (filled)** › Open billing in Velani (outlined) › My pay statements › Sign out › footer |
 
 - **Lapse**: the paid details (plan, people, dates) are withdrawn when the 15 s window ends, and the page shows the same
@@ -63,11 +70,11 @@ Blocking: none left. Fixed in `7c3d1bf9`:
 1. [Hierarchy] Failed and lapse: the state's one filled button (Refresh status) sat below the outlined Open billing
    and came second in focus order. It now comes first, as the filled button does in every other state.
 
-Polish (left as is)
-2. [Spacing] Manager and Employee page at 320: “My pay statements” sits closer under the paragraph than the Owner's
-   actions do under theirs. The non-Owner page doesn't use the actions block's top margin. Seen in the shots, not measured.
-3. [States] Slow: “Checking workplace access…” doesn't change between 3 s and the 10 s cut-off. The page gives no
-   sign that the check is taking longer than usual.
+Polish, done in this batch (Jose, Nov 24)
+2. [Spacing] Manager and Employee page: “My pay statements” sat close under the paragraph. It now has the Owner page's
+   actions gap (`a19b39a6`).
+3. [States] Slow: the page gave no sign that the check was taking longer than usual. From 2.5 s it says it is still
+   checking (`c8597c51`).
 
 States: Empty ✓ (Manager, Employee) · Loading ✓ (slow) · Error ✓ (failed, Owner denied, export only) · Success (in `j18-billing.md`) ·
 Edge ✓ (lapse, 320, 200% text, WebKit)
