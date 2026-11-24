@@ -63,10 +63,15 @@ async function readActionCenterCore(proof:SessionMutationProof,weekStart:string,
  * is therefore distinct from missing source evidence. validForMs is the shortest
  * source/session lifetime after elapsed loading time is deducted. */
 export async function readActionCenter(proof:SessionMutationProof,weekStart:string,executor:SqlExecutor=neonNotificationExecutor(),readScheduling:SchedulingReader=schedulingReader):Promise<ActionCenter>{
+ return readCompanyResult(proof,()=>readActionCenterCore(proof,weekStart,executor,readScheduling),executor);
+}
+
+/** Opt into the current assigned-location projection without changing the Company reader's contract. */
+export async function readActionCenterForCurrentScope(proof:SessionMutationProof,weekStart:string,executor:SqlExecutor=neonNotificationExecutor()):Promise<ActionCenter>{
  if(proof.employee.role==='MANAGER'){
   const access=await readOperationalAuthority(proof,executor);
   if(access.state!=='ready')return {state:'unavailable',reason:access.reason==='access_denied'?'access_denied':'read_failed'};
   if(access.scope?.mode==='LOCATIONS')return readScopedActionCenter(proof,weekStart,access.authority,executor);
  }
- return readCompanyResult(proof,()=>readActionCenterCore(proof,weekStart,executor,readScheduling),executor);
+ return readActionCenter(proof,weekStart,executor);
 }
