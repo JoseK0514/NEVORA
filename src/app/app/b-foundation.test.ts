@@ -98,7 +98,7 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
     expect(contexts(sheet, quiet)).toEqual([['@layer nv-b', '@media (min-width: 768px)']]);
     // Final fixes K (Insights): the date range line under the title paints the band at its height (no glass).
     const range = '.c-page > header.c-title ~ p.c-ins__range:not(#g48a):not(#g48b)';
-    expect(sheet).toContain(`${range} {\n      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; }`);
+    expect(sheet).toContain(`${range} {\n      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; -webkit-background-clip: text !important; background-clip: text !important; }`);
     expect(contexts(sheet, range)).toEqual([['@layer nv-b', '@media (min-width: 768px)']]);
     // Four id steps: over the desktop layer's search field rule (three :is() ids and :not(#nvd-none)).
     expect(css('app/app/owner-b-desktop.css')).toContain('form.c-team-search .c-team-search__field:not(#nvd-none) {');

@@ -175,3 +175,32 @@ describe('release sweep, 200% text on phones (Nov 23)', () => {
     expect(css('components/owner-b/owner-b.css')).toContain('@container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__state > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); max-width: 100%; flex: 0 1 auto; white-space: normal; overflow-wrap: break-word; } }');
   });
 });
+
+describe('release follow-ups (Nov 24)', () => {
+  it('the phone tab bar labels are rem (10.5/13px at 100%) and grow to a cap; at enlarged text they may wrap and the bar grows', () => {
+    const shell = css('app/app/owner-b-shell.css');
+    expect(shell).toContain('font: 500 min(0.65625rem, 13px)/min(0.8125rem, 16px) Inter');
+    expect(shell).not.toMatch(/\.mobile-nav \.mobile-nav-link \{[^}]*font: 500 10\.5px/);
+    const at = shell.indexOf('@container not style(--nv-rem: 16px) {\n      html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b] .mobile-nav');
+    expect(at).toBeGreaterThan(0);
+    const block = shell.slice(at, shell.indexOf('\n    }', at));
+    expect(block).toContain('.mobile-nav-link:not(#tb1):not(#tb2) { height: auto !important; min-height: 56px !important;');
+    expect(block).toContain('> span:not(.b-tab-badge) { max-width: 100% !important; white-space: normal !important; text-align: center !important; overflow: visible !important; text-overflow: clip !important; }');
+  });
+  it("a Manager's segment count pill is rem with its numeral, and the shared count's line is 1rem", () => {
+    expect(css('components/messages-manager-b.css')).toContain('.mb-segn { display: inline-grid; place-items: center; min-width: 1.25rem; height: 1.25rem;');
+    expect(css('app/app/b-foundation.css')).toContain('font-size: var(--b-fs-caption) !important; line-height: 1rem !important; font-weight: 600 !important; }');
+  });
+});
+
+describe('desktop back link reach (Nov 24)', () => {
+  it("a quiet page's back link is relative from 768px at every pointer, so its 44px ::after is placed on it", () => {
+    const shell = css('app/app/owner-b-shell.css');
+    const rule = ':is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame .q-nav > .q-nav__l { position: relative !important; inset: auto !important; }';
+    const at = shell.indexOf(rule);
+    expect(at).toBeGreaterThan(0);
+    // In a plain min-width: 768px block, not the (pointer: coarse) one.
+    expect(shell.lastIndexOf('@media', at)).toBe(shell.lastIndexOf('@media (min-width: 768px) {', at));
+    expect(css('app/app/owner-b-pages.css')).toContain('.q-nav > .q-nav__l:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after { content: "" !important; display: block !important; position: absolute !important; top: min(0px, calc(50% - 22px))');
+  });
+});
