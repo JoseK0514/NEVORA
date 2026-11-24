@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-23T06:33:00Z",
+  "observedAt": "2026-11-24T12:06:11Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "1f6602cb94a8f54f87cbb3a12083c2bf7dd9ee78",
+      "sha": "12263073083a2e5fc387a4728ed13ead7b346cc4",
       "disposition": "target",
-      "reason": "Published Development base for Jose's November 22 joined release continuation, including the Employee Home compact approval date range. All subsequent assembly commits are linear descendants of this base."
+      "reason": "Current Development baseline for the isolated Checkout redirect assembly. Preserves the existing opt-in Clocker picker backend."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "ece147e7f6160f1feeb8c640a09fe3b95eeef439",
-      "disposition": "reference",
-      "reason": "Jose authorized the joined Development continuation on November 22. Reviewed delivery b15cf3d81b7ce2a6d72164db83dbb94c81fcf74f is identified by Jira comments 10594 and 10597 and imported with a squash to preserve required linear history. Subsequent commits through this recorded head contain the time-format pass, Location Manager Team/Home/shift UI, Schedule/replacement rechecks, Copy receipt redesign, gaps ledger and inbox operational-access unit fixture. The inbox fixture overlaps the independently verified integration repair. These commits remain a separate reference delivery pending review and qualification, as the coordinating Phase 2 handoff directs preserving the exact reviewed candidate during live source drift. This assembly includes the validated four-commit Phase 2 backend handoff, diagnosed repairs and regenerated guides. Exact candidate and branch-push qualification are required."
+      "sha": "8c6ee1b67fd987189bd7edbe6d68655c2aaff036",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
     },
     {
       "branch": "claude/eager-meitner-wioy6k",
@@ -540,6 +540,234 @@
       "disposition": "superseded",
       "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed.",
       "archiveRef": "refs/tags/archive/branches/2026-11-19/nevora-30-day-phase"
+    },
+    {
+      "branch": "claude-codex-collab-nevora-account",
+      "sha": "ba21804201cd30d0d29114b2e63e8b157e59f4f0",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-alerts",
+      "sha": "ee222b0da2eb35f40f9e006f0f5f2d7f73e8e473",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-clocker",
+      "sha": "743212e8cce365ea269c703fa200563d64f4f66d",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-nav",
+      "sha": "c5d8273e14f9061e925739e62a3034298f9782a4",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-public",
+      "sha": "11574da9cc25e25c0d465b2c10a113af9a3da0b7",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-time-team",
+      "sha": "7c00717aa3afdc84c75da9e8550823792445d9f9",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-clocker-states",
+      "sha": "6ae27d6082615419e7a3a05d4321312dedbe935b",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-core",
+      "sha": "e2c0e8d9fbe2ec084dbc9330aa34ccf437c6bc82",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-core-options",
+      "sha": "9943126429dd0ab1ce8aa2735bae2635536d6f14",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-ds-pages",
+      "sha": "53e1e67f295ef84e878d2eae0e800b61531f2a47",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-employee",
+      "sha": "84e8109b3ef8eec100cc0c0e26880e772b239403",
+      "disposition": "held",
+      "reason": "Spanish package remains on its separate SCRUM-91 release sequence. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-mobile",
+      "sha": "2cd9ed8cdeafcf3c0dfc4b23027ecd51a8352dc5",
+      "disposition": "held",
+      "reason": "Spanish package remains on its separate SCRUM-91 release sequence. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-owner",
+      "sha": "6de7c2dc234498f55915def4b57b46cdb748f698",
+      "disposition": "held",
+      "reason": "Spanish package remains on its separate SCRUM-91 release sequence. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-payroll",
+      "sha": "89824b49d72d18380d4a2206e425b37f2527e276",
+      "disposition": "held",
+      "reason": "Spanish package remains on its separate SCRUM-91 release sequence. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-rest",
+      "sha": "eced81af42d78c15e927886653dd3dbae966d7fd",
+      "disposition": "held",
+      "reason": "Spanish package remains on its separate SCRUM-91 release sequence. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-rondo",
+      "sha": "9ceeb06ec2a9d8361d7df95ae4d288d0a418f123",
+      "disposition": "held",
+      "reason": "Spanish package remains on its separate SCRUM-91 release sequence. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-kit-final",
+      "sha": "1286f0cbaf7d366c31450ea4a808fb8da87c2f8e",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-messages",
+      "sha": "867fdc8766a6a7af803ece27b7228281d6f19e01",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-messages-2",
+      "sha": "170d012272d95c44a4f73cc11f1e1627dc2840be",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-payroll-2",
+      "sha": "d9282e7191beb86505c9d0696800702b1097885f",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-prodcheck",
+      "sha": "19c9b09fe482bb21035ee3a0fe7132bc8b13bdf4",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-profile",
+      "sha": "a25021850a460f47c1f38874463dc4d955d4de73",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-qa",
+      "sha": "ac73f1b2ff41db5bb2387c1df52e211a9f8d1ba6",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-requests-account",
+      "sha": "ea2601e589a26806d9ab39a82e661710ab20c2cc",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-rondo",
+      "sha": "8a400c4213c23ab9dceb2b63aa0157574cad6665",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-schedule-tools",
+      "sha": "a2381a1671c9b51cd246d4ec447b78da5f96579c",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-schedule-tools-2",
+      "sha": "dcc12231d4cc93b919c09235e97671625e757dd1",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-screens-final",
+      "sha": "0ac957ff08d1449f6964a72e169f6ded1e62752b",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-2",
+      "sha": "5032ed10b57321922934bfd95e4bc24445de197d",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-base",
+      "sha": "cbc3d4bc7287b7beffb9d0fcc327824e579b6133",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-billing",
+      "sha": "528f77995e9f5ba41ac8f3a6f32ebc48e9ed8b9a",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-final",
+      "sha": "109e6acc8121eec07449b207360e995f820842a8",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-locations",
+      "sha": "0e21bbbcaacfe8a1af73c8d096073fd4e228a2b5",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-policies",
+      "sha": "27a6143487f614748b36be9010da57594c4d5d73",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-positions",
+      "sha": "db6508e85d38bbf5742e15a689fb3706237db1d4",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-staff",
+      "sha": "83a43d0031f1957bb44856ddecf19ee83a78f1b6",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-sweep-1",
+      "sha": "156a1735574e7e31576a9f56efc7e6577fa2a7f8",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-timecards-final",
+      "sha": "8e9c11eada97c532a69496963132be4eae3b2b04",
+      "disposition": "held",
+      "reason": "Collab source stays available for its existing integration review. The Checkout candidate contains the Development base and the verified billing patch."
     }
   ],
   "maximumActiveBranches": 3,
