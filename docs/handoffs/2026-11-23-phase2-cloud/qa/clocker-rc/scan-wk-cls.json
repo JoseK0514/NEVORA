@@ -1,0 +1,505 @@
+[
+  "open shift: error: null value in column \"employee_id\" of relation \"shifts\" violates not-null constraint",
+  "console Failed to load resource: the server responded with a status of 404 (Not Found)",
+  {
+    "tabs": [
+      "/app",
+      "/app/schedule",
+      "/app/timecards",
+      "/app/payroll",
+      "/app/employees"
+    ],
+    "tabLabels": [
+      "Home",
+      "Schedule",
+      "Time",
+      "Payroll",
+      "Team"
+    ]
+  },
+  {
+    "runList": [
+      "c1fc4489-2b70-464d-843d-a0025c8822c0"
+    ]
+  },
+  {
+    "clsNew": "768x1024",
+    "cls": 0,
+    "entries": []
+  },
+  {
+    "clsNew": "1024x768",
+    "cls": 0,
+    "entries": []
+  },
+  {
+    "clsNew": "390x844",
+    "cls": 0,
+    "entries": []
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 336,
+    "cls": 0,
+    "entries": [],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 427,
+    "cls": 0,
+    "entries": [],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 320,
+    "cls": 0,
+    "entries": [],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 279,
+    "cls": 0,
+    "entries": [],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 262,
+    "cls": 0,
+    "entries": [],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 301,
+    "cls": 0,
+    "entries": [],
+    "card": 594
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 296,
+    "cls": 0,
+    "entries": [],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 269,
+    "cls": 0,
+    "entries": [],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 303,
+    "cls": 0,
+    "entries": [],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 345,
+    "cls": 0,
+    "entries": [],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 267,
+    "cls": 0,
+    "entries": [],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 313,
+    "cls": 0,
+    "entries": [],
+    "card": 355
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 402,
+    "cls": 0,
+    "entries": [],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 220,
+    "cls": 0,
+    "entries": [],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 256,
+    "cls": 0,
+    "entries": [],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 363,
+    "cls": 0,
+    "entries": [],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 264,
+    "cls": 0,
+    "entries": [],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 225,
+    "cls": 0,
+    "entries": [],
+    "card": 726
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 339,
+    "cls": 0,
+    "entries": [],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 296,
+    "cls": 0,
+    "entries": [],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 268,
+    "cls": 0,
+    "entries": [],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 333,
+    "cls": 0,
+    "entries": [],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 277,
+    "cls": 0,
+    "entries": [],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 288,
+    "cls": 0,
+    "entries": [],
+    "card": 343
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 318,
+    "cls": 0,
+    "entries": [],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 255,
+    "cls": 0,
+    "entries": [],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 311,
+    "cls": 0,
+    "entries": [],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 294,
+    "cls": 0,
+    "entries": [],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 261,
+    "cls": 0,
+    "entries": [],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 333,
+    "cls": 0,
+    "entries": [],
+    "card": 665
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 335,
+    "cls": 0,
+    "entries": [],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 290,
+    "cls": 0,
+    "entries": [],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 301,
+    "cls": 0,
+    "entries": [],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 355,
+    "cls": 0,
+    "entries": [],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 270,
+    "cls": 0,
+    "entries": [],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 320,
+    "cls": 0,
+    "entries": [],
+    "card": 292
+  },
+  {
+    "clsSlow500": [
+      "",
+      ""
+    ]
+  },
+  {
+    "clsSlow1300": [
+      "Getting names…",
+      "",
+      ""
+    ]
+  },
+  {
+    "clsFailedForm": 1
+  },
+  "ck console Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  {
+    "clsDeviceLost": {
+      "before": "picker",
+      "after": null,
+      "card": "device",
+      "h1": [
+        "This tablet needs to be set up again"
+      ]
+    }
+  },
+  {
+    "clsStorage": [],
+    "clsCookies": [
+      "__Host-nevora_clocker=nev_dev_b0db7b788125688b9811a9de495b08c9a1e04c8058610101d5913606256bb4b3 /"
+    ]
+  }
+]

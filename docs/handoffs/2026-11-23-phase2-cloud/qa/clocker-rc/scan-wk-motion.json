@@ -1,0 +1,522 @@
+[
+  "open shift: error: null value in column \"employee_id\" of relation \"shifts\" violates not-null constraint",
+  "console Failed to load resource: the server responded with a status of 404 (Not Found)",
+  {
+    "tabs": [
+      "/app",
+      "/app/schedule",
+      "/app/timecards",
+      "/app/payroll",
+      "/app/employees"
+    ],
+    "tabLabels": [
+      "Home",
+      "Schedule",
+      "Time",
+      "Payroll",
+      "Team"
+    ]
+  },
+  {
+    "runList": [
+      "dc4071cb-489a-4eeb-91d3-492cc22dd51d"
+    ]
+  },
+  {
+    "nmMode": "8c5d9d39-0678-4e18-9383-b99f360ab950",
+    "r": "{\"id\":\"8c5d9d39-0678-4e18-9383-b99f360ab950\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Fictional payro"
+  },
+  {
+    "nmMode": "b06b72e7-6f76-44ca-b2a6-b70d9445e1f9",
+    "r": "{\"id\":\"b06b72e7-6f76-44ca-b2a6-b70d9445e1f9\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Front counter i"
+  },
+  {
+    "mo": "settle",
+    "at": 0,
+    "i": 0,
+    "real": 155,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": null,
+      "tile7": "matrix(1, 0, 0, 1, 0, 6) o0",
+      "dot1": null
+    }
+  },
+  {
+    "mo": "settle",
+    "at": 90,
+    "i": 1,
+    "real": 299,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": null,
+      "tile7": "matrix(1, 0, 0, 1, 0, 0.4281) o0.9286",
+      "dot1": null
+    }
+  },
+  {
+    "mo": "settle",
+    "at": 450,
+    "i": 2,
+    "real": 571,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": null,
+      "tile7": "none o1",
+      "dot1": null
+    }
+  },
+  {
+    "moTapDuringSettle": "ok",
+    "ms": 273
+  },
+  {
+    "mo": "flip",
+    "at": 0,
+    "i": 0,
+    "real": 133,
+    "tf": {
+      "chosen": "matrix(1.0408, 0, 0, 1.0408, 4.8745, 234.024506) o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "flip",
+    "at": 110,
+    "i": 1,
+    "real": 245,
+    "tf": {
+      "chosen": "matrix(1.0018, 0, 0, 1.0018, 0.2105, 10.105) o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "flip",
+    "at": 500,
+    "i": 2,
+    "real": 645,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "flip-back",
+    "at": 0,
+    "i": 0,
+    "real": 121,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": null,
+      "tile7": "matrix(1, 0, 0, 1, 0, 6) o0",
+      "dot1": null
+    }
+  },
+  {
+    "mo": "flip-back",
+    "at": 110,
+    "i": 1,
+    "real": 234,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": null,
+      "tile7": "matrix(1, 0, 0, 1, 0, 1.2701) o0.7883",
+      "dot1": null
+    }
+  },
+  {
+    "mo": "flip-back",
+    "at": 500,
+    "i": 2,
+    "real": 634,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": null,
+      "tile7": "none o1",
+      "dot1": null
+    }
+  },
+  {
+    "mo": "dot",
+    "at": 0,
+    "i": 0,
+    "real": 111,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "matrix(0.55, 0, 0, 0.55, 0, 0) o1"
+    }
+  },
+  {
+    "mo": "dot",
+    "at": 90,
+    "i": 1,
+    "real": 239,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "matrix(0.9913, 0, 0, 0.9913, 0, 0) o1"
+    }
+  },
+  {
+    "mo": "dot",
+    "at": 450,
+    "i": 2,
+    "real": 576,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  "ck console Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  {
+    "mo": "shake",
+    "at": 0,
+    "i": 0,
+    "real": 154,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "shake",
+    "at": 90,
+    "i": 1,
+    "real": 262,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "shake",
+    "at": 500,
+    "i": 2,
+    "real": 623,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "done",
+    "at": 0,
+    "i": 0,
+    "real": 131,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": "matrix(1, 0, 0, 1, 0, 0) o1",
+      "tile7": null,
+      "dot1": null
+    }
+  },
+  {
+    "mo": "done",
+    "at": 160,
+    "i": 1,
+    "real": 295,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": "none o1",
+      "tile7": null,
+      "dot1": null
+    }
+  },
+  {
+    "mo": "done",
+    "at": 600,
+    "i": 2,
+    "real": 741,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": "none o1",
+      "tile7": null,
+      "dot1": null
+    }
+  },
+  {
+    "moFrames": [
+      {
+        "t": 0,
+        "mark": "matrix(0.6, 0, 0, 0.6, 0, 0) o0",
+        "dash": "1px",
+        "h1": "0"
+      },
+      {
+        "t": 63,
+        "mark": "matrix(0.9059, 0, 0, 0.9059, 0, 0) o0.7647",
+        "dash": "1px",
+        "h1": "0"
+      },
+      {
+        "t": 112,
+        "mark": "matrix(0.9721, 0, 0, 0.9721, 0, 0) o0.9303",
+        "dash": "1px",
+        "h1": "0"
+      },
+      {
+        "t": 160,
+        "mark": "matrix(0.9934, 0, 0, 0.9934, 0, 0) o0.9835",
+        "dash": "0px",
+        "h1": "0"
+      },
+      {
+        "t": 208,
+        "mark": "matrix(0.9988, 0, 0, 0.9988, 0, 0) o0.997",
+        "dash": "0px",
+        "h1": "0.228"
+      },
+      {
+        "t": 257,
+        "mark": "matrix(0.9998, 0, 0, 0.9998, 0, 0) o0.9996",
+        "dash": "0px",
+        "h1": "0.8063"
+      },
+      {
+        "t": 404,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "0.9747"
+      },
+      {
+        "t": 435,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 579,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 628,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 676,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      }
+    ]
+  },
+  {
+    "moCls": {
+      "cls": 0,
+      "withInput": 0,
+      "n": 0,
+      "entries": []
+    }
+  },
+  {
+    "nmMode": "8c5d9d39-0678-4e18-9383-b99f360ab950",
+    "r": "{\"id\":\"8c5d9d39-0678-4e18-9383-b99f360ab950\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Fictional payro"
+  },
+  {
+    "nmMode": "b06b72e7-6f76-44ca-b2a6-b70d9445e1f9",
+    "r": "{\"id\":\"b06b72e7-6f76-44ca-b2a6-b70d9445e1f9\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Front counter i"
+  },
+  {
+    "nmMode": "087ab868-933b-4e0e-91b5-6fcacd720090",
+    "r": "{\"id\":\"087ab868-933b-4e0e-91b5-6fcacd720090\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Reduced motion "
+  },
+  {
+    "mo": "reduced-settle",
+    "at": 0,
+    "i": 0,
+    "real": 153,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": null,
+      "tile7": "none o1",
+      "dot1": null
+    }
+  },
+  {
+    "mo": "reduced-flip",
+    "at": 0,
+    "i": 0,
+    "real": 130,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "reduced-dot",
+    "at": 0,
+    "i": 0,
+    "real": 123,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  "ck console Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  {
+    "mo": "reduced-shake",
+    "at": 0,
+    "i": 0,
+    "real": 126,
+    "tf": {
+      "chosen": "none o1",
+      "slots": "none o1",
+      "mark": null,
+      "tile7": null,
+      "dot1": "none o1"
+    }
+  },
+  {
+    "mo": "reduced-done",
+    "at": 0,
+    "i": 0,
+    "real": 148,
+    "tf": {
+      "chosen": null,
+      "slots": null,
+      "mark": "none o1",
+      "tile7": null,
+      "dot1": null
+    }
+  },
+  {
+    "moReducedFrames": [
+      {
+        "t": 0,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 64,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 112,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 161,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 209,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 258,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 306,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 355,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      },
+      {
+        "t": 417,
+        "mark": "none o1",
+        "dash": "0px",
+        "h1": "1"
+      }
+    ]
+  },
+  {
+    "moReducedProbe": {
+      "animations": [],
+      "motionTransitions": [],
+      "fadeCount": 0,
+      "fades": [],
+      "running": [],
+      "reduce": true
+    },
+    "moReducedCls": {
+      "cls": 0,
+      "withInput": 0,
+      "n": 0,
+      "entries": []
+    },
+    "moReducedAnims": 0
+  },
+  {
+    "nmMode": "087ab868-933b-4e0e-91b5-6fcacd720090",
+    "r": "{\"id\":\"087ab868-933b-4e0e-91b5-6fcacd720090\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Reduced motion "
+  },
+  {
+    "nmMode": "67fb6f61-71ea-4d2d-ac35-76bb3b5a4589",
+    "r": "{\"id\":\"67fb6f61-71ea-4d2d-ac35-76bb3b5a4589\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Recording iPad\""
+  },
+  {
+    "nmMode": "8c5d9d39-0678-4e18-9383-b99f360ab950",
+    "r": "{\"id\":\"8c5d9d39-0678-4e18-9383-b99f360ab950\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Fictional payro"
+  },
+  {
+    "nmMode": "b06b72e7-6f76-44ca-b2a6-b70d9445e1f9",
+    "r": "{\"id\":\"b06b72e7-6f76-44ca-b2a6-b70d9445e1f9\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Front counter i"
+  },
+  {
+    "moVideo": true
+  }
+]

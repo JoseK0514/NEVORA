@@ -1,0 +1,980 @@
+[
+  "open shift: error: null value in column \"employee_id\" of relation \"shifts\" violates not-null constraint",
+  "console Failed to load resource: the server responded with a status of 404 (Not Found)",
+  {
+    "tabs": [
+      "/app",
+      "/app/schedule",
+      "/app/timecards",
+      "/app/payroll",
+      "/app/employees"
+    ],
+    "tabLabels": [
+      "Home",
+      "Schedule",
+      "Time",
+      "Payroll",
+      "Team"
+    ]
+  },
+  {
+    "runList": [
+      "8773349e-2da7-4c18-929f-39bcc092cbe5"
+    ]
+  },
+  {
+    "clsNew": "768x1024",
+    "cls": 0.0001,
+    "entries": [
+      {
+        "v": 0.00012370373588055372,
+        "t": 342,
+        "src": [
+          "mkiOUG_title 492>492",
+          "mkiOUG_lead 536>536"
+        ]
+      },
+      {
+        "v": 0.000014156103134155273,
+        "t": 428,
+        "src": [
+          "mkiOUG_zone 385>385"
+        ]
+      }
+    ]
+  },
+  {
+    "clsNew": "1024x768",
+    "cls": 0.0001,
+    "entries": [
+      {
+        "v": 0.00008835224434733391,
+        "t": 224,
+        "src": [
+          "mkiOUG_title 139>139",
+          "mkiOUG_lead 183>183"
+        ]
+      }
+    ]
+  },
+  {
+    "clsNew": "390x844",
+    "cls": 0.0019,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 381,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      }
+    ]
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 208,
+    "cls": 0.0299,
+    "entries": [
+      {
+        "v": 0.029932889621704817,
+        "t": 161,
+        "src": [
+          "mkiOUG_task 417>380",
+          "mkiOUG_when 129>110"
+        ]
+      }
+    ],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 139,
+    "cls": 0.0299,
+    "entries": [
+      {
+        "v": 0.029932889621704817,
+        "t": 102,
+        "src": [
+          "mkiOUG_task 417>380",
+          "mkiOUG_when 129>110"
+        ]
+      }
+    ],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 150,
+    "cls": 0,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 115,
+        "src": [
+          "mkiOUG_zone 349>349"
+        ]
+      }
+    ],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 145,
+    "cls": 0,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 125,
+        "src": [
+          "mkiOUG_zone 349>349"
+        ]
+      }
+    ],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 129,
+    "cls": 0.2028,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 105,
+        "src": [
+          "mkiOUG_zone 588>588"
+        ]
+      },
+      {
+        "v": 0.20276878774166107,
+        "t": 128,
+        "src": [
+          "mkiOUG_task 619>380",
+          "mkiOUG_when 230>110"
+        ]
+      }
+    ],
+    "card": 594
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 172,
+    "cls": 0.2028,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 135,
+        "src": [
+          "mkiOUG_zone 588>588"
+        ]
+      },
+      {
+        "v": 0.20276878774166107,
+        "t": 170,
+        "src": [
+          "mkiOUG_task 619>380",
+          "mkiOUG_when 230>110"
+        ]
+      }
+    ],
+    "card": 594
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 225,
+    "cls": 0.2325,
+    "entries": [
+      {
+        "v": 0.029932889621704817,
+        "t": 157,
+        "src": [
+          "mkiOUG_task 417>380",
+          "mkiOUG_when 129>110"
+        ]
+      },
+      {
+        "v": 0.20255690813064575,
+        "t": 191,
+        "src": [
+          "mkiOUG_task 380>619",
+          "mkiOUG_when 110>230"
+        ]
+      }
+    ],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 165,
+    "cls": 0.2325,
+    "entries": [
+      {
+        "v": 0.029932889621704817,
+        "t": 115,
+        "src": [
+          "mkiOUG_task 417>380",
+          "mkiOUG_when 129>110"
+        ]
+      },
+      {
+        "v": 0.20255690813064575,
+        "t": 148,
+        "src": [
+          "mkiOUG_task 380>619",
+          "mkiOUG_when 110>230"
+        ]
+      }
+    ],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 141,
+    "cls": 0,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 106,
+        "src": [
+          "mkiOUG_zone 588>588"
+        ]
+      }
+    ],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 133,
+    "cls": 0,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 99,
+        "src": [
+          "mkiOUG_zone 588>588"
+        ]
+      }
+    ],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 141,
+    "cls": 0.2026,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 107,
+        "src": [
+          "mkiOUG_zone 349>349"
+        ]
+      },
+      {
+        "v": 0.20255690813064575,
+        "t": 139,
+        "src": [
+          "mkiOUG_task 380>619",
+          "mkiOUG_when 110>230"
+        ]
+      }
+    ],
+    "card": 355
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "768x1024",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 149,
+    "cls": 0.2026,
+    "entries": [
+      {
+        "v": 0.00003406405448913574,
+        "t": 115,
+        "src": [
+          "mkiOUG_zone 349>349"
+        ]
+      },
+      {
+        "v": 0.20255690813064575,
+        "t": 148,
+        "src": [
+          "mkiOUG_task 380>619",
+          "mkiOUG_when 110>230"
+        ]
+      }
+    ],
+    "card": 355
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 147,
+    "cls": 0.0371,
+    "entries": [
+      {
+        "v": 0.03705463407095522,
+        "t": 110,
+        "src": [
+          "mkiOUG_card 66>6",
+          "mkiOUG_when 289>279"
+        ]
+      }
+    ],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 149,
+    "cls": 0.0371,
+    "entries": [
+      {
+        "v": 0.03705463407095522,
+        "t": 113,
+        "src": [
+          "mkiOUG_card 66>6",
+          "mkiOUG_when 289>279"
+        ]
+      }
+    ],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 113,
+    "cls": 0.0024,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 90,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      }
+    ],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 128,
+    "cls": 0.0024,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 108,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      }
+    ],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 158,
+    "cls": 0.1004,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 121,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      },
+      {
+        "v": 0.09803540259599686,
+        "t": 156,
+        "src": [
+          "mkiOUG_card 195>6"
+        ]
+      }
+    ],
+    "card": 726
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 152,
+    "cls": 0.1004,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 115,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      },
+      {
+        "v": 0.09803540259599686,
+        "t": 150,
+        "src": [
+          "mkiOUG_card 195>6"
+        ]
+      }
+    ],
+    "card": 726
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 150,
+    "cls": 0.135,
+    "entries": [
+      {
+        "v": 0.03705463407095522,
+        "t": 113,
+        "src": [
+          "mkiOUG_card 66>6",
+          "mkiOUG_when 289>279"
+        ]
+      },
+      {
+        "v": 0.09790955483913422,
+        "t": 145,
+        "src": [
+          "mkiOUG_card 6>195"
+        ]
+      }
+    ],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 124,
+    "cls": 0.135,
+    "entries": [
+      {
+        "v": 0.03705463407095522,
+        "t": 90,
+        "src": [
+          "mkiOUG_card 66>6",
+          "mkiOUG_when 289>279"
+        ]
+      },
+      {
+        "v": 0.09790955483913422,
+        "t": 123,
+        "src": [
+          "mkiOUG_card 6>195"
+        ]
+      }
+    ],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 144,
+    "cls": 0.0024,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 107,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      }
+    ],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 142,
+    "cls": 0.0024,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 107,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      }
+    ],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 122,
+    "cls": 0.1003,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 88,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      },
+      {
+        "v": 0.09790955483913422,
+        "t": 120,
+        "src": [
+          "mkiOUG_card 6>195"
+        ]
+      }
+    ],
+    "card": 343
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "1024x768",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 149,
+    "cls": 0.1003,
+    "entries": [
+      {
+        "v": 0.002359986654482782,
+        "t": 114,
+        "src": [
+          "mkiOUG_when 289>279",
+          "mkiOUG_foot 639>618"
+        ]
+      },
+      {
+        "v": 0.09790955483913422,
+        "t": 147,
+        "src": [
+          "mkiOUG_card 6>195"
+        ]
+      }
+    ],
+    "card": 343
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 144,
+    "cls": 0.0019,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 79,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      }
+    ],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 150,
+    "cls": 0.0019,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 71,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      }
+    ],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 156,
+    "cls": 0.0019,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 73,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      }
+    ],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "picker",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 130,
+    "cls": 0.0019,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 83,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      }
+    ],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 0,
+    "readyMs": 143,
+    "cls": 0.0402,
+    "entries": [
+      {
+        "v": 0.04017181966562596,
+        "t": 141,
+        "src": [
+          "mkiOUG_meta 441>814"
+        ]
+      }
+    ],
+    "card": 665
+  },
+  {
+    "tablet": "NAME_PICKER",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "id",
+    "storedAfter": "picker",
+    "run": 1,
+    "readyMs": 134,
+    "cls": 0.0421,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 96,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      },
+      {
+        "v": 0.04017181966562596,
+        "t": 133,
+        "src": [
+          "mkiOUG_meta 441>814"
+        ]
+      }
+    ],
+    "card": 665
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 120,
+    "cls": 0.0421,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 72,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      },
+      {
+        "v": 0.0401566846029589,
+        "t": 119,
+        "src": [
+          "mkiOUG_meta 814>441"
+        ]
+      }
+    ],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "none",
+    "hintValue": null,
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 144,
+    "cls": 0.0421,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 78,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      },
+      {
+        "v": 0.0401566846029589,
+        "t": 125,
+        "src": [
+          "mkiOUG_meta 814>441"
+        ]
+      }
+    ],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 108,
+    "cls": 0.0019,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 79,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      }
+    ],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "correct",
+    "hintValue": "id",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 141,
+    "cls": 0.0019,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 76,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      }
+    ],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 0,
+    "readyMs": 123,
+    "cls": 0.0421,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 82,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      },
+      {
+        "v": 0.0401566846029589,
+        "t": 121,
+        "src": [
+          "mkiOUG_meta 814>441"
+        ]
+      }
+    ],
+    "card": 292
+  },
+  {
+    "tablet": "EMPLOYEE_ID",
+    "size": "390x844",
+    "hint": "wrong",
+    "hintValue": "picker",
+    "storedAfter": "id",
+    "run": 1,
+    "readyMs": 142,
+    "cls": 0.0421,
+    "entries": [
+      {
+        "v": 0.0019302688618854024,
+        "t": 77,
+        "src": [
+          "undefined 87>77",
+          "mkiOUG_date 87>77"
+        ]
+      },
+      {
+        "v": 0.0401566846029589,
+        "t": 138,
+        "src": [
+          "mkiOUG_meta 814>441"
+        ]
+      }
+    ],
+    "card": 292
+  },
+  {
+    "clsSlow500": [
+      "",
+      ""
+    ]
+  },
+  {
+    "clsSlow1300": [
+      "Getting names…",
+      "",
+      ""
+    ]
+  },
+  "ck console Failed to load resource: net::ERR_FAILED",
+  {
+    "clsFailedForm": 1
+  },
+  "ck console Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  {
+    "clsDeviceLost": {
+      "before": "picker",
+      "after": null,
+      "card": "device",
+      "h1": [
+        "This tablet needs to be set up again"
+      ]
+    }
+  },
+  {
+    "clsStorage": [],
+    "clsCookies": [
+      "__Host-nevora_clocker=nev_dev_6c2e0039d430a3b83069c7f9693a6614f36bba4d334b8c8f4c38b52f4f7f191a /"
+    ]
+  }
+]
