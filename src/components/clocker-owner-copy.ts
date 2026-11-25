@@ -639,8 +639,17 @@ export function clockerDeviceServerText(message: string, lang: ClockerOwnerLang)
 
 /** "Nov 17, 4:05 PM" in the workplace's time zone; Spanish follows es-PR. Fixed separators, so the server and every
  * browser write the same text. */
+const ES_MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sept', 'oct', 'nov', 'dic'];
 export function clockerOwnerWhen(value: string, timeZone: string, lang: ClockerOwnerLang = 'en'): string {
   if (!Number.isFinite(Date.parse(value))) return clockerOwnerCopy[lang].timeUnavailable;
+  if (lang === 'es') {
+    // Clocker UI step 2: Spanish is built from numeric parts with fixed words. ICU's es-PR month and day period differ
+    // between the server (Node) and the browser ("p. m." spacing, "nov" or "nov."), and the mismatch broke hydration.
+    const numeric = new Intl.DateTimeFormat('en-US', { timeZone, month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(value));
+    const get = (type: Intl.DateTimeFormatPartTypes) => Number(numeric.find(item => item.type === type)?.value ?? NaN);
+    const hour = get('hour') % 24, month = ES_MONTHS[get('month') - 1] ?? '';
+    return `${get('day')}\u00A0${month}, ${hour % 12 === 0 ? 12 : hour % 12}:${String(get('minute')).padStart(2, '0')}\u00A0${hour < 12 ? 'a.\u00A0m.' : 'p.\u00A0m.'}`;
+  }
   const parts = new Intl.DateTimeFormat(lang === 'es' ? 'es-PR' : 'en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(new Date(value));
   const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? '';
   const time = `${part('hour')}:${part('minute')} ${part('dayPeriod')}`;
