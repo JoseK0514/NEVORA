@@ -117,6 +117,24 @@ const en = {
   tabletRemoved: 'Tablet removed. Its time records are kept.',
   codeReady: 'Setup code ready. Finish on the tablet.',
   notSavedTitle: 'Not saved',
+  // ---------- how staff sign in on a tablet (Clocker UI step 2, Option A; Jose, Nov 25) ----------
+  signInLegend: 'How staff sign in',
+  signInId: 'Employee ID + PIN',
+  signInIdLine: 'Each person types their employee ID, then their PIN.',
+  signInPicker: 'Name picker + PIN',
+  signInPickerLine: 'For staff-only areas. People tap their name, then type their PIN.',
+  signInWarnTitle: 'Names are visible to anyone near this tablet',
+  signInWarnBody: 'Use the name picker in staff-only areas. Each person still needs their own PIN, and Employee ID stays available on the tablet.',
+  signInTurnOn: 'Turn on name picker',
+  signInSave: 'Save',
+  signInSavedTitle: 'Saved',
+  signInSavedPicker: (tablet: string) => `${tablet} shows the name picker the next time someone signs in.`,
+  signInSavedId: (tablet: string) => `${tablet} asks for an employee ID.`,
+  signInCheckTitle: 'Check this tablet',
+  signInReload: 'Reload',
+  signInNotSetUp: 'Set up this tablet first. Then you can choose how staff sign in.',
+  signInLocationOff: 'Turn its location back on to change how staff sign in.',
+  replaceSignIn: 'The new tablet starts with Employee ID + PIN. Turn on the name picker again if you need it.',
   notConfirmedTitle: 'Not confirmed',
   notConfirmedBody: 'We don’t know if this was saved. Refresh the list to see what the tablet looks like now, then try again if you need to.',
   refreshTablets: 'Refresh the list',
@@ -405,6 +423,24 @@ const es: ClockerOwnerCopy = {
   tabletRemoved: 'Tableta eliminada. Sus registros de tiempo se conservan.',
   codeReady: 'Código de configuración listo. Termine en la tableta.',
   notSavedTitle: 'No se guardó',
+  // ---------- cómo se identifica el personal en una tableta (Clocker paso 2, opción A; tú, como el paso 1) ----------
+  signInLegend: 'Cómo se identifica el personal',
+  signInId: 'ID de empleado + PIN',
+  signInIdLine: 'Cada persona escribe su ID de empleado y luego su PIN.',
+  signInPicker: 'Elegir nombre + PIN',
+  signInPickerLine: 'Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN.',
+  signInWarnTitle: 'Cualquier persona cerca de esta tableta puede ver los nombres',
+  signInWarnBody: 'Usa elegir nombre en áreas solo del personal. Cada persona sigue necesitando su propio PIN, y el ID de empleado sigue disponible en la tableta.',
+  signInTurnOn: 'Activar elegir nombre',
+  signInSave: 'Guardar',
+  signInSavedTitle: 'Guardado',
+  signInSavedPicker: tablet => `${tablet} muestra la lista de nombres la próxima vez que alguien se identifique.`,
+  signInSavedId: tablet => `${tablet} pide el ID de empleado.`,
+  signInCheckTitle: 'Revisa esta tableta',
+  signInReload: 'Volver a cargar',
+  signInNotSetUp: 'Primero configura esta tableta. Luego podrás elegir cómo se identifica el personal.',
+  signInLocationOff: 'Vuelve a activar su localidad para cambiar cómo se identifica el personal.',
+  replaceSignIn: 'La tableta nueva empieza con ID de empleado + PIN. Vuelve a activar elegir nombre si lo necesitas.',
   notConfirmedTitle: 'Sin confirmar',
   notConfirmedBody: 'No sabemos si esto se guardó. Actualice la lista para ver cómo está la tableta ahora y, si hace falta, inténtelo de nuevo.',
   refreshTablets: 'Actualizar la lista',
@@ -581,6 +617,25 @@ const es: ClockerOwnerCopy = {
 };
 
 export const clockerOwnerCopy: Record<ClockerOwnerLang, ClockerOwnerCopy> = { en, es };
+
+/** The tablet action's own sentences (manageClockerDeviceAction and the device store), in English as the server writes
+ * them, with the Spanish shown for each (Clocker UI step 2, as step 1 does for location access). Display only: the screen
+ * reads `refresh`, never the words. An unknown sentence is shown as the server wrote it. */
+export const clockerDeviceServerCopy: Record<string, { es: string }> = {
+  'This device changed. Reload its current details and try again.': { es: 'Esta tableta cambió. Vuelve a cargar sus datos e inténtalo de nuevo.' },
+  'We could not confirm the update. Refresh Devices before trying again.': { es: 'No pudimos confirmar el cambio. Actualiza la lista de tabletas antes de intentarlo de nuevo.' },
+  'Choose a Clocker sign-in mode.': { es: 'Elige cómo se identifica el personal en Clocker.' },
+  'Check the device details and try again.': { es: 'Revisa los datos de la tableta e inténtalo de nuevo.' },
+  'Only an active Owner may manage Clocker devices.': { es: 'Solo un dueño activo puede administrar las tabletas de Clocker.' },
+  'Only an active Owner with a current session may manage Clocker devices.': { es: 'Solo un dueño activo con una sesión vigente puede administrar las tabletas de Clocker.' },
+  'This Clocker device is not authorized.': { es: 'Esta tableta de Clocker no está autorizada.' },
+  'Clocker device data is unavailable. Please try again.': { es: 'Los datos de las tabletas de Clocker no están disponibles. Inténtalo de nuevo.' },
+};
+/** The sentence shown when no reply came back at all (the request itself failed): the action's own uncertain answer. */
+export const CLOCKER_DEVICE_UNCONFIRMED = 'We could not confirm the update. Refresh Devices before trying again.';
+export function clockerDeviceServerText(message: string, lang: ClockerOwnerLang) {
+  return lang === 'es' ? clockerDeviceServerCopy[message]?.es ?? message : message;
+}
 
 /** "Nov 17, 4:05 PM" in the workplace's time zone; Spanish follows es-PR. Fixed separators, so the server and every
  * browser write the same text. */
