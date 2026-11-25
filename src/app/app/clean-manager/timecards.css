@@ -256,7 +256,7 @@ html body .app-shell.nevora-portal .cm-hold { display: flex; flex-direction: col
 
 
 /* r4: the sheet's punch rows (shared module classes) use the system font like the rest of the sheet. */
-html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet :is(*, *::before, *::after) { font-family: var(--cm-sys); }
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-tc-sheet * { font-family: var(--cm-sys); }
 
 /* Final pass P1-3 / P2-6: the table's columns follow its own width in em, so they respond to the window and to large text
  * alike. Under 55em (below about 1180px, or wide windows at 200% text) Role goes and Person keeps its room; under 40em Breaks
