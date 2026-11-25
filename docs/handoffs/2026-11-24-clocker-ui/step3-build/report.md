@@ -262,3 +262,57 @@ covers the screen while they scroll.
   - Roster failure: the ID form with its line, then sign-in by ID.
   - Hidden and Escape each trigger a fresh read.
 - The 20-second idle clear and the focus order are unchanged.
+
+## Follow-up: the load shift while the roster loads (Nov 25, lead's default)
+| Commit | What |
+|---|---|
+| `1e696021` | A waiting area of reserved height instead of the disabled Employee ID form, with "Getting names…" past 1s |
+| `352c3448` | The reserve is the names' height (lowest overall, measured below) |
+| `8f82a801`, `ae7027ba`, `3353ab85` | Scan tool: `NEVORA_SCAN_CLOCKER_FLOW=cls` |
+| shots commit | `load/` |
+
+**While the roster loads.**
+- The card keeps its title line (invisible, so nothing changes size when the title arrives) and a quiet area of reserved
+  height. The language button stays.
+- Past 1s, "Getting names…" / "Buscando nombres…" appears as a `role=status` line (`load/slow-0500ms`,
+  `load/slow-1300ms`: empty at 0.5s, the line at 1.3s).
+- Then the names or the Employee ID form. The read is still bounded by its 6s timeout, and a failed read shows the
+  enabled form with its line (checked).
+
+**CLS on load** (layout shifts without input, first 4s; production build, Chromium). Picker tablet / Employee ID tablet,
+two loads each, identical:
+
+| Size | Before: disabled form | Reserve = the form's height | **Reserve = the names' height (kept)** |
+|---|---|---|---|
+| 768×1024 | 0.370 / 0.167 | 0.370 / 0.167 | **0.030 / 0.233** |
+| 1024×768 | 0.169 / 0.071 | 0.169 / 0.071 | **0.037 / 0.135** |
+| 390×844 | 0.056 / 0.003 | 0.043 / 0.003 | **0.003 / 0.044** |
+| Sum | 0.836 | 0.823 | **0.482** |
+
+- **Where the shifts come from.** The first shift on every load is the setup screen's "checking" card giving way to the
+  sign-in card (`.task` 417→608 at 768). It's outside the picker and was there before.
+- **What the names' height changes.**
+  - The card no longer resizes on a picker tablet, so both shifts collapse into one small move (0.03).
+  - An Employee ID tablet now resizes once, from the reserve to its shorter form (+0.07 at 768, +0.06 at 1024, +0.04 at
+    390). The lead's rule is to keep the lower overall, so this is the one kept; Jose may weigh the two tablet types
+    differently.
+- **The reserve is sized for about 12 names:**
+  - 25.75rem on a portrait iPad;
+  - 34.25rem in landscape;
+  - on a phone, the name box plus its way out.
+  A much smaller team shrinks the card once when the names arrive.
+- **Ready time** (navigation to the names, or an enabled ID field):
+  - Employee ID tablet: 145–185ms after, against 151–255ms before. It doesn't wait longer.
+  - Picker tablet: 144–170ms.
+
+**Rechecked on the final code** (`NEVORA_SCAN_CLOCKER_FLOW=names`):
+- 44 views: no overflow, nothing under 44px, reach OK.
+- axe, 18 checks: 0 violations.
+- The way out is in view at 390 and 100% in every state.
+- Focus is never hidden at 390; the focus walk passes.
+- Reduced motion: nothing runs.
+- End to end: Ana C. clocks in and out, James by ID, Luis (duplicate) by ID, stale, roster failure, hidden and Escape
+  re-reads.
+- `src/components`: 3,326 passed. tsc and oxlint are clean.
+
+The dot spring is unchanged; the design OS overshoot question goes to Jose.
