@@ -28,6 +28,8 @@ html:has([data-clocker-kiosk] [data-clocker-names]) { scroll-padding-bottom: 8re
  * The padding keeps the 3px focus ring inside the box. The iPad keeps the plain list. */
 @media (max-width: 599px) {
   [data-clocker-kiosk] .np-tiles { max-height: max(13rem, calc(100svh - 27rem)); overflow-y: auto; overscroll-behavior: contain; margin: -6px; padding: 6px; }
+  /* The changed-list line or the search field takes a row's height, so the box gives it back. */
+  [data-clocker-kiosk] .np:has(.np-notice, .np-search) .np-tiles { max-height: max(13rem, calc(100svh - 32rem)); }
   [data-clocker-kiosk] .np-foot { position: static; padding-top: 0; }
   [data-clocker-kiosk] .np-foot::before { content: none; }
 }
