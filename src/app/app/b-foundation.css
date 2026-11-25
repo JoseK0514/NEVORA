@@ -250,6 +250,12 @@
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); }
 }
+/* Kit fix (Nov 25): under reduced motion a button changes colour only. The shared list above still named scale (and the
+ * corp sheet's own transform), so a button eased from scale 1 to none when it was disabled or released. No pseudo-element
+ * is named here: a button's ::before and ::after keep their own rules. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn) { transition-property: background-color, color; }
+}
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) {
   opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); border-color: transparent; box-shadow: none; scale: 1; transform: none; cursor: not-allowed;
 }

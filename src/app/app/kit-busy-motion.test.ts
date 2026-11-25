@@ -28,3 +28,14 @@ describe('a busy button keeps its fill (Jose, Nov 25)', () => {
   });
 });
 
+describe('reduced motion on buttons (Nov 25)', () => {
+  it('under reduced motion a button transitions colour only, with no scale or transform', () => {
+    const sheet = css('app/app/b-foundation.css');
+    const at = sheet.indexOf('@media (prefers-reduced-motion: reduce) {\n  :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn) { transition-property: background-color, color; }');
+    expect(at).toBeGreaterThan(0);
+    // It comes after the shared list that names scale, so it wins at the same specificity.
+    expect(at).toBeGreaterThan(sheet.indexOf('{ transition-property: scale, background-color, color;'));
+    const block = sheet.slice(at, sheet.indexOf('\n}', at));
+    expect(block).not.toMatch(/scale|transform|::/);
+  });
+});
