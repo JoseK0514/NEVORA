@@ -120,7 +120,7 @@ const en = {
   // ---------- how staff sign in on a tablet (Clocker UI step 2, Option A; Jose, Nov 25) ----------
   signInLegend: 'How staff sign in',
   signInId: 'Employee ID + PIN',
-  signInIdLine: 'Each person types their employee ID, then their PIN.',
+  signInIdLine: 'Each person types their Employee ID, then their PIN.',
   signInPicker: 'Name picker + PIN',
   signInPickerLine: 'For staff-only areas. People tap their name, then type their PIN.',
   signInWarnTitle: 'Names are visible to anyone near this tablet',
@@ -129,7 +129,7 @@ const en = {
   signInSave: 'Save',
   signInSavedTitle: 'Saved',
   signInSavedPicker: (tablet: string) => `${tablet} shows the name picker the next time someone signs in.`,
-  signInSavedId: (tablet: string) => `${tablet} asks for an employee ID.`,
+  signInSavedId: (tablet: string) => `${tablet} asks for an Employee ID.`,
   signInCheckTitle: 'Check this tablet',
   signInReload: 'Reload',
   signInNotSetUp: 'Set up this tablet first. Then you can choose how staff sign in.',

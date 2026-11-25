@@ -55,3 +55,7 @@ it('keeps pseudo-elements out of :is() in the picker and kiosk styles',()=>{
   expect(css,file).not.toMatch(/:is\([^)]*::/);
  }
 });
+it('settles without overshoot: no back, elastic or bounce ease (design OS; Jose, Nov 25, 2026)',()=>{
+ const source=readFileSync(new URL('./clocker-motion.ts',import.meta.url),'utf8');
+ expect(source).not.toMatch(/ease:\s*'(back|elastic|bounce)/);
+});

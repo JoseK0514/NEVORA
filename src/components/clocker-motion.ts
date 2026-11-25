@@ -34,10 +34,10 @@ export function flipName(el: Element, from: Box, to: Box, reduced: boolean): Mot
   return gsap.from(el, { x, y, scale, duration: CK_MOTION.enter, ease: 'expo.out', overwrite: 'auto', clearProps: 'transform' });
 }
 
-/** A PIN digit: its dot fills with a soft spring (a slight 1.2 overshoot, the only one on the kiosk; Jose asked for it). */
+/** A PIN digit: its dot grows in and settles, with no overshoot (Jose, Nov 25, 2026: the design OS rule for work screens). */
 export function fillDot(dot: Element, reduced: boolean): Motion {
   if (reduced) return null;
-  return gsap.fromTo(dot, { scale: 0.55 }, { scale: 1, duration: CK_MOTION.note, ease: 'back.out(1.2)', overwrite: 'auto', clearProps: 'transform' });
+  return gsap.fromTo(dot, { scale: 0.55 }, { scale: 1, duration: CK_MOTION.note, ease: 'expo.out', overwrite: 'auto', clearProps: 'transform' });
 }
 
 /** A wrong PIN: the dots shake gently sideways once (6px, then less), beside the error text, never instead of it. */

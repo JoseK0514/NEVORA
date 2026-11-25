@@ -1,14 +1,14 @@
-/* The name picker's words (Clocker UI step 3, Option C). Jose, Nov 25, 2026: the kiosk's own term wins, so "employee ID" /
+/* The name picker's words (Clocker UI step 3, Option C). Jose, Nov 25, 2026: the kiosk's own term wins, so "Employee ID" /
  * "ID de empleado" (never "núm."). Spanish uses tú, as the rest of the kiosk. Plain module, so a server test reads it. */
 export const CLOCKER_ROSTER_COPY = {
   en: {
     title: 'Choose your name',
     names: 'Names',
     search: 'Search names',
-    useId: 'Use employee ID',
-    notListed: 'Not on the list? Use your employee ID.',
-    noMatch: 'No name matches. Use your employee ID.',
-    failed: 'Names couldn’t load. Use your employee ID.',
+    useId: 'Use Employee ID',
+    notListed: 'Not on the list? Use your Employee ID.',
+    noMatch: 'No name matches. Use your Employee ID.',
+    failed: 'Names couldn’t load. Use your Employee ID.',
     stale: 'The list changed. Choose your name again.',
     back: 'Choose another name',
     backToNames: 'Back to names',
