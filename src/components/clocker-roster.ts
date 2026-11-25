@@ -63,12 +63,34 @@ export function rosterReplyCurrent(started: number, current: number) {
   return started === current;
 }
 
+/* The layout hint (lead, Nov 25): a tablet's sign-in mode rarely changes, so it remembers only its last mode, 'picker' or
+ * 'id', per location, to reserve the right height while the roster loads. Never names, selections or counts. A wrong hint
+ * costs one layout shift. Every read and write is guarded (private mode, blocked storage). */
+export type RosterHint = 'picker' | 'id';
+const hintKey = (locationKey: string) => `nevora.clocker.signin-layout.${locationKey}`;
+/** What a roster reply says about the layout: only 'picker' or 'id'; a failed or pending read says nothing. */
+export function rosterHintFor(state: RosterState): RosterHint | null {
+  return state.kind === 'picker' ? 'picker' : state.kind === 'id' ? 'id' : null;
+}
+export function readRosterHint(locationKey: string): RosterHint | null {
+  try { const value = window.localStorage.getItem(hintKey(locationKey)); return value === 'picker' || value === 'id' ? value : null; } catch { return null; }
+}
+export function writeRosterHint(locationKey: string, state: RosterState) {
+  const hint = rosterHintFor(state); if (!hint) return;
+  try { window.localStorage.setItem(hintKey(locationKey), hint); } catch { /* Storage blocked: no hint next time. */ }
+}
+export function clearRosterHint(locationKey: string) {
+  try { window.localStorage.removeItem(hintKey(locationKey)); } catch { /* Storage blocked: nothing stored. */ }
+}
+/** A roster read that failed because the tablet is no longer set up (401). */
+export class RosterReadError extends Error { constructor(readonly status: number) { super('roster ' + status); } }
+
 /** The roster read. Its own short timeout: an Employee ID tablet waits for this answer before its form turns on. */
 export async function readRoster(locationKey: string, signal?: AbortSignal): Promise<RosterState> {
   const response = await fetch(`/api/clocker/${encodeURIComponent(locationKey)}/pin`, {
     method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json', 'X-Nevora-Clocker': '1' },
     body: JSON.stringify({ action: 'roster' }), signal: signal ?? AbortSignal.timeout(6000),
   });
-  if (!response.ok) throw Error('roster ' + response.status);
+  if (!response.ok) throw new RosterReadError(response.status);
   return parseRoster(await response.json());
 }

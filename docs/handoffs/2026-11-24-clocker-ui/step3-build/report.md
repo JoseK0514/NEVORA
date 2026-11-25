@@ -262,3 +262,107 @@ covers the screen while they scroll.
   - Roster failure: the ID form with its line, then sign-in by ID.
   - Hidden and Escape each trigger a fresh read.
 - The 20-second idle clear and the focus order are unchanged.
+
+## Follow-up: the load shift while the roster loads (Nov 25, lead's default)
+| Commit | What |
+|---|---|
+| `1e696021` | A waiting area of reserved height instead of the disabled Employee ID form, with "Getting names…" past 1s |
+| `352c3448` | The reserve is the names' height (lowest overall, measured below) |
+| `8f82a801`, `ae7027ba`, `3353ab85` | Scan tool: `NEVORA_SCAN_CLOCKER_FLOW=cls` |
+| shots commit | `load/` |
+
+**While the roster loads.**
+- The card keeps its title line (invisible, so nothing changes size when the title arrives) and a quiet area of reserved
+  height. The language button stays.
+- Past 1s, "Getting names…" / "Buscando nombres…" appears as a `role=status` line (`load/slow-0500ms`,
+  `load/slow-1300ms`: empty at 0.5s, the line at 1.3s).
+- Then the names or the Employee ID form. The read is still bounded by its 6s timeout, and a failed read shows the
+  enabled form with its line (checked).
+
+**CLS on load** (layout shifts without input, first 4s; production build, Chromium). Picker tablet / Employee ID tablet,
+two loads each, identical:
+
+| Size | Before: disabled form | Reserve = the form's height | **Reserve = the names' height (kept)** |
+|---|---|---|---|
+| 768×1024 | 0.370 / 0.167 | 0.370 / 0.167 | **0.030 / 0.233** |
+| 1024×768 | 0.169 / 0.071 | 0.169 / 0.071 | **0.037 / 0.135** |
+| 390×844 | 0.056 / 0.003 | 0.043 / 0.003 | **0.003 / 0.044** |
+| Sum | 0.836 | 0.823 | **0.482** |
+
+- **Where the shifts come from.** The first shift on every load is the setup screen's "checking" card giving way to the
+  sign-in card (`.task` 417→608 at 768). It's outside the picker and was there before.
+- **What the names' height changes.**
+  - The card no longer resizes on a picker tablet, so both shifts collapse into one small move (0.03).
+  - An Employee ID tablet now resizes once, from the reserve to its shorter form (+0.07 at 768, +0.06 at 1024, +0.04 at
+    390). The lead's rule is to keep the lower overall, so this is the one kept; Jose may weigh the two tablet types
+    differently.
+- **The reserve is sized for about 12 names:**
+  - 25.75rem on a portrait iPad;
+  - 34.25rem in landscape;
+  - on a phone, the name box plus its way out.
+  A much smaller team shrinks the card once when the names arrive.
+- **Ready time** (navigation to the names, or an enabled ID field):
+  - Employee ID tablet: 145–185ms after, against 151–255ms before. It doesn't wait longer.
+  - Picker tablet: 144–170ms.
+
+**Rechecked on the final code** (`NEVORA_SCAN_CLOCKER_FLOW=names`):
+- 44 views: no overflow, nothing under 44px, reach OK.
+- axe, 18 checks: 0 violations.
+- The way out is in view at 390 and 100% in every state.
+- Focus is never hidden at 390; the focus walk passes.
+- Reduced motion: nothing runs.
+- End to end: Ana C. clocks in and out, James by ID, Luis (duplicate) by ID, stale, roster failure, hidden and Escape
+  re-reads.
+- `src/components`: 3,326 passed. tsc and oxlint are clean.
+
+The dot spring is unchanged; the design OS overshoot question goes to Jose.
+
+## Merged Jose's decisions (shared tip a729db0c)
+"Use Employee ID" / "Use your Employee ID." with a capital E, and the PIN dots settle on `expo.out` with no overshoot,
+guarded by a test against back, elastic and bounce eases. Both are kept on top of the loading change above. The scan
+tool keeps the capital-E selectors as well as its cls mode.
+
+## Follow-up: a layout hint per location (Nov 25)
+| Commit | What |
+|---|---|
+| `6b52b49e` | The tablet remembers its last sign-in mode here, and the waiting area reserves the names' or the form's height |
+| `18fc9b48`, `7dbeb19e3` (scan tool) | `cls` mode: no hint, correct hint, wrong hint; losing the setup clears the hint |
+| shots commit | `load/hint-*` |
+
+**What is stored:**
+- One localStorage key per location, `nevora.clocker.signin-layout.<location>`, with the value `'picker'` or `'id'` only.
+  Never names, selections or counts. At the end of the run, localStorage held only that key.
+- It's written on every roster reply (a failed read writes nothing). Every read and write is in try/catch, and blocked
+  storage is tested.
+- **Reserve:** a picker hint, or no hint, reserves the names' height; an id hint reserves the form's height.
+- **Cleared** where the roster is dropped for a lost setup: the `device_required` card, or a 401 roster read.
+  - Checked: the fictional tablet was revoked through `revokeClockerDevice` mid-session. Ana's PIN then gave "This
+    tablet needs to be set up again", and the hint went from `picker` to gone.
+
+**CLS on load** (picker tablet / Employee ID tablet; production build, Chromium; 2 loads each, identical):
+
+| Size | Before (disabled form) | No hint (first-ever load) | Correct hint | Wrong hint |
+|---|---|---|---|---|
+| 768×1024 | 0.370 / 0.167 | 0.030 / 0.233 | **0.030 / 0.167** | 0.370 / 0.233 |
+| 1024×768 | 0.169 / 0.071 | 0.037 / 0.135 | **0.037 / 0.071** | 0.169 / 0.135 |
+| 390×844 | 0.056 / 0.003 | 0.002 / 0.042 | **0.002 / 0.002** | 0.042 / 0.042 |
+
+- **With the hint (every load after the first):**
+  - A picker tablet keeps its gain.
+  - An Employee ID tablet is back to the "before" figure: no roster shift at all.
+- **What's left over 0.1 on the ID tablet at 768** (0.167) is the setup screen's "checking" card giving way to the
+  sign-in card (`.task` 417→619). It was there before the picker and is outside it. Fixing it would mean the setup card
+  reserving the sign-in card's height. I haven't changed it.
+- **A wrong hint** costs one shift, as before the change. The reply corrects the hint for the next load.
+- **Ready time:** an Employee ID tablet is ready in 152–217ms (151–255ms before).
+
+**Rechecked on the final code:**
+- 44 views: no overflow, nothing under 44px, reach OK.
+- axe, 18 checks: 0 violations.
+- The way out is in view at 390 and 100%.
+- Focus walk OK, and focus is never hidden at 390.
+- Reduced motion: nothing runs.
+- End to end: Ana C. clocks in and out, James by ID, Luis (duplicate) by ID, stale, roster failure, hidden and Escape
+  re-reads.
+- "Getting names…" appears past 1s, and a failed read shows the enabled form.
+- `src/components`: 3,347 passed. tsc and oxlint are clean.
