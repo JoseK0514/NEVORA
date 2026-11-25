@@ -6,7 +6,7 @@ import {ClockerPresentation} from './clocker-language';
 import {ClockerPinGate} from './clocker-pin-gate';
 import {ClockerNamePicker} from './clocker-name-picker';
 import {CLOCKER_ROSTER_COPY} from './clocker-roster-copy';
-import {ROSTER_SEARCH_THRESHOLD,parseRoster,readRoster,rosterInitials,rosterMatches,rosterReplyCurrent,rosterSorted,selectionIsStale,verifyBody,type RosterPerson} from './clocker-roster';
+import {ROSTER_SEARCH_THRESHOLD,RosterReadError,clearRosterHint,readRosterHint,rosterHintFor,writeRosterHint,parseRoster,readRoster,rosterInitials,rosterMatches,rosterReplyCurrent,rosterSorted,selectionIsStale,verifyBody,type RosterPerson} from './clocker-roster';
 
 afterEach(()=>{rs.unstubAllGlobals();});
 const sel=(n:number)=>n.toString(16).padStart(64,'0');
@@ -113,4 +113,31 @@ it('keeps the way out reachable: sticky on the iPad, under a bounded name list o
  expect(css).toMatch(/\.np-tile \{[^}]*min-height: 64px/);expect(css).toMatch(/\.np-tile:focus-visible \{ outline: 3px solid/);
  const html=renderToStaticMarkup(<ClockerNamePicker people={twelve} lang="en" onPick={()=>{}} onUseId={()=>{}}/>);
  const foot=html.slice(html.indexOf('class="np-foot"'));expect(foot).toContain('Use Employee ID');expect(foot).not.toContain('np-hint');
+});
+it('remembers only the layout hint, "picker" or "id", and nothing about people',()=>{
+ const store=new Map<string,string>();
+ rs.stubGlobal('window',{localStorage:{getItem:(k:string)=>store.get(k)??null,setItem:(k:string,v:string)=>{store.set(k,String(v));},removeItem:(k:string)=>{store.delete(k);}}});
+ expect(rosterHintFor({kind:'picker',people:twelve})).toBe('picker');expect(rosterHintFor({kind:'id'})).toBe('id');
+ expect(rosterHintFor({kind:'failed'})).toBeNull();expect(rosterHintFor({kind:'loading'})).toBeNull();
+ writeRosterHint('main',{kind:'picker',people:twelve});
+ expect([...store.values()]).toEqual(['picker']);expect([...store.keys()]).toEqual(['nevora.clocker.signin-layout.main']);
+ for(const value of store.values()){expect(['picker','id']).toContain(value);for(const p of twelve){expect(value).not.toContain(p.displayName);expect(value).not.toContain(p.selection);}}
+ writeRosterHint('main',{kind:'id'});expect(store.get('nevora.clocker.signin-layout.main')).toBe('id');
+ writeRosterHint('main',{kind:'failed'});expect(store.get('nevora.clocker.signin-layout.main')).toBe('id');
+ writeRosterHint('west',{kind:'picker',people:twelve});expect(readRosterHint('west')).toBe('picker');expect(readRosterHint('main')).toBe('id');
+ store.set('nevora.clocker.signin-layout.main','Ana C.');expect(readRosterHint('main')).toBeNull();
+ clearRosterHint('west');expect(readRosterHint('west')).toBeNull();
+ // Blocked storage never throws.
+ rs.stubGlobal('window',{localStorage:{getItem:()=>{throw Error('blocked');},setItem:()=>{throw Error('blocked');},removeItem:()=>{throw Error('blocked');}}});
+ expect(readRosterHint('main')).toBeNull();expect(()=>writeRosterHint('main',{kind:'id'})).not.toThrow();expect(()=>clearRosterHint('main')).not.toThrow();
+});
+it('writes the hint on a roster reply, clears it when the tablet loses its setup, and sizes the wait by it',async()=>{
+ expect(gate).toContain('writeRosterHint(rosterKey,next)');
+ expect(gate).toContain('if(reason instanceof RosterReadError&&reason.status===401)clearRosterHint(rosterKey)');
+ expect(gate).toContain("useEffect(()=>{if(blocked&&tone==='device')clearRosterHint(locationKey);},[blocked,tone,locationKey]);");
+ expect(gate).toContain('data-hint={hint??undefined}');
+ rs.stubGlobal('fetch',rs.fn(async()=>new Response(JSON.stringify({state:'device_required'}),{status:401})));
+ await expect(readRoster('main')).rejects.toBeInstanceOf(RosterReadError);
+ const css=readFileSync(new URL('./clocker-name-picker.css',import.meta.url),'utf8');
+ expect(css.match(/\.np-wait\[data-hint="id"\] \{ --ck-roster-wait: [0-9.]+rem; \}/g)).toHaveLength(3);
 });

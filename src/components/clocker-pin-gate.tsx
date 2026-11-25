@@ -11,7 +11,7 @@ import { useReportTabletHealth } from './clocker-shell';
 import { ClockerNamePicker } from './clocker-name-picker';
 import { CLOCKER_ROSTER_COPY } from './clocker-roster-copy';
 import { fillDot, flipName, prefersReducedMotion, shakeDots, stopMotion } from './clocker-motion';
-import { readRoster, rosterReplyCurrent, selectionIsStale, verifyBody, type RosterPerson, type RosterState } from './clocker-roster';
+import { RosterReadError, clearRosterHint, readRoster, readRosterHint, rosterReplyCurrent, selectionIsStale, verifyBody, writeRosterHint, type RosterHint, type RosterPerson, type RosterState } from './clocker-roster';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
 /** Who a 429 pauses (the reply's limitScope): one person, or the tablet. A device or workplace limit stops every sign-in
@@ -188,8 +188,8 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,in
   const generation=++rosterGen.current;let live=true;
   if(rosterKey===null){selection.current=null;return;}
   // A start over keeps the shown list while the new one is read, so the screen doesn't flash; the newest read wins.
-  readRoster(rosterKey).then(next=>{if(live&&rosterReplyCurrent(generation,rosterGen.current))setRoster(next);},
-   ()=>{if(live&&rosterReplyCurrent(generation,rosterGen.current))setRoster({kind:'failed'});});
+  readRoster(rosterKey).then(next=>{writeRosterHint(rosterKey,next);if(live&&rosterReplyCurrent(generation,rosterGen.current))setRoster(next);},
+   reason=>{if(reason instanceof RosterReadError&&reason.status===401)clearRosterHint(rosterKey);if(live&&rosterReplyCurrent(generation,rosterGen.current))setRoster({kind:'failed'});});
   return()=>{live=false;};
  },[rosterKey,rosterTick]);
  const pickerOn=roster.kind==='picker'&&!useId&&step==='id';
@@ -198,6 +198,10 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,in
   * reserved height instead of a disabled Employee ID form; past 1s it says "Getting names…". Then the names or the form.
   * The read is bounded by its 6s timeout, and a failed read still shows the form with its line. */
  const [slowRoster,setSlowRoster]=useState(false);
+ // The last mode this tablet saw here, only to size the waiting area (the gate mounts on the client, after setup).
+ const [hint]=useState<RosterHint|null>(()=>typeof window==='undefined'?null:readRosterHint(locationKey));
+ // A tablet that lost its setup forgets its hint, where the roster is dropped for it.
+ useEffect(()=>{if(blocked&&tone==='device')clearRosterHint(locationKey);},[blocked,tone,locationKey]);
  useEffect(()=>{if(!rosterLoading)return;const timer=window.setTimeout(()=>setSlowRoster(true),1000);return()=>{clearTimeout(timer);setSlowRoster(false);};},[rosterLoading]);
  useWhenBackOnline(!identity&&!(error&&blocked&&tone!=='stop'),()=>{if(unreachable)void recheck();else void reset();});
  useEffect(()=>{
@@ -391,7 +395,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,in
    {entry&&step==='pin'&&picked?<p className="np-who" data-clocker-chosen="">{picked.displayName}</p>:null}
    {entry&&step==='id'&&!pickerOn&&roster.kind==='failed'?<p className="np-failed" role="status" data-clocker-names-failed="">{rc.failed}</p>:null}
    {/* Until the roster answers, a waiting area of reserved height, never a form a picker tablet could take a stray tap on. */}
-   {entry&&step==='id'&&rosterLoading?<div className="np-wait" data-clocker-roster-wait="">{slowRoster?<p className="np-wait-line" role="status">{rc.waiting}</p>:null}</div>:null}
+   {entry&&step==='id'&&rosterLoading?<div className="np-wait" data-clocker-roster-wait="" data-hint={hint??undefined}>{slowRoster?<p className="np-wait-line" role="status">{rc.waiting}</p>:null}</div>:null}
    {entry&&step==='id'&&!pickerOn&&!rosterLoading?<form onSubmit={continueToPin} className={styles.pinForm}>
     <fieldset disabled={pending}>
      <label className={styles.sr} htmlFor="clocker-employee-id">{t("Employee ID")}</label>

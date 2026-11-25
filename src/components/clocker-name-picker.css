@@ -27,8 +27,10 @@ html:has([data-clocker-kiosk] [data-clocker-names]) { scroll-padding-bottom: 8re
 [data-clocker-kiosk] .np-wait { display: grid; place-items: center; min-height: var(--ck-roster-wait, 25.75rem); margin-top: var(--b-space-16); }
 /* The reserve is the names' height for a team of about 12 (measured Nov 25: it cut the load shift on a picker tablet from
  * 0.37 to 0.03 at 768x1024 and lowest overall; an Employee ID tablet's rose from 0.16 to 0.23, see the step 3 report). */
-@media (orientation: landscape) and (min-width: 700px) { [data-clocker-kiosk] .np-wait { --ck-roster-wait: 34.25rem; } }
-@media (max-width: 599px) { [data-clocker-kiosk] .np-wait { --ck-roster-wait: calc(max(13rem, 100svh - 27rem) + 6.5rem); } }
+/* A tablet whose last mode here was the Employee ID form reserves the form's height instead (the layout hint). */
+[data-clocker-kiosk] .np-wait[data-hint="id"] { --ck-roster-wait: 10.8125rem; }
+@media (orientation: landscape) and (min-width: 700px) { [data-clocker-kiosk] .np-wait { --ck-roster-wait: 34.25rem; } [data-clocker-kiosk] .np-wait[data-hint="id"] { --ck-roster-wait: 10.3125rem; } }
+@media (max-width: 599px) { [data-clocker-kiosk] .np-wait { --ck-roster-wait: calc(max(13rem, 100svh - 27rem) + 6.5rem); } [data-clocker-kiosk] .np-wait[data-hint="id"] { --ck-roster-wait: 8.9375rem; } }
 [data-clocker-kiosk] .np-wait-line { margin: 0; color: var(--ck-grey); font-size: .9375rem; }
 [data-clocker-kiosk] .np-failed { margin: var(--b-space-8) 0 0; color: var(--ck-ink2); font-size: .9375rem; line-height: 1.35; text-align: center; }
 [data-clocker-kiosk] .np-who { margin: var(--b-space-4) 0 0; color: var(--ck-ink2); font-size: 1.0625rem; font-weight: 600; text-align: center; overflow-wrap: anywhere; }
