@@ -89,6 +89,10 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .ck-signin[data-readonly] .ck-signin__legend:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin-bottom: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet__signin:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { padding-top: var(--b-space-8) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-signin-form:not(#ck1) { display: none !important; }
+  /* Reach (guide section 7): a choice's native circle sits at the row's top left, so a press 21.5px left of it landed on the
+   * sheet's padding and 21.5px above it on the row before. Each row's label reaches 12px further left and 4px higher,
+   * given back as negative margin, so what's drawn doesn't move and the circle reaches 44px from its centre. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .ck-signin .clk-choice:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: -4px 0 0 -12px !important; padding-top: calc(var(--b-space-8) + 4px) !important; padding-left: 12px !important; }
 }
 
 /* ---------- shared pieces ---------- */
