@@ -31,7 +31,7 @@ it('sends the Employee ID with the PIN and uses the verify reply without a statu
  const [url,init]=fetch.mock.calls[0] as unknown as [string,RequestInit];
  expect(url).toBe('/api/clocker/main%20office/pin');expect(JSON.parse(String(init.body))).toEqual({action:'verify',employeeId:'AB12',pin:'2468'});
  const source=await (await import('node:fs/promises')).readFile(new URL('./clocker-pin-gate.tsx',import.meta.url),'utf8');
- expect(source).toContain("{action:'verify',employeeId:id,pin}");expect(source).not.toContain("action:'status'");
+ expect(source).toContain("verifyBody(sel?{selection:sel}:{employeeId:id},pin)");expect(source).not.toContain("action:'status'");
 });
 // Jose's approved lockout (Nov 11, 2026): who is paused and for how long come from limitScope and retryAfterSeconds.
 it.each([['person','person'],['device','tablet'],['workspace','tablet']] as const)('reads a %s limit as a paused %s with the real wait',async(limitScope,scope)=>{
