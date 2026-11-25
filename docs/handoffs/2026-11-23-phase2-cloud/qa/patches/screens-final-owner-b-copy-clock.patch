@@ -1,0 +1,48 @@
+From 10627c796dd572dc18fcb21c222d091c19f929a9 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 25 Nov 2026 05:05:52 +0000
+Subject: [PATCH] Test: pin the clock in owner-b-copy so Home's greeting is
+ "Buenas tardes" at any hour
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The Spanish Home test expects "Buenas tardes, Daniel", but HomeB picks the greeting from partOfDay(timeZone)
+in b-kit.tsx, which reads the real clock. Outside 12:00-17:00 in Puerto Rico the test failed (at 01:05 PR it
+rendered "Buenos días, Daniel"). The file now pins the system time to 2026-11-22T19:00:00Z (3:00 PM in
+Puerto Rico, the fixtures' own day) before each test and restores real timers after. No app or copy change.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01N2UNZCWA6MJyjA2upDwUp8
+---
+ src/components/owner-b/owner-b-copy.test.tsx | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/components/owner-b/owner-b-copy.test.tsx b/src/components/owner-b/owner-b-copy.test.tsx
+index 8ffcd6b5f..d1c93900e 100644
+--- a/src/components/owner-b/owner-b-copy.test.tsx
++++ b/src/components/owner-b/owner-b-copy.test.tsx
+@@ -3,7 +3,7 @@
+ // in the words this package owns. Fictional data only.
+ import { createElement, type ComponentProps } from "react";
+ import { renderToStaticMarkup } from "react-dom/server";
+-import { expect, it, rs } from "@rstest/core";
++import { afterEach, beforeEach, expect, it, rs } from "@rstest/core";
+ import type { Today, TodayShift } from "@/lib/today/project";
+ import type { ClockMonitor } from "@/lib/time-clock";
+ import type { ActionItem } from "@/lib/action-center/project";
+@@ -15,6 +15,11 @@ rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push:
+ rs.mock("./owner-b.css", () => ({}));
+ 
+ const { OWNER_B_COPY, ASK_ES, clockIn } = await import("./owner-b-copy");
++
++// Home's greeting follows the hour where the business is (partOfDay in b-kit.tsx). The fixtures are Sunday, November 22 in
++// Puerto Rico, so the clock is pinned to 3:00 PM there (19:00 UTC): "Buenas tardes" at any hour the suite runs.
++beforeEach(() => { rs.useFakeTimers(); rs.setSystemTime(new Date("2026-11-22T19:00:00Z")); });
++afterEach(() => { rs.useRealTimers(); });
+ const { HomeB } = await import("./home-b");
+ const { InboxB, LaterB } = await import("./inbox-b");
+ const { TeamB } = await import("./team-b");
+-- 
+2.43.0
+

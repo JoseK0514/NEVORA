@@ -1,0 +1,12 @@
+// QA (not committed to the app): the clock tick that breaks ownerCoverageAction. Date.now() runs 1 ms ahead of new Date().
+import {expect,it,afterEach} from '@rstest/core';
+import {ownerCoverageAction} from "@/test/fixtures/owner-coverage-action";
+import {parseCoverageActionResult} from "@/components/owner-advisor/coverage-actions-response";
+const real=Date.now;
+afterEach(()=>{Date.now=real;});
+it.each(["coverage_review","coverage_saved","coverage_checked"] as const)("%s survives a 1 ms tick between clock readings",state=>{
+ Date.now=()=>real()+1;
+ const v=ownerCoverageAction(state);
+ expect(Date.parse(v.review.expiresAt)-Date.parse(v.review.preparedAt)).toBe(300000);
+ expect(parseCoverageActionResult(v)).toEqual(v);
+});
