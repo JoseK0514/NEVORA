@@ -19,6 +19,7 @@ describe('a busy button keeps its fill (Jose, Nov 25)', () => {
     expect(kit).not.toMatch(/\.b-btn:is\(:disabled, \[aria-disabled="true"\]\) \{/);
   });
   it('the corp and quiet buttons follow the same rule', () => {
+    expect(css('app/app/b-foundation.css')).toContain(`html body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"])${BUSY} {\n    opacity: 1 !important; background-color: var(--b-disabled-bg) !important;`);
     expect(css('app/app/b-foundation.css')).toContain(`:is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"])${BUSY} {`);
     expect(css('components/corp/corp.css')).toContain(`.c-btn:disabled${BUSY}, :is(#c-root, html) .c-btn[aria-disabled="true"]${BUSY} { background: var(--c-neutral-bg);`);
     expect(css('app/app/owner-b-desktop.css')).toContain(`:is(.q-btn, .c-btn, .wc-btn):is(:disabled, [aria-disabled="true"])${BUSY}:not(header.c-title *) {`);

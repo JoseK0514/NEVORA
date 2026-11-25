@@ -943,8 +943,8 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * declarations are in nv-b (B8); the normal ones follow it. Values: src/app/b-tokens.css. */
 @layer nv-b {
   /* One disabled pair for every button class (four pairs drew before: #EDEEEF and #F5F6F6 fills, #A7ACB1 and #6B7075 ink,
-   * a border on one). A busy button keeps its look (Phase 7). */
-  html body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]) {
+   * a border on one). A busy button keeps its look (Phase 7): aria-busy, or its busy label showing (kit fix, Nov 25). */
+  html body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) {
     opacity: 1 !important; background-color: var(--b-disabled-bg) !important; background-image: none !important; color: var(--b-disabled-ink) !important; border-color: transparent !important; box-shadow: none !important; cursor: not-allowed !important;
   }
   /* One weight: 600 on the older kits' buttons (secondary pills drew 500 on phones). The white pill on a band keeps its
