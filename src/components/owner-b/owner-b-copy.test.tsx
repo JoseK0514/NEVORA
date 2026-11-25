@@ -3,7 +3,7 @@
 // in the words this package owns. Fictional data only.
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, it, rs } from "@rstest/core";
+import { afterEach, beforeEach, expect, it, rs } from "@rstest/core";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionItem } from "@/lib/action-center/project";
@@ -15,6 +15,11 @@ rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push:
 rs.mock("./owner-b.css", () => ({}));
 
 const { OWNER_B_COPY, ASK_ES, clockIn } = await import("./owner-b-copy");
+
+// Home's greeting follows the hour where the business is (partOfDay in b-kit.tsx). The fixtures are Sunday, November 22 in
+// Puerto Rico, so the clock is pinned to 3:00 PM there (19:00 UTC): "Buenas tardes" at any hour the suite runs.
+beforeEach(() => { rs.useFakeTimers(); rs.setSystemTime(new Date("2026-11-22T19:00:00Z")); });
+afterEach(() => { rs.useRealTimers(); });
 const { HomeB } = await import("./home-b");
 const { InboxB, LaterB } = await import("./inbox-b");
 const { TeamB } = await import("./team-b");
