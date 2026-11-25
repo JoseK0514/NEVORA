@@ -12,6 +12,7 @@ export const CLOCKER_ROSTER_COPY = {
     stale: 'The list changed. Choose your name again.',
     back: 'Choose another name',
     backToNames: 'Back to names',
+    waiting: 'Getting names…',
   },
   es: {
     title: 'Elige tu nombre',
@@ -24,6 +25,7 @@ export const CLOCKER_ROSTER_COPY = {
     stale: 'La lista cambió. Elige tu nombre otra vez.',
     back: 'Elegir otro nombre',
     backToNames: 'Volver a los nombres',
+    waiting: 'Buscando nombres…',
   },
 } as const;
 export type ClockerRosterCopy = { [K in keyof typeof CLOCKER_ROSTER_COPY.en]: string };

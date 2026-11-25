@@ -79,9 +79,17 @@ it('adds the search field above 12 names, and says when the list changed',()=>{
  expect(html).toContain('La lista cambió. Elige tu nombre otra vez.');expect(html).toContain('>Usar ID de empleado</button>');
  expect(html).toContain('¿No apareces? Usa tu ID de empleado.');expect(html).toContain('aria-label="Nombres"');
 });
-it('waits for the roster before the Employee ID form turns on',()=>{
+it('waits for the roster in a reserved area, with no form to tap, then shows the form or the names',()=>{
  const html=renderToStaticMarkup(<ClockerPresentation initialLocale="en"><ClockerPinGate locationKey="main"/></ClockerPresentation>);
- expect(html).toContain('Enter your Employee ID');expect(html).toMatch(/<fieldset disabled="">/);expect(html).not.toContain('data-clocker-names');
+ expect(html).toContain('data-clocker-roster-wait=""');expect(html).not.toContain('name="employeeId"');expect(html).not.toContain('data-clocker-names');
+ expect(html).toMatch(/<h1[^>]*data-waiting=""/);expect(html).not.toContain('Getting names…');
+ const css=readFileSync(new URL('./clocker-name-picker.css',import.meta.url),'utf8');
+ expect(css).toContain('h1[data-waiting] { visibility: hidden; }');expect(css).toMatch(/\.np-wait \{[^}]*min-height: var\(--ck-roster-wait, /);
+ // The waiting line appears only past 1s; the form returns on a reply or a failure (6s timeout).
+ expect(gate).toContain('window.setTimeout(()=>setSlowRoster(true),1000)');expect(gate).toContain("{entry&&step==='id'&&!pickerOn&&!rosterLoading?<form");
+ expect(CLOCKER_ROSTER_COPY.en.waiting).toBe('Getting names…');expect(CLOCKER_ROSTER_COPY.es.waiting).toBe('Buscando nombres…');
+ const id=renderToStaticMarkup(<ClockerPinGate locationKey="main" initialRoster={{kind:'id'}}/>);expect(id).toContain('name="employeeId"');expect(id).not.toContain('data-clocker-roster-wait');
+ const names=renderToStaticMarkup(<ClockerPinGate locationKey="main" initialRoster={{kind:'picker',people:twelve}}/>);expect(names).toContain('data-clocker-names');expect(names).toContain('Choose your name');
 });
 it('wires the roster lifecycle: read on sign-in and start over, cleared on leaving, hidden or a location switch',()=>{
  // Sign-in means no verified person, no blocked or offline card (a lost tablet setup is a blocked card), and in view.

@@ -74,7 +74,9 @@ function revealCard(field:HTMLInputElement|null){
  if(top>0)window.scrollBy({top,behavior:'instant'});
 }
 
-export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{locationKey:string;timeZone?:string;punchEnabled?:boolean}){
+export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,initialRoster}:{locationKey:string;timeZone?:string;punchEnabled?:boolean;
+ /** Tests only: the roster's first state (the screen otherwise waits for the first read). */
+ initialRoster?:RosterState}){
  const t=useClockerCopy(),{locale}=useClockerPresentation(),intl=useClockerIntlLocale();
  const input=useRef<HTMLInputElement>(null),busy=useRef(false),epoch=useRef(0),heading=useRef<HTMLHeadingElement>(null);
  const online=useClockerOnline();
@@ -90,7 +92,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   * (a verified person, a blocked or offline card, the tablet losing its setup), on a location switch and when the tablet
   * is hidden. A reply for an older read is dropped (rosterGen). The chosen name's selection, like the typed Employee ID,
   * lives in a ref; the name on screen is presentation. */
- const [roster,setRoster]=useState<RosterState>({kind:'loading'}),rosterGen=useRef(0),selection=useRef<string|null>(null);
+ const [roster,setRoster]=useState<RosterState>(initialRoster??{kind:'loading'}),rosterGen=useRef(0),selection=useRef<string|null>(null);
  const [picked,setPicked]=useState<RosterPerson|null>(null),[useId,setUseId]=useState(false),[rosterTick,setRosterTick]=useState(0);
  const [visible,setVisible]=useState(true),[notice,setNotice]=useState<'stale'|null>(null),[searching,setSearching]=useState(false);
  const lastPick=useRef<string|null>(null);
@@ -192,6 +194,11 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  },[rosterKey,rosterTick]);
  const pickerOn=roster.kind==='picker'&&!useId&&step==='id';
  const rosterLoading=roster.kind==='loading';
+ /* Until the roster answers (lead, Nov 25: the load shift), the card shows its title area and a quiet waiting area of
+  * reserved height instead of a disabled Employee ID form; past 1s it says "Getting names…". Then the names or the form.
+  * The read is bounded by its 6s timeout, and a failed read still shows the form with its line. */
+ const [slowRoster,setSlowRoster]=useState(false);
+ useEffect(()=>{if(!rosterLoading)return;const timer=window.setTimeout(()=>setSlowRoster(true),1000);return()=>{clearTimeout(timer);setSlowRoster(false);};},[rosterLoading]);
  useWhenBackOnline(!identity&&!(error&&blocked&&tone!=='stop'),()=>{if(unreachable)void recheck();else void reset();});
  useEffect(()=>{
   if(!unreachable)return;
@@ -375,7 +382,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
     {step==='pin'&&entry?<button type="button" className={styles.back} aria-label={picked?rc.back:t('Change Employee ID')} disabled={pending} onClick={changeId}><ClockerIcon name="back" size={22}/></button>:null}
     {/* With names on the tablet, the Employee ID form chosen from them has a way back. */}
     {step==='id'&&entry&&useId&&roster.kind==='picker'?<button type="button" className={styles.back} aria-label={rc.backToNames} disabled={pending} onClick={backToNames}><ClockerIcon name="back" size={22}/></button>:null}
-    <h1 ref={heading} tabIndex={-1} className={styles.title}>{entry&&pickerOn?rc.title:t(paused?pausedTitle:offline||unreachable&&!online?'Time can’t be recorded':unreachable?'Can’t reach NEVORA':blocked&&tone==='device'?'This tablet needs to be set up again':step==='pin'?'Enter your PIN':'Enter your Employee ID')}</h1>
+    <h1 ref={heading} tabIndex={-1} className={styles.title} data-waiting={entry&&step==='id'&&rosterLoading?'':undefined}>{entry&&pickerOn?rc.title:t(paused?pausedTitle:offline||unreachable&&!online?'Time can’t be recorded':unreachable?'Can’t reach NEVORA':blocked&&tone==='device'?'This tablet needs to be set up again':step==='pin'?'Enter your PIN':'Enter your Employee ID')}</h1>
    </div>
    {blockedCard}{offlineCard}
    {/* The Employee ID step: the tablet's own keyboard, capitals on, no autocorrect; Enter or Continue moves to the PIN. */}
@@ -383,9 +390,10 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
     onPick={pickPerson} onUseId={chooseUseId} onSearch={query=>{setSearching(query.trim()!=='');setEditedAt(performance.now());}}/>:null}
    {entry&&step==='pin'&&picked?<p className="np-who" data-clocker-chosen="">{picked.displayName}</p>:null}
    {entry&&step==='id'&&!pickerOn&&roster.kind==='failed'?<p className="np-failed" role="status" data-clocker-names-failed="">{rc.failed}</p>:null}
-   {/* Until the roster answers, the form waits (disabled), so a picker tablet never takes a stray tap on it. */}
-   {entry&&step==='id'&&!pickerOn?<form onSubmit={continueToPin} className={styles.pinForm}>
-    <fieldset disabled={pending||rosterLoading}>
+   {/* Until the roster answers, a waiting area of reserved height, never a form a picker tablet could take a stray tap on. */}
+   {entry&&step==='id'&&rosterLoading?<div className="np-wait" data-clocker-roster-wait="">{slowRoster?<p className="np-wait-line" role="status">{rc.waiting}</p>:null}</div>:null}
+   {entry&&step==='id'&&!pickerOn&&!rosterLoading?<form onSubmit={continueToPin} className={styles.pinForm}>
+    <fieldset disabled={pending}>
      <label className={styles.sr} htmlFor="clocker-employee-id">{t("Employee ID")}</label>
      <div data-clocker-id-entry className={styles.idEntry}>
       <input id="clocker-employee-id" ref={idInput} name="employeeId" type="text" inputMode="text" autoCapitalize="characters" autoCorrect="off" autoComplete="off" spellCheck={false} enterKeyHint="next" maxLength={128} onChange={e=>{typed();employeeId.current=e.currentTarget.value;setIdFilled(e.currentTarget.value.trim().length>0);setEditedAt(performance.now());}} aria-describedby="clocker-pin-help"/>
