@@ -221,3 +221,44 @@ is the kiosk shell's card resizing between screens (`.task`, `.when`, `.foot`).
 
 **Not run:** WebKit (not installed here) and a real iPad. Smoothness on an iPad needs a device pass; here it's only
 compositor properties, checked in Chromium.
+
+## Follow-up: the way out on a phone (Nov 25)
+| Commit | What |
+|---|---|
+| `b3fc173a` | Below 600px the names scroll in their own box, with "Use employee ID" right under it |
+| `22850c52` | The box gives back the height of the changed-list line or the search field |
+| `b8584a64` | Scan tool: reset the name box's own scroll after the reach probe |
+| shots commit | `phone/`: every 390 capture, plus `before-after-*` |
+
+**Why not scroll padding.** A sticky button over the page's scroll leaves a sliver of whichever tile rests under it. axe
+`target-size` fails whenever that sliver is under 24px, and padding can't move a page that isn't scrolling.
+- I checked this on a static page in Chromium: a sticky footer over 12 tiles failed at 1 of 4 resting offsets; a bounded
+  scroll box passed at all 4.
+- So on a phone the footer is "inside the card's scroll" literally:
+  - the tiles scroll in a box of `max(13rem, 100svh − 27rem)` (`− 32rem` with the changed-list line or search);
+  - the hint and the button sit directly under the box, and nothing covers a name;
+  - the 3px focus ring stays inside the box (6px padding).
+- The iPad (600px and up) keeps the plain list as captured, with the sticky rule kept for long lists.
+
+**200% Spanish.** "Usar ID de empleado" still wraps whole to 109px. It no longer sticks over the names, so it never
+covers the screen while they scroll.
+- At 200% the band alone is about 420px, so the button is under the fold at the top of the page.
+- One short page scroll brings the whole card into view, with the button under four names. You don't scroll past every
+  name.
+- Before and after: `phone/before-after-signin-es-390x844-text200(-full)`, `phone/before-after-stale-390x844`,
+  `phone/before-after-signin-390x844`.
+
+**Rechecked** (production build, Chromium, `NEVORA_SCAN_CLOCKER_FLOW=names`):
+- 44 views: no overflow and nothing under 44px. Reach is OK everywhere; the only miss is the hidden skip link.
+- axe, 18 checks: 0 violations, including the stale screen at 390. Nothing is suppressed.
+- The way out at 390 and 100% is in view and on top in every state: sign-in, duplicate, stale, search at 13 names,
+  Spanish. At 200% it's in view mid-list.
+- Focus not obscured at 390 (100% and 200%): all 12 names clear.
+- Focus walk: Carlos V. into the PIN step, "Choose another name" back, focus returns to Carlos V.
+- Reduced motion: nothing runs.
+- End to end:
+  - Ana C. clocks in and out (one `CLOCKED_OUT` entry), James by Use employee ID, Luis Santos (duplicate) by ID.
+  - Stale: Miguel is dropped and the line shows.
+  - Roster failure: the ID form with its line, then sign-in by ID.
+  - Hidden and Escape each trigger a fresh read.
+- The 20-second idle clear and the focus order are unchanged.
