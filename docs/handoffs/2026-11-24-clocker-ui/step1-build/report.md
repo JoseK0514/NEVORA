@@ -76,9 +76,14 @@ decides by `ok` and `refresh`, never by the words.
 - **Stale, from two contexts.** Two Owners open Carmen's sheet. A ticks Main Office and saves (Saved). B chooses "Every
   location" and saves: "This employee changed. Reload their profile before saving." with focus, and the sheet locked.
   Reload profile shows A's save (SELECTED, all three).
-- **Manager.** The scan's Manager (a fictional person made Manager, with no locations) gets "Outside the locations you
-  manage" for the person, so there is no row and the sheet address shows no sheet. A company-wide Manager is covered by
-  the page unit test (no row; the sheet address redirects).
+- **Managers** (follow-up after merge 93dba5e3). Two fictional Managers with sign-ins, assigned through the real
+  operational-scope command, open Daniel (who works at Main Office and West Office):
+  - **Elena Ruiz, company-wide:** Daniel's page has no "Clock in at" row, and `?edit=clocker` redirects to
+    `/app/employees/QA-SCAN-A`. (`img/clk-manager-elena-person-390/1440`, `-sheet-address-390`.)
+  - **Lucía Vega, West Office only:** her scoped view of Daniel (West Office hours only, 6 h this week) has no row.
+    `?edit=clocker` doesn't redirect: it shows the G17 closed state, "Company-wide access needed". No sheet appears.
+    (`img/clk-manager-lucia-person-390/1440`, `-sheet-address-390`.) See "Finding" below.
+  - That Codex's read isn't called for a Manager can't be seen from a browser; the page unit test proves it.
 - **Suites.** `node scripts/run-rstest.mjs run src/components src/app`: 4,994 passed, 0 failed. tsc clean.
 
 **Not run.**
@@ -91,12 +96,23 @@ decides by `ok` and `refresh`, never by the words.
 - After: `img/clk-row-daniel-390.webp`, `img/clk-row-daniel-1440.webp`, `img/clk-row-carmen-390.webp`.
 - The only change on the person page is the "Clock in at" row between Work and Access and sign-in.
 
+## Finding: a location-limited Manager at `?edit=clocker` (reported, not changed)
+For a Manager limited to some locations, the person page hands off to the scoped view (G17) before the Clock in at
+redirect runs. So `?edit=clocker` shows the scoped "Company-wide access needed" state, the same as `?edit=1` for that
+Manager, instead of redirecting to the person page. Nothing is exposed (no row, no sheet, no read). If Jose wants the
+redirect for every non-Owner, the change is to check `edit=clocker` before the scoped hand-off in
+`src/app/app/employees/[employeeId]/page.tsx`.
+
 ## The Hours card ("The whole schedule couldn't be read" / "Not available")
 It's the fixture, not a UI bug. `readOperationalEmployeeHours` reports the week's schedule as complete only when every
 location the person may work at has a published schedule this week
 (`src/lib/company-access/operational-read.server.ts`, `scheduledComplete`). The scan publishes a schedule only for Main
 Office, and Daniel and Carmen also work at West Office (Carmen at Old San Juan), so the card correctly refuses to show a
-partial figure. The person page's wording for that case is the approved Phase 8 line. No change made.
+partial figure. The person page's wording for that case is the approved Phase 8 line. No app change made.
+**Fixture fixed** (follow-up): the scan now publishes this week at West Office and Old San Juan too. The Hours card shows
+real figures: Daniel 8 h today and 46 h this week, Carmen 8 h and 56 h (`img/clk-person-daniel-390/1440`,
+`img/clk-person-carmen-390/1440`). The 390 full-page captures draw the fixed tab bar over the lower part of the page; the
+"Clock in at" row is shown in `img/clk-row-*-390`.
 
 ## Spanish strings for staff's review list
 | Key | English | Spanish (proposed) |
