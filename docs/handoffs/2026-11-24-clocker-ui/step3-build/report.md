@@ -366,3 +366,54 @@ tool keeps the capital-E selectors as well as its cls mode.
   re-reads.
 - "Getting names…" appears past 1s, and a failed read shows the enabled form.
 - `src/components`: 3,347 passed. tsc and oxlint are clean.
+
+## Follow-up: the setup check holds the sign-in card's place (Nov 25)
+| Commit | What |
+|---|---|
+| `a300f2d0` | The hint becomes a path-scoped cookie the page reads on the server; the setup check of a tablet in use draws the sign-in waiting shape |
+| `07cf2f86` | Scan tool: cls mode sets the hint cookie, and measures a never-set-up tablet's first load |
+| shots commit | `load/setup-*` |
+
+**What changed.** The 0.167 left at 768 was the server-drawn setup form ("Set up this tablet", disabled while its status
+check ran) giving way to the sign-in card.
+- The hint is now a cookie, `nv_clocker_layout` = `picker` | `id`, scoped to `/clocker/<location>`. The page reads it
+  on the server: presentation only, with no data or contract change, and it's guarded outside a request.
+- A tablet with the hint draws its setup check in the sign-in card's own waiting shape: the same title line (invisible),
+  the same reserved height and the language button. The check-to-sign-in hand-off then moves nothing.
+- A tablet never set up has no hint, so its setup screen is exactly as before.
+- **The hint is cleared** when:
+  - the status check finds the tablet not connected here;
+  - the `device_required` card appears;
+  - a roster read returns 401.
+  Checked: revoked mid-session, "This tablet needs to be set up again", hint gone. The cookie jar then held only the
+  device's own credential cookie.
+- Tests: only `picker` or `id` is ever written, read or parsed, and never names or selections. The cookie has the
+  right path and attributes. Blocked cookies don't throw. The checking shape renders for each hint, not for a new
+  tablet, and not without PINs.
+
+**CLS on load** (picker tablet / Employee ID tablet; production build, Chromium; 2 loads each, identical):
+
+| Size | Before (d2f122f4), correct hint | **After, correct hint** | After, no hint (first load after setup) | After, wrong hint |
+|---|---|---|---|---|
+| 768×1024 | 0.030 / 0.167 | **0.000 / 0.000** | 0.030 / 0.233 | 0.203 / 0.203 |
+| 1024×768 | 0.037 / 0.071 | **0.002 / 0.002** | 0.037 / 0.135 | 0.100 / 0.100 |
+| 390×844 | 0.002 / 0.002 | **0.002 / 0.000–0.002** | 0.002 / 0.042 | 0.042 / 0.042 |
+
+**A never-set-up tablet's first load** (the setup screen): 0.0001, 0.0001 and 0.0019 at 768, 1024 and 390. That's
+identical to d2f122f4, which I measured from a separate worktree with the same tool.
+
+- The 0.002 left over is the band's date line settling (`.when` 289→279, `date` 87→77). It was there before and comes
+  from neither the card nor the picker.
+- A wrong hint costs one shift and the next load corrects it. It's now lower than "before" at every size.
+- **Ready time:** an Employee ID tablet is ready in 140–285ms with the hint.
+
+**Rechecked on the final code:**
+- 44 views: no overflow, nothing under 44px, reach OK.
+- axe, 18 checks: 0 violations.
+- The way out is in view at 390 and 100%.
+- Focus walk OK, and focus is never hidden at 390.
+- Reduced motion: nothing runs.
+- End to end: Ana C. clocks in and out, James by ID, Luis (duplicate) by ID, stale, roster failure, hidden and Escape
+  re-reads.
+- "Getting names…" appears past 1s, and a failed read shows the enabled form.
+- `src/components` and `src/app/clocker`: 3,361 passed. tsc and oxlint are clean.
