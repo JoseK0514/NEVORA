@@ -77,6 +77,10 @@
 :is(#c-root, html) .c-row__title--b { font-weight: 500; }
 :is(#c-root, html) .c-row__detail { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-row__detail > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Clock in at (Clocker UI step 1): the answer is product copy ("Every location", "Only these locations: …"), so it wraps
+ * instead of ending in an ellipsis at large text (QA F3, Nov 25, 2026: WebKit cut it at 768 with 200% text). */
+:is(#c-root, html) #clock-in-at .c-row__detail { align-items: flex-start; }
+:is(#c-root, html) #clock-in-at .c-row__detail > span:first-child { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
 :is(#c-root, html) .c-row__value { flex: none; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 400; color: var(--c-grey); text-align: right; white-space: nowrap; font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-row__value--soft { font-weight: 400; color: var(--c-grey); }
 :is(#c-root, html) .c-row__value--ink { font-weight: 500; color: var(--c-ink); }
