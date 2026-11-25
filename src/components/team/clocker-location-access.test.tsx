@@ -143,3 +143,15 @@ describe('every state, drawn', () => {
     expect(html).not.toContain('Works here');
   });
 });
+
+describe('the sheet’s look (Jose’s picks: Inline radio and Inline check)', () => {
+  it('draws plain 48px rows with no box or ruled line, text in rem tokens', async () => {
+    const { readFileSync } = await import('node:fs');
+    const css = readFileSync(new URL('./clocker-location-access.css', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const rule = (selector: string) => css.match(new RegExp(`\\.app-shell\\[data-nv-b\\] ${selector.replace(/[.*+?^${}()|[\]\\>]/g, '\\$&')} \\{([^}]*)\\}`))?.[1] ?? '';
+    expect(rule('.clk-choice')).toContain('min-height: 48px');
+    expect(css).not.toMatch(/box-shadow|border:\s*(?!0)[^;]*solid|border-(top|bottom):/);
+    expect(rule('.clk-choice > input')).toContain('accent-color: var(--b-teal)');
+    expect(css).not.toMatch(/font-size:\s*\d+px/);
+  });
+});
