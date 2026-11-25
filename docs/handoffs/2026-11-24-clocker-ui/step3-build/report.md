@@ -159,3 +159,65 @@ iPad", switched with Codex's `setClockerDeviceSignInMode`.
 - **390 at 200% text in Spanish:** "Usar ID de empleado" wraps to two lines, so the sticky button is 109px tall. One
   name shows above it at the top of the list, and the rest scroll.
 - **The Owner's control for picker mode** is step 2 and isn't built here.
+
+## Motion (added Nov 25, at Jose's request: more premium through motion only)
+Tiles, colours and the PIN layout are as captured above. GSAP (`src/components/clocker-motion.ts`) follows the design OS:
+- transform and opacity only, with the b-tokens durations and `expo.out`;
+- nothing over 0.6s, and nothing blocks a tap;
+- each screen kills the motion it started on unmount or a screen change.
+
+| Commit | What |
+|---|---|
+| `598b16e0` | Motion code and `clocker-motion.test.ts` |
+| `b9c829f4` | Scan tool: `NEVORA_SCAN_CLOCKER_FLOW=motion` |
+| shots commit | `motion/`: stills, reduced-motion end states, the recording |
+
+1. **Shared name (FLIP).** The tapped tile's name is measured, then the name under "Enter your PIN" moves from there into
+   place (0.30s, slight scale). "Choose another name" moves it back into its tile.
+   - Measured after the PIN step's own scroll, before paint.
+   - Mid-flight at 110ms, the name is still 21px from home; at 500ms it has landed (`flip-*`, `flip-back-*`).
+2. **Tiles settle.** On entering sign-in, the tiles settle in with opacity and 6px of movement, 0.02s apart, capped at 8
+   steps. All are done by 0.38s (tested for a list of 30), and the name coming home is left out (`settle-*`).
+   - It uses opacity, not visibility, so tiles take taps at once: a tap on "Ana C." during the settle opened the PIN step.
+3. **PIN dots.** A new digit's dot springs from 0.55 to 1 in 0.24s (`back.out(1.2)`): 0.55 at the start, 0.99 at 90ms,
+   none at 450ms (`dot-*`).
+   - A wrong PIN shakes the dots, not the field: −6, 5, −3, 2, 0px in 0.26s, beside the unchanged error text
+     (`shake-*`).
+   - This replaces the field's CSS keyframe shake, which was 8px on the whole field.
+   - **For Jose:** the spring's slight overshoot is the only one on the kiosk; the design OS bans overshoot on work
+     screens, and this was asked for.
+4. **Done mark.** On the first "Hi, Ana." after a verified PIN, a done mark sits on the person's initial, out of flow.
+   It settles from 0.6 and draws its tick, then the greeting fades in. Focus is on the heading from the start.
+   - Frame by frame: the disc is at 0.6 and opacity 0 at 0ms and settled by 300ms. The tick is drawn by 200ms. The
+     greeting goes from 0 at 150ms to 0.76 at 250ms and 1 by 450ms (`done-*`).
+   - It's the kit's `BDoneMark` markup and class with kiosk styles. The kit module isn't imported because it brings
+     owner-b.css (88 KB, including unscoped rules such as `.b-screen { display: none }`) into the kiosk.
+
+**Reduced motion.** Every function returns null and touches nothing, so the state is drawn at once with no transform.
+`reduced-*` shows each end state at 0ms:
+- the computed transform is `none` on the chosen name, the dots and the mark;
+- the mark's frames are steady from the first frame;
+- the motion probe finds no animations, transitions or running animations.
+
+**Layout shift.** The motion adds none. The full-motion and reduced-motion runs record the same shifts, and every source
+is the kiosk shell's card resizing between screens (`.task`, `.when`, `.foot`).
+- Most come right after a tap and don't count toward CLS: names to PIN 0.08, PIN to "Hi" 0.40 and 0.17.
+- **Not from the motion, reported:** at page load there are two shifts that do count, 0.17 and 0.20. The second is the
+  card resizing when the roster answers, from the waiting Employee ID form to the names.
+- A fix is a product choice: either reserve the names' height while the roster loads, or show nothing in the card until
+  it answers. Neither is built.
+
+**Recording:** `motion/tap-pin-success-768x1024.webm`: tap "James O.", PIN, "Hi, James.", Clock in, the receipt.
+
+**Tests:** `src/components/clocker-motion.test.ts` (6):
+- each motion returns null under reduced motion and leaves the element untouched;
+- the full path tweens only x, y, scale, opacity and strokeDashoffset, and stays at 0.6s or less;
+- the settle is under 0.4s for 30 tiles, and a zero-distance flip is skipped;
+- every motion function opens with its reduced branch;
+- each screen pairs every motion it starts with `prefersReducedMotion()` and `stopMotion`;
+- no pseudo-element inside `:is()` in the picker and kiosk CSS.
+
+`src/components`: 3,440 passed. tsc and oxlint are clean.
+
+**Not run:** WebKit (not installed here) and a real iPad. Smoothness on an iPad needs a device pass; here it's only
+compositor properties, checked in Chromium.
