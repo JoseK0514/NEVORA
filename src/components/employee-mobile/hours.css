@@ -78,7 +78,7 @@
 @media (max-width: 767px) {
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:has(.c-hours-sheet) .mobile-nav { display: none !important; }
 }
-:is(#c-root, html) .c-hours .c-in::placeholder { color: var(--c-faint); }
+:is(#c-root, html) .c-hours .c-in::placeholder { color: var(--c-grey); } /* 4.96:1 on white, as every field (release batch, Nov 23) */
 /* At 320 a card label or row keeps its key words on one line and drops its lead-in. */
 @media (max-width: 359px) { :is(#c-root, html) .c-hours .c-hours-wide { display: none; } }
 /* A heading that takes focus when a page opens doesn't draw a focus ring (it isn't a control). */

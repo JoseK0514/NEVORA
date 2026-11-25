@@ -3,7 +3,9 @@ import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { createOwnedNextApp } from './owned-next-app';
+import { createOwnedNextApp, ownedProductionRequested } from './owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from './owned-collab-origin';
+import { startOwnedTlsProxy } from './owned-tls-proxy';
 import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from './owned-app-fixture';
 import { fixtureProof } from './shift-change-api';
 import { hashPassword } from '../../lib/auth/password';
@@ -18,7 +20,14 @@ it('connects original shift reviews and explicit period history in owned Chromiu
   if (!evidence) throw Error('Choose an external readiness UI evidence directory');
   await mkdir(evidence, { recursive: true });
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
-  const app = await createOwnedNextApp(evidence, { payrollEnabled: true });
+  // A production build sets the session cookie `secure`, which WebKit keeps only over https. Production runs therefore
+  // serve the app at the owned test origin through the owned loopback TLS proxy (a throwaway certificate made at run
+  // time), as the Clocker production run does; development keeps plain http on 127.0.0.1.
+  const production = ownedProductionRequested();
+  const app = await createOwnedNextApp(evidence, { payrollEnabled: true, ...(production ? { portalHttpsOrigin: OWNED_COLLAB_ORIGIN } : {}) });
+  const tls = production ? await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url }).catch(async error => { await app.close(); throw error; }) : null;
+  const base = production ? OWNED_COLLAB_ORIGIN : app.url;
+  const network = tls ? { proxy: { server: tls.server }, ignoreHTTPSErrors: true } : {};
   const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
   const checks: string[] = [], errors: string[] = [];
   const browsers: { close(): Promise<void> }[] = [];
@@ -58,7 +67,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
     for (const engine of ['chromium', 'webkit']) {
       const browser = await runtime[engine].launch({ headless: true }); browsers.push(browser);
       for (const actor of ['UI-COMPANY', 'UI-LOCAL']) {
-        const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce' });
+        const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce', ...network });
         const page = await context.newPage(); page.setDefaultTimeout(20000);
         // G69 (Nov 23, 2026): `networkidle` belongs to the last document load, so after a client-side move (sign-in lands on
         // Home that way) it is already met while Home's shell is still reading (inbox count, notifications, access check).
@@ -72,18 +81,37 @@ it('connects original shift reviews and explicit period history in owned Chromiu
           while (Date.now() < deadline) { if (reads.size) quietSince = Date.now(); else if (Date.now() - quietSince >= 500) return; await page.waitForTimeout(100); }
           throw Error(`Page reads never settled: ${[...reads].map(request => (request as { url(): string }).url()).join(', ')}`);
         };
-        const pause = async () => { await settled(); await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); await settled(); };
-        const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(app.url + path); };
+        // Development (b5a42125, a3c91e4a, 3e8fd30a, f9126a48, 456646c5, ed0a33b6): also wait for this page's own router
+        // reads and Server Actions to finish, and for a named read's full response body.
+        const waitForRead = (path: string) => page.waitForResponse((response: { url(): string; status(): number }) =>
+          response.url() === base + path && response.status() === 200)
+          .then((response: { finished(): Promise<unknown> }) => response.finished());
+        const pendingRouterRequests = new Set<object>();
+        page.on('request', (request: { url(): string; headers(): Record<string, string> }) => {
+          const headers = request.headers(), url = new URL(request.url());
+          if (url.origin === base && (headers.rsc === '1' || headers['next-action'])) pendingRouterRequests.add(request);
+        });
+        for (const event of ['requestfinished', 'requestfailed']) page.on(event, (request: object) => pendingRouterRequests.delete(request));
+        const pause = async () => {
+          await settled(); await expect.poll(() => pendingRouterRequests.size, { timeout: 20000 }).toBe(0);
+          await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); await settled();
+        };
+        const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(base + path); };
         failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
         page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));
-        await context.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => {
-          const url = new URL(route.request().url());
-          if (['http:', 'https:'].includes(url.protocol) && url.origin !== app.url) await route.abort(); else await route.continue();
-        });
+        // Development (6496df41): only foreign requests are routed (and aborted); the app's own stay on the browser's
+        // native transport.
+        await context.route((url: URL) => ['http:', 'https:'].includes(url.protocol) && url.origin !== base,
+          (route: { abort(): Promise<void> }) => route.abort());
         await visit('/login');
         await page.getByLabel('Employee ID', { exact: true }).fill(actor);
         await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
-        await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(app.url + '/app');
+        // Development (456646c5, ed0a33b6, 2f77ad7e, 598c3dd6): Home's own data read finished and its heading drawn.
+        const homeReady = waitForRead(actor === 'UI-COMPANY' ? '/api/manager/today' : '/api/manager/clock-monitor');
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(base + '/app');
+        await homeReady;
+        await page.getByRole('main').getByRole('heading', { level: 1 }).filter({ visible: true }).first().waitFor();
+        await page.waitForLoadState('load');
         const id = `${engine}-${actor}`;
         await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'ui-review','UI-WORKER','2026-10-12','08:00','16:00')", [id]);
         await visit('/app/schedule/edit?shiftId=' + id);
@@ -111,38 +139,58 @@ it('connects original shift reviews and explicit period history in owned Chromiu
         await page.screenshot({ path: resolve(evidence, `${engine}-${actor}-conflict.png`), fullPage: true });
         checks.push(`${engine} ${actor}: edit/delete reject original stale review, keep draft, keyboard confirmation, 320/390/768/1440`);
         await page.waitForLoadState('networkidle');
-        await page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click();
+        // "Reload current shift" is window.location.reload(). The old document still has [name="notes"] with the retained
+        // draft, and WebKit can start the reload after the click resolves, so wait for the new document's load before
+        // reading the field (QA, Nov 23, 2026: 3 of 13 WebKit runs read the old page).
+        await Promise.all([page.waitForEvent('load'), page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click()]);
         await form.locator('[name="notes"]').waitFor();
-        expect(await form.locator('[name="notes"]').inputValue()).toBe('Concurrent edit');
+        // Development (f24e2002): the reloaded value, polled until it arrives.
+        await expect.poll(() => form.locator('[name="notes"]').inputValue(), { timeout: 20000 }).toBe('Concurrent edit');
         await form.locator('[name="notes"]').fill('Fresh reviewed edit');
+        const savedScheduleReady = waitForRead('/api/manager/today');
         await form.evaluate((element: HTMLFormElement) => element.requestSubmit());
         await page.waitForURL(/\/app\/schedule\?/);
+        await savedScheduleReady;
         expect(await q('SELECT notes FROM shifts WHERE id=$1', [id])).toEqual([{ notes: 'Fresh reviewed edit' }]);
         checks.push(`${engine} ${actor}: explicit reload and valid review save`);
         await visit('/app/schedule/edit?shiftId=' + id);
         await page.getByRole('button', { name: 'Delete shift', exact: true }).click();
+        const deletedScheduleReady = waitForRead('/api/manager/today');
         await page.getByRole('button', { name: 'Delete', exact: true }).click();
         await page.waitForURL(/\/app\/schedule\?/);
+        await deletedScheduleReady;
         expect(await q('SELECT count(*)::int n FROM shifts WHERE id=$1', [id])).toEqual([{ n: 0 }]);
         checks.push(`${engine} ${actor}: fresh original-review delete`);
 
         if (actor === 'UI-COMPANY') {
+          // Development (119f680f, 7cf538fb, 275f2646): phone width first, and the page's payroll reads finished.
+          await page.setViewportSize({ width: 390, height: 1000 });
+          const payrollReady = Promise.all([waitForRead('/api/timecards'), waitForRead('/api/payroll-export/profiles'), waitForRead('/api/period-close')]);
           await visit('/app/payroll-export?start=' + period.startDate + '&end=' + period.endDate);
+          await page.getByRole('heading', { name: 'Time exports', exact: true }).filter({ visible: true }).waitFor();
+          await payrollReady;
+          await page.waitForLoadState('networkidle');
+          await expect.poll(() => pendingRouterRequests.size, { timeout: 20000 }).toBe(0);
           await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
           const mobile = page.getByRole('button', { name: 'Choose who’s included', exact: true });
-          if (await mobile.isVisible()) await mobile.click();
+          await mobile.click();
           const history = page.getByRole('region', { name: 'Period artifact and handoff history' });
+          await history.getByRole('heading', { name: 'Full period history', exact: true }).scrollIntoViewIfNeeded();
           await history.getByRole('button', { name: 'Load history', exact: true }).click();
           await history.getByText('More events are available.', { exact: true }).waitFor();
           expect(await history.locator('li').count()).toBe(50);
           await history.getByRole('button', { name: 'Load older events', exact: true }).focus(); await page.keyboard.press('Enter');
           await history.getByText(/100 of 1001 events loaded/).waitFor();
-          for (let i = 0; i < 19; i++) { await history.getByRole('button', { name: 'Load older events', exact: true }).click(); await history.getByRole('button', { name: 'Refresh history', exact: true }).waitFor({ state: 'visible' }); await page.waitForFunction(() => document.querySelector('[aria-label="Period artifact and handoff history"]')?.getAttribute('aria-busy') === 'false'); }
+          // Development (119f680f, 7cf538fb): each page's exact count; ours: the refresh control and aria-busy settle.
+          for (let i = 0; i < 19; i++) {
+            await history.getByRole('button', { name: 'Load older events', exact: true }).and(page.locator(':enabled')).press('Enter');
+            await expect.poll(() => history.locator('li').count(), { timeout: 20000 }).toBe(Math.min(150 + i * 50, 1001));
+            await history.getByRole('button', { name: 'Refresh history', exact: true }).waitFor({ state: 'visible' });
+            await page.waitForFunction(() => document.querySelector('[aria-label="Period artifact and handoff history"]')?.getAttribute('aria-busy') === 'false');
+          }
           await history.getByText('All events in this history snapshot are loaded.', { exact: true }).waitFor();
           expect(await history.locator('li').count()).toBe(1001);
           expect(await history.getByRole('button', { name: 'Load older events', exact: true }).count()).toBe(0);
-          await page.setViewportSize({ width: 390, height: 1000 });
-          if (await mobile.isVisible()) await mobile.click();
           await history.getByRole('heading', { name: 'Full period history', exact: true }).scrollIntoViewIfNeeded();
           expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
           await page.screenshot({ path: resolve(evidence, `${engine}-history.png`), fullPage: false });
@@ -158,6 +206,7 @@ it('connects original shift reviews and explicit period history in owned Chromiu
   } catch (error) { await failureShot?.().catch(() => {}); throw error; }
   finally {
     await Promise.all(browsers.map(browser => browser.close()));
+    await tls?.close();
     await app.close();
     await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, fictionalOnly: true, source: app.sourceHashes }, null, 2));
   }

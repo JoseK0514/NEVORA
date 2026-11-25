@@ -136,15 +136,15 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot--live { background: #7EF0C7; box-shadow: 0 0 0 3px rgb(126 240 199 / 0.25); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-dot--warn { background: #FFC46B; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: var(--b-space-16) var(--b-space-20) 0; padding: var(--b-space-4); border-radius: var(--b-radius-field); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: var(--b-radius-small); font-size: 14px; font-weight: 600; color: var(--b-on-band); white-space: nowrap; text-align: center; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: var(--b-radius-small); font-size: min(0.875rem, 20px); font-weight: 600; color: var(--b-on-band); white-space: nowrap; text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-seg > :is([aria-current="page"], [aria-pressed="true"]) { background: #FFFFFF; color: #0B3B38; box-shadow: var(--b-shadow-thumb); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-search { display: flex; align-items: center; gap: 10px; margin: var(--b-space-16) var(--b-space-20) 0; height: var(--b-seg-h); padding: 0 var(--b-gutter); border-radius: var(--b-radius-field); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--b-on-band); font: 400 16px/1 Inter, "Inter Fallback", sans-serif; -webkit-appearance: none; appearance: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-search input::placeholder { color: var(--b-on-band); opacity: 1; }
 /* Nov 14 inspection (RA-17): forced colours drop the shadow ring; they paint the transparent outline instead. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-search:focus-within { box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6); outline: 2px solid transparent; outline-offset: 2px; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; min-height: var(--b-btn-h-compact); padding: 0 var(--b-gutter); border-radius: var(--b-radius-pill);
-  font-size: 14px; line-height: var(--b-lh-meta); font-weight: 600; white-space: nowrap; transition-property: scale, background-color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); position: relative; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; max-width: 100%; min-height: var(--b-btn-h-compact); padding: 0 var(--b-gutter); border-radius: var(--b-radius-pill);
+  font-size: 0.875rem; line-height: var(--b-lh-meta); font-weight: 600; white-space: normal; text-align: center; text-wrap: balance; transition-property: scale, background-color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); position: relative; }
 /* Nov 14 inspection (BR-11): the target is at least 44px tall whatever the pill's drawn height (36px here, 32 and 34px
  * where a screen draws it smaller); it was the pill plus 4px each way, so a 32px pill had a 40px target. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: max(100%, 44px); translate: 0 -50%; }
@@ -162,9 +162,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: var(--b-btn-h); } /* Final fixes K: 44px on phones (was 40px) */
 :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-btn--glass:not(.b-btn--full, .b-btn--big) { font-size: 0.875rem; }
 @media (min-width: 768px) { :is(#c-root, html) .app-shell[data-nv-b] .b-hero :is(.b-btn--white, .b-btn--glass):not(.b-btn--full, .b-btn--big) { min-height: var(--b-btn-h-band); } }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 16px; line-height: 22px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; }
 /* Phase 9: the "big" full-width primary is the ladder's full step (52px, 16/22 600); only the teal one glows. */
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--big { min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 16px; line-height: 22px; font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--big { min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; font-weight: 600; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(:disabled, [aria-disabled="true"]) { opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; cursor: not-allowed; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ib { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--b-radius-pill); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-stack { position: relative; z-index: 2; display: flex; flex-direction: column; gap: var(--b-space-12); margin-top: -40px; padding: 0 var(--b-gutter) 22px; }
@@ -173,7 +173,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 44px; padding: var(--b-space-12) var(--b-inset) var(--b-space-2); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__h h2 { display: flex; align-items: center; gap: var(--b-space-8); font-size: var(--b-fs-title-sm); line-height: var(--b-lh-title-sm); font-weight: 700; letter-spacing: -0.01em; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card__a { display: inline-flex; align-items: center; min-height: 44px; margin: -10px -6px -10px 0; padding: 0 6px; font-size: 0.875rem; font-weight: 600; color: var(--b-teal); white-space: nowrap; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 14px; color: var(--b-grey); white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-card__meta { font-size: 0.875rem; color: var(--b-grey); white-space: nowrap; }
 /* Phase 9: one inline count (BCard's count and BCount): 20px, 12/16 700 tabular, teal on teal-50, never wraps. */
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-pill, .b-count) { display: inline-grid; place-items: center; box-sizing: border-box; flex: none; min-width: var(--b-count-h); height: var(--b-count-h); padding: 0 6px; border-radius: var(--b-radius-pill); background: var(--b-teal-50); color: var(--b-teal);
   font-size: var(--b-fs-count); line-height: 16px; font-weight: 700; letter-spacing: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -312,9 +312,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 18px var(--b-inset); border-radius: var(--b-radius-card); color: #FFFFFF;
   background: radial-gradient(80% 120% at 100% 0%, rgb(63 179 168 / 0.35), transparent 60%), linear-gradient(150deg, #152A28 0%, #0C1918 100%);
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06), 0 18px 36px -18px rgb(5 30 28 / 0.7); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ink__top { display: flex; justify-content: space-between; align-items: center; gap: var(--b-space-8); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ink__top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__k { font-size: var(--b-fs-meta); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--b-on-band-2); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-ink__due { padding: var(--b-space-4) var(--b-space-8); border-radius: var(--b-radius-pill); font-size: 12px; font-weight: 700; white-space: nowrap; color: #FFD596; background: rgb(255 196 107 / 0.14); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-ink__due { padding: var(--b-space-4) var(--b-space-8); border-radius: var(--b-radius-pill); font-size: 0.75rem; font-weight: 700; white-space: nowrap; color: #FFD596; background: rgb(255 196 107 / 0.14); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__due--ok { color: #9BF0D6; background: rgb(126 240 199 / 0.12); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__big { font-size: var(--b-fs-display); line-height: 2.125rem; font-weight: 700; letter-spacing: -0.025em; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ink__m { margin-top: -8px; font-size: var(--b-fs-meta); color: var(--b-on-band-2); }
@@ -330,7 +330,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; gap: 6px; height: 64px; padding: 0 var(--b-inset) var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-days i { display: block; border-radius: 4px 4px 2px 2px; background: #D3E9E5; min-height: 4px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-days i.today { background: var(--b-teal); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-days-l { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 var(--b-inset) 14px; margin-top: -10px; font-size: 12px; color: var(--b-grey); text-align: center; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-days-l { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 var(--b-inset) 14px; margin-top: -10px; font-size: 0.75rem; color: var(--b-grey); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-steps { display: flex; flex-direction: column; padding: var(--b-space-4) var(--b-inset) var(--b-space-16); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-step { display: flex; align-items: flex-start; gap: var(--b-space-12); padding: 10px 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-step + .b-step { box-shadow: inset 0 1px 0 var(--b-line); }
@@ -354,7 +354,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__h > span { display: flex; align-items: center; gap: 6px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__arrow { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--b-radius-pill); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-week__d { display: flex; flex-direction: column; align-items: center; gap: var(--b-space-2); min-height: 44px; padding: 6px 0; border-radius: var(--b-radius-field); font-size: 12px; font-weight: 500; color: var(--b-on-band); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-week__d { display: flex; flex-direction: column; align-items: center; gap: var(--b-space-2); min-height: 44px; padding: 6px 0; border-radius: var(--b-radius-field); font-size: 0.75rem; font-weight: 500; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d b { font-size: var(--b-fs-title-sm); font-weight: 600; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i { width: 5px; height: 5px; border-radius: 3px; background: transparent; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i.has { background: rgb(255 255 255 / 0.55); }
@@ -418,13 +418,19 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__arrow { width: 36px; height: 36px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-filters button { padding: 0 10px; font-size: var(--b-fs-meta); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__i > :is(.b-live__a), :is(#c-root, html) .app-shell[data-nv-b] .b-live__i:not(:has(> .b-live__a)) { padding: var(--b-space-12) 10px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-live__v { font-size: 22px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-live__v { font-size: 1.375rem; }
 }
 @media (max-width: 767px) {
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-week__h { flex-wrap: wrap; row-gap: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-week__h > span:last-child:not(:first-child) { margin-left: auto; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__tx { min-width: 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { display: block; width: fit-content; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: max(22px, 1.375rem); }
+  /* DS-16 (Nov 23): once the reader enlarges text (--nv-rem, owner-b-pages.css), a row's chip ("Action needed") wraps
+   * onto a second line instead of being cut with an ellipsis. At the default size it stays one line. */
+  @container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); white-space: normal; overflow: visible; text-overflow: clip; } }
+  /* Final fixes K (release sweep, Nov 23): a row's status chip under the name ("Not clocked in · 2 h 11 min" on Team) ran
+   * past the card's edge at 200% text. Once the reader enlarges text it wraps inside the row, as the chip above does. */
+  @container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__state > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); max-width: 100%; flex: 0 1 auto; white-space: normal; overflow-wrap: break-word; } }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) { grid-auto-columns: auto; }
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 6px; }
 }

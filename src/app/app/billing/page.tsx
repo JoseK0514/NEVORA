@@ -36,7 +36,11 @@ export default async function BillingPage({searchParams}:{searchParams?:Promise<
    :lang==='es'?'Pídele al propietario de tu negocio que revise la facturación. Solo la cuenta del propietario puede administrar la suscripción.':'Ask your workplace Owner to review billing. Only the Owner account can manage the subscription.'}</p>
   {/* Phase 5 consistency (as the Owner's page): one filled button only when there is something to retry; the way to
    * pay statements is a text link, never a second pill. */}
-  {unreachable?<div className={styles.actions}><Link className={styles.action} href="/app" prefetch={false}>{lang==='es'?'Intentar de nuevo':'Try again'}</Link></div>:null}
-  {payrollEnabled?<div className={styles.links}><Link className={styles.quiet} href="/app/my-pay" prefetch={false}>{lang==='es'?'Mis comprobantes de pago':'My pay statements'}</Link></div>:null}
+  {/* J18 polish (Nov 24, 2026): one actions block, as on the Owner's page, so the links have its gap (--b-space-20) under
+   * the paragraph whether or not Try again is there. */}
+  {unreachable||payrollEnabled?<div className={styles.actions}>
+   {unreachable?<Link className={styles.action} href="/app" prefetch={false}>{lang==='es'?'Intentar de nuevo':'Try again'}</Link>:null}
+   {payrollEnabled?<div className={`${styles.links} ${styles.linksStack}`}><Link className={styles.quiet} href="/app/my-pay" prefetch={false}>{lang==='es'?'Mis comprobantes de pago':'My pay statements'}</Link></div>:null}
+  </div>:null}
  </>}</RecoveryFrame>;
 }

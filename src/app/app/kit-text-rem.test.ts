@@ -70,3 +70,137 @@ describe('Home band lines in rem (sweep Z)', () => {
     expect(css('app/b-tokens.css')).toContain('--b-fs-body: 0.96875rem;');
   });
 });
+
+describe('desktop at 200% text (sweep, Nov 23)', () => {
+  it('kit buttons are rem and wrap between words instead of spilling out of their card', () => {
+    expect(css('components/owner-b/owner-b.css')).toContain('font-size: 0.875rem; line-height: var(--b-lh-meta); font-weight: 600; white-space: normal; text-align: center; text-wrap: balance;');
+    expect(css('components/owner-b/owner-b.css')).toContain('gap: 6px; flex: none; max-width: 100%; min-height: var(--b-btn-h-compact);');
+  });
+  it('shell and quiet text in rem: sidebar group label, desktop back link, row values, quiet nav and values, Profile band', () => {
+    const desk = css('app/app/owner-b-desktop.css');
+    expect(desk).toContain('aside.sidebar .sidebar-group-label { font-size: 0.75rem !important;');
+    expect(desk).toContain(':is(.c-row__value, .q-rv) { font-size: 0.875rem !important;');
+    expect(desk).toContain('.q-who :is(b, strong, h1, h2) { font-size: 2rem !important; line-height: 2.375rem !important;');
+    expect(css('app/app/corp-shell.css')).toContain('.sidebar .sidebar-group-label { margin: 16px 12px 4px !important; padding: 0 !important; font: 600 0.8125rem/1.125rem Inter');
+    const quiet = css('components/quiet/quiet.css');
+    expect(quiet).toContain('.q-nav__l { justify-self: start; display: flex; align-items: center; gap: 4px; min-height: 44px; font-size: 1.0625rem; line-height: 1.375rem; }');
+    expect(quiet).toContain('.q-rv { flex: none; max-width: 55%; font-size: 0.9375rem; line-height: 1.25rem;');
+    expect(css('app/app/corp-quiet-bridge.css')).toContain('.q-nav__r { font-size: 0.9375rem; line-height: 1.25rem;');
+    const prof = css('components/manager-profile/manager-profile-upscale.css');
+    expect(prof).toContain('.q-who h1:not(#nvd-none) { font: 700 1.75rem/2.125rem Inter');
+    expect(prof).toContain('font-size: 0.875rem !important; line-height: 1.1875rem !important;');
+  });
+});
+
+describe('sweep follow-up: B7 and C4 at 200% text', () => {
+  it('the card meta ("3 of 9"), the desktop shift sheet title and its subtitle line are rem', () => {
+    expect(css('components/owner-b/owner-b.css')).toContain('.b-card__meta { font-size: 0.875rem;');
+    const desk = css('app/app/owner-b-desktop.css');
+    expect(desk).toMatch(/\.c-shift__head \.c-shift__title \{[^}]*font-size: 2rem !important; line-height: 2\.375rem !important;/);
+    expect(desk).toMatch(/\.c-shift__titles \.c-shift__sub \{ font-size: var\(--b-fs-body\) !important; line-height: 1\.25rem !important;/);
+  });
+});
+
+describe('gap closure (Nov 23): Home, kit buttons, skip link, sign-in footer', () => {
+  it('full and big buttons, live figures and the ink chip are rem; the ink header wraps', () => {
+    const kit = css('components/owner-b/owner-b.css');
+    expect(kit).toContain('.b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; }');
+    expect(kit).toContain('.b-btn--big { min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; font-weight: 600; }');
+    expect(kit).toContain('.b-ink__top { display: flex; flex-wrap: wrap;');
+    expect(kit).toMatch(/\.b-ink__due \{[^}]*font-size: 0\.75rem;/);
+    expect(css('app/app/b-foundation.css')).toContain('--bs-fig-fs: 1.375rem; --bs-fig-lh: 1.75rem;');
+    expect(css('app/app/owner-b-desktop.css')).toContain('b-live__v { font-size: var(--bs-fig-fs, 1.75rem) !important; line-height: var(--bs-fig-lh, 2.125rem) !important; }');
+  });
+  it('the skip link is real text in rem', () => {
+    expect(css('app/app/premium-desktop.css')).toContain('font: 600 0.9375rem/1 Inter');
+  });
+});
+
+describe('corp shell type tokens', () => {
+  it('are rem (13–24px at the default size), so the skip link and every token user grow with text', () => {
+    const shell = css('app/app/corp-shell.css');
+    expect(shell).toContain('--nv-t-label: 600 0.8125rem/1rem var(--nv-font);');
+    expect(shell).toContain('--nv-t-title-1: 600 1.5rem/1.875rem var(--nv-font);');
+    expect(shell).not.toMatch(/--nv-t-[a-z0-9-]+: \d+ \d+px\//);
+  });
+});
+
+describe('kit checkbox, corp buttons, tab fallback and sheet band (Nov 23, evening)', () => {
+  it('the checkbox is 20px in rem (1.25rem) with a 14px (0.875rem) check', () => {
+    expect(css('app/app/b-foundation.css')).toContain('width: 1.25rem !important; height: 1.25rem !important; min-width: 1.25rem !important; min-height: 1.25rem !important;');
+    expect(css('app/app/b-foundation.css')).toContain('background: #FFFFFF none center / 0.875rem 0.875rem no-repeat !important;');
+  });
+  it('corp buttons and the sheet back link are rem; a three-item band tab row falls back to the capped segment size', () => {
+    expect(css('components/corp/corp.css')).toContain('font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; text-decoration: none; white-space: nowrap;');
+    expect(css('components/team/team-forms.css')).toMatch(/\.c-formhead__link \{[^}]*font-size: 0\.9375rem;/);
+    expect(css('components/owner-b/owner-b.css')).toContain('.b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: var(--b-radius-small); font-size: min(0.875rem, 20px);');
+  });
+  it("a sheet page's band reaches the screen edge with the gutter, not 2px past it", () => {
+    expect(css('app/app/owner-b-pages.css')).toContain(':is(.c-sheetpage, .c-shift-page) :is(.c-shift__head, .c-formhead):not(#sg1):not(#sg2) { margin-left: calc(-1 * var(--b-gutter)) !important; margin-right: calc(-1 * var(--b-gutter)) !important; padding-left: var(--b-gutter) !important; padding-right: var(--b-gutter) !important; }');
+  });
+});
+
+describe('sign-in pages and the header account name (Jose, Nov 23)', () => {
+  it('the legal footer is in the flow on desktop, the sign-in button label and the account name are rem', () => {
+    expect(css('components/auth-premium/auth-b.css')).toContain('main.q-page.q-auth.q-auth:not(.q-doc):not(#mobile-access-page) > .q-auth__foot:not(#af1):not(#af2) { position: static !important; }');
+    expect(css('components/quiet/quiet.css')).toMatch(/\.q-btn \{[^}]*font-size: 1\.0625rem;/);
+    expect(css('app/app/corp-shell.css')).toContain('.portal-account-menu .nevora-action-menu-trigger { font: 400 0.9375rem/1.25rem Inter');
+  });
+});
+
+describe('Employee Schedule at 200% text (Nov 23, late)', () => {
+  it('the changes list "Added Mon, Nov 23" line and the week labels are rem; the row chip wraps once text grows', () => {
+    const corp = css('components/employee-schedule-corp.css');
+    expect(corp).toContain('.c-esched .schedule-publication-change li strong { color: var(--c-ink); font-size: 0.9375rem; line-height: 1.25rem;');
+    expect(corp).toContain('.c-esched .c-card .schedule-publication-change li strong { font-size: 0.9375rem; line-height: 1.25rem;');
+    expect(corp).not.toMatch(/schedule-publication-change li strong \{[^}]*15px/);
+    const kit = css('components/owner-b/owner-b.css');
+    expect(kit).toMatch(/\.b-week__d \{[^}]*font-size: 0\.75rem;/);
+    expect(kit).toMatch(/\.b-days-l \{[^}]*font-size: 0\.75rem;/);
+    expect(kit).toContain('@container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); white-space: normal; overflow: visible; text-overflow: clip; } }');
+  });
+});
+
+describe('release sweep, 200% text on phones (Nov 23)', () => {
+  it("a Manager's approval value goes under its label once text is enlarged", () => {
+    const sheet = css('app/app/owner-b-settings.css');
+    const at = sheet.indexOf('@media (max-width: 767px) { @container not style(--nv-rem: 16px) {');
+    expect(at).toBeGreaterThan(0);
+    const block = sheet.slice(at, sheet.indexOf('} }', at));
+    expect(block).toContain('.q-row.pmp-access:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#z2t) { grid-template-columns: minmax(0, 1fr) !important; }');
+    expect(block).toContain(':not(#z2t) > .q-rv { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; text-align: left !important; }');
+    expect(block).toContain(':not(#z2t) > .q-rt > i { grid-row: 3 !important; }');
+  });
+  it("a row's status chip under the name wraps once text is enlarged", () => {
+    expect(css('components/owner-b/owner-b.css')).toContain('@container not style(--nv-rem: 16px) { :is(#c-root, html) .app-shell[data-nv-b] .b-row__state > .b-chip { height: auto; min-height: max(var(--b-chip-h), 1.375rem); max-width: 100%; flex: 0 1 auto; white-space: normal; overflow-wrap: break-word; } }');
+  });
+});
+
+describe('release follow-ups (Nov 24)', () => {
+  it('the phone tab bar labels are rem (10.5/13px at 100%) and grow to a cap; at enlarged text they may wrap and the bar grows', () => {
+    const shell = css('app/app/owner-b-shell.css');
+    expect(shell).toContain('font: 500 min(0.65625rem, 13px)/min(0.8125rem, 16px) Inter');
+    expect(shell).not.toMatch(/\.mobile-nav \.mobile-nav-link \{[^}]*font: 500 10\.5px/);
+    const at = shell.indexOf('@container not style(--nv-rem: 16px) {\n      html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b] .mobile-nav');
+    expect(at).toBeGreaterThan(0);
+    const block = shell.slice(at, shell.indexOf('\n    }', at));
+    expect(block).toContain('.mobile-nav-link:not(#tb1):not(#tb2) { height: auto !important; min-height: 56px !important;');
+    expect(block).toContain('> span:not(.b-tab-badge) { max-width: 100% !important; white-space: normal !important; text-align: center !important; overflow: visible !important; text-overflow: clip !important; }');
+  });
+  it("a Manager's segment count pill is rem with its numeral, and the shared count's line is 1rem", () => {
+    expect(css('components/messages-manager-b.css')).toContain('.mb-segn { display: inline-grid; place-items: center; min-width: 1.25rem; height: 1.25rem;');
+    expect(css('app/app/b-foundation.css')).toContain('font-size: var(--b-fs-caption) !important; line-height: 1rem !important; font-weight: 600 !important; }');
+  });
+});
+
+describe('desktop back link reach (Nov 24)', () => {
+  it("a quiet page's back link is relative from 768px at every pointer, so its 44px ::after is placed on it", () => {
+    const shell = css('app/app/owner-b-shell.css');
+    const rule = ':is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame .q-nav > .q-nav__l { position: relative !important; inset: auto !important; }';
+    const at = shell.indexOf(rule);
+    expect(at).toBeGreaterThan(0);
+    // In a plain min-width: 768px block, not the (pointer: coarse) one.
+    expect(shell.lastIndexOf('@media', at)).toBe(shell.lastIndexOf('@media (min-width: 768px) {', at));
+    expect(css('app/app/owner-b-pages.css')).toContain('.q-nav > .q-nav__l:not(#r44a):not(#r44b):not(#r44c):not(#r44d):not(#r44e):not(#r44f):not(#r44g):not(#r44h)::after { content: "" !important; display: block !important; position: absolute !important; top: min(0px, calc(50% - 22px))');
+  });
+});

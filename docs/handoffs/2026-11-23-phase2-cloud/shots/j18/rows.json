@@ -1,0 +1,76 @@
+[
+ {
+  "id": "J18-O",
+  "row": "J18",
+  "page": "Billing (signed in)",
+  "section": "Settings",
+  "note": "Owner, billing configured, fictional status answers. Subscribed (Small, paid through), trial (plan not selected, trial ends) and payment needs attention (amber line, paid through and grace end). One teal “Open billing in Velani”; Refresh status, Return to workspace and My pay statements are 44px text links. The legal line now grows at 200% text (was fixed at 13px).",
+  "shots": [
+   {
+    "label": "Subscribed · Phone",
+    "after": "img/J18-subscribed-en-390.webp"
+   },
+   {
+    "label": "Subscribed · Phone, 200% text",
+    "after": "img/J18-subscribed-en-390-200pct.webp"
+   },
+   {
+    "label": "Subscribed · Tablet",
+    "after": "img/J18-subscribed-en-768.webp"
+   },
+   {
+    "label": "Subscribed · Desktop",
+    "after": "img/J18-subscribed-en-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Subscribed · Phone, Spanish",
+    "after": "img/J18-subscribed-es-390.webp"
+   },
+   {
+    "label": "Trial · Phone",
+    "after": "img/J18-trial-en-390.webp"
+   },
+   {
+    "label": "Trial · Phone, 200% text",
+    "after": "img/J18-trial-en-390-200pct.webp"
+   },
+   {
+    "label": "Trial · Tablet",
+    "after": "img/J18-trial-en-768.webp"
+   },
+   {
+    "label": "Trial · Desktop",
+    "after": "img/J18-trial-en-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Trial · Phone, Spanish",
+    "after": "img/J18-trial-es-390.webp"
+   },
+   {
+    "label": "Payment needs attention · Phone",
+    "after": "img/J18-attention-en-390.webp"
+   },
+   {
+    "label": "Payment needs attention · Phone, 200% text",
+    "after": "img/J18-attention-en-390-200pct.webp"
+   },
+   {
+    "label": "Payment needs attention · Tablet",
+    "after": "img/J18-attention-en-768.webp"
+   },
+   {
+    "label": "Payment needs attention · Desktop",
+    "after": "img/J18-attention-en-1440.webp",
+    "desk": true
+   },
+   {
+    "label": "Payment needs attention · Phone, Spanish",
+    "after": "img/J18-attention-es-390.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]

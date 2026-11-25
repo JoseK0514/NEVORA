@@ -407,3 +407,22 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > :is(.b-home-payfirst, .b-home-paylate) > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-column: 1 / -1 !important; grid-row: auto !important; }
   }
 }
+
+/* Team's filters at large text on tablets and desktop (DS-17, Nov 23). From 768px they are one row; with 200% text the
+ * four labels don't fit and "Off today" ran under the control's edge. Once the reader enlarges text (--nv-rem, set in
+ * owner-b-pages.css), they wrap as the phone's pills do (G24 above). At the default size nothing changes. */
+@layer nv-b {
+  @container not style(--nv-rem: 16px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds1) { display: flex !important; flex-wrap: wrap !important; gap: var(--b-space-8) var(--b-space-4) !important; width: auto !important; max-width: none !important; height: auto !important; min-height: 0 !important; padding: var(--b-seg-pad) !important; overflow: visible !important; border-radius: var(--b-radius-field) !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds1) { flex: 1 1 auto !important; justify-content: center !important; min-width: 0 !important; max-width: 100% !important; height: auto !important; min-height: var(--b-seg-item-h) !important; line-height: 1.25 !important; padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; white-space: normal !important; text-align: center !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds1)::after { inset: -4px 0 !important; }
+  }
+}
+
+/* Target size (release, Nov 23): Team's four filters are two rows of two with an 8px row gap. Each pill's 4px ring meets
+ * the other row's at the gap's midline, and the second row, later in the page, won that boundary, so the first row reached
+ * a sub-pixel under 44px below its centre. The first row sits above the second (z-index only), so each pill's ring is its
+ * own: 36 + 2 × 4 = 44 for both rows. Nothing drawn moves. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:has(> :nth-child(4)) > button:nth-child(-n+2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }
+}

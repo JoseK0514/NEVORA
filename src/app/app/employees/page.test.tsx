@@ -135,7 +135,7 @@ it('uses the released minimal directory projection for a location-scoped Manager
  operationalPageFixture.scoped=true;
  const html=renderToStaticMarkup(await EmployeesPage());
  expect(html).toContain('Local Person');expect(html).not.toContain('Active Person');
- expect(html).not.toContain('href="/app/employees/local"');expect(html).not.toContain('href="/app/employees/new"');
+ expect(html).toContain('href="/app/employees/local"');expect(html).not.toContain('href="/app/employees/new"');
  expect(fixture.events).toEqual(['authorize']);
 });
 
@@ -153,8 +153,9 @@ it('gives a location Manager the Direction B Team with their place in the band a
  // The role on the row; the place is said once, in the band; nothing company-wide.
  // The role only where it differs from Employee (Jose, Nov 23: no repeated wording).
  expect(html).not.toContain('>EMPLOYEE<');expect(html).not.toMatch(/company-wide|Team at your locations|local<\/|Team tools|\/app\/availability|\/app\/account-recovery/);
- // The rows aren't links (the person's page needs company-wide access), so they carry no chevron.
- expect(html).not.toContain('/app/employees/local');expect(html).not.toContain('c-chev');
+ // Release sweep (Nov 23): each row opens the person's page, which G17 (4745f4f2) serves to a location Manager for anyone
+ // on the scoped roster, so the rows are links with a chevron.
+ expect(html).toContain('href="/app/employees/local"');expect(html).toContain('c-chev');
 });
 
 it('filters a location Manager with several places by place and keeps the place in the search',async()=>{

@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useRef,useState,type ReactNode} from 'react';
 import {dateRange} from '@/lib/duration-format';
-import Link from 'next/link';
+import {NavigationLink} from '../navigation-link';
 import {useSearchParams} from 'next/navigation';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {ArrowSquareOutIcon} from '@phosphor-icons/react/dist/ssr/ArrowSquareOut';
@@ -50,7 +50,7 @@ function useDaysUntil(nextPay:NextPay){
 
 /** A pushed page's white bar: "‹ Pay" left, the title centred. */
 function PayNav({back,title}:{back:{href:string;label:string};title:string}){
- return <div className="c-nav"><Link className="c-nav__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{back.label}</Link>
+ return <div className="c-nav"><NavigationLink className="c-nav__back" href={back.href} intent="auto"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{back.label}</NavigationLink>
   <h1 className="c-nav__title" id="pay-page-title" tabIndex={-1}>{title}</h1><span className="c-nav__right"/></div>;
 }
 

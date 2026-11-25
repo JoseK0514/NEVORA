@@ -30,10 +30,17 @@ import {ScopedReadFrame,resetScopedReadTab} from './scoped-read-frame';
 const receipt={authority:'fictional-current-authority',phase:'ready',content:'Current receipt'};
 let dispose:void|(()=>void);
 let view:ReturnType<typeof ScopedReadFrame>;
+/** The state section, wherever it sits: beside the Direction B placeholder in a page wrapper (Review F2, NV-074), which
+ * itself sits beside the hidden held page (WebKit period history, Nov 23, 2026). */
+function findSection(node:ReactNode):ReactNode{
+ if(!isValidElement<{children?:ReactNode}>(node))return null;
+ if(node.type==='section')return node;
+ for(const child of Children.toArray(node.props.children)){const found=findSection(child);if(found)return found;}
+ return null;
+}
 function activateRecovery(){
  if(!isValidElement<{children:ReactNode}>(view))throw Error('Recovery view unavailable');
- // Review F2 (NV-074): while checking, the state section sits beside the Direction B placeholder in a page wrapper.
- const section=view.type==='section'?view:Children.toArray(view.props.children).find(child=>isValidElement(child)&&child.type==='section');
+ const section=findSection(view);
  if(!isValidElement<{children:ReactNode}>(section))throw Error('Recovery view unavailable');
  const button=Children.toArray(section.props.children).find(child=>isValidElement(child)&&child.type==='button');
  if(!isValidElement<{onClick?:()=>void}>(button)||typeof button.props.onClick!=='function')throw Error('Recovery action unavailable');

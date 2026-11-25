@@ -37,7 +37,7 @@ it('a notice says what happened, from its kind, its dates and whether it still n
  expect(title('Shift request update',{actionState:'available',subject:day})).toBe('You can respond to a shift request for Nov 26');
  expect(title('Shift request update',{actionState:'complete',subject:day})).toBe('A shift request for Nov 26 is closed');expect(title('Shift request update',{subject:day})).toBe('A shift request for Nov 26 was updated');
  expect(title('Availability update',{actionState:'required'})).toBe('Reminder to submit your availability');expect(title('Availability update',{actionState:'complete'})).toBe('Your availability was submitted');
- expect(title('Team update',{actionState:'required'})).toBe('A team update needs your acknowledgement');expect(title('Team update')).toBe('A team update was shared with you');
+ expect(title('Team update',{actionState:'required'})).toBe('Confirm the team update');expect(title('Team update')).toBe('A team update was shared with you');
  expect(title('Pay statement update',{actionState:'available'})).toBe('A pay statement was shared with you');
  // A kind with nothing more to say, and a label that isn't a known kind, keep their own words.
  expect(title('Device notification test')).toBe('Device notification test');expect(title('Holiday hours')).toBe('Holiday hours');

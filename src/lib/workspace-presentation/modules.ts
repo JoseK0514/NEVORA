@@ -21,7 +21,7 @@ export const MODULES: ModuleDefinition[] = [
     offNote: "Employees can’t request time off. Approved time off stays on the schedule." },
   { id: "marketplace", name: "Shift swaps and cover", description: "Employees offer, swap and pick up open shifts.",
     offNote: "Employees can’t offer, swap or pick up shifts. Shifts already traded stay as they are." },
-  { id: "updates", name: "Company updates", description: "Announcements with optional acknowledgement.",
+  { id: "updates", name: "Company updates", description: "Announcements people can be asked to confirm.",
     offNote: "Updates are hidden from everyone and nothing new can be posted. Past updates are kept." },
   { id: "payStatements", name: "Pay statements", description: "Employees see their statements in NEVORA.", requires: "payroll",
     offNote: "Employees see their hours instead of statements. Payroll runs are unaffected." },
