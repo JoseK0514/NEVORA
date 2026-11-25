@@ -46,6 +46,10 @@ describe('Clocker owner copy', () => {
   it('writes a time in the workplace zone for each language', () => {
     expect(clockerOwnerWhen('2026-11-17T20:05:00Z', 'America/Puerto_Rico')).toBe('Nov 17, 4:05 PM');
     expect(clockerOwnerWhen('2026-11-17T20:05:00Z', 'America/Puerto_Rico', 'es')).toMatch(/^17 nov\.?, 4:05 p\.\sm\.$/);
+    // Clocker UI step 2: Spanish is the same text on the server and in the browser (fixed words, no ICU day period).
+    expect(clockerOwnerWhen('2026-11-17T20:05:00Z', 'America/Puerto_Rico', 'es')).toBe('17\u00A0nov, 4:05\u00A0p.\u00A0m.');
+    expect(clockerOwnerWhen('2026-11-17T12:00:00Z', 'America/Puerto_Rico', 'es')).toBe('17\u00A0nov, 8:00\u00A0a.\u00A0m.');
+    expect(clockerOwnerWhen('2026-09-03T16:30:00Z', 'America/Puerto_Rico', 'es')).toBe('3\u00A0sept, 12:30\u00A0p.\u00A0m.');
     expect(clockerOwnerWhen('not a date', 'America/Puerto_Rico')).toBe('Time unavailable');
   });
   it('the leak check itself finds an English sentence and ignores a Spanish one', () => {
