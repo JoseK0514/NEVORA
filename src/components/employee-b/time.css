@@ -184,7 +184,7 @@
   display: flex; align-items: center; justify-content: center; width: auto; height: auto; min-height: 48px; padding: 0 var(--b-space-16); border: 0; border-radius: 16px; background: var(--b-teal); color: #FFFFFF; box-shadow: none;
   font: 700 var(--b-fs-body)/1 Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
 }
-:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn:is(:disabled, [aria-disabled="true"]) { background: var(--b-disabled-bg); color: var(--b-disabled-ink); opacity: 1; cursor: not-allowed; } /* Review F3 (NV-232) */
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { background: var(--b-disabled-bg); color: var(--b-disabled-ink); opacity: 1; cursor: not-allowed; } /* Review F3 (NV-232) */
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__note { display: block; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); text-align: center; text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .eb-avail-lead { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__link { align-self: center; margin-top: var(--b-space-4); }

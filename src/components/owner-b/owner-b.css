@@ -165,7 +165,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; }
 /* Phase 9: the "big" full-width primary is the ladder's full step (52px, 16/22 600); only the teal one glows. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--big { min-height: var(--b-btn-h-full); padding: 0 22px; border-radius: var(--b-radius-pill); font-size: 1rem; line-height: 1.375rem; font-weight: 600; }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(:disabled, [aria-disabled="true"]) { opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; cursor: not-allowed; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; cursor: not-allowed; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-ib { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--b-radius-pill); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-stack { position: relative; z-index: 2; display: flex; flex-direction: column; gap: var(--b-space-12); margin-top: -40px; padding: 0 var(--b-gutter) 22px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-card { overflow: hidden; border-radius: var(--b-radius-card); border: 1px solid transparent; background: #FFFFFF;
@@ -384,7 +384,12 @@
 :is(#c-root, html) .app-shell[data-nv-b] :is(.b-notice__t, .b-step__t) { text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-row__end .b-link { font-size: 14px; line-height: 20px; color: var(--b-teal); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { box-shadow: var(--b-elev-glow); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn:disabled { box-shadow: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn:disabled:not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { box-shadow: none; }
+/* Kit fix (Nov 25, Jose): a busy button is disabled only so it takes no second press. It keeps its fill, ink, shadow and
+ * width with the spinner and busy words; only a button that truly can't be used goes grey. Busy is aria-busy on the
+ * button, or its busy label showing (BBusyLabel's .b-busy__on, Settings' ButtonLabel .wc-swap pending): several forms
+ * disable the button while pending and put aria-busy on the form. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn:is([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { opacity: 1; scale: 1; cursor: progress; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__right .b-ib { position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__right .b-ib::after { content: ""; position: absolute; inset: -2px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-back { left: var(--b-gutter); }
@@ -680,7 +685,7 @@
  * glow and gains a light top edge. Hover and press are a shade of the surface, never a new colour. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet):not(:disabled, [aria-disabled="true"]) { background: var(--b-btn-surface); color: var(--b-btn-surface-ink); box-shadow: var(--b-btn-surface-edge); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet):not(:disabled, [aria-disabled="true"]):active { background: var(--b-btn-surface-press); }
-:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal:not(:disabled, [aria-disabled="true"]) { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), var(--b-elev-glow); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal:is(:not(:disabled, [aria-disabled="true"]), [aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), var(--b-elev-glow); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal:not(:disabled, [aria-disabled="true"]):active { background: var(--b-teal-press); }
 @media (hover: hover) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(.b-btn--ghost, .b-btn--quiet):not(:disabled, [aria-disabled="true"]):hover { background: var(--b-btn-surface-hover); }
