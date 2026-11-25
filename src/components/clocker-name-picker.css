@@ -22,5 +22,14 @@ html:has([data-clocker-kiosk] [data-clocker-names]) { scroll-padding-bottom: 8re
 [data-clocker-kiosk] .np-useid { width: 100%; }
 [data-clocker-kiosk] .np-failed { margin: var(--b-space-8) 0 0; color: var(--ck-ink2); font-size: .9375rem; line-height: 1.35; text-align: center; }
 [data-clocker-kiosk] .np-who { margin: var(--b-space-4) 0 0; color: var(--ck-ink2); font-size: 1.0625rem; font-weight: 600; text-align: center; overflow-wrap: anywhere; }
+/* On a phone (Nov 25 follow-up): the names scroll inside their own box and "Use employee ID" sits right under it, so the
+ * way out is always one short scroll from the top, nothing ever covers a name (axe target-size: a sticky overlay leaves
+ * slivers of tiles under it), and at 200% text the wrapped Spanish label takes no part of the screen while names scroll.
+ * The padding keeps the 3px focus ring inside the box. The iPad keeps the plain list. */
+@media (max-width: 599px) {
+  [data-clocker-kiosk] .np-tiles { max-height: max(13rem, calc(100svh - 27rem)); overflow-y: auto; overscroll-behavior: contain; margin: -6px; padding: 6px; }
+  [data-clocker-kiosk] .np-foot { position: static; padding-top: 0; }
+  [data-clocker-kiosk] .np-foot::before { content: none; }
+}
 @media (hover: hover) { [data-clocker-kiosk] .np-tile:hover:not(:disabled) { background: #E6E9EA; } }
 @media (prefers-reduced-motion: reduce) { [data-clocker-kiosk] .np-tile { transition: none; } }
