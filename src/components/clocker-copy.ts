@@ -168,6 +168,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "PIN verification could not be confirmed.": "No pudimos confirmar la verificación del PIN.",
  "We could not clear tablet verification. Check the connection before continuing.": "No pudimos borrar la verificación de la tableta. Revisa la conexión antes de continuar.",
  "Enter exactly four PIN digits.": "Ingresa exactamente los cuatro dígitos del PIN.",
+ "Choose your name or enter your Employee ID, then enter four PIN digits.": "Selecciona tu nombre o ingresa tu ID de empleado y luego los cuatro dígitos de tu PIN.",
  "Verification changed. Please enter your PIN again.": "La verificación cambió. Ingresa tu PIN de nuevo.",
  "Verification could not be confirmed. Please try again.": "No pudimos confirmar la verificación. Inténtalo de nuevo.",
  "Your PIN is verified for this tablet.": "Tu PIN está verificado para esta tableta.",

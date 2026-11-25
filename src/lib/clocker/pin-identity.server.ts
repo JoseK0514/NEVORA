@@ -5,6 +5,7 @@ import { neonNotificationExecutor } from '../data/notification-transactions';
 import { clockerDeviceWriteGuards, type ClockerDeviceWriteProof } from './devices.server';
 import { assertPin, pinBatch, ClockerPinError, statement as s } from './pin-authority.server';
 import { pinKeyIdentity } from './pin-crypto.server';
+import { clockerLocationEligible } from './location-access.server';
 export type ClockerIdentityProof = {
  device:ClockerDeviceWriteProof; employeeId:string; tokenHash:string; pinVersion:number; employeeUpdatedAt:string; keyIdentity:string;
 };
@@ -28,7 +29,7 @@ export function clockerIdentityWriteGuards(proof:ClockerIdentityProof):SqlStatem
     AND ps.credential_version=$4 AND ps.pin_version=$5 AND p.version=$5
     AND ps.employee_updated_at=e.updated_at AND e.updated_at::text=$6
     AND ps.expires_at>clock_timestamp() AND p.workspace_id=$7 AND c.key_identity=$8
-    AND EXISTS(SELECT 1 FROM employee_location_eligibility WHERE employee_id=e.id AND location_id=$9))`,
+    AND (${clockerLocationEligible(9)}))`,
     [proof.device.deviceId,proof.tokenHash,proof.employeeId,proof.device.credentialVersion,proof.pinVersion,
      proof.employeeUpdatedAt,proof.device.workspaceId,proof.keyIdentity,proof.device.locationId],'IDENTITY_INVALID'),
  ];

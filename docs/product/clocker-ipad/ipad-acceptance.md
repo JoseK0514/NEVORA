@@ -29,9 +29,9 @@ Each row starts NOT RUN. Record PASS only from observed behavior; otherwise FAIL
 |---|---|---|---|
 | IP01 | Owner registers named iPad, transfers code and enrolls at correct location | One-use code, correct device/location, cookie-confirmed connection; portal session removed only on that iPad | NOT RUN |
 | IP02 | Wrong/expired/replaced code; cookies/storage blocked | No false ready/success; actionable retry/check path; original Owner session elsewhere remains valid | NOT RUN |
-| IP03 | Off-clock PIN→Clock in→Done | No roster before PIN, correct employee/action, recorded server time/reference, private return | NOT RUN |
+| IP03 | Off-clock PIN→Clock in→Done | ID + PIN mode exposes no roster, correct employee/action, recorded server time/reference, private return | NOT RUN |
 | IP04 | Working→break type→End break; clock out while on break | Reference minutes never end break automatically; accurate Stay on break/Cancel copy; correct atomic receipt | NOT RUN |
-| IP05 | Invalid PIN→temporary limit→recovery; unset/inactive/ineligible person | Masked input, no employee enumeration, real Retry-After respected; no indefinite local lock | NOT RUN |
+| IP05 | Invalid PIN→temporary limit→recovery; unset/inactive/ineligible person | Masked input, no identity data beyond the opted-in roster, real Retry-After respected; no indefinite local lock | NOT RUN |
 | IP06 | Two partial digits then20 idle seconds | Digits clear; keypad/focus remain usable | NOT RUN |
 | IP07 | Read slowly across warning and30-second deadline; Continue securely | Warning visible/announced, hard cap kept, fresh PIN required; same actor resumes safe unsent mode only | NOT RUN |
 | IP08 | Different employee enters after prior expiry / pending action | No previous identity/mode leakage; their own permitted actions work; original reference unchanged | NOT RUN |
@@ -55,6 +55,10 @@ Each row starts NOT RUN. Record PASS only from observed behavior; otherwise FAIL
 | IP26 | Photo response lost after clock commit; exact photo retry | Time receipt preserved; separate truthful photo status; no second clock action or cross-command attachment | NOT RUN |
 | IP27 | Owner-only photo review/removal; Manager/direct URL/other-company attempts | Private authorized review only; no public cache/link access; refusal after authority expires; time records intact | NOT RUN |
 | IP28 | Owner shortens/increases retention, turns Off, then late upload/retry or backup restore | Expiry never extended for old images; removed/expired photos do not reappear; no false immediate-deletion claim; actual cleanup/backup evidence | NOT RUN |
+| IP29 | Owner toggles the name picker on one enrolled staff-only iPad | Other iPads stay in ID + PIN mode. Anonymous, revoked, wrong-location, and disabled-device requests receive no roster. | NOT RUN |
+| IP30 | Select a name, sign in with the existing PIN, punch, then use Employee ID + PIN | Minimal, unambiguous display names only. Both paths use the same employee/device attempt limits. One receipt and private return. | NOT RUN |
+| IP31 | Set one, selected, and all Clocker locations on the employee profile | Both sign-in methods enforce the same current scope. All includes newly added active company locations. Scheduling assignments stay intact. | NOT RUN |
+| IP32 | Disable an open picker, edit eligibility after sign-in, and test targeted failed PINs | Old selection cannot sign in. Changed eligibility invalidates stale proof. Another employee can sign in under the shared budget. Verify manager-assisted time entry in Timecards. | NOT RUN |
 
 ## Evidence and completion
 
