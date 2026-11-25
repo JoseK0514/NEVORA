@@ -650,8 +650,8 @@ export function clockerOwnerWhen(value: string, timeZone: string, lang: ClockerO
     const hour = get('hour') % 24, month = ES_MONTHS[get('month') - 1] ?? '';
     return `${get('day')}\u00A0${month}, ${hour % 12 === 0 ? 12 : hour % 12}:${String(get('minute')).padStart(2, '0')}\u00A0${hour < 12 ? 'a.\u00A0m.' : 'p.\u00A0m.'}`;
   }
-  const parts = new Intl.DateTimeFormat(lang === 'es' ? 'es-PR' : 'en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(new Date(value));
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }).formatToParts(new Date(value));
   const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value ?? '';
   const time = `${part('hour')}:${part('minute')} ${part('dayPeriod')}`;
-  return lang === 'es' ? `${part('day')} ${part('month')}, ${time}` : `${part('month')} ${part('day')}, ${time}`;
+  return `${part('month')} ${part('day')}, ${time}`;
 }
