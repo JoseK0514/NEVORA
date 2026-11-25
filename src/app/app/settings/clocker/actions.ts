@@ -4,7 +4,8 @@ import {publicWorkspaceToken} from '@/lib/workspace-routing/token-envelope.serve
 import { headers } from 'next/headers';
 import { requireSessionMutationProof } from '@/lib/auth/session';
 import {
-  ClockerDeviceError, registerClockerDevice, renameClockerDevice, revokeClockerDevice, rotateClockerDevice,
+  ClockerDeviceError, registerClockerDevice, renameClockerDevice, revokeClockerDevice, rotateClockerDevice, setClockerDeviceSignInMode,
+  type ClockerSignInMode,
 } from '@/lib/clocker/devices.server';
 import { clockerOriginFailure, clockerSecurity } from '../../../../lib/clocker/setup.server';
 import { clockerDeviceView, type ClockerOwnerResult } from '../../../../lib/clocker/views';
@@ -31,13 +32,19 @@ export async function manageClockerDeviceAction(form: FormData): Promise<Clocker
   if (originError) return { ok: false, error: originError.error, refresh: false };
   const proof = { employeeId: session.employee.id, sessionTokenHash: session.sessionTokenHash };
   let operation: string, name = '', locationId = '', deviceId = '', expectedVersion = 0;
+  let signInMode: ClockerSignInMode = 'EMPLOYEE_ID';
   try {
     operation = field(form, 'operation');
-    if (!['REGISTER', 'RENAME', 'ROTATE', 'REVOKE'].includes(operation)) return invalid;
+    if (!['REGISTER', 'RENAME', 'ROTATE', 'REVOKE', 'SET_SIGN_IN_MODE'].includes(operation)) return invalid;
     const allowed = operation === 'REGISTER' ? ['operation', 'name', 'locationId']
-      : ['operation', 'deviceId', 'expectedVersion', ...(operation === 'RENAME' ? ['name'] : [])];
+      : ['operation', 'deviceId', 'expectedVersion', ...(operation === 'RENAME' ? ['name'] : []), ...(operation === 'SET_SIGN_IN_MODE' ? ['signInMode'] : [])];
     if ([...form.keys()].some(key => !allowed.includes(key))) return invalid;
     if (operation === 'REGISTER' || operation === 'RENAME') name = field(form, 'name');
+    if (operation === 'SET_SIGN_IN_MODE') {
+      const mode = field(form, 'signInMode');
+      if (mode !== 'EMPLOYEE_ID' && mode !== 'NAME_PICKER') return invalid;
+      signInMode = mode;
+    }
     if (operation === 'REGISTER') locationId = field(form, 'locationId');
     else {
       deviceId = field(form, 'deviceId');
@@ -54,6 +61,10 @@ export async function manageClockerDeviceAction(form: FormData): Promise<Clocker
       const device = clockerDeviceView(result.device);
       if (!device.enrollmentExpiresAt) throw Error('Missing setup expiration');
       return { ok: true, device, setup: { code: await publicWorkspaceToken('CLOCKER_ENROLLMENT',result.enrollmentToken,Date.parse(device.enrollmentExpiresAt)), expiresAt: device.enrollmentExpiresAt } };
+    }
+    if (operation === 'SET_SIGN_IN_MODE') {
+      const device = await setClockerDeviceSignInMode(proof, { deviceId, expectedVersion, signInMode });
+      return { ok: true, device: clockerDeviceView(device) };
     }
     const device = operation === 'RENAME'
       ? await renameClockerDevice(proof, { deviceId, expectedVersion, name })

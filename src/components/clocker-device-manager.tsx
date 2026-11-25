@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent, type RefObject } from 'react';
 import { DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
@@ -13,12 +13,14 @@ import './clocker-owner-page.css';
 import { ButtonLabel, Field, FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
-import { BCard, BChip, BIcon, BList, BSegsText, BState } from './owner-b/b-kit';
+import { BBusyLabel, BCallout, BCard, BChip, BIcon, BList, BSegsText, BState } from './owner-b/b-kit';
 import { encodeQr, qrPath } from './access-recovery/qr';
 import { setupLink } from './clocker-setup-link';
-import { clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
+import { CLOCKER_DEVICE_UNCONFIRMED, clockerDeviceServerText, clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
 import './clocker-device-manager.css';
 import './clocker-owner-b.css';
+// Clocker UI step 2: the Inline radio rows are step 1's (clk-choice), so the two sheets draw the same choice.
+import './team/clocker-location-access.css';
 
 type Operation = 'REGISTER' | 'RENAME' | 'ROTATE' | 'REVOKE';
 type Selection = { operation: Operation; device?: ClockerDeviceView };
@@ -35,7 +37,9 @@ export function tabletLine(device: ClockerDeviceView, options: { place?: string;
   const place = options.place ?? t.locationUnavailable;
   if (device.state === 'REVOKED') return { tone: 'grey' as const, chip: null, sub: `${place} · ${t.removed}` };
   if (!options.locationActive) return { tone: 'amber' as const, chip: t.chipLocationInactive, sub: `${place} · ${t.locationOff}` };
-  if (device.state === 'ACTIVE') return { tone: 'grey' as const, chip: null, sub: `${place} · ${t.connected} · ${device.lastSeenAt ? t.lastSeen(when(device.lastSeenAt)) : t.notUsedYet}` };
+  // Clocker UI step 2 (Option A, Jose, Nov 25): a connected tablet's line says how staff sign in on it, in place of
+  // "Connected" (the row has no chip, so it is connected; the hidden count above the list still says it).
+  if (device.state === 'ACTIVE') return { tone: 'grey' as const, chip: null, sub: `${place} · ${device.signInMode === 'NAME_PICKER' ? t.signInPicker : t.signInId} · ${device.lastSeenAt ? t.lastSeen(when(device.lastSeenAt)) : t.notUsedYet}` };
   if (device.state === 'PENDING') return { tone: 'amber' as const, chip: t.chipNotSetUp, sub: `${place} · ${device.enrollmentExpiresAt ? t.codeGoodUntil(when(device.enrollmentExpiresAt)) : t.noCodeYet}` };
   if (device.state === 'EXPIRED') return { tone: 'amber' as const, chip: t.chipCodeExpired, sub: `${place} · ${device.enrollmentExpiresAt ? t.codeExpired(when(device.enrollmentExpiresAt)) : t.codeExpiredPlain}` };
   return { tone: 'amber' as const, chip: t.chipNotSetUp, sub: `${place} · ${t.noCodeYet}` };
@@ -96,6 +100,98 @@ export function ClockerSetupTicket({ name, place, clockerKey, code, expiresAt, t
     </div>
     <p role="status" className="ck-ticket__said">{said}</p>
   </div>;
+}
+
+type SignInMode = ClockerDeviceView['signInMode'];
+export type SignInStatus = { kind: 'idle' } | { kind: 'saving' } | { kind: 'saved'; mode: SignInMode } | { kind: 'failed'; message: string; refresh: boolean };
+/** The form id the sign-in controls belong to: an empty form beside the tablet's options form, so a rename never carries
+ * the sign-in fields and a sign-in save never carries the name. */
+export const signInFormId = (deviceId: string) => `ck-signin-${deviceId}`;
+/** The one request a sign-in change sends: exactly these four fields (the action refuses any other). */
+export function signInModeForm(device: Pick<ClockerDeviceView, 'id' | 'version'>, mode: SignInMode) {
+  const form = new FormData();
+  form.set('operation', 'SET_SIGN_IN_MODE'); form.set('deviceId', device.id); form.set('expectedVersion', String(device.version)); form.set('signInMode', mode);
+  return form;
+}
+
+/** Clocker UI step 2, Option A (Jose, Nov 25, 2026): "How staff sign in" in a tablet's options. Two Inline radio choices
+ * (the step-1 look). Choosing the name picker shows the staff-only warning (amber BCallout) and turns the one teal action
+ * into "Turn on name picker"; going back to Employee ID is a plain Save, with no warning. Only a connected tablet at an
+ * active location can change; any other shows its sign-in read-only with one reason. The answer decides: the returned
+ * tablet (its new version) replaces the old one in the list and in the sheet. A stale or unconfirmed answer locks the
+ * choice behind one neutral title, the server's sentence and Reload (the screen reads `refresh`, never the words). */
+/** One sign-in save: the four fields, the action's answer, and what the screen shows next. A refusal keeps the server's
+ * sentence and whether a reload is needed; a request that never answered is not confirmed (never saved, never failed). */
+export async function saveSignInMode(action: (form: FormData) => Promise<ClockerOwnerResult>, device: ClockerDeviceView, mode: SignInMode)
+  : Promise<{ status: SignInStatus; device?: ClockerDeviceView }> {
+  try {
+    const result = await action(signInModeForm(device, mode));
+    if (!result.ok) return { status: { kind: 'failed', message: result.error, refresh: result.refresh } };
+    return { status: { kind: 'saved', mode: result.device.signInMode }, device: result.device };
+  } catch { return { status: { kind: 'failed', message: CLOCKER_DEVICE_UNCONFIRMED, refresh: true } }; }
+}
+
+/** What the section draws for a given choice and status (exported for its tests). */
+export function ClockerSignInView({ device, eligible, reason, t, lang, choice, status, onPick, onSave, resultRef }: {
+  device: ClockerDeviceView; eligible: boolean; reason?: string; t: ClockerOwnerCopy; lang: ClockerOwnerLang;
+  choice: SignInMode; status: SignInStatus; onPick(mode: SignInMode): void; onSave(): void; resultRef?: RefObject<HTMLDivElement | null>;
+}) {
+  const formId = signInFormId(device.id), saving = status.kind === 'saving', locked = status.kind === 'failed' && status.refresh;
+  const changed = choice !== device.signInMode;
+  const label = (mode: SignInMode) => mode === 'NAME_PICKER' ? t.signInPicker : t.signInId;
+  if (!eligible) return <div className="clk ck-signin" data-readonly="">
+    <p className="ck-signin__legend">{t.signInLegend}</p>
+    <p className="ck-signin__now">{label(device.signInMode)}</p>
+    {reason ? <p className="clk-hint">{reason}</p> : null}
+  </div>;
+  const choiceRow = (mode: SignInMode, line: string) => <label className="clk-choice">
+    <input type="radio" form={formId} name="signInMode" value={mode} checked={choice === mode} onChange={() => onPick(mode)} />
+    <span className="clk-choice__text">{label(mode)}<small>{line}</small></span>
+  </label>;
+  const warn = choice === 'NAME_PICKER' && changed && !locked;
+  return <div className="clk ck-signin">
+    <fieldset disabled={saving || locked} aria-describedby={warn ? `${formId}-warn` : undefined}>
+      <legend className="ck-signin__legend">{t.signInLegend}</legend>
+      {choiceRow('EMPLOYEE_ID', t.signInIdLine)}
+      {choiceRow('NAME_PICKER', t.signInPickerLine)}
+    </fieldset>
+    {warn ? <BCallout tone="amber" icon="check" id={`${formId}-warn`} title={t.signInWarnTitle}>{t.signInWarnBody}</BCallout> : null}
+    <div ref={resultRef} tabIndex={-1} className="clk-result">
+      {status.kind === 'saved' ? <BCallout tone="green" title={t.signInSavedTitle} role="status">{status.mode === 'NAME_PICKER' ? t.signInSavedPicker(device.name) : t.signInSavedId(device.name)}</BCallout> : null}
+      {status.kind === 'failed' ? <BCallout tone="amber" icon="unknown" title={t.signInCheckTitle} role="alert">{clockerDeviceServerText(status.message, lang)}</BCallout> : null}
+    </div>
+    {locked ? <button type="button" className="b-btn b-btn--teal b-btn--full ck-signin__go" onClick={() => window.location.reload()}>{t.signInReload}</button>
+      : changed || saving ? <button type="button" className="b-btn b-btn--teal b-btn--full ck-signin__go" aria-busy={saving || undefined} onClick={onSave}>
+        <BBusyLabel busy={saving} busyLabel={t.saving}>{choice === 'NAME_PICKER' ? t.signInTurnOn : t.signInSave}</BBusyLabel></button> : null}
+  </div>;
+}
+
+/** Clocker UI step 2, Option A (Jose, Nov 25, 2026): "How staff sign in" in a tablet's options. Two Inline radio choices
+ * (the step-1 look). Choosing the name picker shows the staff-only warning (amber BCallout) and turns the one teal action
+ * into "Turn on name picker"; going back to Employee ID is a plain Save, with no warning. Only a connected tablet at an
+ * active location can change; any other shows its sign-in read-only with one reason. The answer decides: the returned
+ * tablet (its new version) replaces the old one in the list and in the sheet. A stale or unconfirmed answer locks the
+ * choice behind one neutral title, the server's sentence and Reload (the screen reads `refresh`, never the words). */
+export function ClockerSignIn({ device, eligible, reason, t, lang, action, onSaved }: {
+  device: ClockerDeviceView; eligible: boolean; reason?: string; t: ClockerOwnerCopy; lang: ClockerOwnerLang;
+  action(form: FormData): Promise<ClockerOwnerResult>; onSaved(device: ClockerDeviceView): void;
+}) {
+  const [choice, setChoice] = useState<SignInMode>(device.signInMode);
+  const [status, setStatus] = useState<SignInStatus>({ kind: 'idle' });
+  const busy = useRef(false);
+  const resultRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (status.kind === 'saved' || status.kind === 'failed') resultRef.current?.focus({ preventScroll: false }); }, [status]);
+  const locked = status.kind === 'failed' && status.refresh;
+  async function save() {
+    if (busy.current || choice === device.signInMode || locked) return;
+    busy.current = true; setStatus({ kind: 'saving' });
+    const next = await saveSignInMode(action, device, choice);
+    busy.current = false;
+    if (next.device) { onSaved(next.device); setChoice(next.device.signInMode); }
+    setStatus(next.status);
+  }
+  const pick = (mode: SignInMode) => { if (status.kind === 'saving' || locked) return; setChoice(mode); if (status.kind !== 'idle') setStatus({ kind: 'idle' }); };
+  return <ClockerSignInView device={device} eligible={eligible} reason={reason} t={t} lang={lang} choice={choice} status={status} onPick={pick} onSave={() => void save()} resultRef={resultRef} />;
 }
 
 /** Clocker tablets (Phase 6). The list of tablets with honest states, one tinted action and one quiet action per row,
@@ -293,6 +389,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         </div>
         {selection.operation === 'REGISTER' ? <p className="ck-step ck-step--sheet">{t.addStep}</p> : null}
         <p className="c-tablet-sheet__text" id="clocker-dialog-text">{body}</p>
+        {selection.operation === 'ROTATE' && rotateKind === 'replace' ? <p className="c-tablet-sheet__text ck-sheet__signin">{t.replaceSignIn}</p> : null}
         <fieldset disabled={pending || Boolean(error?.refresh)} className="wc-fieldset c-tablet-sheet__fields">
           <FieldErrors errors={errors}>
             {selection.operation === 'REGISTER' || options ? <div className="wc-fields">
@@ -305,6 +402,10 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
             </div> : null}
           </FieldErrors>
         </fieldset>
+        {options && device && device.state !== 'REVOKED' ? <ClockerSignIn key={device.id} device={device} t={t} lang={lang} action={action}
+          eligible={device.state === 'ACTIVE' && locationActive(device)}
+          reason={needsSetup(device) ? t.signInNotSetUp : !locationActive(device) ? t.signInLocationOff : undefined}
+          onSaved={saved => { setDevices(current => current.map(item => item.id === saved.id ? saved : item)); setSelection(current => current?.device?.id === saved.id ? { ...current, device: saved } : current); }} /> : null}
         {error ? <div ref={errorBox} role="alert" tabIndex={-1} className="ck-alert" data-tone={error.refresh ? 'amber' : 'red'}>
           {error.refresh ? <QuestionIcon size={18} weight="bold" aria-hidden="true" /> : <WarningCircleIcon size={18} weight="bold" aria-hidden="true" />}
           <span><b>{error.refresh ? t.notConfirmedTitle : t.notSavedTitle}</b>{error.refresh ? t.notConfirmedBody : error.message}</span>
@@ -324,6 +425,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
             onClick={() => { setError(null); setSelection({ operation: 'REVOKE', device }); }}>{t.removeTablet}</button><p className="ck-sheet__help">{t.pauseNote}</p></> : null}
         </div>
       </form> : null}
+      {selection && options && device ? <form id={signInFormId(device.id)} className="ck-signin-form" noValidate onSubmit={event => event.preventDefault()} /> : null}
     </QuietSheet>
     </div>
   </SettingsPageB>;

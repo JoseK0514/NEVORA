@@ -7,6 +7,7 @@ const m = rs.hoisted(() => ({
   employeeRole: "EMPLOYEE",
   profileUnavailable:false, invitation:rs.fn(), hours:rs.fn(), scoped:rs.fn(), profileOptions:[] as unknown[],
   lang: 'en' as 'en' | 'es',
+  clockerAccess:rs.fn(), redirected:[] as string[],
 }));
 rs.mock('@/lib/i18n/page-lang.server', () => ({ readPageLang: async () => m.lang }));
 
@@ -16,6 +17,12 @@ rs.mock("next/link", () => ({
 }));
 rs.mock("next/navigation", () => ({
   notFound: () => { throw new Error("notFound"); },
+  redirect: (to: string) => { m.redirected.push(to); throw new Error("redirect " + to); },
+}));
+rs.mock("@/lib/clocker/location-access.server", () => ({ readClockerLocationAccess: m.clockerAccess }));
+rs.mock("@/components/team/clocker-location-access", () => ({
+  ClockerLocationSheet: ({ employeeId, baseline }: { employeeId: string; baseline: { mode: string } }) => createElement("div", { "data-testid": "clocker-sheet", "data-employee": employeeId, "data-mode": baseline.mode }),
+  ClockerLocationReturnFocus: () => null,
 }));
 rs.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
@@ -77,6 +84,8 @@ beforeEach(() => {
   m.actorRole = "MANAGER";
   m.employeeRole = "EMPLOYEE";
   m.lang = 'en';
+  m.redirected = [];
+  m.clockerAccess.mockReset().mockResolvedValue({ employeeId: "worker", mode: "ASSIGNED", locationIds: [], updatedAt: "2026-11-24T12:00:00.000000Z" });
   m.hours.mockReset().mockResolvedValue({state:'ready',authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000,coverage:{kind:'COMPANY',locationIds:[]},
     data:{employeeId:'worker',today:'2026-10-14',weekStart:'2026-10-12',timeZone:'America/Puerto_Rico',scheduledTodayMinutes:480,scheduledWeekMinutes:1920,workedWeekMinutes:null,workedBasis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS'}});
 });
@@ -266,4 +275,40 @@ it('reads employment dates only for the edit sheet and never shows them on the o
  expect(m.profileOptions).toEqual([{employmentDates:false},{employmentDates:false},{employmentDates:true}]);
  for(const html of [overview,access])expect(html).not.toMatch(/1995-04-12|2016-08-01|data-birth|data-hire/);
  expect(edit).toContain('data-hire="2016-08-01" data-birth="1995-04-12"');
+});
+
+/* Clocker UI step 1 (Option A, Jose's pick Nov 25, 2026): the "Clock in at" row and sheet are the Owner's only. */
+it('shows the Clock in at row to an Owner for a non-Owner, with the current answer, and nothing to a Manager',async()=>{
+ const overview={params:Promise.resolve({employeeId:'worker'})};
+ // A Manager: no row, and Codex's read isn't called.
+ let html=renderToStaticMarkup(await EmployeeProfilePage(overview));
+ expect(html).not.toContain('Clock in at');expect(html).not.toContain('edit=clocker');expect(m.clockerAccess).not.toHaveBeenCalled();
+ m.actorRole='OWNER';
+ html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
+ expect(html).toContain('id="clock-in-at"');expect(html).toContain('href="/app/employees/worker?edit=clocker"');
+ expect(html).toContain('Where they work · Main');
+ expect(m.clockerAccess).toHaveBeenCalledWith({employeeId:'actor',sessionTokenHash:'a'.repeat(64)},'worker');
+ // Every location: the row says so, once.
+ m.clockerAccess.mockResolvedValue({employeeId:'worker',mode:'ALL',locationIds:[],updatedAt:'2026-11-24T12:00:00.000000Z'});
+ expect(renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}))).toContain('Every location · Includes locations added later');
+ // A failed read keeps the page and shows the row as unavailable, without a link.
+ m.clockerAccess.mockRejectedValue(new Error('unavailable'));
+ html=renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}));
+ expect(html).toContain('Clock in at');expect(html).toContain('Unavailable');expect(html).not.toContain('edit=clocker');
+ // Not for an Owner's own kind of row: another Owner has no Clocker PIN here, so no row either.
+ m.clockerAccess.mockClear();m.employeeRole='OWNER';
+ expect(renderToStaticMarkup(await EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'})}))).not.toContain('Clock in at');
+ expect(m.clockerAccess).not.toHaveBeenCalled();
+});
+
+it('opens the Clock in at sheet for an Owner and sends anyone else back to the person page',async()=>{
+ const sheet=()=>EmployeeProfilePage({params:Promise.resolve({employeeId:'worker'}),searchParams:Promise.resolve({edit:'clocker'})});
+ await expect(sheet()).rejects.toThrow('redirect /app/employees/worker');
+ m.actorRole='OWNER';
+ const html=renderToStaticMarkup(await sheet());
+ expect(html).toContain('data-testid="clocker-sheet"');expect(html).toContain('data-employee="worker"');expect(html).toContain('data-mode="ASSIGNED"');
+ // Cancel returns to the row, which takes focus back.
+ expect(html).toContain('href="/app/employees/worker#clock-in-at"');
+ m.clockerAccess.mockRejectedValue(new Error('unavailable'));
+ await expect(sheet()).rejects.toThrow('redirect /app/employees/worker');
 });

@@ -332,7 +332,7 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
   html body .app-shell.nevora-portal .page-frame .section-tabs.section-tabs { max-width: none; }
   html body .app-shell.nevora-portal .section-tabs-track { gap: 20px; }
 }
-@media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal :is(.section-tab, .section-tab::after) { transition: none; } }
+@media (prefers-reduced-motion: reduce) { html body .app-shell.nevora-portal .section-tab, html body .app-shell.nevora-portal .section-tab::after { transition: none; } }
 @media (prefers-contrast: more) { html body .app-shell.nevora-portal .section-tabs { border-bottom-color: var(--g-ink); } }
 
 /* Phone tab bar (U1): four destinations and More for every role. The manager

@@ -12,6 +12,11 @@ Postgres. No real device, notification, payment, deploy or publishing.
   768x1024, 1024x768 and 390x844 with 200% text, in English and Spanish.
 - `f4d33443` The fix (`src/components/clocker.module.css`) and its test beside the gate
   (`src/components/clocker-pin-gate.test.tsx`).
+- `78f7aca0` Merge of `claude-codex-collab-nevora` at da3283a0.
+- `aef0ac6b` End-sweep rows 1 and 4, on K3 and K4 together (`clocker.module.css`, tests in `clocker-pin-gate.test.tsx`):
+  the Continue arrow is 1.25rem (20px at the default size, 40px at 200% text), and while a refusal shows the PIN field
+  keeps a 3px teal focus outline outside its red border. Recaptured: K3 typed and the K4 unknown-ID error, EN, 390 and
+  390 at 200%. Clocker suite 226 passed, tsc clean.
 - Shots commit: this report, `shots/clocker-k3/rows.json` and `img/`.
 
 ## What changed
@@ -52,11 +57,12 @@ motion of its own).
 None.
 
 ## End-sweep items (proposed ledger rows)
-1. The Continue arrow stays 20px at 200% text while the word grows (fixed icon size in `ClockerIcon`).
+Rows 1 (Continue arrow at 200% text) and 4 (focus hidden by the error border) are fixed in `aef0ac6b`. Rows 2 and 3 are
+wording decisions the lead is putting to Jose; not changed.
 2. Offline: the band and the card heading both say "No connection" ("Sin conexión"). Kept because the band follows the
    card by the approved rule NV-049, and K1's setup and the fallback screen use the same pair. Proposed for Jose: band
    "Offline", or a heading "This tablet is offline" on K1, K3 and the fallback together.
 3. Unknown ID: the message says "Check both" on the PIN step, where the Employee ID isn't shown; the way back is the
    icon-only back arrow ("Change Employee ID"). Proposed: show the entered ID under the heading with a Change link (K4).
-4. Unknown ID: focus stays in the PIN field, whose red error border replaces the teal focus ring, so focus isn't
-   visible while the error shows (K4 pattern).
+5. Fixed in `c1b44d98`: the language switch's globe is 1.125rem on every Clocker screen with the shared switch (18px at
+   the default size as before, 36px at 200%). Recaptured K3 typed and K15 paused at 390 with 200% text.

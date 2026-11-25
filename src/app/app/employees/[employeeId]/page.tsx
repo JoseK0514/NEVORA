@@ -28,6 +28,7 @@ import { christmasBonusApplies } from "@/lib/reports/christmas-bonus";
 import { readOperationalRuleProfileView } from "@/lib/data/shift-change-views";
 import { employeeRoleLabel } from "@/lib/employee-display";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { CORP_NO_VALUE, CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpMeta, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { TeamLivePill, TeamLiveProvider } from "@/components/team-live";
 import { BCallout, BSegs } from "@/components/owner-b/b-kit";
@@ -36,6 +37,10 @@ import { PhoneIcon } from "@phosphor-icons/react/dist/ssr/Phone";
 import "@/components/team/team-forms.css";
 import { readPageLang } from "@/lib/i18n/page-lang.server";
 import { EMPLOYEES_COPY, invitedDate } from "../employees-copy";
+import { readClockerLocationAccess } from "@/lib/clocker/location-access.server";
+import { clockerLocationCopy, type ClockerLocationLang } from "@/components/team/clocker-location-access-copy";
+import { clockerLocationSummary, type ClockerLocationBaseline } from "@/components/team/clocker-location-access-model";
+import { ClockerLocationReturnFocus, ClockerLocationSheet } from "@/components/team/clocker-location-access";
 import {
   saveEmployeeCoreProfileAction,
   saveEmployeeSchedulingProfileAction,
@@ -57,7 +62,7 @@ export default async function EmployeeProfilePage({
   const actor=proof.employee;
   const lang=await readPageLang(),t=EMPLOYEES_COPY[lang];
   const query = (await searchParams) ?? {};
-  const editing = query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
+  const editing = query.edit === "clocker" ? "clocker" : query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
   const accessView = !editing && query.view === "access";
   const source=await withOperationalCompany(proof,async()=>{
     // Employment dates (birth date included) are read only for the edit sheet, never for the overview or Access pages.
@@ -100,6 +105,18 @@ export default async function EmployeeProfilePage({
   const accountValue = !employee.active ? t.inactive : invitation?.state === "ready" && invitation.eligibility !== "ALREADY_ACTIVATED" ? (invitation.invitation?.state === "ISSUED" ? t.invited : t.notActivated) : t.active;
   const inviting = invitation !== null && !(invitation.state === "ready" && invitation.eligibility === "ALREADY_ACTIVATED");
   const place = primaryLocation ? `${primaryLocation.shortName}${primaryLocation.active ? "" : t.placeInactive}` : null;
+  // Clocker UI step 1 (Option A, Jose's pick Nov 25, 2026): where an Owner says this person may clock in. Owners only, and
+  // only for the people whose Clocker PIN they manage (active, not an Owner). Codex's read; a failed read shows the row as
+  // unavailable and never takes the page down.
+  const clockerShown = pinShown && (editing === "clocker" || (!editing && !accessView));
+  let clocker: null | { lang: ClockerLocationLang; baseline: ClockerLocationBaseline | null; places: { id: string; name: string }[]; work: string[] } = null;
+  if (clockerShown) {
+    let lang: ClockerLocationLang = "en"; try { lang = (await readPortalLanguage(proof)).language; } catch { /* English */ }
+    let baseline: ClockerLocationBaseline | null = null;
+    try { const access = await readClockerLocationAccess({ employeeId: actor.id, sessionTokenHash: proof.sessionTokenHash }, employee.id); baseline = { mode: access.mode, locationIds: access.locationIds, updatedAt: access.updatedAt }; } catch { /* unavailable */ }
+    clocker = { lang, baseline, places: locations.filter(location => location.active).map(location => ({ id: location.id, name: location.shortName || location.name })),
+      work: [...new Set([employee.primaryLocationId, ...employee.eligibleLocationIds].filter((id): id is string => !!id))] };
+  }
   // Nov 14, 2026 inspection (BR-3): where this person stands on signing in, said under their name. Only an Owner's page
   // reads the invitation, so a Manager's page says nothing rather than guess. The date is the workplace's day.
   const issued = invitation?.state === "ready" && invitation.invitation?.state === "ISSUED" ? new Date(invitation.invitation.issuedAt) : null;
@@ -171,6 +188,13 @@ export default async function EmployeeProfilePage({
           {actor.role === "OWNER" ? <li><CorpRow href={`${base}/time-off`} title={t.timeOffBalance} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
+      {/* Where they may clock in, apart from Work (their schedule): one row with the answer; the sheet changes it. */}
+      {clocker ? <CorpCard as="div" id="clock-in-at" ariaLabel={clockerLocationCopy[clocker.lang].title}>
+        {clocker.baseline
+          ? <CorpRow href={`${base}?edit=clocker`} bold title={clockerLocationCopy[clocker.lang].title} detail={clockerLocationSummary(clocker.lang, clocker.baseline, clocker.work, clocker.places)} chevron />
+          : <CorpRow bold title={clockerLocationCopy[clocker.lang].title} value={clockerLocationCopy[clocker.lang].unavailable} valueTone="soft" />}
+        <ClockerLocationReturnFocus targetId="clock-in-at" />
+      </CorpCard> : null}
       <CorpCard as="div" ariaLabel={t.accessTitle}>
         {/* Owner premium R7: the one thing to act on (no Clocker PIN yet, an invitation), else their role. */}
         <CorpRow href={`${base}?view=access`} bold title={t.accessTitle} chevron
@@ -234,6 +258,18 @@ export default async function EmployeeProfilePage({
             value: location.id, label: location.shortName, checked: employee.eligibleLocationIds.includes(location.id) || employee.primaryLocationId === location.id, disabled: employee.primaryLocationId === location.id,
             help: [!location.active ? t.inactive : null, employee.primaryLocationId === location.id ? t.theirLocation : null].filter(Boolean).join(" · ") || undefined }))} />
       </ConfigurationForm>
+    </CorpPage>
+  </ScopedReadFrame>);
+
+  // The sheet is the Owner's only; without it (a Manager, an Owner's own row, a failed read) the address goes back to the page.
+  if (editing === "clocker" && !clocker?.baseline) redirect(base);
+  if (editing === "clocker" && clocker?.baseline) return (<ScopedReadFrame observation={scopedObservation(source)}>
+    <CorpPage className="c-sheetpage c-editpos clk-page" labelledBy="clk-title">
+      <SheetMarker />
+      <FormHead titleId="clk-title" title={clockerLocationCopy[clocker.lang].title} left={<FormHeadLink href={`${base}#clock-in-at`}>{clockerLocationCopy[clocker.lang].cancel}</FormHeadLink>} />
+      <section className="c-card clk-card" aria-labelledby="clk-title">
+        <ClockerLocationSheet lang={clocker.lang} employeeId={employee.id} baseline={clocker.baseline} places={clocker.places} work={clocker.work} primaryId={employee.primaryLocationId ?? null} />
+      </section>
     </CorpPage>
   </ScopedReadFrame>);
 
