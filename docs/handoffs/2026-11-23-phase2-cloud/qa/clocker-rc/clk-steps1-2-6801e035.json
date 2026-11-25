@@ -1,0 +1,4183 @@
+{
+ "setup": [
+  "ok",
+  "ok",
+  "ok",
+  "ok",
+  "ok",
+  "ok",
+  "ok"
+ ],
+ "views": [
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "webkit",
+   "name": "row-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-daniel-assigned-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-daniel-assigned-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-carmen-selected-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "webkit",
+   "name": "row-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-every-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-every-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "webkit",
+   "name": "state-nothing-ticked",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-nothing-ticked-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "webkit",
+   "name": "row-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-daniel-assigned-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [
+    "pageerror /collab.nevora.example.invalid/app/availability?employeeId=QA-SCAN-A&_rsc=cpIDqOT9aoDxwFXD due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-A/restrictions?_rsc=z57lBcMn7uPKJqhC due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-A?edit=clocker&_rsc=gbtyVZ0YEt6xd6sN due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-A?view=access&_rsc=gbtyVZ0YEt6xd6sN due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/schedule?_rsc=u0eLAYdm1BpzVzVa due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/availability?_rsc=u0eLAYdm1BpzVzVa due to access control checks."
+   ],
+   "shot": "webkit-sheet-daniel-assigned-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [
+    "pageerror /collab.nevora.example.invalid/app/schedule?location=loc-1&_rsc=D54rZjv6pcSDr-ss due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/timecards?_rsc=XTR8oa66FdqtZMRx due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/availability?employeeId=QA-SCAN-B&_rsc=0vppnUVHCFjrt7E3 due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-B/restrictions?_rsc=S2Vc_6KBlyWLMQF2 due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-B?edit=clocker&_rsc=pNK90vA9hhLUOOk- due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-B?view=access&_rsc=pNK90vA9hhLUOOk- due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/schedule?_rsc=5ge0Cw_NHSu2esaW due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/availability?_rsc=5ge0Cw_NHSu2esaW due to access control checks."
+   ],
+   "shot": "webkit-sheet-carmen-selected-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "webkit",
+   "name": "row-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-every-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [
+    "pageerror /collab.nevora.example.invalid/app/availability?employeeId=QA-SCAN-C&_rsc=GZ0KD0gnP0kO5DP0 due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-C/restrictions?_rsc=vq3RrSG46ZtMdxcQ due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-C?edit=clocker&_rsc=rGTIgB2XGkLomw9r due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-C?view=access&_rsc=rGTIgB2XGkLomw9r due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/schedule?_rsc=AL8D_DZ_Vz-jkIoa due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/availability?_rsc=AL8D_DZ_Vz-jkIoa due to access control checks."
+   ],
+   "shot": "webkit-sheet-every-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "webkit",
+   "name": "state-nothing-ticked",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-nothing-ticked-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "webkit",
+   "name": "row-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-daniel-assigned-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-daniel-assigned-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-carmen-selected-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "webkit",
+   "name": "row-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-every-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-every-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "webkit",
+   "name": "state-nothing-ticked",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-nothing-ticked-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "webkit",
+   "name": "row-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-daniel-assigned-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-daniel-assigned-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-carmen-selected-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [
+    "Every location · Includes locations adde"
+   ],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "webkit",
+   "name": "row-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-every-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-every-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "webkit",
+   "name": "state-nothing-ticked",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-nothing-ticked-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "webkit",
+   "name": "row-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-daniel-assigned-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-daniel-assigned-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-carmen-selected-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "webkit",
+   "name": "row-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-every-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-every-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "webkit",
+   "name": "state-nothing-ticked",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-nothing-ticked-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "webkit",
+   "name": "row-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-daniel-assigned-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-daniel-assigned-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-carmen-selected-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "webkit",
+   "name": "row-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-every-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "webkit",
+   "name": "sheet-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-every-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "webkit",
+   "name": "state-nothing-ticked",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-nothing-ticked-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "chromium",
+   "name": "row-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-daniel-assigned-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-daniel-assigned-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "chromium",
+   "name": "row-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-every-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-every-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "chromium",
+   "name": "state-nothing-ticked",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-nothing-ticked-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "chromium",
+   "name": "row-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-daniel-assigned-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-daniel-assigned",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-daniel-assigned-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "chromium",
+   "name": "row-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-every-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-every",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-every-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "chromium",
+   "name": "state-nothing-ticked",
+   "width": 390,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-nothing-ticked-en-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "chromium",
+   "name": "row-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-daniel-assigned-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-daniel-assigned-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "chromium",
+   "name": "row-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-every-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-every-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "chromium",
+   "name": "state-nothing-ticked",
+   "width": 768,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-nothing-ticked-en-768.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "chromium",
+   "name": "row-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-daniel-assigned-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-daniel-assigned",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-daniel-assigned-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "chromium",
+   "name": "row-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-every-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-every",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-every-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "chromium",
+   "name": "state-nothing-ticked",
+   "width": 768,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-nothing-ticked-en-768-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "chromium",
+   "name": "row-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-daniel-assigned-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-daniel-assigned-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "chromium",
+   "name": "row-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-every-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-every-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "chromium",
+   "name": "state-nothing-ticked",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-nothing-ticked-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Where they work · Main Office, West Office",
+   "engine": "chromium",
+   "name": "row-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-daniel-assigned-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-daniel-assigned",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-daniel-assigned-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Clock in at Every location · Includes locations added later",
+   "engine": "chromium",
+   "name": "row-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-every-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 4,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office Only these locations Every location Includes locations added later Save",
+   "engine": "chromium",
+   "name": "sheet-every",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-every-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Choose at least one location to save. Save",
+   "engine": "chromium",
+   "name": "state-nothing-ticked",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-nothing-ticked-en-1440-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Puede marcar en West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-es-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Puede marcar en Donde trabaja Main Office, West Office, Old San Juan Solo estas localidades Main Office Trabaja aquí · Principal West Office Trabaja aquí Old San Juan Trabaja aquí Todas las localidades Incluye las localidades que se añadan Guardar",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-sheet-carmen-selected-es-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Puede marcar en West Office, Old San Juan",
+   "engine": "webkit",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-row-carmen-selected-es-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Puede marcar en Donde trabaja Main Office, West Office, Old San Juan Solo estas localidades Main Office Trabaja aquí · Principal West Office Trabaja aquí Old San Juan Trabaja aquí Todas las localidades Incluye las localidades que se añadan Guardar",
+   "engine": "webkit",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 200,
+   "axe": [],
+   "errors": [
+    "pageerror /collab.nevora.example.invalid/app/availability?employeeId=QA-SCAN-B&_rsc=0vppnUVHCFjrt7E3 due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-B/restrictions?_rsc=S2Vc_6KBlyWLMQF2 due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-B?edit=clocker&_rsc=pNK90vA9hhLUOOk- due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/employees/QA-SCAN-B?view=access&_rsc=pNK90vA9hhLUOOk- due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/schedule?_rsc=5ge0Cw_NHSu2esaW due to access control checks.",
+    "pageerror /collab.nevora.example.invalid/app/availability?_rsc=5ge0Cw_NHSu2esaW due to access control checks."
+   ],
+   "shot": "webkit-sheet-carmen-selected-es-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Puede marcar en West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-es-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Puede marcar en Donde trabaja Main Office, West Office, Old San Juan Solo estas localidades Main Office Trabaja aquí · Principal West Office Trabaja aquí Old San Juan Trabaja aquí Todas las localidades Incluye las localidades que se añadan Guardar",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-es-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 1,
+   "reachMiss": [],
+   "text": "Puede marcar en West Office, Old San Juan",
+   "engine": "chromium",
+   "name": "row-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-row-carmen-selected-es-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Puede marcar en Donde trabaja Main Office, West Office, Old San Juan Solo estas localidades Main Office Trabaja aquí · Principal West Office Trabaja aquí Old San Juan Trabaja aquí Todas las localidades Incluye las localidades que se añadan Guardar",
+   "engine": "chromium",
+   "name": "sheet-carmen-selected",
+   "width": 390,
+   "lang": "es",
+   "textSize": 200,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-sheet-carmen-selected-es-390-200.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Saving…",
+   "engine": "webkit",
+   "name": "state-saving",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-saving-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 8,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Clocker location access could not be confirmed. Reload the profile before trying again. R",
+   "engine": "webkit",
+   "name": "state-unconfirmed",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-unconfirmed-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Saved Save",
+   "engine": "webkit",
+   "name": "state-saved",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-saved-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Saved Save",
+   "engine": "webkit",
+   "name": "state-saved",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-saved-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Saving…",
+   "engine": "chromium",
+   "name": "state-saving",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-saving-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 8,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Clocker location access could not be confirmed. Reload the profile before trying again. R",
+   "engine": "chromium",
+   "name": "state-unconfirmed",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [
+    "console Failed to load resource: net::ERR_FAILED"
+   ],
+   "shot": "chromium-state-unconfirmed-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Saved Save",
+   "engine": "chromium",
+   "name": "state-saved",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-saved-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 7,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Main Office Works here · Main West Office Works here Old San Juan Works here Every location Includes locations added later Saved Save",
+   "engine": "chromium",
+   "name": "state-saved",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-saved-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 5,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Every location Includes locations added later This employee changed. Reload their profile before saving. Reload profile Save",
+   "engine": "webkit",
+   "name": "state-stale",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-stale-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 5,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Every location Includes locations added later This employee changed. Reload their profile before saving. Reload profile Save",
+   "engine": "webkit",
+   "name": "state-stale",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "webkit-state-stale-en-1440.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 5,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Every location Includes locations added later This employee changed. Reload their profile before saving. Reload profile Save",
+   "engine": "chromium",
+   "name": "state-stale",
+   "width": 390,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-stale-en-390.png"
+  },
+  {
+   "root": true,
+   "over": 0,
+   "clipped": [],
+   "controls": 5,
+   "reachMiss": [],
+   "text": "Clock in at Where they work Main Office, West Office, Old San Juan Only these locations Every location Includes locations added later This employee changed. Reload their profile before saving. Reload profile Save",
+   "engine": "chromium",
+   "name": "state-stale",
+   "width": 1440,
+   "lang": "en",
+   "textSize": 100,
+   "axe": [],
+   "errors": [],
+   "shot": "chromium-state-stale-en-1440.png"
+  }
+ ],
+ "focus": [
+  {
+   "engine": "webkit",
+   "width": 390,
+   "cancelError": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a.c-formhead__link').filter({ hasText: 'Cancel' }).first()\u001b[22m\n",
+   "cancelInfo": [],
+   "url": "/app/employees/QA-SCAN-B?edit=clocker",
+   "walk": [
+    {
+     "inClk": true,
+     "el": "input[radio]",
+     "label": "Only these locations",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Main OfficeWorks here · Main",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "West OfficeWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Old San JuanWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    }
+   ]
+  },
+  {
+   "engine": "webkit",
+   "width": 1440,
+   "cancelError": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a.c-formhead__link').filter({ hasText: 'Cancel' }).first()\u001b[22m\n",
+   "cancelInfo": [],
+   "url": "/app/employees/QA-SCAN-B?edit=clocker",
+   "walk": [
+    {
+     "inClk": true,
+     "el": "input[radio]",
+     "label": "Only these locations",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Main OfficeWorks here · Main",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "West OfficeWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Old San JuanWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    }
+   ]
+  },
+  {
+   "engine": "chromium",
+   "width": 390,
+   "cancelError": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a.c-formhead__link').filter({ hasText: 'Cancel' }).first()\u001b[22m\n",
+   "cancelInfo": [],
+   "url": "/app/employees/QA-SCAN-B?edit=clocker",
+   "walk": [
+    {
+     "inClk": true,
+     "el": "input[radio]",
+     "label": "Only these locations",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Main OfficeWorks here · Main",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "West OfficeWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Old San JuanWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    }
+   ]
+  },
+  {
+   "engine": "chromium",
+   "width": 1440,
+   "cancelError": "locator.click: Timeout 8000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('a.c-formhead__link').filter({ hasText: 'Cancel' }).first()\u001b[22m\n",
+   "cancelInfo": [],
+   "url": "/app/employees/QA-SCAN-B?edit=clocker",
+   "walk": [
+    {
+     "inClk": true,
+     "el": "input[radio]",
+     "label": "Only these locations",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Main OfficeWorks here · Main",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "West OfficeWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    },
+    {
+     "inClk": true,
+     "el": "input[checkbox]",
+     "label": "Old San JuanWorks here",
+     "outline": "solid 2px rgb(11, 110, 105)",
+     "shadow": "none",
+     "ring": true
+    }
+   ]
+  },
+  {
+   "engine": "webkit",
+   "width": 390,
+   "cancelKeyboard": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "cancelClick": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "afterSave": {
+    "focus": "other div.clk-result \"Saved\"",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   },
+   "afterSaveThenClose": {
+    "focus": "ROW a.c-row \"Clock in atMain Office, West Office, Old\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at",
+    "row": "Clock in at\nMain Office, West Office, Old San Juan"
+   },
+   "tabOut": {
+    "active": "BODY",
+    "hasFocus": false,
+    "sheet": 0,
+    "paused": 1
+   },
+   "afterReturn": {
+    "sheet": 1,
+    "paused": 0,
+    "mainChecked": true
+   }
+  },
+  {
+   "engine": "webkit",
+   "width": 1440,
+   "cancelKeyboard": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "cancelClick": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "afterSave": {
+    "focus": "other div.clk-result \"Saved\"",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   },
+   "afterSaveThenClose": {
+    "focus": "ROW a.c-row \"Clock in atMain Office, West Office, Old\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at",
+    "row": "Clock in at\nMain Office, West Office, Old San Juan"
+   },
+   "tabOut": {
+    "active": "BODY",
+    "hasFocus": false,
+    "sheet": 0,
+    "paused": 1
+   },
+   "afterReturn": {
+    "sheet": 1,
+    "paused": 0,
+    "mainChecked": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 390,
+   "cancelKeyboard": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "cancelClick": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "afterSave": {
+    "focus": "other div.clk-result \"Saved\"",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   },
+   "afterSaveThenClose": {
+    "focus": "ROW a.c-row \"Clock in atMain Office, West Office, Old\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at",
+    "row": "Clock in at\nMain Office, West Office, Old San Juan"
+   },
+   "tabOut": {
+    "active": "BODY",
+    "hasFocus": false,
+    "sheet": 0,
+    "paused": 1
+   },
+   "afterReturn": {
+    "sheet": 1,
+    "paused": 0,
+    "mainChecked": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 1440,
+   "cancelKeyboard": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "cancelClick": {
+    "focus": "ROW a.c-row \"Clock in atWest Office, Old San Juan\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at"
+   },
+   "afterSave": {
+    "focus": "other div.clk-result \"Saved\"",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   },
+   "afterSaveThenClose": {
+    "focus": "ROW a.c-row \"Clock in atMain Office, West Office, Old\"",
+    "url": "/app/employees/QA-SCAN-B#clock-in-at",
+    "row": "Clock in at\nMain Office, West Office, Old San Juan"
+   },
+   "tabOut": {
+    "active": "BODY",
+    "hasFocus": false,
+    "sheet": 0,
+    "paused": 1
+   },
+   "afterReturn": {
+    "sheet": 1,
+    "paused": 0,
+    "mainChecked": true
+   }
+  }
+ ],
+ "states": [
+  {
+   "engine": "webkit",
+   "width": 390,
+   "big": false,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "webkit",
+   "width": 390,
+   "big": true,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "webkit",
+   "width": 768,
+   "big": false,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "webkit",
+   "width": 768,
+   "big": true,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "webkit",
+   "width": 1440,
+   "big": false,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "webkit",
+   "width": 1440,
+   "big": true,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 390,
+   "big": false,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 390,
+   "big": true,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 768,
+   "big": false,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 768,
+   "big": true,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 1440,
+   "big": false,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 1440,
+   "big": true,
+   "nothingTicked": {
+    "saveDisabled": true,
+    "hint": true
+   }
+  },
+  {
+   "engine": "webkit",
+   "saving": {
+    "button": "Saving…",
+    "disabled": false
+   },
+   "unconfirmed": {
+    "text": "Clocker location access could not be confirmed. Reload the profile before trying again.\n\nReload profile",
+    "focus": "clk-result"
+   },
+   "afterReload": [
+    "SELECTED",
+    "loc-2",
+    "loc-3"
+   ]
+  },
+  {
+   "engine": "webkit",
+   "width": 390,
+   "saved": {
+    "text": "Saved",
+    "focus": "div.clk-result Saved",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   }
+  },
+  {
+   "engine": "webkit",
+   "width": 1440,
+   "saved": {
+    "text": "Saved",
+    "focus": "div.clk-result Saved",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   }
+  },
+  {
+   "engine": "chromium",
+   "saving": {
+    "button": "Saving…",
+    "disabled": false
+   },
+   "unconfirmed": {
+    "text": "Clocker location access could not be confirmed. Reload the profile before trying again.\n\nReload profile",
+    "focus": "clk-result"
+   },
+   "afterReload": [
+    "SELECTED",
+    "loc-2",
+    "loc-3"
+   ]
+  },
+  {
+   "engine": "chromium",
+   "width": 390,
+   "saved": {
+    "text": "Saved",
+    "focus": "div.clk-result Saved",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   }
+  },
+  {
+   "engine": "chromium",
+   "width": 1440,
+   "saved": {
+    "text": "Saved",
+    "focus": "div.clk-result Saved",
+    "url": "/app/employees/QA-SCAN-B?edit=clocker"
+   }
+  }
+ ],
+ "roundTrip": {
+  "webkit": {
+   "before": {
+    "mode": "ASSIGNED",
+    "ids": []
+   },
+   "selected": {
+    "ui": [
+     "SELECTED",
+     "loc-2"
+    ],
+    "db": {
+     "mode": "SELECTED",
+     "ids": [
+      "loc-2"
+     ]
+    }
+   },
+   "all": {
+    "ui": [
+     "ALL"
+    ],
+    "db": {
+     "mode": "ALL",
+     "ids": []
+    }
+   },
+   "row": "Clock in at\nEvery location · Includes locations added later",
+   "errors": [
+    "console TypeError: Load failed",
+    "console TypeError: Load failed"
+   ]
+  },
+  "chromium": {
+   "before": {
+    "mode": "ASSIGNED",
+    "ids": []
+   },
+   "selected": {
+    "ui": [
+     "SELECTED",
+     "loc-2"
+    ],
+    "db": {
+     "mode": "SELECTED",
+     "ids": [
+      "loc-2"
+     ]
+    }
+   },
+   "all": {
+    "ui": [
+     "ALL"
+    ],
+    "db": {
+     "mode": "ALL",
+     "ids": []
+    }
+   },
+   "row": "Clock in at\nEvery location · Includes locations added later",
+   "errors": []
+  }
+ },
+ "stale": {
+  "webkit": {
+   "text": "This employee changed. Reload their profile before saving.\n\nReload profile",
+   "focus": "clk-result",
+   "saveDisabled": true,
+   "afterReload": [
+    "SELECTED",
+    "loc-1",
+    "loc-2",
+    "loc-3"
+   ]
+  },
+  "chromium": {
+   "text": "This employee changed. Reload their profile before saving.\n\nReload profile",
+   "focus": "clk-result",
+   "saveDisabled": true,
+   "afterReload": [
+    "SELECTED",
+    "loc-1",
+    "loc-2",
+    "loc-3"
+   ]
+  }
+ },
+ "extra": [
+  {
+   "engine": "webkit",
+   "dblclick": {
+    "posts": 1,
+    "paths": [
+     "/app/employees/QA-SCAN-B?edit=clocker"
+    ],
+    "result": "Saved",
+    "db": {
+     "mode": "SELECTED",
+     "ids": [
+      "loc-1",
+      "loc-2",
+      "loc-3"
+     ]
+    },
+    "errors": []
+   },
+   "double-enter": {
+    "posts": 1,
+    "paths": [
+     "/app/employees/QA-SCAN-B?edit=clocker"
+    ],
+    "result": "Saved",
+    "db": {
+     "mode": "SELECTED",
+     "ids": [
+      "loc-1",
+      "loc-2",
+      "loc-3"
+     ]
+    },
+    "errors": []
+   },
+   "tabOutSheet": {
+    "path": "/app/employees/QA-SCAN-B?edit=clocker",
+    "lastFocused": "SaveSaving…",
+    "after": {
+     "active": "BODY",
+     "hasFocus": false,
+     "blur": 1,
+     "vis": []
+    },
+    "paused": 1,
+    "afterTryAgain": {
+     "paused": 0,
+     "sheet": 1,
+     "url": "/app/employees/QA-SCAN-B?edit=clocker",
+     "checked": [
+      "SELECTED",
+      "loc-2",
+      "loc-3"
+     ]
+    }
+   },
+   "tabOutPayrollExport": {
+    "path": "/app/payroll-export",
+    "lastFocused": "Team",
+    "after": {
+     "active": "BODY",
+     "hasFocus": false,
+     "blur": 1,
+     "vis": []
+    },
+    "paused": 1,
+    "afterTryAgain": {
+     "paused": 0,
+     "sheet": 0,
+     "url": "/app/payroll-export",
+     "checked": []
+    }
+   },
+   "tabOutTimecards": {
+    "path": "/app/timecards",
+    "lastFocused": "Team",
+    "after": {
+     "active": "BODY",
+     "hasFocus": false,
+     "blur": 1,
+     "vis": []
+    },
+    "paused": 1,
+    "afterTryAgain": {
+     "paused": 0,
+     "sheet": 0,
+     "url": "/app/timecards",
+     "checked": []
+    }
+   },
+   "triggers": [
+    {
+     "name": "alert",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "confirm",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "second-tab-front",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "print",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "file-input",
+     "blur": 0,
+     "paused": 0
+    }
+   ],
+   "importBlur": {
+    "fileInputs": 0,
+    "pausedAfterBlur": 0,
+    "fileInputsWhilePaused": 0,
+    "pausedAfterFocus": 0,
+    "filesAfter": [],
+    "text": "Team Import a staff list Staff list import isn’t available for this workplace yet. You can still add people one at a time. Add one person",
+    "controlText": "Team Import a staff list Staff list import isn’t available for this workplace yet. You can still add people one at a time. Add one person",
+    "errors": []
+   }
+  },
+  {
+   "engine": "chromium",
+   "dblclick": {
+    "posts": 1,
+    "paths": [
+     "/app/employees/QA-SCAN-B?edit=clocker"
+    ],
+    "result": "Saved",
+    "db": {
+     "mode": "SELECTED",
+     "ids": [
+      "loc-1",
+      "loc-2",
+      "loc-3"
+     ]
+    },
+    "errors": []
+   },
+   "double-enter": {
+    "posts": 1,
+    "paths": [
+     "/app/employees/QA-SCAN-B?edit=clocker"
+    ],
+    "result": "Saved",
+    "db": {
+     "mode": "SELECTED",
+     "ids": [
+      "loc-1",
+      "loc-2",
+      "loc-3"
+     ]
+    },
+    "errors": []
+   },
+   "tabOutSheet": {
+    "path": "/app/employees/QA-SCAN-B?edit=clocker",
+    "lastFocused": "SaveSaving…",
+    "after": {
+     "active": "BODY",
+     "hasFocus": false,
+     "blur": 1,
+     "vis": []
+    },
+    "paused": 1,
+    "afterTryAgain": {
+     "paused": 0,
+     "sheet": 1,
+     "url": "/app/employees/QA-SCAN-B?edit=clocker",
+     "checked": [
+      "SELECTED",
+      "loc-2",
+      "loc-3"
+     ]
+    }
+   },
+   "tabOutPayrollExport": {
+    "path": "/app/payroll-export",
+    "lastFocused": "Team",
+    "after": {
+     "active": "BODY",
+     "hasFocus": false,
+     "blur": 1,
+     "vis": []
+    },
+    "paused": 1,
+    "afterTryAgain": {
+     "paused": 0,
+     "sheet": 0,
+     "url": "/app/payroll-export",
+     "checked": []
+    }
+   },
+   "tabOutTimecards": {
+    "path": "/app/timecards",
+    "lastFocused": "Team",
+    "after": {
+     "active": "BODY",
+     "hasFocus": false,
+     "blur": 1,
+     "vis": []
+    },
+    "paused": 1,
+    "afterTryAgain": {
+     "paused": 0,
+     "sheet": 0,
+     "url": "/app/timecards",
+     "checked": []
+    }
+   },
+   "triggers": [
+    {
+     "name": "alert",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "confirm",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "second-tab-front",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "print",
+     "blur": 0,
+     "paused": 0
+    },
+    {
+     "name": "file-input",
+     "blur": 0,
+     "paused": 0
+    }
+   ],
+   "importBlur": {
+    "fileInputs": 0,
+    "pausedAfterBlur": 0,
+    "fileInputsWhilePaused": 0,
+    "pausedAfterFocus": 0,
+    "filesAfter": [],
+    "text": "Team Import a staff list Staff list import isn’t available for this workplace yet. You can still add people one at a time. Add one person",
+    "controlText": "Team Import a staff list Staff list import isn’t available for this workplace yet. You can still add people one at a time. Add one person",
+    "errors": []
+   }
+  }
+ ],
+ "step2": {
+  "views": [
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-en-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-en-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-en-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-en-390.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-es-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-es-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN. Cualquier persona cerca de esta tableta puede ver los nom",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-es-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Primero configura esta tableta. Luego podrás elegir cómo se identifica el personal.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-es-390.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-en-390-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-en-390-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-en-390-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-en-390-200.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-en-768.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-es-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-es-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN. Cualquier persona cerca de esta tableta puede ver los nom",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-es-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Primero configura esta tableta. Luego podrás elegir cómo se identifica el personal.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-es-768.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-en-768-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-en-768-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-en-768-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-en-768-200.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-en-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-en-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-en-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-en-1440.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-es-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-es-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN. Cualquier persona cerca de esta tableta puede ver los nom",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-es-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Primero configura esta tableta. Luego podrás elegir cómo se identifica el personal.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-es-1440.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "webkit",
+    "name": "list",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-list-en-1440-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "webkit",
+    "name": "sheet-id",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-id-en-1440-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "webkit",
+    "name": "sheet-picker-warning",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-picker-warning-en-1440-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "webkit",
+    "name": "sheet-readonly",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-sheet-readonly-en-1440-200.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-en-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-en-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-en-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-en-390.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-es-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-es-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN. Cualquier persona cerca de esta tableta puede ver los nom",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-es-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Primero configura esta tableta. Luego podrás elegir cómo se identifica el personal.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 390,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-es-390.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-en-390-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-en-390-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-en-390-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 390,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-en-390-200.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-en-768.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-es-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-es-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN. Cualquier persona cerca de esta tableta puede ver los nom",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-es-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Primero configura esta tableta. Luego podrás elegir cómo se identifica el personal.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 768,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-es-768.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-en-768-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-en-768-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-en-768-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 768,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-en-768-200.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-en-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-en-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-en-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-en-1440.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-es-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-es-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Cada persona escribe su ID de empleado y luego su PIN. Elegir nombre + PIN Para áreas solo del personal. Cada persona toca su nombre y escribe su PIN. Cualquier persona cerca de esta tableta puede ver los nom",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-es-1440.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "Cómo se identifica el personal ID de empleado + PIN Primero configura esta tableta. Luego podrás elegir cómo se identifica el personal.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 1440,
+    "lang": "es",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-es-1440.png"
+   },
+   {
+    "root": false,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": null,
+    "engine": "chromium",
+    "name": "list",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-list-en-1440-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN.",
+    "engine": "chromium",
+    "name": "sheet-id",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-id-en-1440-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Names are visible to anyone near this tablet Use the name picker in staff-only areas. E",
+    "engine": "chromium",
+    "name": "sheet-picker-warning",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-picker-warning-en-1440-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 0,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Set up this tablet first. Then you can choose how staff sign in.",
+    "engine": "chromium",
+    "name": "sheet-readonly",
+    "width": 1440,
+    "lang": "en",
+    "textSize": 200,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-sheet-readonly-en-1440-200.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Saved Front counter iPad shows the name picker the next time someone signs in.",
+    "engine": "webkit",
+    "name": "saved",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-saved-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Check this tablet This device changed. Reload its current details and try again. Reload",
+    "engine": "webkit",
+    "name": "stale",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "webkit-s2-stale-en-390.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 2,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Saved Front counter iPad shows the name picker the next time someone signs in.",
+    "engine": "chromium",
+    "name": "saved",
+    "width": 768,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-saved-en-768.png"
+   },
+   {
+    "root": true,
+    "over": 0,
+    "clipped": [],
+    "controls": 3,
+    "reachMiss": [],
+    "text": "How staff sign in Employee ID + PIN Each person types their Employee ID, then their PIN. Name picker + PIN For staff-only areas. People tap their name, then type their PIN. Check this tablet This device changed. Reload its current details and try again. Reload",
+    "engine": "chromium",
+    "name": "stale",
+    "width": 390,
+    "lang": "en",
+    "textSize": 100,
+    "axe": [],
+    "errors": [],
+    "shot": "chromium-s2-stale-en-390.png"
+   }
+  ],
+  "roundTrip": {
+   "webkit": {
+    "before": {
+     "m": "EMPLOYEE_ID",
+     "v": 2
+    },
+    "button": "Turn on name picker",
+    "describedBy": "ck-signin-37d74116-fe02-43d9-8bd2-c48bb3046a97-warn",
+    "saved": {
+     "text": "How staff sign in\nEmployee ID + PIN\nEach person types their Employee ID, then their PIN.\nName picker + PIN\nFor staff-only areas. People tap their name, then type their PIN.\n\nSaved\n\nFront counter iPad shows the name picker the next time someone signs in.",
+     "focus": "clk-result",
+     "posts": 1,
+     "db": {
+      "m": "NAME_PICKER",
+      "v": 3
+     }
+    },
+    "afterReload": "NAME_PICKER",
+    "rowLine": [
+     "Main Office · Name picker + PIN · Not used yet",
+     "Main Office · Name picker + PIN · Not used yet"
+    ],
+    "backButton": "Save",
+    "back": {
+     "text": "How staff sign in\nEmployee ID + PIN\nEach person types their Employee ID, then their PIN.\nName picker + PIN\nFor staff-only areas. People tap their name, then type their PIN.\n\nSaved\n\nFront counter iPad asks for an Employee ID.",
+     "db": {
+      "m": "EMPLOYEE_ID",
+      "v": 4
+     }
+    },
+    "errors": []
+   },
+   "chromium": {
+    "before": {
+     "m": "EMPLOYEE_ID",
+     "v": 4
+    },
+    "button": "Turn on name picker",
+    "describedBy": "ck-signin-37d74116-fe02-43d9-8bd2-c48bb3046a97-warn",
+    "saved": {
+     "text": "How staff sign in\nEmployee ID + PIN\nEach person types their Employee ID, then their PIN.\nName picker + PIN\nFor staff-only areas. People tap their name, then type their PIN.\n\nSaved\n\nFront counter iPad shows the name picker the next time someone signs in.",
+     "focus": "clk-result",
+     "posts": 1,
+     "db": {
+      "m": "NAME_PICKER",
+      "v": 5
+     }
+    },
+    "afterReload": "NAME_PICKER",
+    "rowLine": [
+     "Main Office · Name picker + PIN · Not used yet",
+     "Main Office · Employee ID + PIN · Not used yet"
+    ],
+    "backButton": "Save",
+    "back": {
+     "text": "How staff sign in\nEmployee ID + PIN\nEach person types their Employee ID, then their PIN.\nName picker + PIN\nFor staff-only areas. People tap their name, then type their PIN.\n\nSaved\n\nFront counter iPad asks for an Employee ID.",
+     "db": {
+      "m": "EMPLOYEE_ID",
+      "v": 6
+     }
+    },
+    "errors": []
+   }
+  },
+  "stale": {
+   "webkit": {
+    "text": "How staff sign in\nEmployee ID + PIN\nEach person types their Employee ID, then their PIN.\nName picker + PIN\nFor staff-only areas. People tap their name, then type their PIN.\n\nCheck this tablet\n\nThis device changed. Reload its current details and try again.\nReload",
+    "focus": "clk-result",
+    "locked": false,
+    "reload": {
+     "x": 16,
+     "y": 532,
+     "width": 358,
+     "height": 52
+    },
+    "db": {
+     "m": "EMPLOYEE_ID",
+     "v": 3
+    }
+   },
+   "chromium": {
+    "text": "How staff sign in\nEmployee ID + PIN\nEach person types their Employee ID, then their PIN.\nName picker + PIN\nFor staff-only areas. People tap their name, then type their PIN.\n\nCheck this tablet\n\nThis device changed. Reload its current details and try again.\nReload",
+    "focus": "clk-result",
+    "locked": false,
+    "reload": {
+     "x": 16,
+     "y": 532,
+     "width": 358,
+     "height": 52
+    },
+    "db": {
+     "m": "EMPLOYEE_ID",
+     "v": 4
+    }
+   }
+  },
+  "focus": [
+   {
+    "engine": "webkit",
+    "width": 390,
+    "animationsOnOpen": [],
+    "startFocus": "DIALOG Front counter iPadDoneAt Main Office.Tablet nameOnly ",
+    "walk": [
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     }
+    ],
+    "afterEscape": "BUTTON Front counter iPadMain Office · Employee ID + PIN · N"
+   },
+   {
+    "engine": "webkit",
+    "width": 1440,
+    "animationsOnOpen": [],
+    "startFocus": "DIALOG Front counter iPadDoneAt Main Office.Tablet nameOnly ",
+    "walk": [
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     }
+    ],
+    "afterEscape": "BUTTON Front counter iPadMain Office · Employee ID + PIN · N"
+   },
+   {
+    "engine": "chromium",
+    "width": 390,
+    "animationsOnOpen": [
+     "opacity 150",
+     "opacity 150"
+    ],
+    "startFocus": "DIALOG Front counter iPadDoneAt Main Office.Tablet nameOnly ",
+    "walk": [
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     }
+    ],
+    "afterEscape": "BUTTON Front counter iPadMain Office · Employee ID + PIN · N"
+   },
+   {
+    "engine": "chromium",
+    "width": 1440,
+    "animationsOnOpen": [
+     "opacity 150",
+     "opacity 150"
+    ],
+    "startFocus": "DIALOG Front counter iPadDoneAt Main Office.Tablet nameOnly ",
+    "walk": [
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Employee ID + PINEach person types their",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Replace tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "button",
+      "label": "Remove tablet",
+      "ring": true,
+      "inDialog": false
+     },
+     null,
+     {
+      "el": "button",
+      "label": "Done",
+      "ring": true,
+      "inDialog": false
+     },
+     {
+      "el": "input",
+      "label": "Front counter iPad",
+      "ring": true,
+      "inDialog": false
+     }
+    ],
+    "afterEscape": "BUTTON Front counter iPadMain Office · Employee ID + PIN · N"
+   }
+  ],
+  "motion": []
+ }
+}
