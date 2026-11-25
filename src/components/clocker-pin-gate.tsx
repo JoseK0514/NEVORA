@@ -10,6 +10,7 @@ import { ClockerLanguageToggle, ClockerText, useClockerCopy, useClockerIntlLocal
 import { useReportTabletHealth } from './clocker-shell';
 import { ClockerNamePicker } from './clocker-name-picker';
 import { CLOCKER_ROSTER_COPY } from './clocker-roster-copy';
+import { fillDot, flipName, prefersReducedMotion, shakeDots, stopMotion } from './clocker-motion';
 import { readRoster, rosterReplyCurrent, selectionIsStale, verifyBody, type RosterPerson, type RosterState } from './clocker-roster';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
@@ -93,6 +94,10 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  const [picked,setPicked]=useState<RosterPerson|null>(null),[useId,setUseId]=useState(false),[rosterTick,setRosterTick]=useState(0);
  const [visible,setVisible]=useState(true),[notice,setNotice]=useState<'stale'|null>(null),[searching,setSearching]=useState(false);
  const lastPick=useRef<string|null>(null);
+ /* Motion (Jose, Nov 25: more premium through motion only; clocker-motion.ts). The chosen name is a shared element: its
+  * place on screen is measured before the step changes, and the name is moved from there (FLIP). Presentation only. */
+ const flipFrom=useRef<{rect:DOMRect;to:'pin'|'names';selection:string}|null>(null),slots=useRef<HTMLDivElement>(null),drawnDots=useRef(0);
+ const [returning,setReturning]=useState<string|null>(null);
  // Presentation only: who the last 429 paused and when the wait ends (wall clock, from retryAfterSeconds).
  const [pause,setPause]=useState<{scope:'person'|'tablet';until:number|null}|null>(null);
  // Presentation only: a PIN check is in flight, so Continue shows it (Nov 10 review, NV-179).
@@ -115,6 +120,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   if(input.current)input.current.value='';if(idInput.current)idInput.current.value='';
   employeeId.current='';setCount(0);setIdFilled(false);setStep('id');setCounted(false);
   selection.current=null;lastPick.current=null;setPicked(null);setUseId(false);setNotice(null);setSearching(false);setRosterTick(n=>n+1);
+  flipFrom.current=null;setReturning(null);
  },[]);
  const reset=useCallback(async(keepDraft=false)=>{
   if(!keepDraft)setHeld(null);draft.current=null;
@@ -203,6 +209,25 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   // Back from the PIN step, the Employee ID is still there to check or correct.
   if(idInput.current){idInput.current.value=employeeId.current;idInput.current.focus();}
  },[pending,identity,blocked,step,offline,pickerOn,rosterLoading]);
+ // After the focus effect (and the PIN step's scroll), so the name lands where it is now. React runs these before paint
+ // for a tap, so the name never flashes at its new place first.
+ useEffect(()=>{
+  const flip=flipFrom.current;if(!flip)return;
+  const el=flip.to==='pin'&&step==='pin'?document.querySelector('[data-clocker-chosen]'):flip.to==='names'&&pickerOn?document.querySelector(`[data-clocker-names] [data-selection="${flip.selection}"] .np-name`):null;
+  if(!el)return;flipFrom.current=null;
+  const motion=flipName(el,flip.rect,el.getBoundingClientRect(),prefersReducedMotion());return()=>stopMotion(motion);
+ },[step,pickerOn]);
+ // Each new digit's dot fills with a soft spring; a refusal shakes the dots gently beside its message.
+ useEffect(()=>{
+  const before=drawnDots.current;drawnDots.current=count;
+  if(count<=before||!slots.current)return;
+  const dot=slots.current.children[count-1];if(!dot)return;
+  const motion=fillDot(dot,prefersReducedMotion());return()=>stopMotion(motion);
+ },[count]);
+ useEffect(()=>{
+  if(!shake||!slots.current)return;
+  const motion=shakeDots(slots.current,prefersReducedMotion());return()=>stopMotion(motion);
+ },[shake]);
  // The red wrong-PIN state answers one submit; the next keystroke starts a new PIN (Nov 10 review, NV-178).
  function typed(){if(error&&!blocked)setError(null);}
  function key(value:string,editedAt:number,refocus=false){
@@ -229,12 +254,16 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  }
  function pickPerson(person:RosterPerson){
   if(busy.current||blocked)return;
+  const from=document.querySelector(`[data-clocker-names] [data-selection="${person.selection}"] .np-name`)?.getBoundingClientRect();
+  flipFrom.current=from?{rect:from,to:'pin',selection:person.selection}:null;setReturning(null);
   selection.current=person.selection;lastPick.current=person.selection;employeeId.current='';setPicked(person);setNotice(null);setSearching(false);typed();setStep('pin');setEditedAt(performance.now());
  }
  function chooseUseId(){if(busy.current||blocked)return;setUseId(true);setNotice(null);setSearching(false);setEditedAt(performance.now());}
  function backToNames(){if(busy.current||blocked)return;if(idInput.current)idInput.current.value='';employeeId.current='';setIdFilled(false);setUseId(false);setEditedAt(performance.now());}
  function changeId(){
   if(busy.current||blocked)return;
+  const from=picked&&lastPick.current?document.querySelector('[data-clocker-chosen]')?.getBoundingClientRect():undefined;
+  flipFrom.current=from&&lastPick.current?{rect:from,to:'names',selection:lastPick.current}:null;setReturning(flipFrom.current?.selection??null);
   typed();if(input.current)input.current.value='';setCount(0);selection.current=null;setPicked(null);setStep('id');setEditedAt(performance.now());
  }
  async function submit(event:FormEvent<HTMLFormElement>){
@@ -350,7 +379,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
    </div>
    {blockedCard}{offlineCard}
    {/* The Employee ID step: the tablet's own keyboard, capitals on, no autocorrect; Enter or Continue moves to the PIN. */}
-   {entry&&pickerOn&&roster.kind==='picker'?<ClockerNamePicker key={rosterTick} people={roster.people} lang={lang} disabled={pending} notice={notice}
+   {entry&&pickerOn&&roster.kind==='picker'?<ClockerNamePicker key={rosterTick} people={roster.people} lang={lang} disabled={pending} notice={notice} returning={returning}
     onPick={pickPerson} onUseId={chooseUseId} onSearch={query=>{setSearching(query.trim()!=='');setEditedAt(performance.now());}}/>:null}
    {entry&&step==='pin'&&picked?<p className="np-who" data-clocker-chosen="">{picked.displayName}</p>:null}
    {entry&&step==='id'&&!pickerOn&&roster.kind==='failed'?<p className="np-failed" role="status" data-clocker-names-failed="">{rc.failed}</p>:null}
@@ -372,7 +401,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
      <label className={styles.sr} htmlFor="clocker-pin">{t("Employee PIN")}</label>
      <div data-clocker-pin-entry className={styles.pin} data-error={shown?true:undefined} data-shake={shake?shake%2?'a':'b':undefined}>
       <input id="clocker-pin" ref={input} name="pin" type="password" inputMode="none" autoComplete="off" maxLength={4} minLength={4} required pattern="[0-9]{4}" onChange={e=>{typed();setCount(e.currentTarget.value.length);setCounted(true);setEditedAt(performance.now());}} aria-describedby={shown?'clocker-pin-error clocker-pin-help':'clocker-pin-help'} aria-invalid={shown?true:undefined}/>
-      <div className={styles.slots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
+      <div ref={slots} className={styles.slots} aria-hidden="true">{[0,1,2,3].map(index=><span key={index} data-filled={index<count}/>)}</div>
      </div>
      {/* The message line is always there, so a wrong PIN never moves the keypad (Nov 10 review, NV-177, NV-180). Premium
        * pass (#14): the field's help holds that place until a refusal takes it, so the space under the field is no longer an

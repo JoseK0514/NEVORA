@@ -3,24 +3,34 @@
  * initials, alphabetical, a search field only above 12 names, and "Use employee ID" always reachable. On a phone the button
  * sticks to the bottom of the card while the names scroll (Jose, Nov 25); the hint above it stays in the flow, so at 200%
  * text the sticky part is one button, not a third of the screen. Names only, never photos or phone numbers. */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import styles from './clocker.module.css';
 import { CLOCKER_ROSTER_COPY } from './clocker-roster-copy';
 import { ROSTER_SEARCH_THRESHOLD, rosterInitials, rosterMatches, rosterSorted, type RosterPerson } from './clocker-roster';
+import { prefersReducedMotion, settleTiles, stopMotion } from './clocker-motion';
 import './clocker-name-picker.css';
 
-export function ClockerNamePicker({ people, lang, disabled, notice, onPick, onUseId, onSearch }: {
+export function ClockerNamePicker({ people, lang, disabled, notice, returning, onPick, onUseId, onSearch }: {
   people: RosterPerson[]; lang: 'en' | 'es'; disabled?: boolean; notice?: 'stale' | null;
+  /** The name coming back from the PIN step: it flies home (the gate's FLIP), so it isn't part of the settle. */
+  returning?: string | null;
   onPick: (person: RosterPerson) => void; onUseId: () => void; onSearch?: (query: string) => void;
 }) {
   const t = CLOCKER_ROSTER_COPY[lang];
+  const root = useRef<HTMLDivElement>(null), skip = useRef(returning);
+  // Entering sign-in, once per mount (each start over remounts the picker): the tiles settle in. Taps work at once.
+  useEffect(() => {
+    const tiles = [...(root.current?.querySelectorAll('.np-tile') ?? [])].filter(tile => tile.getAttribute('data-selection') !== skip.current);
+    const motion = settleTiles(tiles, prefersReducedMotion());
+    return () => stopMotion(motion);
+  }, []);
   const [query, setQuery] = useState('');
   const sorted = useMemo(() => rosterSorted(people, lang), [people, lang]);
   const searchable = sorted.length > ROSTER_SEARCH_THRESHOLD;
   const shown = searchable ? rosterMatches(sorted, query) : sorted;
   const none = searchable && query.trim() !== '' && shown.length === 0;
-  return <div className="np" data-clocker-names="">
+  return <div ref={root} className="np" data-clocker-names="">
     {notice === 'stale' ? <p className="np-notice" role="status">{t.stale}</p> : null}
     {searchable ? <label className="np-search">
       <span className={styles.sr}>{t.search}</span>
