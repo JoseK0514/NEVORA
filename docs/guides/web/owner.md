@@ -114,6 +114,13 @@ switch moves only after the save is confirmed. If it says **Not confirmed**, use
 **Check again**, which sends the same change again. A request outside every
 Manager's grants comes to you. Nobody reviews their own time off or correction.
 
+**Clock in at**, on the page of an active person who isn't an Owner, sets where
+they may clock in. It is separate from where they're scheduled. Choose **Where
+they work**, **Only these locations** (tick at least one) or **Every location**,
+which includes locations added later. Each location says **Works here** and
+**Main**, so you can tell where they work from where they may clock in. **Save**
+turns on once something changes.
+
 ## Build, review and publish a schedule
 
 1. Open **Schedule**, select the week and location, and check who is eligible.
@@ -334,5 +341,22 @@ is set up separately and isn't posted from these screens.
 ## Tablet setup and uncertain punches
 
 Open **Clocker tablets** and choose **Add tablet** (the last row of the list) to register a tablet. The setup card offers a QR code, **Copy link** and **Show code**; use the link only on the intended tablet. The person holding it must tap to connect it. The code works once for 15 minutes. Browser and Home Screen app cookies can differ, so check registration in the actual kiosk you will use.
+
+Open a tablet's row to choose **How staff sign in**:
+
+- **Employee ID + PIN**: each person types their Employee ID, then their PIN.
+- **Name picker + PIN**: people tap their name, then type their PIN. Choosing it
+  shows **Names are visible to anyone near this tablet**, so use it only in
+  staff-only areas, then choose **Turn on name picker**. Each person still needs
+  their own PIN, and Employee ID stays available on the tablet.
+
+Only a connected tablet at an active location can change how staff sign in. A
+replaced tablet starts again with Employee ID + PIN.
+
+On a tablet with the name picker, staff see **Choose your name**, tap their name,
+then enter their PIN on **Enter your PIN**. The back arrow (**Choose another
+name**) returns to the list. The list shows active people who have a Clocker PIN
+and may clock in at that location (see **Clock in at**), by first name and last
+initial. **Use Employee ID** is always there for anyone who isn't listed.
 
 A retained punch may say **not confirmed yet**. **Check if it saved** checks its original reference; **Send it again** retains that reference. **See current status** is a separate current observation. **Ask Owner to check** and **Check your last punch** are recovery routes. A failed check or a disabled service is not proof that a previous punch was never recorded. Offline punches are not queued automatically.
