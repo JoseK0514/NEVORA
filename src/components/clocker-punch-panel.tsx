@@ -11,6 +11,7 @@ import type { BreakSelection } from '../lib/clocker/break-types';
 import {ClockerRecoveryHelp,ClockerRecoveryLink,useClockerReviewRequest} from './clocker-recovery';
 import {CLOCKER_RECEIPT_CLEAR_MS,continuationFor,resumeContinuation,type ClockContinuation} from './clocker-privacy';
 import styles from './clocker.module.css';
+import { drawDone, prefersReducedMotion, stopMotion } from './clocker-motion';
 import {ClockerPunchPhotoFlow} from './clocker-photo/punch-photo-flow';
 import {createClockerPhotoTransport} from '../lib/clocker/photo-client/transport';
 import {readPhotoConfiguration,type PhotoSessionContext,type PhotoBindings} from '../lib/clocker/photo-client/session';
@@ -99,6 +100,14 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  },[locationKey,resume]);
  useEffect(()=>{onContinuationChange?.(view&&!pending?continuationFor(view,mode):null);return()=>onContinuationChange?.(null);},[view,mode,pending,onContinuationChange]);
  useEffect(()=>{heading.current?.focus({preventScroll:true});},[mode,helpFor]);
+ /* Verified (Jose, Nov 25: premium through motion): the first time the person's screen is ready, the done mark on their
+  * initial draws its tick, then the greeting arrives. Focus has already moved; this is only paint. Later returns to this
+  * screen (Back from breaks) show the mark still. */
+ const doneMark=useRef<HTMLSpanElement>(null),drewDone=useRef(false);
+ useEffect(()=>{
+  if(mode!=='ready'||drewDone.current||!doneMark.current)return;drewDone.current=true;
+  const motion=drawDone(doneMark.current,doneMark.current.querySelector('path'),heading.current,prefersReducedMotion());return()=>stopMotion(motion);
+ },[mode]);
  /* A punch that could not be confirmed is in the tablet's journal by now: read the saved references again so the
   * "Something didn’t save?" path is offered on this screen, not only after the next PIN (Phase 6, item 3). A read only. */
  useEffect(()=>{
@@ -260,7 +269,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  return <div className={styles.content} aria-busy={waiting} data-clocker-state={mode} data-align={left?'start':'center'}>
   {mode==='success'?<span className={styles.check}><DoneTick size={52}/></span>
    :ring?<span className={styles.ring} data-tone={ring[1]==='teal'?undefined:ring[1]}><ClockerIcon name={ring[0]} size={28} mark/></span>:null}
-  {mode==='ready'?<div className={styles.who}>{face()}<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{name:first})}</h1></div>
+  {mode==='ready'?<div className={styles.who}><span className={styles.faceWrap}>{face()}<ClockerDoneMark markRef={doneMark}/></span><h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{name:first})}</h1></div>
    :<h1 ref={heading} tabIndex={-1} className={styles.title}>{t(title,{first,name:first})}</h1>}
   {mode==='ready'&&view?<>
    <div className={styles.strow}>
@@ -331,4 +340,11 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   {leave&&!withActions?<div className={styles.stack}>{leave}</div>:null}
   {mode!=='ready'&&!withActions?helpLink(false):null}
  </div>;
+}
+
+/* The kit's done mark (BDoneMark: a green disc whose one round-capped tick has pathLength 1, so it can be drawn), with
+ * the kiosk's own styles. The kit module isn't imported here: it brings owner-b.css (88 KB, with unscoped rules such as
+ * .b-screen) into the kiosk. Same markup and class, so it reads as the same mark. */
+function ClockerDoneMark({markRef}:{markRef:React.Ref<HTMLSpanElement>}){
+ return <span ref={markRef} className={`b-donemark ${styles.doneMark}`} aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" focusable="false"><path d="M5.5 12.75l4.25 4.25L18.5 7.75" pathLength={1} stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round"/></svg></span>;
 }

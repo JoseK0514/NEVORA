@@ -107,3 +107,37 @@ describe('the Phase 7 motion sheet (b-motion.css)', () => {
     expect(readFileSync(join(root, 'app/b-tokens.css'), 'utf8')).toMatch(new RegExp(`--b-dur-exit:\\s*${OVERLAY_EXIT_MS}ms`));
   });
 });
+
+/* Phase 2 gap closure (Nov 23, 2026): a pseudo-element is not allowed inside :is(), :where(), :not() or :has(). The
+ * browser drops it silently, so `:is(.mb-tog, .mb-tog::after) { transition: none; }` under reduced motion left the
+ * toggle's knob sliding (found by the reduced-motion browser probe on New update; four sheets had the same rule shape).
+ * A pseudo-element is written outside the function, on its own selector. */
+export function pseudoInsideFunctional(selector: string): string[] {
+  const out: string[] = [], re = /:(is|where|not|has)\(/g;
+  for (let match = re.exec(selector); match; match = re.exec(selector)) {
+    let depth = 1, end = re.lastIndex;
+    for (; end < selector.length && depth; end++) depth += selector[end] === '(' ? 1 : selector[end] === ')' ? -1 : 0;
+    const argument = selector.slice(re.lastIndex, end - 1);
+    if (/::[a-z-]+/.test(argument)) out.push(`:${match[1]}(${argument})`);
+  }
+  return out;
+}
+describe('selectors the browser would drop (Phase 2 gap closure)', () => {
+  it('reads a pseudo-element inside a functional pseudo-class', () => {
+    expect(pseudoInsideFunctional('a :is(.mb-tog, .mb-tog::after)')).toEqual([':is(.mb-tog, .mb-tog::after)']);
+    expect(pseudoInsideFunctional('a .mb-tog, a .mb-tog::after')).toEqual([]);
+    expect(pseudoInsideFunctional(':is(#c-root, html) .b-btn:not(:disabled)::after')).toEqual([]);
+  });
+  it('has no pseudo-element inside :is(), :where(), :not() or :has() in any stylesheet', () => {
+    const found: string[] = [];
+    for (const path of sheets(root)) {
+      const text = css(path);
+      for (const match of text.matchAll(/([^{};]+)\{/g)) {
+        const selector = match[1].trim();
+        if (selector.startsWith('@')) continue;
+        for (const bad of pseudoInsideFunctional(selector)) found.push(`${relative(root, path)}: ${bad}`);
+      }
+    }
+    expect(found).toEqual([]);
+  });
+});
