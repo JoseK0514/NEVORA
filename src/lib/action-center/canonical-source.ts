@@ -349,7 +349,8 @@ export function prepareTimecardActionRows(input: TimecardActionCapture): Prepare
     const latest=p.history.reduce<string|null>((at,h)=>at===null||Temporal.Instant.compare(h.occurredAt,at)>0?h.occurredAt:at,null);
     const history=p.history.map(h=>({occurredAt:h.occurredAt,snapshot:{entries:h.snapshot.entries.map(e=>({locationId:e.locationId}))}}));
     const locations=[...p.source.entries.map(e=>e.locationId),...nowCard.entries.map(e=>e.locationId),
-      ...p.history.flatMap(h=>h.snapshot.entries.map(e=>e.locationId)),...nativeLocations.map(l=>l.id as string)];
+      ...p.history.flatMap(h=>h.snapshot.entries.map(e=>e.locationId)),...nativeLocations.map(l=>l.id as string),
+      ...[p.source,nowCard,...p.history.map(h=>h.snapshot)].flatMap(source=>(source.shiftOutcomes??[]).map(outcome=>outcome.locationId))];
     return action({kind:'TIMECARD',payload:{employeeId:p.card.employeeId,employeeName:p.card.employeeName,
       startDate:p.card.startDate,endDate:p.card.endDate,state:p.state,revision:p.revision,sourceHash:p.sourceHash,
       entries:p.source.entries.map(e=>({locationId:e.locationId})),history,issues:p.card.issues}},s.workspaceId,

@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-19T17:55:25Z",
+  "observedAt": "2026-11-25T12:33:10Z",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "62d791ad702f6b9590f037e3de647062291d42b7",
+      "sha": "12263073083a2e5fc387a4728ed13ead7b346cc4",
       "disposition": "target",
-      "reason": "Published Development base for the Employee Home date-range fix. It includes the November 20 linear Collab integration and the staged Clocker face verification backend."
+      "reason": "Current Development base for SCRUM-83 Timecards and Payroll bundles, including the Clocker backend and migration 0078."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,16 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "9075be11a1e6989ea86942a67a68b28e8179bb92",
-      "disposition": "held",
-      "reason": "The prior Collab source d00ca97b6b4e301ab05de72684c58e4ae1647186 is preserved in join 87b22d32926120f5225ffee90eec755098321bba and its resolved tree was carried into Development by 2e42ee98a. This scoped integration takes the shared compact date formatter from c3ede1f86 for the Employee Home server fix 2f23dbabb68bf81380f8c4887b1a7947266e7b38. The rest of this Collab head is held for separate integration."
+      "sha": "6983360dd74c0ce51ef62d2fbdab3284c983ebd5",
+      "disposition": "reference",
+      "reason": "The reviewed Collab tree was imported into a linear detached Development assembly and checked for exact tree equivalence before adding the verified first-payroll checkpoint. Extra package heads are preserved for review. Spanish integration is tracked in SCRUM-91."
+    },
+    {
+      "branch": "claude/eager-meitner-wioy6k",
+      "sha": "57e58b92653f9a4b51e5a3dfa00cbf1e22529b71",
+      "disposition": "reference",
+      "reason": "Claude session session_01N2UNZFBxnmqY4hGAbQjzz3 owns this design-skill delivery. The exact tip is an ancestor of reviewed Collab b15cf3d81 and its content arrives through that linear import. No PR was found for this head. Jose subsequently chose Archive and retire it in the coordinating Phase 2 session. That owner recorded a SHA-leased retirement in /tmp/nevora-phase2-closeout-20261122-handoff.md. The integrator independently verified this exact remote archive and three remaining heads before final qualification.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-22/claude/eager-meitner-wioy6k"
     },
     {
       "branch": "scrum190-signup-ui",
@@ -533,6 +540,234 @@
       "disposition": "superseded",
       "reason": "Jose explicitly authorized this extra branch on November 18, recorded in docs/handoffs/2026-11-18-30-day-phase.md. Exact source is already included through collaboration merge 4e83dfa53; the exception is scoped to this phase, not other branches. November 19 linear publication: this original head is preserved by immutable qualified assembly candidate/backend-completion/20261118-development-combined-02 at05f2553182b387f20495c19070cfbabd50a987ef, which contains the actual integration ancestry. Its byte-identical tree is republished from Development22107 to obey GitHub required linear history; this record does not claim the original head is an ancestor of that linear delivery. The two active source branches remain active and unchanged; the password source retains its exact approved archive. See2026-11-19-linear-development-publication.md and the exact content-equivalence receipt. No source gate or branch ceiling is relaxed.",
       "archiveRef": "refs/tags/archive/branches/2026-11-19/nevora-30-day-phase"
+    },
+    {
+      "branch": "claude-codex-collab-nevora-account",
+      "sha": "ba21804201cd30d0d29114b2e63e8b157e59f4f0",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-alerts",
+      "sha": "ee222b0da2eb35f40f9e006f0f5f2d7f73e8e473",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-clocker",
+      "sha": "743212e8cce365ea269c703fa200563d64f4f66d",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-nav",
+      "sha": "c5d8273e14f9061e925739e62a3034298f9782a4",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-public",
+      "sha": "11574da9cc25e25c0d465b2c10a113af9a3da0b7",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-batch-time-team",
+      "sha": "7c00717aa3afdc84c75da9e8550823792445d9f9",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-clocker-states",
+      "sha": "6ae27d6082615419e7a3a05d4321312dedbe935b",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-core",
+      "sha": "e2c0e8d9fbe2ec084dbc9330aa34ccf437c6bc82",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-core-options",
+      "sha": "9943126429dd0ab1ce8aa2735bae2635536d6f14",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-ds-pages",
+      "sha": "53e1e67f295ef84e878d2eae0e800b61531f2a47",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-employee",
+      "sha": "84e8109b3ef8eec100cc0c0e26880e772b239403",
+      "disposition": "held",
+      "reason": "Held for the separate SCRUM-91 Spanish release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-mobile",
+      "sha": "2cd9ed8cdeafcf3c0dfc4b23027ecd51a8352dc5",
+      "disposition": "held",
+      "reason": "Held for the separate SCRUM-91 Spanish release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-owner",
+      "sha": "6de7c2dc234498f55915def4b57b46cdb748f698",
+      "disposition": "held",
+      "reason": "Held for the separate SCRUM-91 Spanish release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-payroll",
+      "sha": "89824b49d72d18380d4a2206e425b37f2527e276",
+      "disposition": "held",
+      "reason": "Held for the separate SCRUM-91 Spanish release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-rest",
+      "sha": "eced81af42d78c15e927886653dd3dbae966d7fd",
+      "disposition": "held",
+      "reason": "Held for the separate SCRUM-91 Spanish release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-es-rondo",
+      "sha": "9ceeb06ec2a9d8361d7df95ae4d288d0a418f123",
+      "disposition": "held",
+      "reason": "Held for the separate SCRUM-91 Spanish release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-kit-final",
+      "sha": "1286f0cbaf7d366c31450ea4a808fb8da87c2f8e",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-messages",
+      "sha": "867fdc8766a6a7af803ece27b7228281d6f19e01",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-messages-2",
+      "sha": "170d012272d95c44a4f73cc11f1e1627dc2840be",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-payroll-2",
+      "sha": "d9282e7191beb86505c9d0696800702b1097885f",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-prodcheck",
+      "sha": "19c9b09fe482bb21035ee3a0fe7132bc8b13bdf4",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-profile",
+      "sha": "a25021850a460f47c1f38874463dc4d955d4de73",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-qa",
+      "sha": "d99d6695aebdd319d76bb502161f2603d6dc50c9",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-requests-account",
+      "sha": "ea2601e589a26806d9ab39a82e661710ab20c2cc",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-rondo",
+      "sha": "8a400c4213c23ab9dceb2b63aa0157574cad6665",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-schedule-tools",
+      "sha": "a2381a1671c9b51cd246d4ec447b78da5f96579c",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-schedule-tools-2",
+      "sha": "dcc12231d4cc93b919c09235e97671625e757dd1",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-screens-final",
+      "sha": "0ac957ff08d1449f6964a72e169f6ded1e62752b",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-2",
+      "sha": "5032ed10b57321922934bfd95e4bc24445de197d",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-base",
+      "sha": "cbc3d4bc7287b7beffb9d0fcc327824e579b6133",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-billing",
+      "sha": "528f77995e9f5ba41ac8f3a6f32ebc48e9ed8b9a",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-final",
+      "sha": "109e6acc8121eec07449b207360e995f820842a8",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-locations",
+      "sha": "0e21bbbcaacfe8a1af73c8d096073fd4e228a2b5",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-policies",
+      "sha": "27a6143487f614748b36be9010da57594c4d5d73",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-settings-positions",
+      "sha": "db6508e85d38bbf5742e15a689fb3706237db1d4",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-staff",
+      "sha": "83a43d0031f1957bb44856ddecf19ee83a78f1b6",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-sweep-1",
+      "sha": "156a1735574e7e31576a9f56efc7e6577fa2a7f8",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
+    },
+    {
+      "branch": "claude-codex-collab-nevora-timecards-final",
+      "sha": "8e9c11eada97c532a69496963132be4eae3b2b04",
+      "disposition": "held",
+      "reason": "Held for Claude UI review and the existing Collab release. This backend assembly applies the verified Timecards and Payroll bundles to Development."
     }
   ],
   "maximumActiveBranches": 3,

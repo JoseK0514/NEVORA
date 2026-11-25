@@ -8,6 +8,9 @@ import {
   runs,
   command,
   receipt,
+  readRun,
+  enqueue,
+  insertRevision,
 } from "../../lib/payroll/service";
 import type { SessionMutationProof } from "../../lib/shift-changes/types";
 const proof: SessionMutationProof = {
@@ -221,6 +224,105 @@ async function approve() {
   );
   return (await runs(proof, f.db.executor)).runs[0];
 }
+it.each(['OWNER', 'MANAGER'] as const)('requires an independent payroll approver and publisher when a %s has imported pay', async role => {
+  const ex = f.db.executor;
+  const seeded = await seedPayrollFixture(ex, { automaticPublish: false });
+  const employeeId = seeded.ids.a;
+  const paidActor: SessionMutationProof = {
+    employee: { ...seeded.proof.employee, id: employeeId, role },
+    sessionTokenHash: 'e'.repeat(64),
+  };
+  await f.q('UPDATE employees SET role=$2 WHERE id=$1', [employeeId, role]);
+  await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')", [paidActor.sessionTokenHash, employeeId]);
+  if (role === 'MANAGER') {
+    await saveSettings(seeded.proof, {
+      action: 'SET_GRANT', operationId: randomUUID(), expectedRevision: 0,
+      reason: 'Fictional approve and review grant', grant: { employeeId, approve: true, review: true },
+    }, ex);
+  }
+  const before = await readRun(seeded.proof, seeded.runId, ex);
+  expect(before.payload.status).toBe('REVIEW_REQUIRED');
+  const approveInput = {
+    action: 'APPROVE', operationId: randomUUID(), runId: seeded.runId,
+    expectedRevision: before.payload.revision, reviewToken: before.payload.reviewToken,
+  };
+  await expect(command(paidActor, approveInput, ex)).rejects.toMatchObject({ code: 'PAYROLL_SELF_REVIEW', status: 409 });
+  expect(await readRun(seeded.proof, seeded.runId, ex)).toEqual(before);
+  expect(await receipt(paidActor, approveInput.operationId, ex)).toBeNull();
+  expect(await f.q('SELECT kind FROM payroll_jobs WHERE run_id=$1', [seeded.runId])).toEqual([]);
+
+  const independentApproval = { ...approveInput, operationId: randomUUID() };
+  const approved = await command(seeded.proof, independentApproval, ex);
+  expect(await command(seeded.proof, independentApproval, ex)).toEqual(approved);
+  const approvedRun = await readRun(seeded.proof, seeded.runId, ex);
+  expect(approvedRun.payload).toMatchObject({ status: 'APPROVED', approvedBy: seeded.proof.employee.id });
+  const publishInput = { action: 'PUBLISH', operationId: randomUUID(), runId: seeded.runId, expectedRevision: approved.revision };
+  await expect(command(paidActor, publishInput, ex)).rejects.toMatchObject({ code: 'PAYROLL_SELF_REVIEW', status: 409 });
+  expect(await readRun(seeded.proof, seeded.runId, ex)).toEqual(approvedRun);
+  expect(await receipt(paidActor, publishInput.operationId, ex)).toBeNull();
+  expect(await f.q('SELECT kind FROM payroll_jobs WHERE run_id=$1', [seeded.runId])).toEqual([{ kind: 'PDF' }]);
+
+  const independentPublish = { ...publishInput, operationId: randomUUID() };
+  const published = await command(seeded.proof, independentPublish, ex);
+  expect(await command(seeded.proof, independentPublish, ex)).toEqual(published);
+  await workerOnce(ex);
+  await workerOnce(ex);
+  expect(await f.q('SELECT count(*)::int AS n FROM payroll_publications WHERE run_id=$1', [seeded.runId])).toEqual([{ n: 1 }]);
+  expect(await f.q('SELECT kind FROM payroll_jobs WHERE run_id=$1 ORDER BY kind', [seeded.runId])).toEqual([{ kind: 'PDF' }, { kind: 'PUBLISH' }, { kind: 'REMINDER' }]);
+});
+
+it('holds a historical self-approved statement from new manual and queued publication', async () => {
+  const ex = f.db.executor;
+  const seeded = await seedPayrollFixture(ex, { automaticPublish: false });
+  const { payload, snapshot } = await readRun(seeded.proof, seeded.runId, ex);
+  const historical = {
+    ...payload, revision: payload.revision + 1, status: 'APPROVED' as const,
+    approvedBy: seeded.ids.a, approvedAt: new Date().toISOString(),
+  };
+  // Seed a pre-policy approved revision and pending publication as historical data.
+  await ex.transaction([insertRevision(historical, snapshot), enqueue(historical.id, 'PUBLISH', `publish:${historical.id}`)]);
+  const input = { action: 'PUBLISH', operationId: randomUUID(), runId: historical.id, expectedRevision: historical.revision };
+  await expect(command(seeded.proof, input, ex)).rejects.toMatchObject({ code: 'INDEPENDENT_PAYROLL_APPROVAL_REQUIRED', status: 409 });
+  expect(await receipt(seeded.proof, input.operationId, ex)).toBeNull();
+  await expect(workerOnce(ex)).rejects.toMatchObject({ code: 'INDEPENDENT_PAYROLL_APPROVAL_REQUIRED' });
+  expect(await f.q('SELECT status,error FROM payroll_jobs WHERE run_id=$1', [historical.id])).toEqual([
+    { status: 'FAILED', error: 'INDEPENDENT_PAYROLL_APPROVAL_REQUIRED' },
+  ]);
+  expect(await f.q('SELECT count(*)::int AS n FROM payroll_publications WHERE run_id=$1', [historical.id])).toEqual([{ n: 0 }]);
+  expect(await readRun(seeded.proof, historical.id, ex)).toEqual({ payload: historical, snapshot });
+});
+
+it('preserves approved payroll custody without locking an unrelated employee or disjoint period', async () => {
+  const { readTimecards, mutateTimecard } = await import('../../lib/timecards/service');
+  const ex = f.db.executor;
+  const seeded = await seedPayrollFixture(ex, { published: true });
+  const approved = await readRun(seeded.proof, seeded.runId, ex);
+  const unrelatedId = 'fictional-unrelated-to-approved-payroll';
+  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id)
+    VALUES($1,'Unrelated','Fictional','$000','EMPLOYEE','loc-1')`, [unrelatedId]);
+  const mutate = async (employeeId: string, cardPeriod: typeof period, action: 'APPROVE' | 'FINALIZE' | 'REOPEN') => {
+    const view = await readTimecards(seeded.proof, cardPeriod, ex);
+    if (view.state !== 'ready') throw Error('Fictional timecard unavailable');
+    const card = view.cards.find(item => item.card.employeeId === employeeId)!;
+    return mutateTimecard(seeded.proof, {
+      ...cardPeriod, operationId: randomUUID(), employeeId, action,
+      expectedRevision: card.revision, expectedSourceHash: card.sourceHash,
+      ...(action === 'REOPEN' ? { note: 'Fictional separate timecard review' } : {}),
+    }, ex);
+  };
+  expect(await mutate(seeded.ids.a, seeded.period, 'REOPEN')).toEqual({status:'blocked',reason:'payroll_approved'});
+  for (const [employeeId, cardPeriod] of [
+    [unrelatedId, seeded.period],
+    [seeded.ids.a, { startDate: '2026-09-14', endDate: '2026-09-20' }],
+  ] as const) {
+    expect((await mutate(employeeId, cardPeriod, 'APPROVE')).status).toBe('approved');
+    expect((await mutate(employeeId, cardPeriod, 'FINALIZE')).status).toBe('finalized');
+    expect((await mutate(employeeId, cardPeriod, 'REOPEN')).status).toBe('reopened');
+  }
+  expect(await readRun(seeded.proof, seeded.runId, ex)).toEqual(approved);
+  expect(await f.q('SELECT count(*)::int AS n FROM payroll_publications WHERE run_id=$1', [seeded.runId])).toEqual([{n:1}]);
+});
+
 it("freezes approved inputs, generates and publishes real private PDFs, keeps employees isolated and exact payment retries", async () => {
   const r = await approve();
   await expect(

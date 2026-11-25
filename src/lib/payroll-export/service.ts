@@ -6,9 +6,11 @@ import {assertManagementProof} from '../data/management-session';
 import {workspaceReadGuard} from '../data/workspaces';
 import {neonNotificationExecutor} from '../data/notification-transactions';
 import {readTimecards} from '../timecards/service';
+import {periodInstants} from '../timecards/project';
 import {assertReviewedPaidProfile,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile,parseExportProfile,requiresPaidTimeReview,type ExportProfile,type CanonicalPayrollExport} from './model';
 import {projectPaidPayrollExport} from './paid-time';
 import {parseExportCommand,type ExportCommand} from './command';
+import {PayrollExportReviewError} from './errors';
 export {parseExportCommand,type ExportCommand} from './command';
 const object=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(v);
@@ -68,6 +70,15 @@ export async function createPayrollExport(proof:SessionMutationProof,input:unkno
  const receipt=await recover();if(receipt)return receipt;
  let generated:PayrollExportPayload;
  try{
+ // A repeated or skipped local midnight can resolve differently in PostgreSQL
+ // and Temporal. A finalized snapshot may already have omitted source entries.
+ const {startAt,endAt}=periodInstants(command,workspace.timeZone);
+ const [boundary]=await executor.query<{aligned:boolean}>({
+  text:`SELECT ($1::date::timestamp AT TIME ZONE $3::text)=$4::timestamptz
+    AND (($2::date+1)::timestamp AT TIME ZONE $3::text)=$5::timestamptz AS aligned`,
+  values:[command.startDate,command.endDate,workspace.timeZone,startAt,endAt],
+ });
+ if(!boundary?.aligned)throw new PayrollExportReviewError('PERIOD_BOUNDARY_MISMATCH');
  const cards=await readTimecards(proof,command,executor);if(cards.state!=='ready')throw new Error('Timecards unavailable');
  const model=canonicalPayrollExport(workspace.id,cards.observedAt,command,cards.cards,command.cards.map(c=>c.employeeId),cards.paging,command.paidTime);
  if(model.rows.some(r=>{const expected=command.cards.find(c=>c.employeeId===r.employeeId)!;return r.revision!==expected.revision||r.sourceHash!==expected.sourceHash||r.finalizationOperationId!==expected.finalizationOperationId;}))throw new Error('nevora_export_CONFLICT');

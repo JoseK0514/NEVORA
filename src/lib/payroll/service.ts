@@ -12,6 +12,7 @@ import { compatibleManagerScopeSql, payrollObjectScopeSql } from "./native/scope
 import { readPayrollBacklog } from "./backlog-read";
 import { payrollNoticeDelivery } from "./notices";
 import { assertPaymentExportSupported } from './payment-policy';
+import { assertIndependentPayrollActor, assertIndependentPayrollApproval } from './approval-policy';
 import { randomUUID } from "node:crypto";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import type { SessionMutationProof } from "../shift-changes/types";
@@ -531,6 +532,9 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
             !r.reviewToken ||
             r.reviewToken !== c.reviewToken)
             throw new PayrollError("REVIEW_CONFLICT", 409);
+        // revisionGuard binds this financial-interest check to the immutable
+        // reviewed revision in the same transaction as approval and its receipt.
+        assertIndependentPayrollActor(r, proof.employee.id);
         if (r.sourceAuthority === "NATIVE_RECORDED_TIME") {
             const seed = await source(proof, r.period, ex);
             const captured = await captureNativePayroll(seed, r, ex, authority(proof, "APPROVE"), snapshot.native?.originalRunId ?? r.id);
@@ -582,6 +586,8 @@ export async function command(proof: SessionMutationProof, input: unknown, ex: S
                 documentId: doc.id,
             }, stmts, ex);
         }
+        assertIndependentPayrollActor(r, proof.employee.id);
+        assertIndependentPayrollApproval(r);
         stmts = [revisionGuard(r), enqueue(r.id, "PUBLISH", `publish:${r.id}`)];
     }
     return commit(proof, permission, c, {

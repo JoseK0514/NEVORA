@@ -45,7 +45,7 @@ describe('D6 export transport',()=>{
   f.create.mockRejectedValue(Object.assign(new Error('Time cannot be represented exactly: internal/private diagnostic'),{reason:'INEXACT_HOURS'}));
   const response=await POST(request());expect(response.status).toBe(503);expect(await response.json()).toEqual({state:'unavailable'});
  });
- it.each(['LEGACY_MAPPING_REVIEW_REQUIRED','BREAK_CLASSIFICATION_REVIEW_REQUIRED','PAID_TIME_REVIEW_REQUIRED','PROVIDER_EMPLOYEE_MAPPING_REQUIRED','FINALIZED_TIMECARDS_REQUIRED'] as const)('returns deterministic %s as a bounded invalid command',async reason=>{
+ it.each(['LEGACY_MAPPING_REVIEW_REQUIRED','BREAK_CLASSIFICATION_REVIEW_REQUIRED','PAID_TIME_REVIEW_REQUIRED','PROVIDER_EMPLOYEE_MAPPING_REQUIRED','FINALIZED_TIMECARDS_REQUIRED','PERIOD_BOUNDARY_MISMATCH'] as const)('returns deterministic %s as a bounded invalid command',async reason=>{
   f.create.mockRejectedValue(new PayrollExportReviewError(reason));const response=await POST(request());
   expect(response.status).toBe(400);expect(await response.json()).toEqual({state:'invalid',reason});
  });

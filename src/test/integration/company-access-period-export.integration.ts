@@ -6,7 +6,7 @@ import {companyAccessFixture} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope,isOperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
-import {createPayrollExport,readExportProfiles,saveExportProfile} from '../../lib/payroll-export/service';
+import {createPayrollExport,readExportProfiles,readOwnPayrollExportReceipt,saveExportProfile} from '../../lib/payroll-export/service';
 import {neutralProfile} from '../../lib/payroll-export/model';
 import {readPeriodCloseHistory,readPeriodClose,savePeriodPopulation,preparePeriodManifest,readPeriodArtifact,recordPeriodHandoff} from '../../lib/period-close/service';
 const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
@@ -27,7 +27,7 @@ async function choose(f:Awaited<ReturnType<typeof companyAccessFixture>>,mode:'C
  const base={operationId:randomUUID(),expectedEmployeeVersion:c.employeeUpdatedAt,expectedRoleGeneration:c.roleGeneration,expectedScopeRevision:c.scopeRevision};
  expect((await assignOperationalScope(f.owner,'manager',mode==='REVOKE'?{...base,action:'REVOKE'}:{...base,action:'ASSIGN',scope:mode==='COMPANY'?{mode,locationIds:[]}:{mode,locationIds:['loc-1']}},f.db.executor)).state).toBe('saved');
 }
-async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;try{
+async function setup(successorFinishes=false){const f=await companyAccessFixture();ctx.ex=f.db.executor;ctx.proof=f.manager;try{
  await f.q(`INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('period-private-b','Private B','Employee','NONE','EMPLOYEE','loc-2');
  INSERT INTO clocker_devices(id,location_id,name) VALUES('period-device-b','loc-2','Owned B');
  INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status) VALUES('period-entry-b','period-private-b','loc-2','period-device-b','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT')`);
@@ -41,9 +41,11 @@ async function setup(){const f=await companyAccessFixture();ctx.ex=f.db.executor
  const populationInput={...period,operationId:randomUUID(),expectedRevision:0,sourceHash:close.sourceHash,members:close.members.map(m=>({employeeId:m.employeeId,disposition:m.employeeId==='period-private-b'?'INCLUDE' as const:'ZERO_TIME' as const,reason:'Owned reviewed member',employmentFacts:'Owned fictional employment facts',employmentBasis:'MANAGER_ATTESTED' as const}))};
  const population=await savePeriodPopulation(f.manager,populationInput,f.db.executor);expect(population.revision).toBe(1);
  const manifestInput={...period,operationId:randomUUID(),populationRevision:population.revision,receipts:[{actorId:'manager',operationId:exported.operationId}]};
- const manifest=await preparePeriodManifest(f.manager,manifestInput,f.db.executor);expect(manifest.totals.recordedNanoseconds).toBe('28800000000000');
+ if(successorFinishes)await choose(f,'LOCATIONS');
+ const finisher=successorFinishes?f.owner:f.manager;
+ const manifest=await preparePeriodManifest(finisher,manifestInput,f.db.executor);expect(manifest.totals.recordedNanoseconds).toBe('28800000000000');
  const handoffInput={operationId:randomUUID(),manifestId:manifest.id,destination:'Owned destination',reference:'Owned reference',kind:'REPORTED_IMPORTED'};
- const handoff=await recordPeriodHandoff(f.manager,handoffInput,f.db.executor);expect(handoff).toMatchObject({providerVerified:false});
+ const handoff=await recordPeriodHandoff(finisher,handoffInput,f.db.executor);expect(handoff).toMatchObject({providerVerified:false});
  return {...f,profileInput,profile,exportInput,exported,populationInput,population,manifestInput,manifest,handoffInput};
  }catch(error){await f.db.dispose();throw error;}}
 async function close(f:Fixture){ctx.ex=null;ctx.proof=null;rs.unstubAllEnvs();await f.db.dispose();}
@@ -74,6 +76,47 @@ it('Owner and Company preserve complete canonical B time, mappings, manifest tot
   for(const p of [f.owner,f.manager]){const value=await readPeriodClose(p,period,f.db.executor);expect(value.members.some(m=>m.employeeId==='period-private-b')).toBe(true);expect((await readExportProfiles(p,f.db.executor))[0].profile.employeeMappings).toEqual([{employeeId:'period-private-b',providerEmployeeId:'OWNED-B-001'}]);}
   const artifact=await readPeriodArtifact(f.manager,f.manifest.id,'csv',0,f.db.executor);expect(artifact.content).toBe(f.exported.csv);expect(artifact.sha256).toBe(f.exported.csvSha256);
   for(const test of replays)expect(await test.run(f,f.db.executor)).toBeDefined();
+ }finally{await close(f);}
+});
+it('preserves company custody across an export preparer change and keeps a stale handoff historical',async()=>{
+ const f=await setup(true);try{
+  const ex=f.db.executor;
+  expect(await readOwnPayrollExportReceipt(f.owner,f.exported.operationId,ex)).toBeNull();
+  const before=await readPeriodClose(f.owner,period,ex);
+  expect(before.exports).toContainEqual(expect.objectContaining({actorId:'manager',operationId:f.exported.operationId}));
+  expect(before.manifests[0]).toMatchObject({id:f.manifest.id,current:true});
+  const original=await recordPeriodHandoff(f.owner,f.handoffInput,ex);
+  await f.q("UPDATE employees SET active=false WHERE id='manager'");
+  expect((await readPeriodClose(f.owner,period,ex)).manifests[0]).toMatchObject({id:f.manifest.id,current:false});
+  const twoDownloads=[await readPeriodArtifact(f.owner,f.manifest.id,'csv',0,ex),await readPeriodArtifact(f.owner,f.manifest.id,'csv',0,ex)];
+  for(const artifact of twoDownloads)expect(artifact).toMatchObject({content:f.exported.csv,sha256:f.exported.csvSha256});
+  await expect(recordPeriodHandoff(f.owner,{...f.handoffInput,operationId:randomUUID()},ex)).rejects.toThrow('HANDOFF_SOURCE_CONFLICT');
+  expect(await recordPeriodHandoff(f.owner,f.handoffInput,ex)).toEqual(original);
+  expect(await f.q("SELECT count(*)::int AS n FROM payroll_period_events WHERE kind='REPORTED_IMPORTED'")).toEqual([{n:1}]);
+ }finally{await close(f);}
+});
+it('BL-22 makes the exact submitted artifact historical when a finalized card reopens',async()=>{
+ const f=await setup();
+ try{
+  const ex=f.db.executor, before=await readTimecards(f.owner,period,ex);
+  if(before.state!=='ready')throw Error('Expected current finalized card');
+  const member=before.cards.find(card=>card.card.employeeId==='period-private-b');
+  if(!member)throw Error('Expected fictional payroll employee');
+  const original=await recordPeriodHandoff(f.manager,f.handoffInput,ex);
+
+  expect((await mutateTimecard(f.owner,{
+   ...period,operationId:randomUUID(),employeeId:member.card.employeeId,
+   expectedRevision:member.revision,expectedSourceHash:member.sourceHash,
+   action:'REOPEN',note:'Fictional employee reported a time correction after export.',
+  },ex)).status).toBe('reopened');
+
+  expect((await readPeriodClose(f.owner,period,ex)).manifests)
+   .toContainEqual(expect.objectContaining({id:f.manifest.id,current:false}));
+  await expect(recordPeriodHandoff(f.manager,{...f.handoffInput,operationId:randomUUID()},ex))
+   .rejects.toThrow('HANDOFF_SOURCE_CONFLICT');
+  expect(await recordPeriodHandoff(f.manager,f.handoffInput,ex)).toEqual(original);
+  expect(await readPeriodArtifact(f.owner,f.manifest.id,'csv',0,ex))
+   .toMatchObject({content:f.exported.csv,sha256:f.exported.csvSha256});
  }finally{await close(f);}
 });
 const reads=[
@@ -127,6 +170,45 @@ it('P4 leaving someone with recorded hours out of pay needs an Owner and a real 
   await expect(savePeriodPopulation(f.manager,input('Left the company on 9/26; paid by final check'),f.db.executor)).rejects.toThrow('EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER');
   await expect(savePeriodPopulation(f.owner,input('x'),f.db.executor)).rejects.toThrow('EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER');
   expect((await savePeriodPopulation(f.owner,input('Left the company on 9/26; paid by final check'),f.db.executor)).revision).toBe(2);
+ }finally{await close(f);}
+});
+
+it.each([
+ {name:'wrong worksite',reason:'Fictional external correction EX-1 confirms the worker was at Main.'},
+ {name:'duplicate entry',reason:'Fictional external correction EX-2 counts the duplicated interval once.'},
+ {name:'missing break',reason:'Fictional external correction EX-3 records the actual reviewed meal.'},
+])('BL-21 preserves the audit trail for $name referred to payroll',async({name,reason})=>{
+ const f=await setup();
+ try{
+  const ex=f.db.executor;
+  if(name==='duplicate entry'){
+   const duplicate=()=>f.q(`INSERT INTO time_entries
+    (id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status)
+    SELECT 'period-duplicate-b',employee_id,location_id,device_id,clock_in_at,clock_out_at,status
+    FROM time_entries WHERE id='period-entry-b'`);
+   await expect(duplicate()).rejects.toThrow('nevora_timecard_FINALIZED_PERIOD');
+   const card=f.exportInput.cards[0];
+   expect((await mutateTimecard(f.owner,{...period,operationId:randomUUID(),employeeId:card.employeeId,
+    expectedRevision:card.revision,expectedSourceHash:card.sourceHash,action:'REOPEN',
+    note:'Fictional review of a duplicate legacy interval.'},ex)).status).toBe('reopened');
+   await duplicate();
+  }
+  const recorded=()=>f.q("SELECT to_jsonb(t) AS facts FROM time_entries t WHERE employee_id='period-private-b' ORDER BY id");
+  const before=await readPeriodClose(f.owner,period,ex),original=await recorded();
+  const request=(disposition:'ZERO_TIME'|'EXCLUDE')=>({
+   ...f.populationInput,sourceHash:before.sourceHash,expectedRevision:1,operationId:randomUUID(),
+   members:f.populationInput.members.map(member=>member.employeeId==='period-private-b'
+    ?{...member,disposition,reason}:member),
+  });
+  await expect(savePeriodPopulation(f.owner,request('ZERO_TIME'),ex)).rejects.toThrow('ZERO_TIME_REQUIRES_COMPLETE_EMPTY_EVIDENCE');
+  const exclusion=request('EXCLUDE');
+  await expect(savePeriodPopulation(f.manager,exclusion,ex)).rejects.toThrow('EXCLUDE_WITH_RECORDED_TIME_REQUIRES_OWNER');
+  const saved=await savePeriodPopulation(f.owner,exclusion,ex);
+  expect(saved.members).toContainEqual(expect.objectContaining({employeeId:'period-private-b',disposition:'EXCLUDE',reason}));
+  expect(await savePeriodPopulation(f.owner,exclusion,ex)).toEqual(saved);
+  expect(await recorded()).toEqual(original);
+  await expect(recordPeriodHandoff(f.owner,{...f.handoffInput,operationId:randomUUID()},ex))
+   .rejects.toThrow('HANDOFF_SOURCE_CONFLICT');
  }finally{await close(f);}
 });
 

@@ -1,5 +1,6 @@
 import {describe,expect,it} from '@rstest/core';
 import {adpRunColumns,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile} from './model';
+import {projectPaidPayrollExport} from './paid-time';
 import type {TimecardEntry,Period} from '../timecards/project';
 
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
@@ -23,6 +24,25 @@ describe('explicit recorded-break paid time projection',()=>{
   expect(model.rows[0]).toMatchObject({recordedNanoseconds:'30600000000000',breakNanoseconds:'2400000000000',paidNanoseconds:'28800000000000',unpaidBreakNanoseconds:'1800000000000',paidRestNanoseconds:'600000000000'});
   expect(model.rows[0].days).toEqual([{businessDate:'2026-09-22',recordedNanoseconds:'30600000000000',breakNanoseconds:'2400000000000',paidNanoseconds:'28800000000000',unpaidBreakNanoseconds:'1800000000000',paidRestNanoseconds:'600000000000'}]);
   expect(JSON.stringify(input)).toBe(before);
+ });
+ it('keeps a reviewed worked-through interval paid without counting it as rest',()=>{
+  const input=shift();
+  const model=projection([input],[classification('rest','PAID_REST'),
+   {employeeId:'E',entryId:'T',breakId:'meal',treatment:'PAID_AS_WORKED'}]);
+  const expected={paidNanoseconds:'30600000000000',unpaidBreakNanoseconds:'0',
+   paidRestNanoseconds:'600000000000',workedDuringBreakNanoseconds:'1800000000000'};
+  expect(model.rows[0]).toMatchObject(expected);
+  expect(model.rows[0].days?.[0]).toMatchObject(expected);
+  expect(model.rows[0].entries[0].breaks).toEqual(input.breaks.slice().reverse());
+ });
+ it('recomputes worked-through provenance when a fresh review changes the classification',()=>{
+  const model=projection([shift()],[classification('rest','PAID_REST'),
+   {employeeId:'E',entryId:'T',breakId:'meal',treatment:'PAID_AS_WORKED'}]);
+  const revised=projectPaidPayrollExport(model,{version:1,breakTreatments:[
+   classification('rest','PAID_REST'),classification('meal','UNPAID_RELIEVED_MEAL'),
+  ]});
+  expect(revised.rows[0].paidNanoseconds).toBe('28800000000000');
+  expect(revised.rows[0]).not.toHaveProperty('workedDuringBreakNanoseconds');
  });
  it.each([
   [],[classification('meal','UNPAID_RELIEVED_MEAL')],

@@ -1,6 +1,8 @@
 import {providerRunCoverage} from './source-coverage';
 import {assertWorkerWorkspace} from '../workspace-routing/worker.server';
 import {readPayrollCalculationMode} from './calculation-mode';
+import {assertIndependentPayrollApproval} from './approval-policy';
+import {PayrollError} from './model';
 /**
  * Leased payroll outbox processor. External preparation/rendering runs outside the
  * final transaction; workspace, source and lease guards fence the resulting writes.
@@ -125,6 +127,8 @@ export async function processJob(job: ClaimedJob, ex: SqlExecutor = neonNotifica
                 stmts.push(enqueue(run.id, "PUBLISH", `publish:${run.id}`));
         }
         else if (job.kind === "PUBLISH") {
+            // Jobs already in the queue must still respect the approved revision.
+            assertIndependentPayrollApproval(run);
             const nativeGuard = run.sourceAuthority === "NATIVE_RECORDED_TIME" ? (await import("./native/document-manifest.server")).nativePublicationGuard(run) : null;
             stmts = [
                 nativeGuard ?? q(`SELECT (CASE WHEN (SELECT count(*) FROM payroll_documents WHERE workspace_id=$1 AND run_id=$2::uuid AND kind IN('EMPLOYEE_STATEMENT','COMPANY_SUMMARY'))=$3 THEN '1' ELSE 'PDF_NOT_READY' END)::integer`, job.workspace_id, run.id, run.rows!.length + 1),
@@ -139,7 +143,10 @@ export async function processJob(job: ClaimedJob, ex: SqlExecutor = neonNotifica
         await finishJob(job, stmts, ex);
     }
     catch (error) {
-        await ex.query(q(`UPDATE payroll_jobs SET status=CASE WHEN attempts>=5 OR $3 IN('SCHEDULE_CHANGED','PAYDAY_CONFLICT','UNSUPPORTED_DOCUMENT_GLYPH') THEN 'FAILED' ELSE 'PENDING' END,error=$3,available_at=clock_timestamp()+make_interval(secs=>LEAST(3600,30*attempts)),lease_token=NULL,lease_until=NULL WHERE id=$1::uuid AND lease_token=$2::uuid AND status='RUNNING'`, job.id, job.lease_token, error instanceof Error &&
+        await ex.query(q(`UPDATE payroll_jobs SET status=CASE WHEN attempts>=5 OR $3 IN('SCHEDULE_CHANGED','PAYDAY_CONFLICT','UNSUPPORTED_DOCUMENT_GLYPH','INDEPENDENT_PAYROLL_APPROVAL_REQUIRED') THEN 'FAILED' ELSE 'PENDING' END,error=$3,available_at=clock_timestamp()+make_interval(secs=>LEAST(3600,30*attempts)),lease_token=NULL,lease_until=NULL WHERE id=$1::uuid AND lease_token=$2::uuid AND status='RUNNING'`, job.id, job.lease_token,
+            error instanceof PayrollError && error.code === 'INDEPENDENT_PAYROLL_APPROVAL_REQUIRED'
+            ? error.code
+            : error instanceof Error &&
             error.message.includes("UNSUPPORTED_DOCUMENT_GLYPH")
             ? "UNSUPPORTED_DOCUMENT_GLYPH"
             : error instanceof Error && error.message.includes("SCHEDULE_CHANGED")

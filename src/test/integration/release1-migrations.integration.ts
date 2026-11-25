@@ -41,6 +41,7 @@ it('refuses an actual interrupted concurrent index without silently dropping or 
 
 it.each([
  ['release 1 indexes', ['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql']],
+ ['Development through 0078', ['0079_timecard_missing_shift_disposition.sql']],
  ['current Development through 0071', ['0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql','0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql']],
  ['published 30-day Development through 0069', ['0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql','0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql']],
  ['Development through 0067', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql','0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql']],
@@ -57,6 +58,8 @@ it.each([
   const applied=[...legacy,...FINAL_MIGRATIONS];const missing=missingMigrationFiles([...BASE_MIGRATIONS,...FINAL_MIGRATIONS],applied);expect(missing).toEqual(additions);
   for(const file of missing){await client.query(await readFile('db/migrations/'+file,'utf8'));applied.push(file as typeof applied[number]);}
   expect(missingMigrationFiles([...BASE_MIGRATIONS,...FINAL_MIGRATIONS],applied)).toEqual([]);
+  expect((await client.query("SELECT to_regclass('schedule_revision_shifts_employee_date_idx')::text AS idx")).rows)
+    .toEqual([{idx:'schedule_revision_shifts_employee_date_idx'}]);
   expect((await client.query('SELECT id,name FROM workspaces ORDER BY id')).rows).toEqual(before);
   expect((await client.query("SELECT address FROM locations WHERE id='loc-1'")).rows).toEqual([{address:null}]);
   expect((await client.query("SELECT active,hire_date,termination_date,birth_date FROM employees WHERE id='R1-OWNER'")).rows).toEqual([{active:true,hire_date:null,termination_date:null,birth_date:null}]);
@@ -107,7 +110,13 @@ it('upgrades the recorded Development schema and restores both its rollback back
   const before=await state(client),oldBackup=join(directory,'development.dump');
   tool('pg_dump',['--format=custom','--no-owner','--file',oldBackup,'--dbname',database.connectionString]);
   const additions=BASE_MIGRATIONS.slice(baseline.base.length);
-  expect(additions).toEqual(['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql','0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql']);
+  expect(additions).toEqual([
+   '0068_employee_employment_dates.sql','0069_clocker_early_grace.sql',
+   '0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql',
+   '0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql',
+   '0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql',
+   '0077_clocker_face_verification.sql','0078_clocker_picker.sql','0079_timecard_missing_shift_disposition.sql',
+  ]);
   for(const file of additions)await client.query(await readFile('db/migrations/'+file,'utf8'));
   expect(await state(client)).toEqual(before);
   expect((await client.query("SELECT hire_date,termination_date,birth_date FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:null,termination_date:null,birth_date:null}]);
@@ -119,10 +128,16 @@ it('upgrades the recorded Development schema and restores both its rollback back
   const finalBackup=join(directory,'final.dump');tool('pg_dump',['--format=custom','--no-owner','--file',finalBackup,'--dbname',database.connectionString]);
   await client.end();await database.dispose();sourceDisposed=true;
   const {restored:old,target:oldTarget}=await restore(oldBackup);
-  try{expect(await state(old)).toEqual(before);expect((await old.query("SELECT to_regclass('clocker_schedule_match_policy') AS policy")).rows).toEqual([{policy:null}]);}finally{await old.end();await oldTarget.dispose();}
+  try{
+   expect(await state(old)).toEqual(before);
+   expect((await old.query("SELECT to_regclass('clocker_schedule_match_policy') AS policy")).rows).toEqual([{policy:null}]);
+   expect((await old.query("SELECT to_regclass('schedule_revision_shifts_employee_date_idx') AS idx")).rows).toEqual([{idx:null}]);
+  }finally{await old.end();await oldTarget.dispose();}
   const {restored:final,target:finalTarget}=await restore(finalBackup);
   try{
    expect(await state(final)).toEqual(before);
+   expect((await final.query("SELECT to_regclass('schedule_revision_shifts_employee_date_idx')::text AS idx")).rows)
+     .toEqual([{idx:'schedule_revision_shifts_employee_date_idx'}]);
    expect((await final.query("SELECT language FROM user_language_preferences WHERE employee_id='R1-RESTORE'")).rows).toEqual([{language:'es'}]);
    expect((await final.query("SELECT permission,revision,granted FROM workforce_permission_revisions WHERE workspace_id='workspace-fuel' AND employee_id='R1-RESTORE' AND location_id='loc-1'")).rows).toEqual([{permission:'PUBLISH_SCHEDULE',revision:1,granted:true}]);
    expect((await final.query("SELECT hire_date::text,birth_date::text FROM employees WHERE id='R1-RESTORE'")).rows).toEqual([{hire_date:'2016-01-01',birth_date:'1990-01-01'}]);

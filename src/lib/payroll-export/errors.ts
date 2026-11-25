@@ -1,6 +1,7 @@
 const reviewMessages={
  PROVIDER_EMPLOYEE_MAPPING_REQUIRED:'Provider identifier required for every selected employee; review the provider mapping',
  FINALIZED_TIMECARDS_REQUIRED:'Every selected timecard must have a current finalized revision',
+ PERIOD_BOUNDARY_MISMATCH:'The selected period has an ambiguous local boundary. Reconcile the affected time records before exporting.',
  LEGACY_MAPPING_REVIEW_REQUIRED:'Review the legacy RUN recorded-hours mapping and explicitly replace Pay Hours with paidHours before generating a new file',
  BREAK_CLASSIFICATION_REVIEW_REQUIRED:'Review complete, distinct recorded-break treatments for the selected source and period',
  PAID_TIME_REVIEW_REQUIRED:'Review explicit paid-time recorded-break treatments before generating paid hours',

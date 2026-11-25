@@ -31,6 +31,7 @@ function fixture(profile:unknown=neutralProfile()){
    queries.push(statement);
    if(statement.text.includes('FROM workspaces'))return [workspace] as T[];
    if(statement.text.includes('AS remaining'))return [{remaining:45000}] as T[];
+   if(statement.text.includes('AS aligned'))return [{aligned:true}] as T[];
    throw new Error('Unexpected fixture query');
   },
   async transaction(statements){

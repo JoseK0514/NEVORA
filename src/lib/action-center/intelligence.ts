@@ -77,7 +77,7 @@ const BINDINGS = ['workspaceId', 'actorId', 'role', 'sessionVersion', 'grantsVer
 const FAILURES: SourceFailure[] = ['READ_FAILED', 'ACCESS_DENIED', 'SCHEMA_UNAVAILABLE', 'SOURCE_LIMIT', 'STALE_SOURCE', 'INVALID_SOURCE'];
 const OBSERVATIONS: ObservationKind[] = ['TIME_HISTORY_INCONSISTENT', 'SCHEDULE_UNMATCHED', 'SCHEDULE_AMBIGUOUS',
   'CLOCK_IN_AFTER_SCHEDULE_START', 'CLOCK_OUT_BEFORE_SCHEDULE_END', 'OPEN_AFTER_SCHEDULE_END', 'OPEN_PAST_LIMIT', 'BREAK_TARGET_EXCEEDED'];
-const ISSUES: TimecardIssue[] = ['period_open', 'open_entry', 'open_break', 'pending_correction', 'overlapping_time'];
+const ISSUES: TimecardIssue[] = ['period_open', 'open_entry', 'open_break', 'pending_correction', 'overlapping_time', 'missing_shift_disposition'];
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const text = (v: unknown, max = 300): v is string => typeof v === 'string' && v.length > 0 && v.length <= max &&
   v.trim() === v && !/[\u0000-\u001f\u007f]/.test(v);
@@ -279,7 +279,7 @@ function projectFact(raw: unknown, source: Extract<IntelligenceSource, { state: 
         if (sourceTimestamp !== null && Temporal.Instant.compare(sourceTimestamp, latestHistory)) throw Error('Inconsistent timestamp');
         sourceTimestamp = latestHistory;
       }
-      if (p.state === 'FINALIZED' || (!p.entries.length && !p.history.length)) return { item: null, incomplete: false };
+      if (p.state === 'FINALIZED' || (!p.entries.length && !p.history.length && !p.issues.includes('missing_shift_disposition'))) return { item: null, incomplete: false };
       const self = subject.employeeId === context.actorId;
       item = { id: `TIMECARD:${subject.employeeId}:${start}:${end}`, type: 'HOURS_REVIEW', priority: 'REVIEW',
         title: self ? 'Your timecard needs another reviewer' : p.state === 'APPROVED' ? 'Approved timecard awaits finalization' : 'Period timecard needs review',

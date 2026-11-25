@@ -4,6 +4,7 @@ import {isManagementAuthorizationError} from '../../lib/data/management-session'
 import {afterEach,beforeEach,describe,expect,it} from '@rstest/core';
 import {createPunchFixture} from './clocker-punch-fixture';
 import {readTimecards,mutateTimecard} from '../../lib/timecards/service';
+import {reviewTimeCorrection,submitTimeCorrection} from '../../lib/time-corrections/service';
 import {createPayrollExport,listOwnPayrollExportReceipts,readExportProfiles,readOwnPayrollExportReceipt,saveExportProfile,type ExportCommand} from '../../lib/payroll-export/service';
 import {adpRunPaidColumns,canonicalPayrollExport,mappedPayrollCsv,neutralPaidProfile,neutralProfile} from '../../lib/payroll-export/model';
 import {stableExportJson} from '../../lib/payroll-export/json';
@@ -15,9 +16,9 @@ const proof:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstNam
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 beforeEach(async()=>{f=await createPunchFixture({companyAccess:true});await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status,version) VALUES('D6-T','c34-a','loc-1',$1,'2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT',1)",[f.devices[0].device.id]);});
 afterEach(async()=>{await f?.db.dispose();});
-async function card(){const r=await readTimecards(proof,period,f.db.executor);if(r.state!=='ready')throw new Error('Unavailable card');return r.cards.find(c=>c.card.employeeId==='c34-a')!;}
-async function finalize(){const c=await card();await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'APPROVE'},f.db.executor);await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...period,expectedRevision:c.revision+1,expectedSourceHash:c.sourceHash,action:'FINALIZE'},f.db.executor);}
-async function command():Promise<ExportCommand>{const c=await card();return {...period,operationId:randomUUID(),profileId:null,profileRevision:0,cards:[{employeeId:'c34-a',revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId}]};}
+async function card(selectedPeriod = period){const r=await readTimecards(proof,selectedPeriod,f.db.executor);if(r.state!=='ready')throw new Error('Unavailable card');return r.cards.find(c=>c.card.employeeId==='c34-a')!;}
+async function finalize(selectedPeriod = period){const c=await card(selectedPeriod);await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...selectedPeriod,expectedRevision:c.revision,expectedSourceHash:c.sourceHash,action:'APPROVE'},f.db.executor);await mutateTimecard(proof,{operationId:randomUUID(),employeeId:'c34-a',...selectedPeriod,expectedRevision:c.revision+1,expectedSourceHash:c.sourceHash,action:'FINALIZE'},f.db.executor);}
+async function command(selectedPeriod = period):Promise<ExportCommand>{const c=await card(selectedPeriod);return {...selectedPeriod,operationId:randomUUID(),profileId:null,profileRevision:0,cards:[{employeeId:'c34-a',revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId}]};}
 describe('D6 mapping and immutable export protocol',()=>{
  it('recovers a concurrently committed identical operation before returning a deterministic finalization refusal',async()=>{
   await finalize();const input=await command(),original=f.db.executor;let interleaved=false,saved:Awaited<ReturnType<typeof createPayrollExport>>|undefined;
@@ -98,6 +99,51 @@ describe('D6 mapping and immutable export protocol',()=>{
   await expect(createPayrollExport(proof,{...input,paidTime:{...paidTime,breakTreatments:paidTime.breakTreatments.map(b=>({...b,treatment:'PAID_REST'}))}},f.db.executor)).rejects.toThrow('CONFLICT');
   expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:1}]);
  });
+ it('clips an overnight shift and meal to adjacent paid export periods without losing or duplicating payable time', async () => {
+  // Midnight in America/Puerto_Rico is 04:00 UTC. The relieved meal crosses that boundary.
+  await f.q(`UPDATE time_entries SET clock_in_at='2026-09-22T03:00:00Z',clock_out_at='2026-09-22T06:00:00Z' WHERE id='D6-T';
+   INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES
+   ('midnight-meal','D6-T','2026-09-22T03:30:00Z','2026-09-22T04:30:00Z'),
+   ('paid-rest','D6-T','2026-09-22T05:00:00Z','2026-09-22T05:15:00Z')`);
+  const firstDay = { startDate: '2026-09-21', endDate: '2026-09-21' };
+  const nextDay = { startDate: '2026-09-22', endDate: '2026-09-22' };
+  const meal = { employeeId: 'c34-a', entryId: 'D6-T', breakId: 'midnight-meal', treatment: 'UNPAID_RELIEVED_MEAL' as const };
+  const rest = { employeeId: 'c34-a', entryId: 'D6-T', breakId: 'paid-rest', treatment: 'PAID_REST' as const };
+  const ex = f.db.executor;
+  await finalize(firstDay);
+  await finalize(nextDay);
+  const firstInput = { ...await command(firstDay), paidTime: { version: 1, breakTreatments: [meal] } };
+  const nextInput = { ...await command(nextDay), paidTime: { version: 1, breakTreatments: [meal, rest] } };
+  await expect(createPayrollExport(proof, { ...firstInput, paidTime: { version: 1, breakTreatments: [] } }, ex))
+   .rejects.toMatchObject({ reason: 'BREAK_CLASSIFICATION_REVIEW_REQUIRED' });
+  expect(await f.q('SELECT count(*)::int AS n FROM payroll_export_receipts')).toEqual([{ n: 0 }]);
+  const first = await createPayrollExport(proof, firstInput, ex);
+  const next = await createPayrollExport(proof, nextInput, ex);
+  expect(first.model.rows[0]).toMatchObject({ recordedNanoseconds: '3600000000000', paidNanoseconds: '1800000000000', unpaidBreakNanoseconds: '1800000000000', paidRestNanoseconds: '0' });
+  expect(next.model.rows[0]).toMatchObject({ recordedNanoseconds: '7200000000000', paidNanoseconds: '5400000000000', unpaidBreakNanoseconds: '1800000000000', paidRestNanoseconds: '900000000000' });
+  expect(first.model.rows[0].days!.map(day => day.businessDate)).toEqual([firstDay.startDate]);
+  expect(next.model.rows[0].days!.map(day => day.businessDate)).toEqual([nextDay.startDate]);
+  expect(first.csv).toContain('"2026-09-21","0.500000000","0.500000000","0.000000000"');
+  expect(next.csv).toContain('"2026-09-22","1.500000000","0.500000000","0.250000000"');
+  expect((await readOwnPayrollExportReceipt(proof, nextInput.operationId, ex))?.csv).toBe(next.csv);
+  expect(await createPayrollExport(proof, firstInput, ex)).toEqual(first);
+  expect(await f.q('SELECT count(*)::int AS n FROM payroll_export_receipts')).toEqual([{ n: 2 }]);
+ });
+ it('refuses a fresh export when PostgreSQL and the payroll projection disagree on a repeated midnight', async () => {
+  await f.q(`UPDATE workspaces SET time_zone='America/Havana' WHERE singleton;
+   UPDATE time_entries SET clock_in_at='2025-11-02T04:15:00Z',clock_out_at='2025-11-02T04:45:00Z' WHERE id='D6-T'`);
+  const repeatedMidnight = { startDate: '2025-11-02', endDate: '2025-11-02' };
+  await finalize(repeatedMidnight);
+  const finalized = await card(repeatedMidnight);
+  expect(finalized.state).toBe('FINALIZED');
+  // The SQL selection starts on the second occurrence and never sees the shift.
+  expect(finalized.card.recordedNanoseconds).toBe('0');
+  const input = await command(repeatedMidnight);
+  await expect(createPayrollExport(proof, { ...input, paidTime: { version: 1, breakTreatments: [] } }, f.db.executor))
+   .rejects.toMatchObject({ reason: 'PERIOD_BOUNDARY_MISMATCH' });
+  expect(await f.q('SELECT count(*)::int AS n FROM payroll_export_receipts')).toEqual([{ n: 0 }]);
+  expect((await card(repeatedMidnight)).history).toEqual(finalized.history);
+ });
  // QA A3-03 (Nov 21, 2026): the page clears a generated file when its view expires and a second export is refused, so the
  // stored receipt is how the person gets the same file again: their own only, verified, never regenerated.
  it('reads back only this person\'s own stored export, unchanged, and lists it without names or hours',async()=>{
@@ -135,6 +181,87 @@ describe('D6 mapping and immutable export protocol',()=>{
    await expect(createPayrollExport(proof,{...base,paidTime:{version:1,breakTreatments}},f.db.executor)).rejects.toMatchObject({reason:'BREAK_CLASSIFICATION_REVIEW_REQUIRED'});
   }
   expect(await f.q('SELECT count(*)::integer n FROM payroll_export_receipts')).toEqual([{n:0}]);
+ });
+ it('BL-12 exports a worked-through meal as paid work with immutable review evidence', async () => {
+  await f.q(`UPDATE time_entries SET clock_out_at='2026-09-22T20:30:00Z' WHERE id='D6-T';
+    INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES
+    ('rest','D6-T','2026-09-22T14:00:00Z','2026-09-22T14:15:00Z'),
+    ('worked-meal','D6-T','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z'),
+    ('relieved-meal','D6-T','2026-09-22T18:00:00Z','2026-09-22T18:15:00Z')`);
+  await finalize();
+  const breakTreatments = [
+   {employeeId:'c34-a',entryId:'D6-T',breakId:'rest',treatment:'PAID_REST'},
+   {employeeId:'c34-a',entryId:'D6-T',breakId:'worked-meal',treatment:'PAID_AS_WORKED'},
+   {employeeId:'c34-a',entryId:'D6-T',breakId:'relieved-meal',treatment:'UNPAID_RELIEVED_MEAL'},
+  ];
+  const input={...await command(),paidTime:{version:1,breakTreatments}};
+  const result=await createPayrollExport(proof,input,f.db.executor);
+  expect(result.csv).toContain('"8.250000000","0.250000000","0.250000000"');
+  expect(result.model.rows[0]).toMatchObject({recordedNanoseconds:'30600000000000',
+   paidNanoseconds:'29700000000000',paidRestNanoseconds:'900000000000',
+   unpaidBreakNanoseconds:'900000000000',workedDuringBreakNanoseconds:'1800000000000'});
+  expect(result.model.paidTime?.breakTreatments).toContainEqual(breakTreatments[1]);
+  expect(await createPayrollExport(proof,input,f.db.executor)).toEqual(result);
+  breakTreatments[1]={...breakTreatments[1],treatment:'UNPAID_RELIEVED_MEAL'};
+  await expect(createPayrollExport(proof,input,f.db.executor)).rejects.toThrow('CONFLICT');
+  expect(await f.q('SELECT count(*)::int AS n FROM payroll_export_receipts')).toEqual([{n:1}]);
+ });
+ it('BL-13 pays resumed work after independent correction of a break that ended with the shift', async () => {
+  await f.q(`INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('d',64),'c34-a',now()+interval '1 day');
+    INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at)
+    SELECT 'forgotten-meal',id,'2026-09-22T16:00:00Z',clock_out_at FROM time_entries WHERE id='D6-T'`);
+  const worker:SessionMutationProof={
+   employee:{id:'c34-a',role:'EMPLOYEE',firstName:'Avery',lastName:'QA',primaryLocationId:'loc-1'},
+   sessionTokenHash:'d'.repeat(64),
+  };
+  const request=await submitTimeCorrection(worker,{
+   operationId:randomUUID(),kind:'BREAK_BOUNDARY',timeEntryId:'D6-T',breakEntryId:'forgotten-meal',
+   proposedStartAt:'2026-09-22T16:00:00Z',proposedEndAt:'2026-09-22T16:30:00Z',
+   reason:'Fictional employee resumed work at 12:30 PM and forgot to end the meal.',
+  },f.db.executor);
+  expect(request.status).toBe('pending');
+  if(request.status!=='pending')throw Error('Expected pending break correction');
+  const before=await card();
+  expect(await mutateTimecard(proof,{...period,operationId:randomUUID(),employeeId:'c34-a',
+   expectedRevision:before.revision,expectedSourceHash:before.sourceHash,action:'APPROVE'},f.db.executor))
+   .toEqual({status:'blocked',reason:'unresolved_time'});
+  expect((await reviewTimeCorrection(proof,{operationId:randomUUID(),requestId:request.requestId,
+   expectedRevision:request.revision,decision:'APPROVE'},f.db.executor)).status).toBe('approved');
+  await finalize();
+  const result=await createPayrollExport(proof,{...await command(),paidTime:{version:1,breakTreatments:[
+   {employeeId:'c34-a',entryId:'D6-T',breakId:'forgotten-meal',treatment:'UNPAID_RELIEVED_MEAL'},
+  ]}},f.db.executor);
+  expect(result.model.rows[0]).toMatchObject({paidNanoseconds:'27000000000000',unpaidBreakNanoseconds:'1800000000000'});
+  expect(result.model.rows[0].entries[0].breaks[0]).toMatchObject({
+   endAt:'2026-09-22T16:30:00Z',rawEndAt:'2026-09-22T20:00:00Z',
+  });
+ });
+ it('BL-24 reconciles 42 reviewed paid hours across two worksites against fictional provider totals', async () => {
+  await f.q("DELETE FROM time_entries WHERE id='D6-T'");
+  await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status)
+    SELECT 'week-'||day,'c34-a','loc-1',$1,
+     '2026-09-21T12:00:00Z'::timestamptz+day*interval '24 hours',
+     '2026-09-21T20:30:00Z'::timestamptz+day*interval '24 hours','CLOCKED_OUT'
+    FROM generate_series(0,4) day;
+    `,[f.devices[0].device.id]);
+  await f.q(`INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status)
+    VALUES('cover','c34-a','loc-2',$1,'2026-09-26T14:00:00Z','2026-09-26T16:00:00Z','CLOCKED_OUT')`,
+   [f.devices[2].device.id]);
+  await f.q(`INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at)
+    SELECT id||'-meal',id,clock_in_at+interval '4 hours',clock_in_at+interval '4.5 hours'
+    FROM time_entries WHERE id LIKE 'week-%'`);
+  await finalize();
+  const breakTreatments=Array.from({length:5},(_,day)=>({
+   employeeId:'c34-a',entryId:`week-${day}`,breakId:`week-${day}-meal`,treatment:'UNPAID_RELIEVED_MEAL',
+  }));
+  const result=await createPayrollExport(proof,{...await command(),paidTime:{version:1,breakTreatments}},f.db.executor);
+  const [row]=result.model.rows;
+  const fictionalProvider={regularHours:40,overtimeHours:2,premiumHours:0};
+  const nanosPerHour=BigInt(3_600_000_000_000);
+  expect(row.paidNanoseconds).toBe((BigInt(fictionalProvider.regularHours+fictionalProvider.overtimeHours)*nanosPerHour).toString());
+  expect(row.days?.map(day=>day.paidNanoseconds))
+   .toEqual([8,8,8,8,8,2].map(hours=>(BigInt(hours)*nanosPerHour).toString()));
+  expect(row.entries.map(entry=>entry.locationId)).toEqual(['loc-1','loc-1','loc-1','loc-1','loc-1','loc-2']);
  });
  it('uses paid hours for reviewed RUN mappings and requires review of saved legacy recorded-hours mappings',async()=>{
   await f.q("UPDATE time_entries SET clock_out_at='2026-09-22T20:30:00Z' WHERE id='D6-T'; INSERT INTO break_entries(id,time_entry_id,break_start_at,break_end_at) VALUES('meal','D6-T','2026-09-22T16:00:00Z','2026-09-22T16:30:00Z')");
