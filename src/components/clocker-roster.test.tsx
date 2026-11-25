@@ -106,7 +106,7 @@ it('wires the roster lifecycle: read on sign-in and start over, cleared on leavi
  expect(gate).toContain("setNotice(fresh.kind==='picker'?'stale':null)");
 });
 it('keeps the way out reachable: sticky on the iPad, under a bounded name list on a phone',()=>{
- const phone=readFileSync(new URL('./clocker-name-picker.css',import.meta.url),'utf8').split('@media (max-width: 599px)')[1]??'';
+ const phone=readFileSync(new URL('./clocker-name-picker.css',import.meta.url),'utf8').split('@media (max-width: 599px) {\n').pop()??'';
  expect(phone).toMatch(/\.np-tiles \{ max-height: max\(13rem, calc\(100svh - 27rem\)\); overflow-y: auto;/);expect(phone).toMatch(/\.np-foot \{ position: static;/);
  const css=readFileSync(new URL('./clocker-name-picker.css',import.meta.url),'utf8');
  expect(css).toMatch(/\.np-foot \{ position: sticky; bottom: 0;/);expect(css).toContain('scroll-padding-bottom: 8rem');
