@@ -59,10 +59,10 @@ it('drops a late roster reply for an older screen',()=>{
 it('keeps the words in English and Spanish with the same keys, tú, and the kiosk term "ID de empleado"',()=>{
  expect(Object.keys(CLOCKER_ROSTER_COPY.es).sort()).toEqual(Object.keys(CLOCKER_ROSTER_COPY.en).sort());
  const es=Object.values(CLOCKER_ROSTER_COPY.es).join(' '),en=Object.values(CLOCKER_ROSTER_COPY.en).join(' ');
- expect(CLOCKER_ROSTER_COPY.en.useId).toBe('Use employee ID');expect(CLOCKER_ROSTER_COPY.es.useId).toBe('Usar ID de empleado');
+ expect(CLOCKER_ROSTER_COPY.en.useId).toBe('Use Employee ID');expect(CLOCKER_ROSTER_COPY.es.useId).toBe('Usar ID de empleado');
  expect(CLOCKER_ROSTER_COPY.en.back).toBe('Choose another name');
  expect(es).not.toMatch(/núm|usted|\bsu ID\b|Elija|Use su/i);expect(es).toContain('Usa tu ID de empleado');expect(es).toContain('Elige tu nombre');
- expect(en).not.toMatch(/Employee ID/);
+ expect(en).not.toMatch(/employee ID/);expect(en).toContain('Use your Employee ID.');
 });
 it('shows every name as a tile with initials, the way out, and no search up to 12 names',()=>{
  const html=renderToStaticMarkup(<ClockerNamePicker people={twelve} lang="en" onPick={()=>{}} onUseId={()=>{}}/>);
@@ -70,7 +70,7 @@ it('shows every name as a tile with initials, the way out, and no search up to 1
  expect(html.indexOf('Ana C.')).toBeLessThan(html.indexOf('Beatriz M.'));
  expect(html).toContain('<span class="np-initials" aria-hidden="true">AC</span>');
  expect(html).not.toContain('type="search"');expect(ROSTER_SEARCH_THRESHOLD).toBe(12);
- expect(html).toContain('Not on the list? Use your employee ID.');expect(html).toContain('>Use employee ID</button>');
+ expect(html).toContain('Not on the list? Use your Employee ID.');expect(html).toContain('>Use Employee ID</button>');
  expect(html).not.toMatch(/<img|tel:|@/);
 });
 it('adds the search field above 12 names, and says when the list changed',()=>{
@@ -112,5 +112,5 @@ it('keeps the way out reachable: sticky on the iPad, under a bounded name list o
  expect(css).toMatch(/\.np-foot \{ position: sticky; bottom: 0;/);expect(css).toContain('scroll-padding-bottom: 8rem');
  expect(css).toMatch(/\.np-tile \{[^}]*min-height: 64px/);expect(css).toMatch(/\.np-tile:focus-visible \{ outline: 3px solid/);
  const html=renderToStaticMarkup(<ClockerNamePicker people={twelve} lang="en" onPick={()=>{}} onUseId={()=>{}}/>);
- const foot=html.slice(html.indexOf('class="np-foot"'));expect(foot).toContain('Use employee ID');expect(foot).not.toContain('np-hint');
+ const foot=html.slice(html.indexOf('class="np-foot"'));expect(foot).toContain('Use Employee ID');expect(foot).not.toContain('np-hint');
 });

@@ -1,6 +1,6 @@
 'use client';
 /* The kiosk's name picker (Clocker UI step 3, Option C, Jose's pick Nov 25, 2026): every name as a tile with its
- * initials, alphabetical, a search field only above 12 names, and "Use employee ID" always reachable. On a phone the button
+ * initials, alphabetical, a search field only above 12 names, and "Use Employee ID" always reachable. On a phone the button
  * sticks to the bottom of the card while the names scroll (Jose, Nov 25); the hint above it stays in the flow, so at 200%
  * text the sticky part is one button, not a third of the screen. Names only, never photos or phone numbers. */
 import { useEffect, useMemo, useRef, useState } from 'react';

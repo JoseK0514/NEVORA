@@ -316,3 +316,8 @@ two loads each, identical:
 - `src/components`: 3,326 passed. tsc and oxlint are clean.
 
 The dot spring is unchanged; the design OS overshoot question goes to Jose.
+
+## Merged Jose's decisions (shared tip a729db0c)
+"Use Employee ID" / "Use your Employee ID." with a capital E, and the PIN dots settle on `expo.out` with no overshoot,
+guarded by a test against back, elastic and bounce eases. Both are kept on top of the loading change above. The scan
+tool keeps the capital-E selectors as well as its cls mode.

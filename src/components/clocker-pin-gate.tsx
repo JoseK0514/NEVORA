@@ -224,7 +224,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,in
   if(!el)return;flipFrom.current=null;
   const motion=flipName(el,flip.rect,el.getBoundingClientRect(),prefersReducedMotion());return()=>stopMotion(motion);
  },[step,pickerOn]);
- // Each new digit's dot fills with a soft spring; a refusal shakes the dots gently beside its message.
+ // Each new digit's dot grows in and settles (no overshoot); a refusal shakes the dots gently beside its message.
  useEffect(()=>{
   const before=drawnDots.current;drawnDots.current=count;
   if(count<=before||!slots.current)return;

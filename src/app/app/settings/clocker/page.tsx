@@ -6,6 +6,8 @@ import { clockerDeviceView, type ClockerDeviceView, type ClockerLocationView } f
 import { listLocations } from '@/lib/data/locations';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { manageClockerDeviceAction } from './actions';
+import { readPortalLanguage } from '@/lib/activation/language.server';
+import type { ClockerOwnerLang } from '@/components/clocker-owner-copy';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
 export const metadata = { title: "Clocker tablets" };
@@ -27,6 +29,10 @@ export default async function ClockerDevicesPage() {
       shortNames: Object.fromEntries(locations.filter(location => location.shortName).map(location => [location.id, location.shortName])),
     };
   } catch { data = null; }
-  if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} shortNames={data.shortNames} action={manageClockerDeviceAction} />;
-  return <ClockerDevicesUnavailable />;
+  // Clocker UI step 2: the page speaks the Owner's portal language (Profile, then the nv-lang cookie), as the person
+  // page's "Clock in at" does (step 1). English when it can't be read.
+  let lang: ClockerOwnerLang = 'en';
+  try { lang = (await readPortalLanguage(session)).language; } catch { /* English */ }
+  if (data) return <ClockerDeviceManager initialDevices={data.devices} timeZone={data.timeZone} locations={data.locations} shortNames={data.shortNames} action={manageClockerDeviceAction} lang={lang} />;
+  return <ClockerDevicesUnavailable lang={lang} />;
 }

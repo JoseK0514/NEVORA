@@ -81,6 +81,18 @@
   }
   /* "Saved" takes focus when the Save that was pressed goes away with the change: it reads once and draws no ring. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .c-photos__feedback[tabindex]:focus:not(#ck1):not(#ck2):not(#ck3) { outline: none !important; }
+  /* Clocker UI step 2 (Option A): "How staff sign in" in a tablet's options, between its name and Replace. The legend reads
+   * like the field labels above it; the read-only line is the current sign-in, then one plain reason. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .ck-signin:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { display: grid !important; gap: var(--b-space-12) !important; margin: var(--b-space-8) 0 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .ck-signin__legend:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: 0 0 var(--b-space-4) !important; padding: 0 !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; color: var(--b-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .ck-signin__now:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: 0 !important; font-size: var(--b-fs-body) !important; line-height: var(--b-lh-body) !important; color: var(--b-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .ck-signin[data-readonly] .ck-signin__legend:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin-bottom: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet__signin:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { padding-top: var(--b-space-8) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-signin-form:not(#ck1) { display: none !important; }
+  /* Reach (guide section 7): a choice's native circle sits at the row's top left, so a press 21.5px left of it landed on the
+   * sheet's padding and 21.5px above it on the row before. Each row's label reaches 12px further left and 4px higher,
+   * given back as negative margin, so what's drawn doesn't move and the circle reaches 44px from its centre. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .ck-signin .clk-choice:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: -4px 0 0 -12px !important; padding-top: calc(var(--b-space-8) + 4px) !important; padding-left: 12px !important; }
 }
 
 /* ---------- shared pieces ---------- */

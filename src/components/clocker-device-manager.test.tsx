@@ -28,7 +28,7 @@ rs.mock('react', () => {
 const toast = rs.hoisted(() => rs.fn());
 rs.mock('./toaster', () => ({ toast }));
 rs.mock('../app/app/settings/wave-c-form', () => ({ ...rstestImportedActual1, lockPageScroll: () => () => {} }));
-import { ClockerDeviceManager, ClockerDevicesUnavailable, ClockerSetupTicket, tabletLine } from './clocker-device-manager';
+import { ClockerDeviceManager, ClockerDevicesUnavailable, ClockerSetupTicket, ClockerSignIn, signInFormId, tabletLine } from './clocker-device-manager';
 import { CorpButton } from './corp/corp';
 import { QuietSheet } from './quiet/quiet-sheet';
 import { BRow } from './owner-b/b-kit';
@@ -59,8 +59,12 @@ const tablets: ClockerDeviceView[] = [
 describe('what each tablet’s row says', () => {
   const line = (item: ClockerDeviceView, locationActive = true) => tabletLine(item, { place: 'Calle Loíza', locationActive, timeZone: 'America/Puerto_Rico' });
   it('connected is the normal state: plain grey words, no chip, with when it was last used', () => {
-    expect(line(tablets[0])).toEqual({ tone: 'grey', chip: null, sub: 'Calle Loíza · Connected · Last used Nov 16, 3:20 PM' });
-    expect(line(device('x', 'ACTIVE')).sub).toBe('Calle Loíza · Connected · Not used yet');
+    expect(line(tablets[0])).toEqual({ tone: 'grey', chip: null, sub: 'Calle Loíza · Employee ID + PIN · Last used Nov 16, 3:20 PM' });
+    expect(line(device('x', 'ACTIVE')).sub).toBe('Calle Loíza · Employee ID + PIN · Not used yet');
+    // Clocker UI step 2 (Option A): how staff sign in takes the place of "Connected" in a connected tablet's line.
+    expect(line(device('x', 'ACTIVE', 'main', { signInMode: 'NAME_PICKER' })).sub).toBe('Calle Loíza · Name picker + PIN · Not used yet');
+    expect(tabletLine(device('x', 'ACTIVE', 'main', { signInMode: 'NAME_PICKER' }), { place: 'Calle Loíza', locationActive: true, timeZone: 'America/Puerto_Rico', lang: 'es' }).sub)
+      .toBe(`Calle Loíza · Elegir nombre + PIN · ${clockerOwnerCopy.es.notUsedYet}`);
   });
   it('not set up yet is the exception: an amber chip, and the code’s expiry when a code is out', () => {
     expect(line(tablets[1])).toEqual({ tone: 'amber', chip: 'Not set up', sub: 'Calle Loíza · No setup code yet' });
@@ -330,6 +334,42 @@ describe('the sheet and the code, driven through the component’s handlers', ()
     expect(focused.at(-1)).toBe('Keep tablet');
     button('Keep tablet').onClick({}); draw();
     expect(sheet().open).toBe(false); expect(row.focus).toHaveBeenCalledTimes(2);
+  });
+
+  // Clocker UI step 2 (Option A): how staff sign in, in a tablet's options.
+  it('a connected tablet at an active location can change how staff sign in, in its own form beside the name', () => {
+    press('Front counter tablet');
+    const nodes = draw();
+    const signIn = nodes.find(node => node.type === ClockerSignIn)!;
+    expect(signIn.props).toMatchObject({ eligible: true, reason: undefined, device: tablets[0], lang: 'en' });
+    expect(signIn.props.action).toBe(action);
+    // The controls belong to an empty sibling form, so a rename never carries them (and they never carry the name).
+    const forms = nodes.filter(node => node.type === 'form');
+    expect(forms.map(node => node.props.id)).toEqual([undefined, signInFormId('front')]);
+    expect(all(forms[0]).some(node => node.type === ClockerSignIn)).toBe(true);
+  });
+  it('a tablet that is not set up, or whose location is off, shows its sign-in read-only with one reason', () => {
+    press('Bar tablet');
+    expect(draw().find(node => node.type === ClockerSignIn)!.props).toMatchObject({ eligible: false, reason: clockerOwnerCopy.en.signInNotSetUp });
+    button('Done').onClick({}); draw();
+    hooks.states = []; hooks.refs = [{ current: fakeForm }];
+    devices = [{ ...device('old-front', 'ACTIVE', 'old'), name: 'Old office tablet' }];
+    press('Old office tablet');
+    expect(draw().find(node => node.type === ClockerSignIn)!.props).toMatchObject({ eligible: false, reason: clockerOwnerCopy.en.signInLocationOff });
+  });
+  it('a saved sign-in replaces the tablet in the list and in the open sheet, so the next change sends the new version', () => {
+    press('Front counter tablet');
+    const saved = { ...tablets[0], signInMode: 'NAME_PICKER' as const, version: 8 };
+    (draw().find(node => node.type === ClockerSignIn)!.props.onSaved as (device: ClockerDeviceView) => void)(saved);
+    const nodes = draw();
+    expect(nodes.find(node => node.type === ClockerSignIn)!.props.device).toEqual(saved);
+    expect(JSON.stringify(hooks.states)).toContain('"version":8');
+    expect(JSON.stringify(nodes.map(node => node.props.text).filter(Boolean))).toContain('Calle Loíza · Name picker + PIN');
+  });
+  it('Replace says the new tablet starts with Employee ID + PIN', () => {
+    press('Front counter tablet');
+    button('Replace tablet').onClick({}); settle();
+    expect(text(draw().find(node => String(node.props.className ?? '').includes('ck-sheet__signin')))).toBe(clockerOwnerCopy.en.replaceSignIn);
   });
 
   it('a removed tablet offers Set up again and nothing else', () => {
