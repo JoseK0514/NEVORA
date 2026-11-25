@@ -55,9 +55,12 @@
       background: color-mix(in srgb, var(--b-on-band) 8%, color-mix(in srgb, var(--b-band-solid) 79%, black)) !important; }
     /* Final fixes K (Insights): the date range line under Insights' title (p.c-ins__range) sits on the same border-image
      * band, so axe read its white words on the canvas (1.08:1) at 1024 and 1440. It has no glass, so it paints the band
-     * itself at its height: --b-band-solid 84% toward black. */
+     * itself at its height: --b-band-solid 84% toward black. Release follow-ups (Nov 24): a flat fill showed as a darker
+     * strip at 200% text, where the band's gradient lightens behind it. The fill is clipped to the glyphs
+     * (background-clip: text), under the 86% white text, so the band shows unchanged around the words at every size;
+     * contrast tools still read the fill as the line's background. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page > header.c-title ~ p.c-ins__range:not(#g48a):not(#g48b) {
-      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; }
+      background: color-mix(in srgb, var(--b-band-solid) 84%, black) !important; -webkit-background-clip: text !important; background-clip: text !important; }
   }
 
   /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
@@ -247,7 +250,13 @@
 @media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); }
 }
-:is(#c-root, html) body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]) {
+/* Kit fix (Nov 25): under reduced motion a button changes colour only. The shared list above still named scale (and the
+ * corp sheet's own transform), so a button eased from scale 1 to none when it was disabled or released. No pseudo-element
+ * is named here: a button's ::before and ::after keep their own rules. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .nv-btn) { transition-property: background-color, color; }
+}
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) {
   opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); border-color: transparent; box-shadow: none; scale: 1; transform: none; cursor: not-allowed;
 }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]) {
@@ -934,10 +943,13 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * declarations are in nv-b (B8); the normal ones follow it. Values: src/app/b-tokens.css. */
 @layer nv-b {
   /* One disabled pair for every button class (four pairs drew before: #EDEEEF and #F5F6F6 fills, #A7ACB1 and #6B7075 ink,
-   * a border on one). A busy button keeps its look (Phase 7). */
-  html body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]) {
+   * a border on one). A busy button keeps its look (Phase 7): aria-busy, or its busy label showing (kit fix, Nov 25). */
+  html body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) {
     opacity: 1 !important; background-color: var(--b-disabled-bg) !important; background-image: none !important; color: var(--b-disabled-ink) !important; border-color: transparent !important; box-shadow: none !important; cursor: not-allowed !important;
   }
+  /* Kit fix (Nov 25): a busy button stays fully drawn. The older portal sheet fades every disabled button to .55, and the
+   * disabled pair above (which set opacity 1) now skips a busy one, so this keeps it solid and says it is working. */
+  html body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):is([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { opacity: 1 !important; cursor: progress !important; }
   /* One weight: 600 on the older kits' buttons (secondary pills drew 500 on phones). The white pill on a band keeps its
    * approved 700, so band rows and sheet headers are left to their own rules. */
   html body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):not(:is(header.c-title, .c-formhead, .q-nav, .c-nav, .q-hd, .b-hero, .c-shift__head) *, .c-shift__save) { font-weight: 600 !important; }
@@ -1067,7 +1079,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
  * circle (the white thumb's teal circle and the amber one beside "For you" read as stickers). A count that waits on the
  * person keeps one small amber dot before it. Supersedes "a 20px count pill" in NV-103; the gap and the type stay. */
 @layer nv-b {
-  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 1 !important; font-size: var(--b-fs-caption) !important; line-height: 16px !important; font-weight: 600 !important; }
+  html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { display: inline-flex !important; align-items: center !important; min-width: 0 !important; height: auto !important; padding: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; opacity: 1 !important; font-size: var(--b-fs-caption) !important; line-height: 1rem !important; font-weight: 600 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"]) :is(.c-count, .eb-segn, .c-pins__count, .b-count, b) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"]) { background: none !important; color: inherit !important; opacity: 1 !important; }
   html body .app-shell[data-nv-b] :is(.b-seg, .q-seg, .c-seg, .b-filters) > :is(a, button) :is(.eb-segn--amber, .b-count[data-tone="amber"])::before { content: "" !important; flex: none !important; width: 6px !important; height: 6px !important; margin-inline-end: 5px !important; border-radius: 50% !important; background: #FFC46B !important; }

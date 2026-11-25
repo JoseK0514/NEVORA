@@ -16,8 +16,8 @@ const q=<T=Record<string,unknown>>(text:string,values:readonly unknown[]=[])=>db
 const headers={Host:'127.0.0.1:3001',Origin:'http://127.0.0.1:3001','X-Nevora-Clocker':'1','Content-Type':'application/json'};
 function request(body:unknown,extra:Record<string,string|undefined>={}){return new Request('http://127.0.0.1:3001/api/clocker/2/punch',{method:'POST',headers:{...headers,...Object.fromEntries(Object.entries(extra).filter(([,v])=>v!==undefined))},body:JSON.stringify(body)});}
 function call(body:unknown,extra:Record<string,string|undefined>={},executor:SqlExecutor=db.executor,enabled=true){return handleClockerPunch(request(body,extra),'2',{cookies:store,executor,security:{production:false},key,enabled});}
-async function verify(pin='1234'){
- const response=await handleClockerPin(request({action:'verify',pin}),'2',{cookies:store,executor:db.executor,security:{production:false},key});
+async function verify(pin='1234',employeeId='transport-a'){
+ const response=await handleClockerPin(request({action:'verify',employeeId,pin}),'2',{cookies:store,executor:db.executor,security:{production:false},key});
  expect(response.status).toBe(200);
 }
 async function view(){const r=await call({operation:'state'});expect(r.status).toBe(200);return r.json();}
@@ -83,7 +83,7 @@ it.each(['missing-device','missing-identity','expired','inactive','revoked'])('d
  expect(await q('SELECT id FROM time_entries')).toEqual([]);
 });
 it('a stale tab cannot clock the newer employee in using their changed identity cookie',async()=>{
- const old=await view();await verify('5678');const current=await view();expect(current.subject).not.toBe(old.subject);
+ const old=await view();await verify('5678','transport-b');const current=await view();expect(current.subject).not.toBe(old.subject);
  const r=await call({operation:'execute',command:command(old)});expect(r.status).toBe(409);
  expect(await q('SELECT id FROM time_entries')).toEqual([]);
 });
@@ -118,7 +118,7 @@ it('returns not_found for an unseen receipt, not an invented successful action',
  expect(await q('SELECT id FROM time_entries')).toEqual([]);
 });
 it('another employee on the same tablet cannot read a prior employee receipt',async()=>{
- const v=await view(),cmd=command(v);await call({operation:'execute',command:cmd});await verify('5678');await view();
+ const v=await view(),cmd=command(v);await call({operation:'execute',command:cmd});await verify('5678','transport-b');await view();
  expect(await (await call({operation:'receipt',commandId:cmd.commandId,verificationId:(await view()).verificationId})).json()).toMatchObject({state:'unknown'});
 });
 it('disabled feature performs no SQL and reports unavailable',async()=>{

@@ -76,6 +76,7 @@ export const CURRENT_MIGRATIONS = [
   '0075_manager_open_shifts.sql',
   '0076_location_addresses.sql',
   '0077_clocker_face_verification.sql',
+  '0078_clocker_picker.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

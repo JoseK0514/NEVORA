@@ -316,10 +316,7 @@
 /* K3/K4 (Phase 2): while a refusal shows, the red border holds the box-shadow, so focus is a teal outline outside it and
  * stays visible (the box-shadow ring above was replaced by the red one). */
 .pin[data-error=true]:focus-within { outline: 3px solid var(--ck-focus); outline-offset: 3px; }
-.pin[data-shake=a] { animation: ckShakeA 220ms ease-in-out 1; }
-.pin[data-shake=b] { animation: ckShakeB 220ms ease-in-out 1; }
-@keyframes ckShakeA { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
-@keyframes ckShakeB { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
+/* A refusal's shake moved to the dots (GSAP, clocker-motion.ts shakeDots; Nov 25, 2026): gentler, and the field stays put. */
 /* The slot under the PIN field (NV-177, NV-180): two lines of a message are always reserved, so a wrong PIN never moves the
  * keypad. Premium pass (#14): the field's help holds it until a refusal takes it. */
 .pinMsg { min-height: 2.8em; margin-top: var(--b-space-8); font-size: .9375rem; }
@@ -369,6 +366,12 @@
 
 /* ---------- the clock-state screen ---------- */
 .who { display: flex; align-items: center; gap: 14px; }
+.faceWrap { position: relative; flex: none; display: grid; }
+/* The done mark on the person's initial once their PIN is verified (Nov 25, 2026). Out of flow, so it moves nothing. */
+.doneMark { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--b-green-solid); color: #FFFFFF; box-shadow: 0 0 0 2px var(--ck-card); }
+.doneMark svg { width: 14px; height: 14px; overflow: visible; }
+.doneMark svg path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+@media (forced-colors: active) { .doneMark { forced-color-adjust: none; background: CanvasText; color: Canvas; box-shadow: none; } }
 .face { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: 1.375rem; font-weight: 700; }
 .strow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8) var(--b-space-12); margin: var(--b-space-8) 0 0 66px; }
 /* Premium pass (Nov 21, 2026): the state is a dot and its words, no pill: grey Off clock, green Clocked in, amber On

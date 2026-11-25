@@ -56,8 +56,10 @@
   :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-fold > .b-list { margin: 0; padding: 0; list-style: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .b-li.mb-fold { box-shadow: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-fold .b-li { box-shadow: inset 0 1px 0 var(--b-line); }
-  :is(#c-root, html) .app-shell[data-nv-b] .mb-segn { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; padding: 0 6px; border-radius: var(--b-radius-pill);
+  :is(#c-root, html) .app-shell[data-nv-b] .mb-segn { display: inline-grid; place-items: center; min-width: 1.25rem; height: 1.25rem; margin-left: 6px; padding: 0 6px; border-radius: var(--b-radius-pill);
     background: rgb(255 255 255 / .22); font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  /* Final fixes K (release follow-ups, Nov 24): the pill is in rem with its numeral (20px at the default size), so at 200%
+   * text the count stays centred in its pill on the label's line instead of dropping below a fixed 20px pill. */
   :is(#c-root, html) .app-shell[data-nv-b] [aria-pressed="true"] > .mb-segn { background: var(--b-teal); color: #FFFFFF; }
   @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] .mb-cards .mb-caret { transition: none; } }
 }
@@ -106,7 +108,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:checked { background: var(--b-teal); }
   :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:checked::after { translate: 20px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .mb-tog:focus-visible { outline: 2px solid var(--b-teal); outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] :is(.mb-tog, .mb-tog::after) { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .app-shell[data-nv-b] .mb-tog, :is(#c-root, html) .app-shell[data-nv-b] .mb-tog::after { transition: none; } }
   /* The card's footer: Cancel and Next (step 1), Back and Publish (step 2), one height, full width each on a phone. On a
    * phone the hero's Cancel is the way out, so the footer keeps Next alone (Cancel isn't said twice). */
   :is(#c-root, html) .app-shell[data-nv-b] .mb-foot { padding-top: var(--b-space-4); }

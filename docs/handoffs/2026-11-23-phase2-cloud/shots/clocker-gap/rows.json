@@ -1,0 +1,172 @@
+[
+ {
+  "id": "k13-sweep-en",
+  "row": "K13",
+  "page": "Someone else's punch in progress (regression sweep)",
+  "section": "Clocker",
+  "note": "Checked on the tip (552ceed3): no overflow, Done 56px with a 3px focus ring, axe finds no WCAG 2.x A/AA violations, and in forced colours the card, ring and Done keep visible borders. At 200% text the card scrolls and Done stays reachable.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k13-someone-elses-punch-en-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/k13-someone-elses-punch-en-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k13-someone-elses-punch-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k13-someone-elses-punch-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Forced colours, phone",
+    "after": "img/k13-someone-elses-punch-forced-en-390.webp"
+   },
+   {
+    "label": "Forced colours, tablet",
+    "after": "img/k13-someone-elses-punch-forced-en-1024.webp"
+   },
+   {
+    "label": "Keyboard focus on Done",
+    "after": "img/k13-someone-elses-punch-focus-en-1024.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": [
+   "The state's ring glyph stays 28px at 200% text (fixed size in ClockerIcon), as on every Clocker state card."
+  ]
+ },
+ {
+  "id": "k13-sweep-es",
+  "row": "K13",
+  "page": "Someone else's punch in progress (Spanish, regression sweep)",
+  "section": "Clocker",
+  "note": "Same checks in Spanish: no axe violations, no overflow; the four-line heading at 200% text scrolls with Listo reachable.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/k13-someone-elses-punch-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/k13-someone-elses-punch-es-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/k13-someone-elses-punch-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/k13-someone-elses-punch-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Forced colours, phone",
+    "after": "img/k13-someone-elses-punch-forced-es-390.webp"
+   },
+   {
+    "label": "Forced colours, tablet",
+    "after": "img/k13-someone-elses-punch-forced-es-1024.webp"
+   },
+   {
+    "label": "Keyboard focus on Listo",
+    "after": "img/k13-someone-elses-punch-focus-es-1024.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-fallback-en",
+  "row": "K-fallback",
+  "page": "Clocker offline fallback (error screen)",
+  "section": "Clocker",
+  "note": "First capture of this page. The kiosk was served, its time-zone formatter made to fail in the browser so the route fell to its error screen, then the network dropped. It reads 'Time can't be recorded' / 'This tablet is offline.' (DEC9), focus goes to the heading, axe finds no violations, and it returns to the error screen when the network comes back.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/fallback-offline-en-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/fallback-offline-en-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/fallback-offline-en-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/fallback-offline-en-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Forced colours, phone",
+    "after": "img/fallback-offline-forced-en-390.webp"
+   },
+   {
+    "label": "Forced colours, tablet",
+    "after": "img/fallback-offline-forced-en-1024.webp"
+   },
+   {
+    "label": "Online error screen",
+    "after": "img/fallback-error-en-390.webp"
+   },
+   {
+    "label": "Online error screen, tablet",
+    "after": "img/fallback-error-en-1024.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ },
+ {
+  "id": "k-fallback-es",
+  "row": "K-fallback",
+  "page": "Clocker offline fallback (Spanish)",
+  "section": "Clocker",
+  "note": "'No se puede registrar el tiempo' / 'Esta tableta está sin conexión.'; no overflow at any size, no axe violations.",
+  "shots": [
+   {
+    "label": "Phone",
+    "after": "img/fallback-offline-es-390.webp"
+   },
+   {
+    "label": "Phone, 200% text",
+    "after": "img/fallback-offline-es-390-text200.webp"
+   },
+   {
+    "label": "Tablet portrait",
+    "after": "img/fallback-offline-es-768.webp"
+   },
+   {
+    "label": "Tablet landscape",
+    "after": "img/fallback-offline-es-1024.webp",
+    "desk": true
+   },
+   {
+    "label": "Forced colours, phone",
+    "after": "img/fallback-offline-forced-es-390.webp"
+   },
+   {
+    "label": "Forced colours, tablet",
+    "after": "img/fallback-offline-forced-es-1024.webp"
+   },
+   {
+    "label": "Online error screen",
+    "after": "img/fallback-error-es-390.webp"
+   },
+   {
+    "label": "Online error screen, tablet",
+    "after": "img/fallback-error-es-1024.webp"
+   }
+  ],
+  "blocking": [],
+  "endSweep": []
+ }
+]

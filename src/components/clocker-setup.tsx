@@ -6,6 +6,7 @@ import {clockerErrorText,type ClockerLocale} from './clocker-copy';
 import styles from './clocker.module.css';
 import setup from './clocker-tablet-setup.module.css';
 import { ClockerPinGate } from './clocker-pin-gate';
+import { clearRosterHint, type RosterHint } from './clocker-roster';
 import { ClockerShell } from './clocker-shell';
 import { ClockerIcon } from './clocker-icon';
 import { DoneTick } from './owner-b/b-glyphs';
@@ -44,7 +45,9 @@ async function send(locationKey: string, body: object, signal?: AbortSignal): Pr
  * logged). It leaves memory when the tablet connects, when the server refuses it, when someone chooses to type a code
  * instead, and when the page goes away. Nothing connects until someone taps Connect tablet: a link opened on the wrong
  * device (the Owner's own phone) must not enrol that device or use up the code. */
-function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false, brand, workspaceName }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean; brand?: { style?: Record<string, string>; logoUrl?: string | null }; workspaceName?: string }) {
+function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false, brand, workspaceName, layoutHint = null }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean; brand?: { style?: Record<string, string>; logoUrl?: string | null }; workspaceName?: string;
+  /** The sign-in layout this tablet last had here (the server read its path-scoped cookie): 'picker', 'id' or none. */
+  layoutHint?: RosterHint | null }) {
   const t=useClockerCopy(),keep=useClockerKeepNames();
   const [state, setState] = useState<SetupState>({ state: 'unregistered' });
   const [pending, setPending] = useState(true);
@@ -68,6 +71,8 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
     const timeout = window.setTimeout(() => controller.abort(), 12000);
     let current = true;
     send(locationKey, { step: 'status' }, controller.signal).then(result => {
+      // A tablet that isn't connected here has no sign-in to size for: its layout hint goes.
+      if (result.state !== 'connected') clearRosterHint(locationKey);
       if (current) setState(result);
     }).catch(error => { if (current) failed(error); }).finally(() => {
       clearTimeout(timeout); if (current) setPending(false);
@@ -140,6 +145,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
 
   const uncertain = Boolean(feedback?.uncertain);
   const connected = state.state === 'connected';
+  const checkingSignIn = Boolean(layoutHint) && pinEnabled && pending && state.state === 'unregistered' && !feedback && mode === 'type';
   const greeted = connected && welcome && pinEnabled && !uncertain;
   const linkedGate = connected && pinEnabled && !uncertain && !welcome;
   const view = uncertain ? 'uncertain' : greeted ? 'welcome' : connected ? 'connected' : mode;
@@ -168,7 +174,15 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
   return <ClockerShell locationLabel={locationLabel} timeZone={timeZone} brand={brand} workspaceName={workspaceName}
     deviceName={state.state === 'connected' ? state.deviceName : undefined}
     status={uncertain ? offline ? 'offline' : 'unconfirmed' : pending ? 'checking' : connected ? 'connected' : 'setup'}>
-    {linkedGate ? <ClockerPinGate locationKey={locationKey} timeZone={timeZone} punchEnabled={punchEnabled} />
+    {linkedGate ? <ClockerPinGate locationKey={locationKey} timeZone={timeZone} punchEnabled={punchEnabled} layoutHint={layoutHint} />
+    /* A tablet that signed people in here before (the layout hint) checks its setup in the sign-in card's own waiting
+     * shape, the same title line and reserved height the sign-in draws while its names load, so the hand-off from the
+     * check to sign-in moves nothing (lead, Nov 25). A tablet never set up has no hint and keeps the setup screen. */
+    : checkingSignIn ? <div className={styles.content} data-align="center" aria-busy="true" data-clocker-checking="">
+      <div className={styles.head}><h1 ref={heading} tabIndex={-1} className={styles.title} data-waiting="">{t('Enter your Employee ID')}</h1></div>
+      <div className="np-wait" data-hint={layoutHint ?? undefined}/>
+      <div className={styles.meta} data-clocker-foot="" data-align="end"><ClockerLanguageToggle/></div>
+    </div>
     : <div className={`${styles.content} ${setup.root}`} data-align="center" aria-busy={pending} data-clocker-setup={view} data-refused={fieldError ? '' : undefined}>
       {view === 'uncertain' ? <>
         {/* Premium pass (decision 2): a setup that can't be confirmed is the amber Question; no connection is red. */}

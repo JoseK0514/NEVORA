@@ -4,6 +4,8 @@ import {clockerLaunchMetadata} from '@/lib/clocker/installation';
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { notFound } from "next/navigation";
 import { ClockerSetup } from "@/components/clocker-setup";
+import { cookies } from "next/headers";
+import { ROSTER_HINT_COOKIE, parseRosterHint } from "@/components/clocker-roster";
 import { findActiveLocationByClockerKey } from "@/lib/data/locations";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
@@ -35,5 +37,12 @@ export default async function ClockerPage({
   // read through the central feature flags (development, Nov 15).
   // Phase 6 (RA-13): a tablet that has not chosen a language starts in the one its browser asks for (or the sign-in
   // language already set on it), so a Spanish tablet opens in Spanish. A choice made on the tablet still leads.
-  return <ClockerSetup initialLocale={await readAuthLang()} workspaceName={workspace.name} brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={readFeatureFlags(process.env).clockerPunch} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
+  // The sign-in layout hint ('picker' | 'id', a path-scoped cookie the kiosk writes): presentation only, so the first
+  // paint of a tablet already in use has the sign-in card's shape. Outside a request there is none.
+  const layoutHint = await readLayoutHint();
+  return <ClockerSetup layoutHint={layoutHint} initialLocale={await readAuthLang()} workspaceName={workspace.name} brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={readFeatureFlags(process.env).clockerPunch} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
+}
+
+async function readLayoutHint() {
+  try { return parseRosterHint((await cookies()).get(ROSTER_HINT_COOKIE)?.value); } catch { return null; }
 }

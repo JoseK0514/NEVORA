@@ -12,7 +12,7 @@ const failure=async(status:number,body:object)=>{
 
 // Jose's approved sign-in (Nov 11, 2026): the Employee ID first, on the tablet's keyboard with capitals, then the PIN.
 it('starts at the Employee ID with the tablet keyboard, capitals on and corrections off',()=>{
- const html=renderToStaticMarkup(<ClockerPinGate locationKey="main"/>);
+ const html=renderToStaticMarkup(<ClockerPinGate locationKey="main" initialRoster={{kind:'id'}}/>);
  expect(html).toContain('data-clocker-step="id"');expect(html).toContain('Enter your Employee ID');
  const field=html.match(/<input[^>]*name="employeeId"[^>]*>/)?.[0]??'';
  expect(field).toContain('type="text"');expect(field).toContain('inputMode="text"');expect(field).toMatch(/autoCapitalize="characters"/i);
@@ -21,7 +21,7 @@ it('starts at the Employee ID with the tablet keyboard, capitals on and correcti
  expect(html).toContain('Don’t know your Employee ID? Ask your manager.');
 });
 it('asks for the Employee ID in Spanish on a Spanish tablet',()=>{
- const html=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerPinGate locationKey="main"/></ClockerPresentation>);
+ const html=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerPinGate locationKey="main" initialRoster={{kind:'id'}}/></ClockerPresentation>);
  expect(html).toContain('Ingresa tu ID de empleado');expect(html).toContain('¿No sabes tu ID de empleado? Pregúntale a tu gerente.');expect(html).not.toContain('Employee ID');
 });
 it('sends the Employee ID with the PIN and uses the verify reply without a status request',async()=>{
@@ -31,7 +31,7 @@ it('sends the Employee ID with the PIN and uses the verify reply without a statu
  const [url,init]=fetch.mock.calls[0] as unknown as [string,RequestInit];
  expect(url).toBe('/api/clocker/main%20office/pin');expect(JSON.parse(String(init.body))).toEqual({action:'verify',employeeId:'AB12',pin:'2468'});
  const source=await (await import('node:fs/promises')).readFile(new URL('./clocker-pin-gate.tsx',import.meta.url),'utf8');
- expect(source).toContain("{action:'verify',employeeId:id,pin}");expect(source).not.toContain("action:'status'");
+ expect(source).toContain("verifyBody(sel?{selection:sel}:{employeeId:id},pin)");expect(source).not.toContain("action:'status'");
 });
 // Jose's approved lockout (Nov 11, 2026): who is paused and for how long come from limitScope and retryAfterSeconds.
 it.each([['person','person'],['device','tablet'],['workspace','tablet']] as const)('reads a %s limit as a paused %s with the real wait',async(limitScope,scope)=>{
@@ -139,7 +139,7 @@ it('sizes the Continue arrow in rem and keeps the PIN field’s focus visible ov
  const css=readFileSync(new URL('./clocker.module.css',import.meta.url),'utf8').replace(/\/\*[\s\S]*?\*\//g,'');
  const rule=(selector:string)=>css.match(new RegExp(`(?:^|\\n)${selector.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')} \\{([^}]*)\\}`))?.[1]??'';
  expect(rule('.continue svg')).toContain('width: 1.25rem');expect(rule('.continue svg')).toContain('height: 1.25rem');
- const html=renderToStaticMarkup(<ClockerPinGate locationKey="main"/>);
+ const html=renderToStaticMarkup(<ClockerPinGate locationKey="main" initialRoster={{kind:'id'}}/>);
  expect(html).toMatch(/class="[^"]*continue[^"]*"[^>]*>(?:(?!<\/button>).)*<svg/);
  const focus=rule('.pin[data-error=true]:focus-within');
  expect(focus).toContain('outline: 3px solid var(--ck-focus)');expect(focus).toContain('outline-offset: 3px');
