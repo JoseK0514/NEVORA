@@ -5,8 +5,9 @@ import {afterEach,expect,it,rs} from '@rstest/core';
 import {ClockerPresentation} from './clocker-language';
 import {ClockerPinGate} from './clocker-pin-gate';
 import {ClockerNamePicker} from './clocker-name-picker';
+import {ClockerSetup} from './clocker-setup';
 import {CLOCKER_ROSTER_COPY} from './clocker-roster-copy';
-import {ROSTER_SEARCH_THRESHOLD,RosterReadError,clearRosterHint,readRosterHint,rosterHintFor,writeRosterHint,parseRoster,readRoster,rosterInitials,rosterMatches,rosterReplyCurrent,rosterSorted,selectionIsStale,verifyBody,type RosterPerson} from './clocker-roster';
+import {ROSTER_SEARCH_THRESHOLD,RosterReadError,clearRosterHint,parseRosterHint,readRosterHint,rosterHintFor,writeRosterHint,parseRoster,readRoster,rosterInitials,rosterMatches,rosterReplyCurrent,rosterSorted,selectionIsStale,verifyBody,type RosterPerson} from './clocker-roster';
 
 afterEach(()=>{rs.unstubAllGlobals();});
 const sel=(n:number)=>n.toString(16).padStart(64,'0');
@@ -114,22 +115,30 @@ it('keeps the way out reachable: sticky on the iPad, under a bounded name list o
  const html=renderToStaticMarkup(<ClockerNamePicker people={twelve} lang="en" onPick={()=>{}} onUseId={()=>{}}/>);
  const foot=html.slice(html.indexOf('class="np-foot"'));expect(foot).toContain('Use Employee ID');expect(foot).not.toContain('np-hint');
 });
-it('remembers only the layout hint, "picker" or "id", and nothing about people',()=>{
- const store=new Map<string,string>();
- rs.stubGlobal('window',{localStorage:{getItem:(k:string)=>store.get(k)??null,setItem:(k:string,v:string)=>{store.set(k,String(v));},removeItem:(k:string)=>{store.delete(k);}}});
+it('remembers only the layout hint, "picker" or "id", in a cookie scoped to the location, and nothing about people',()=>{
+ const written:string[]=[];let jar='';
+ rs.stubGlobal('document',{get cookie(){return jar;},set cookie(v:string){written.push(v);const [pair]=v.split(';');jar=v.includes('Max-Age=0')?'':pair;}});
  expect(rosterHintFor({kind:'picker',people:twelve})).toBe('picker');expect(rosterHintFor({kind:'id'})).toBe('id');
  expect(rosterHintFor({kind:'failed'})).toBeNull();expect(rosterHintFor({kind:'loading'})).toBeNull();
- writeRosterHint('main',{kind:'picker',people:twelve});
- expect([...store.values()]).toEqual(['picker']);expect([...store.keys()]).toEqual(['nevora.clocker.signin-layout.main']);
- for(const value of store.values()){expect(['picker','id']).toContain(value);for(const p of twelve){expect(value).not.toContain(p.displayName);expect(value).not.toContain(p.selection);}}
- writeRosterHint('main',{kind:'id'});expect(store.get('nevora.clocker.signin-layout.main')).toBe('id');
- writeRosterHint('main',{kind:'failed'});expect(store.get('nevora.clocker.signin-layout.main')).toBe('id');
- writeRosterHint('west',{kind:'picker',people:twelve});expect(readRosterHint('west')).toBe('picker');expect(readRosterHint('main')).toBe('id');
- store.set('nevora.clocker.signin-layout.main','Ana C.');expect(readRosterHint('main')).toBeNull();
- clearRosterHint('west');expect(readRosterHint('west')).toBeNull();
- // Blocked storage never throws.
- rs.stubGlobal('window',{localStorage:{getItem:()=>{throw Error('blocked');},setItem:()=>{throw Error('blocked');},removeItem:()=>{throw Error('blocked');}}});
- expect(readRosterHint('main')).toBeNull();expect(()=>writeRosterHint('main',{kind:'id'})).not.toThrow();expect(()=>clearRosterHint('main')).not.toThrow();
+ writeRosterHint('main office',{kind:'picker',people:twelve});
+ expect(written[0]).toBe('nv_clocker_layout=picker; Path=/clocker/main%20office; Max-Age=31536000; SameSite=Lax; Secure');
+ expect(readRosterHint()).toBe('picker');
+ writeRosterHint('main office',{kind:'id'});expect(readRosterHint()).toBe('id');
+ writeRosterHint('main office',{kind:'failed'});expect(written).toHaveLength(2);
+ for(const cookie of written){const value=cookie.split(';')[0].split('=')[1];expect(['picker','id']).toContain(value);for(const p of twelve){expect(cookie).not.toContain(p.displayName);expect(cookie).not.toContain(p.selection);}}
+ jar='other=1; nv_clocker_layout=Ana C.';expect(readRosterHint()).toBeNull();expect(parseRosterHint('picker')).toBe('picker');expect(parseRosterHint('names')).toBeNull();
+ jar='nv_clocker_layout=id';clearRosterHint('main office');expect(written.at(-1)).toContain('Max-Age=0');expect(readRosterHint()).toBeNull();
+ // Blocked cookies never throw.
+ rs.stubGlobal('document',{get cookie():string{throw Error('blocked');},set cookie(_v:string){throw Error('blocked');}});
+ expect(readRosterHint()).toBeNull();expect(()=>writeRosterHint('main',{kind:'id'})).not.toThrow();expect(()=>clearRosterHint('main')).not.toThrow();
+});
+it('draws the setup check of a tablet in use in the sign-in waiting shape, and reads the hint on the server',()=>{
+ const setupSrc=readFileSync(new URL('./clocker-setup.tsx',import.meta.url),'utf8');
+ expect(setupSrc).toContain("const checkingSignIn = Boolean(layoutHint) && pinEnabled && pending && state.state === 'unregistered' && !feedback && mode === 'type';");
+ expect(setupSrc).toContain('<div className="np-wait" data-hint={layoutHint ?? undefined}/>');
+ expect(setupSrc).toContain("if (result.state !== 'connected') clearRosterHint(locationKey);");
+ const page=readFileSync(new URL('../app/clocker/[location]/page.tsx',import.meta.url),'utf8');
+ expect(page).toContain('parseRosterHint((await cookies()).get(ROSTER_HINT_COOKIE)?.value)');
 });
 it('writes the hint on a roster reply, clears it when the tablet loses its setup, and sizes the wait by it',async()=>{
  expect(gate).toContain('writeRosterHint(rosterKey,next)');
@@ -140,4 +149,15 @@ it('writes the hint on a roster reply, clears it when the tablet loses its setup
  await expect(readRoster('main')).rejects.toBeInstanceOf(RosterReadError);
  const css=readFileSync(new URL('./clocker-name-picker.css',import.meta.url),'utf8');
  expect(css.match(/\.np-wait\[data-hint="id"\] \{ --ck-roster-wait: [0-9.]+rem; \}/g)).toHaveLength(3);
+});
+it('renders the first paint of a tablet in use in the sign-in waiting shape, and a new tablet as the setup screen',()=>{
+ const props={locationKey:'main',locationLabel:'Main Office',timeZone:'UTC',pinEnabled:true};
+ for(const hint of ['picker','id'] as const){
+  const html=renderToStaticMarkup(<ClockerSetup {...props} layoutHint={hint}/>);
+  expect(html).toContain('data-clocker-checking=""');expect(html).toContain(`<div class="np-wait" data-hint="${hint}"></div>`);
+  expect(html).toMatch(/<h1[^>]*data-waiting=""/);expect(html).not.toContain('enrollmentToken');
+ }
+ const fresh=renderToStaticMarkup(<ClockerSetup {...props}/>);
+ expect(fresh).not.toContain('data-clocker-checking');expect(fresh).not.toContain('np-wait');expect(fresh).toContain('enrollmentToken');
+ const noPin=renderToStaticMarkup(<ClockerSetup {...props} pinEnabled={false} layoutHint="id"/>);expect(noPin).not.toContain('data-clocker-checking');
 });
