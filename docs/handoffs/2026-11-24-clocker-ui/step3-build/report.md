@@ -321,3 +321,48 @@ The dot spring is unchanged; the design OS overshoot question goes to Jose.
 "Use Employee ID" / "Use your Employee ID." with a capital E, and the PIN dots settle on `expo.out` with no overshoot,
 guarded by a test against back, elastic and bounce eases. Both are kept on top of the loading change above. The scan
 tool keeps the capital-E selectors as well as its cls mode.
+
+## Follow-up: a layout hint per location (Nov 25)
+| Commit | What |
+|---|---|
+| `6b52b49e` | The tablet remembers its last sign-in mode here, and the waiting area reserves the names' or the form's height |
+| `18fc9b48`, `7dbeb19e3` (scan tool) | `cls` mode: no hint, correct hint, wrong hint; losing the setup clears the hint |
+| shots commit | `load/hint-*` |
+
+**What is stored:**
+- One localStorage key per location, `nevora.clocker.signin-layout.<location>`, with the value `'picker'` or `'id'` only.
+  Never names, selections or counts. At the end of the run, localStorage held only that key.
+- It's written on every roster reply (a failed read writes nothing). Every read and write is in try/catch, and blocked
+  storage is tested.
+- **Reserve:** a picker hint, or no hint, reserves the names' height; an id hint reserves the form's height.
+- **Cleared** where the roster is dropped for a lost setup: the `device_required` card, or a 401 roster read.
+  - Checked: the fictional tablet was revoked through `revokeClockerDevice` mid-session. Ana's PIN then gave "This
+    tablet needs to be set up again", and the hint went from `picker` to gone.
+
+**CLS on load** (picker tablet / Employee ID tablet; production build, Chromium; 2 loads each, identical):
+
+| Size | Before (disabled form) | No hint (first-ever load) | Correct hint | Wrong hint |
+|---|---|---|---|---|
+| 768×1024 | 0.370 / 0.167 | 0.030 / 0.233 | **0.030 / 0.167** | 0.370 / 0.233 |
+| 1024×768 | 0.169 / 0.071 | 0.037 / 0.135 | **0.037 / 0.071** | 0.169 / 0.135 |
+| 390×844 | 0.056 / 0.003 | 0.002 / 0.042 | **0.002 / 0.002** | 0.042 / 0.042 |
+
+- **With the hint (every load after the first):**
+  - A picker tablet keeps its gain.
+  - An Employee ID tablet is back to the "before" figure: no roster shift at all.
+- **What's left over 0.1 on the ID tablet at 768** (0.167) is the setup screen's "checking" card giving way to the
+  sign-in card (`.task` 417→619). It was there before the picker and is outside it. Fixing it would mean the setup card
+  reserving the sign-in card's height. I haven't changed it.
+- **A wrong hint** costs one shift, as before the change. The reply corrects the hint for the next load.
+- **Ready time:** an Employee ID tablet is ready in 152–217ms (151–255ms before).
+
+**Rechecked on the final code:**
+- 44 views: no overflow, nothing under 44px, reach OK.
+- axe, 18 checks: 0 violations.
+- The way out is in view at 390 and 100%.
+- Focus walk OK, and focus is never hidden at 390.
+- Reduced motion: nothing runs.
+- End to end: Ana C. clocks in and out, James by ID, Luis (duplicate) by ID, stale, roster failure, hidden and Escape
+  re-reads.
+- "Getting names…" appears past 1s, and a failed read shows the enabled form.
+- `src/components`: 3,347 passed. tsc and oxlint are clean.
