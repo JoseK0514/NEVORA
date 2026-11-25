@@ -57,7 +57,7 @@
   html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn--danger { background: var(--b-red-50) !important; color: var(--b-red) !important; box-shadow: none !important; }
   /* Can't work's Send to manager is the form's primary action: solid red, as it stops a shift. */
   html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-xs-form .c-btn.c-btn--danger { background: var(--b-red) !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(180 35 24 / 0.55) !important; }
-  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn.c-btn:is(:disabled, [aria-disabled="true"]) { background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; }
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn.c-btn:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; }
   html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:focus-visible { outline: 2px solid var(--b-teal) !important; outline-offset: 2px !important; }
   /* Fields: 13.5px grey labels 6px above 48px fields (1px #8C9397, 3:1, 14px corners); a 96px reason; 13px grey hints. */
   html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-field__label, .c-xs-group > legend) { font-size: var(--b-fs-meta) !important; line-height: var(--b-lh-meta) !important; font-weight: 600 !important; color: var(--b-grey) !important; }

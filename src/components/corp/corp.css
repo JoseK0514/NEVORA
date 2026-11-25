@@ -129,7 +129,7 @@ html body #employee-mobile[data-nv-corp] .c-pill.b-chip.c-pill--amber { box-shad
 :is(#c-root, html) .c-btn.c-btn--danger { color: var(--c-red) !important; }
 @media (hover: hover) { :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):hover:not(:disabled):not([aria-disabled="true"]) { background: var(--b-hover); } }
 :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):active:not(:disabled):not([aria-disabled="true"]) { background: #EDEEEF; }
-:is(#c-root, html) .c-btn:disabled, :is(#c-root, html) .c-btn[aria-disabled="true"] { background: var(--c-neutral-bg); box-shadow: none; color: var(--c-faint) !important; cursor: default; }
+:is(#c-root, html) .c-btn:disabled:not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])), :is(#c-root, html) .c-btn[aria-disabled="true"]:not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])) { background: var(--c-neutral-bg); box-shadow: none; color: var(--c-faint) !important; cursor: default; }
 :is(#c-root, html) .c-btns { display: flex; gap: 8px; }
 :is(#c-root, html) .c-btns > .c-btn { flex: 1; }
 :is(#c-root, html) .c-btns--stack { flex-direction: column; }

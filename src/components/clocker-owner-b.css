@@ -52,7 +52,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet .ck-sheet .wc-fields > .q-fl.wc-field:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { margin: 0 !important; }
   /* A quiet text button: the kit's pill without its fill (the row rule's second action). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-text:not(#ck1):not(#ck2):not(#ck3) { background: transparent !important; color: var(--b-teal) !important; box-shadow: none !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-text:is(:disabled, [aria-disabled="true"]):not(#ck1):not(#ck2):not(#ck3) { color: var(--b-disabled-ink) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-text:is(:disabled, [aria-disabled="true"]):not([aria-busy="true"], :has(.b-busy__on:not([data-b-off]), .wc-swap[data-state="pending"])):not(#ck1):not(#ck2):not(#ck3) { color: var(--b-disabled-ink) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner :is(.b-btn, .ck-pinbox input, .ck-code__v, .ck-search input, .ck-seg button, .ck-switch input):focus-visible:not(#ck1):not(#ck2):not(#ck3) { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
 
   /* ---------- Phase 8 (review B #5, #6): Punch photos ---------- */
