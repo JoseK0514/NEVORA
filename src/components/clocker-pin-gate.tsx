@@ -8,6 +8,9 @@ import { CLOCKER_PIN_ERROR_FALLBACK, clockerPinErrorKey, clockerRetryText } from
 import { useClockerOnline, useWhenBackOnline } from './clocker-online';
 import { ClockerLanguageToggle, ClockerText, useClockerCopy, useClockerIntlLocale, useClockerPresentation } from './clocker-language';
 import { useReportTabletHealth } from './clocker-shell';
+import { ClockerNamePicker } from './clocker-name-picker';
+import { CLOCKER_ROSTER_COPY } from './clocker-roster-copy';
+import { readRoster, rosterReplyCurrent, selectionIsStale, verifyBody, type RosterPerson, type RosterState } from './clocker-roster';
 type Verified={state:'verified';firstName:string;expiresAt:string};
 type Reply=Verified|{state:'idle'};
 /** Who a 429 pauses (the reply's limitScope): one person, or the tablet. A device or workplace limit stops every sign-in
@@ -25,6 +28,8 @@ const UNREACHABLE='Nothing can be recorded until this tablet reaches NEVORA agai
 const EXPIRED='Your PIN timed out. Enter your Employee ID and PIN again.';
 /* The server never says which of the two was wrong, so the kiosk names both (it sends an Employee ID with every PIN). */
 const DENIED=clockerPinErrorKey({code:'PIN_DENIED'});
+/* A chosen name with the wrong PIN: the name is right, so only the PIN is named (the kiosk's own sentence). */
+const PICKED_DENIED='PIN not recognized. Try again or ask your manager to check your PIN.';
 const browserFailure=(reason:unknown)=>reason instanceof TypeError||reason instanceof SyntaxError||(typeof DOMException!=='undefined'&&reason instanceof DOMException);
 /** One PIN request. Exported for its test; the gate is its only caller. */
 export async function requestPin(locationKey:string,body:object):Promise<Reply>{
@@ -79,6 +84,15 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  // PIN on the number pad. Like the PIN, the typed ID lives in the field and a ref, never in React state.
  const idInput=useRef<HTMLInputElement>(null),employeeId=useRef('');
  const [step,setStep]=useState<'id'|'pin'>('id'),[idFilled,setIdFilled]=useState(false);
+ /* Clocker UI step 3 (Option C, Jose's pick Nov 25, 2026): on a tablet in picker mode, sign-in starts with the names. The
+  * roster is read on entering sign-in and on every start over, lives in memory only, and is dropped on leaving sign-in
+  * (a verified person, a blocked or offline card, the tablet losing its setup), on a location switch and when the tablet
+  * is hidden. A reply for an older read is dropped (rosterGen). The chosen name's selection, like the typed Employee ID,
+  * lives in a ref; the name on screen is presentation. */
+ const [roster,setRoster]=useState<RosterState>({kind:'loading'}),rosterGen=useRef(0),selection=useRef<string|null>(null);
+ const [picked,setPicked]=useState<RosterPerson|null>(null),[useId,setUseId]=useState(false),[rosterTick,setRosterTick]=useState(0);
+ const [visible,setVisible]=useState(true),[notice,setNotice]=useState<'stale'|null>(null),[searching,setSearching]=useState(false);
+ const lastPick=useRef<string|null>(null);
  // Presentation only: who the last 429 paused and when the wait ends (wall clock, from retryAfterSeconds).
  const [pause,setPause]=useState<{scope:'person'|'tablet';until:number|null}|null>(null);
  // Presentation only: a PIN check is in flight, so Continue shows it (Nov 10 review, NV-179).
@@ -100,6 +114,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  const clearEntry=useCallback(()=>{
   if(input.current)input.current.value='';if(idInput.current)idInput.current.value='';
   employeeId.current='';setCount(0);setIdFilled(false);setStep('id');setCounted(false);
+  selection.current=null;lastPick.current=null;setPicked(null);setUseId(false);setNotice(null);setSearching(false);setRosterTick(n=>n+1);
  },[]);
  const reset=useCallback(async(keepDraft=false)=>{
   if(!keepDraft)setHeld(null);draft.current=null;
@@ -123,7 +138,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   void clearServer().then(()=>{if(generation===epoch.current)setBlocked(false);})
    .catch(()=>{if(generation===epoch.current){setBlocked(true);setTone('stop');setError(UNREACHABLE);}})
    .finally(()=>{if(generation===epoch.current){busy.current=false;setPending(false);}});
-  const hidden=()=>{if(document.hidden)void reset();};
+  const hidden=()=>{setVisible(!document.hidden);if(document.hidden)void reset();};
   const escape=(event:KeyboardEvent)=>{if(event.key==='Escape')void reset();};
   const restored=(event:PageTransitionEvent)=>{if(event.persisted)void reset();};
   const leaving=()=>{void reset();};
@@ -141,7 +156,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   return()=>{clearInterval(timer);clearTimeout(hard);};
  },[identity,reset]);
  // The 20-second idle clear covers the Employee ID as well as the PIN; a wrong-entry message leaves with them.
- const holding=count>0||idFilled||step==='pin';
+ const holding=count>0||idFilled||step==='pin'||searching||useId||notice!==null;
  useEffect(()=>{
   if(!holding||pending||identity||blocked)return;
   const clear=()=>{clearEntry();setError(null);};
@@ -156,6 +171,21 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  // The form leaves the screen with whatever was typed in it; the Employee ID kept for the PIN step goes too. The reset
  // that runs when the connection returns starts the next person at the Employee ID.
  useEffect(()=>{if(offline)employeeId.current='';},[offline]);
+ const signIn=!identity&&!blocked&&!offline&&visible;
+ // Leaving sign-in, or another location, drops the names and any chosen one from memory (set while rendering, as React
+ // advises for a reset that follows a change).
+ const rosterKey=signIn?locationKey:null,[rosterFor,setRosterFor]=useState(rosterKey);
+ if(rosterFor!==rosterKey){setRosterFor(rosterKey);setRoster({kind:'loading'});setPicked(null);}
+ useEffect(()=>{
+  const generation=++rosterGen.current;let live=true;
+  if(rosterKey===null){selection.current=null;return;}
+  // A start over keeps the shown list while the new one is read, so the screen doesn't flash; the newest read wins.
+  readRoster(rosterKey).then(next=>{if(live&&rosterReplyCurrent(generation,rosterGen.current))setRoster(next);},
+   ()=>{if(live&&rosterReplyCurrent(generation,rosterGen.current))setRoster({kind:'failed'});});
+  return()=>{live=false;};
+ },[rosterKey,rosterTick]);
+ const pickerOn=roster.kind==='picker'&&!useId&&step==='id';
+ const rosterLoading=roster.kind==='loading';
  useWhenBackOnline(!identity&&!(error&&blocked&&tone!=='stop'),()=>{if(unreachable)void recheck();else void reset();});
  useEffect(()=>{
   if(!unreachable)return;
@@ -168,9 +198,11 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  useEffect(()=>{
   if(pending||identity||blocked||offline)return;
   if(step==='pin'){input.current?.focus({preventScroll:true});revealCard(input.current);return;}
+  // Back from the PIN step to the names, focus returns to the name that was chosen.
+  if(pickerOn){if(lastPick.current)document.querySelector<HTMLButtonElement>(`[data-clocker-names] [data-selection="${lastPick.current}"]`)?.focus({preventScroll:true});return;}
   // Back from the PIN step, the Employee ID is still there to check or correct.
   if(idInput.current){idInput.current.value=employeeId.current;idInput.current.focus();}
- },[pending,identity,blocked,step,offline]);
+ },[pending,identity,blocked,step,offline,pickerOn,rosterLoading]);
  // The red wrong-PIN state answers one submit; the next keystroke starts a new PIN (Nov 10 review, NV-178).
  function typed(){if(error&&!blocked)setError(null);}
  function key(value:string,editedAt:number,refocus=false){
@@ -193,24 +225,31 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   event.preventDefault();if(busy.current||blocked)return;
   const value=(idInput.current?.value??'').trim();
   if(!value)return;
-  employeeId.current=value;typed();setStep('pin');setEditedAt(performance.now());
+  employeeId.current=value;selection.current=null;setPicked(null);typed();setStep('pin');setEditedAt(performance.now());
  }
+ function pickPerson(person:RosterPerson){
+  if(busy.current||blocked)return;
+  selection.current=person.selection;lastPick.current=person.selection;employeeId.current='';setPicked(person);setNotice(null);setSearching(false);typed();setStep('pin');setEditedAt(performance.now());
+ }
+ function chooseUseId(){if(busy.current||blocked)return;setUseId(true);setNotice(null);setSearching(false);setEditedAt(performance.now());}
+ function backToNames(){if(busy.current||blocked)return;if(idInput.current)idInput.current.value='';employeeId.current='';setIdFilled(false);setUseId(false);setEditedAt(performance.now());}
  function changeId(){
   if(busy.current||blocked)return;
-  typed();if(input.current)input.current.value='';setCount(0);setStep('id');setEditedAt(performance.now());
+  typed();if(input.current)input.current.value='';setCount(0);selection.current=null;setPicked(null);setStep('id');setEditedAt(performance.now());
  }
  async function submit(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(busy.current||blocked)return;
   const fresh=performance.now()-editedAt>=0&&performance.now()-editedAt<20000;
-  const pin=fresh?input.current?.value??'':'',id=fresh?employeeId.current:'';
+  const pin=fresh?input.current?.value??'':'',id=fresh?employeeId.current:'',sel=fresh?selection.current:null;
   if(input.current)input.current.value='';setCount(0);
-  if(!id){clearEntry();return;}
+  if(!id&&!sel){clearEntry();return;}
   if(pin.length!==4||!/^[0-9]{4}$/.test(pin)){setError('Enter exactly four PIN digits.');setShake(n=>n+1);return;}
   const generation=advanceEpoch();busy.current=true;setPending(true);setIdentity(null);setError(null);setChecking(true);
   try{
    // The verify reply carries the first name and the expiry, so the kiosk no longer asks for status as well: one round
    // trip fewer before the clock. The clock-state read that follows proves the identity cookie was stored.
-   const confirmed=await requestPin(locationKey,{action:'verify',employeeId:id,pin});
+   // Exactly one of the two: the chosen name's selection, or the typed Employee ID (unchanged).
+   const confirmed=await requestPin(locationKey,verifyBody(sel?{selection:sel}:{employeeId:id},pin));
    if(generation!==epoch.current){await clearServer();return;}
    if(confirmed.state!=='verified')throw new PinRequestError(EXPIRED,false);
    if(document.hidden){void reset();return;}
@@ -221,6 +260,19 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   }catch(reason){if(generation===epoch.current){
    const blocking=!(reason instanceof PinRequestError)||reason.recover;
    const denied=reason instanceof PinRequestError&&reason.code==='PIN_DENIED';
+   /* A denied chosen name: the server answers a stale selection exactly as a wrong PIN, so the roster is read again. If
+    * the name is gone or changed, the names come back with one plain line; otherwise it was the PIN. */
+   if(denied&&sel){
+    const rosterRead=++rosterGen.current;let fresh:RosterState;
+    try{fresh=await readRoster(locationKey);}catch{fresh={kind:'failed'};}
+    if(generation!==epoch.current||!rosterReplyCurrent(rosterRead,rosterGen.current))return;
+    setRoster(fresh);
+    if(selectionIsStale(fresh,sel)){
+     selection.current=null;lastPick.current=null;setPicked(null);setStep('id');setError(null);setBlocked(false);
+     setNotice(fresh.kind==='picker'?'stale':null);setEditedAt(performance.now());return;
+    }
+    setError(PICKED_DENIED);setBlocked(false);setTone('device');setPause(null);setShake(n=>n+1);setEditedAt(performance.now());return;
+   }
    setError(browserFailure(reason)?UNAVAILABLE:denied?DENIED:reason instanceof PinRequestError?reason.message:CLOCKER_PIN_ERROR_FALLBACK);setBlocked(blocking);
    setTone(reason instanceof PinRequestError&&reason.status===429?'wait':reason instanceof PinRequestError&&reason.status===401?'device':'stop');
    setPause(reason instanceof PinRequestError&&reason.pause?{scope:reason.pause.scope,until:reason.pause.retryAfterSeconds===null?null:Date.now()+reason.pause.retryAfterSeconds*1000}:null);
@@ -278,6 +330,8 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
  // The visible count changes every second; screen readers hear the reminder twice, at 10 and 3 seconds (NV-182).
  const seconds=Math.ceil(remaining/1000),warning=Boolean(identity&&remaining<=10000&&remaining>0);
  const milestone=warning?seconds<=3?3:10:null;
+ const lang=locale==='es'?'es':'en',rc=CLOCKER_ROSTER_COPY[lang];
+ const entry=!blocked&&!offline;
  return <div className={styles.content} data-align="center" aria-busy={pending} data-clocker-pin={identity?'verified':'entry'} data-clocker-step={identity?undefined:step}>
   {identity&&punchEnabled?<ClockerPunchPanel screenMonotonicExpiresAt={identity.monotonicDeadline} screenExpiresAt={identity.deadline} locationKey={locationKey} timeZone={timeZone} onDone={finish} resume={held} onContinuationChange={receiveDraft}/>:identity?<>
    <span className={styles.ring}><ClockerIcon name="info" size={28} mark/></span>
@@ -288,14 +342,21 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
    <p className={styles.clears}>{t("This screen clears after 30 seconds.")}</p>
   </>:<>
    {blocked||offline?ring:null}
-   <div className={styles.head} data-back={step==='pin'&&!blocked&&!offline?'':undefined}>
-    {step==='pin'&&!blocked&&!offline?<button type="button" className={styles.back} aria-label={t('Change Employee ID')} disabled={pending} onClick={changeId}><ClockerIcon name="back" size={22}/></button>:null}
-    <h1 ref={heading} tabIndex={-1} className={styles.title}>{t(paused?pausedTitle:offline||unreachable&&!online?'Time can’t be recorded':unreachable?'Can’t reach NEVORA':blocked&&tone==='device'?'This tablet needs to be set up again':step==='pin'?'Enter your PIN':'Enter your Employee ID')}</h1>
+   <div className={styles.head} data-back={entry&&(step==='pin'||useId&&roster.kind==='picker')?'':undefined}>
+    {step==='pin'&&entry?<button type="button" className={styles.back} aria-label={picked?rc.back:t('Change Employee ID')} disabled={pending} onClick={changeId}><ClockerIcon name="back" size={22}/></button>:null}
+    {/* With names on the tablet, the Employee ID form chosen from them has a way back. */}
+    {step==='id'&&entry&&useId&&roster.kind==='picker'?<button type="button" className={styles.back} aria-label={rc.backToNames} disabled={pending} onClick={backToNames}><ClockerIcon name="back" size={22}/></button>:null}
+    <h1 ref={heading} tabIndex={-1} className={styles.title}>{entry&&pickerOn?rc.title:t(paused?pausedTitle:offline||unreachable&&!online?'Time can’t be recorded':unreachable?'Can’t reach NEVORA':blocked&&tone==='device'?'This tablet needs to be set up again':step==='pin'?'Enter your PIN':'Enter your Employee ID')}</h1>
    </div>
    {blockedCard}{offlineCard}
    {/* The Employee ID step: the tablet's own keyboard, capitals on, no autocorrect; Enter or Continue moves to the PIN. */}
-   {!blocked&&!offline&&step==='id'?<form onSubmit={continueToPin} className={styles.pinForm}>
-    <fieldset disabled={pending}>
+   {entry&&pickerOn&&roster.kind==='picker'?<ClockerNamePicker key={rosterTick} people={roster.people} lang={lang} disabled={pending} notice={notice}
+    onPick={pickPerson} onUseId={chooseUseId} onSearch={query=>{setSearching(query.trim()!=='');setEditedAt(performance.now());}}/>:null}
+   {entry&&step==='pin'&&picked?<p className="np-who" data-clocker-chosen="">{picked.displayName}</p>:null}
+   {entry&&step==='id'&&!pickerOn&&roster.kind==='failed'?<p className="np-failed" role="status" data-clocker-names-failed="">{rc.failed}</p>:null}
+   {/* Until the roster answers, the form waits (disabled), so a picker tablet never takes a stray tap on it. */}
+   {entry&&step==='id'&&!pickerOn?<form onSubmit={continueToPin} className={styles.pinForm}>
+    <fieldset disabled={pending||rosterLoading}>
      <label className={styles.sr} htmlFor="clocker-employee-id">{t("Employee ID")}</label>
      <div data-clocker-id-entry className={styles.idEntry}>
       <input id="clocker-employee-id" ref={idInput} name="employeeId" type="text" inputMode="text" autoCapitalize="characters" autoCorrect="off" autoComplete="off" spellCheck={false} enterKeyHint="next" maxLength={128} onChange={e=>{typed();employeeId.current=e.currentTarget.value;setIdFilled(e.currentTarget.value.trim().length>0);setEditedAt(performance.now());}} aria-describedby="clocker-pin-help"/>
