@@ -53,7 +53,10 @@
         "src/lib/clocker/schedule-grace.server.ts",
         "src/lib/attendance/project.ts",
         "src/app/onboarding/verify/verify-journey.tsx",
-        "src/app/onboarding/activate/owner-activation.tsx"
+        "src/app/onboarding/activate/owner-activation.tsx",
+        "src/components/team/clocker-location-access-copy.ts",
+        "src/components/clocker-owner-copy.ts",
+        "src/components/clocker-roster-copy.ts"
       ]
     },
     {
