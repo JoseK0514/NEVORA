@@ -1,0 +1,145 @@
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { resolve, join } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { randomUUID } from 'node:crypto';
+import { fixtureProof } from '../src/test/integration/shift-change-api';
+import { hashPassword } from '../src/lib/auth/password';
+import { readOwnerOperationalScope, assignOperationalScope } from '../src/lib/company-access/operational-scope.server';
+
+// QA release sweep (not committed): every Owner route on a production build over https, fictional data only.
+const ROUTES = [
+  '/app', '/app/inbox', '/app/notifications', '/app/more', '/app/help',
+  '/app/schedule', '/app/schedule?week=WEEK', '/app/schedule/new', '/app/schedule/publish', '/app/schedule/settings', '/app/schedule/templates', '/app/schedule/coverage',
+  '/app/schedule/edit?shiftId=sweep-shift-1', '/app/availability', '/app/availability/agreement', '/app/exchange', '/app/exchange/open-shifts', '/app/requests', '/app/requests/hub',
+  '/app/timecards', '/app/timecards/corrections', '/app/timecards/corrections/new/SWEEP-A',
+  '/app/payroll', '/app/payroll/prepare', '/app/payroll/review', '/app/payroll/people', '/app/payroll/history', '/app/payroll/import', '/app/payroll/fix',
+  '/app/payroll-export', '/app/payroll-export/paid-time',
+  '/app/employees', '/app/employees/new', '/app/employees/import', '/app/employees/SWEEP-A', '/app/employees/SWEEP-A/pay', '/app/employees/SWEEP-A/restrictions', '/app/employees/SWEEP-A/time-off', '/app/employees/SWEEP-A/clocker-pin',
+  '/app/reports', '/app/reports/christmas-bonus',
+  '/app/ai-manager', '/app/ai-manager/weekly', '/app/ai-manager/knowledge', '/app/ai-manager/business',
+  '/app/updates', '/app/updates/compose',
+  '/app/settings', '/app/settings/workspace', '/app/settings/branding', '/app/settings/features', '/app/settings/locations', '/app/settings/locations/new', '/app/settings/locations/loc-1',
+  '/app/settings/positions', '/app/settings/breaks', '/app/settings/time-off', '/app/settings/company-policies', '/app/settings/payroll',
+  '/app/settings/clocker', '/app/settings/clocker/matching', '/app/settings/clocker/photos', '/app/settings/clocker/photos/review', '/app/settings/clocker/pins',
+  '/app/billing', '/app/profile', '/app/profile/calendar', '/app/profile/device-alerts', '/app/profile/passkeys', '/app/account/delete', '/app/clocker-recovery',
+];
+const ALL_VIEWS = [{ name: '390', width: 390, text: false }, { name: '390-200', width: 390, text: true }, { name: '1440', width: 1440, text: false }];
+const VIEWS = process.env.NEVORA_SWEEP_VIEWS ? ALL_VIEWS.filter(v => process.env.NEVORA_SWEEP_VIEWS!.split(',').includes(v.name)) : ALL_VIEWS;
+
+function monday(d = new Date()) { const x = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); x.setUTCDate(x.getUTCDate() - ((x.getUTCDay() + 6) % 7)); return x.toISOString().slice(0, 10); }
+
+it('step 1 recheck', async () => {
+  const evidence = process.env.NEVORA_SWEEP_EVIDENCE!, shots = join(evidence, 'shots');
+  await mkdir(shots, { recursive: true });
+  const runtimePackage = process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!;
+  const runtime = createRequire(runtimePackage)('playwright');
+  const axePath = createRequire(runtimePackage).resolve('axe-core/axe.min.js');
+  const app = await createOwnedNextApp(evidence, { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, payrollEnabled: true, ownerAdvisorEnabled: true, managerAdvisorEnabled: true, ownerAdvisorWeeklyEnabled: true, ownerAdvisorKnowledgeEnabled: true, ownerAdvisorBusinessImportsEnabled: true });
+  const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+  const base = OWNED_COLLAB_ORIGIN, week = monday();
+  const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
+  const results: Record<string, unknown>[] = [], setupLog: string[] = [];
+  try {
+    await seedOwnedApp(app.database.executor);
+    const step = async (name: string, text: string, values: unknown[] = []) => { try { await q(text, values); setupLog.push(name + ' ok'); } catch (e) { setupLog.push(name + ' failed: ' + String((e as Error).message).slice(0, 200)); } };
+    await step('people', "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('SWEEP-A','Maria','Fictional-Lopez','555-0101','EMPLOYEE','loc-1'),('SWEEP-B','James','Fictional-Ortiz','555-0102','EMPLOYEE','loc-1'),('SWEEP-C','Ana','Fictional-Rivera','555-0103','LEAD','loc-2'),('SWEEP-M','Elena','Fictional-Cruz','555-0104','MANAGER','loc-1')");
+    await step('eligibility', "INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('SWEEP-A','loc-1'),('SWEEP-B','loc-1'),('SWEEP-C','loc-2'),('SWEEP-M','loc-1')");
+    await step('draft week', "INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('sweep-week','loc-1',$1,'DRAFT','QAOWNER')", [week]);
+    await step('shifts', "INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('sweep-shift-1','sweep-week','SWEEP-A',$1,'07:00','15:00'),('sweep-shift-2','sweep-week','SWEEP-B',$1,'15:00','23:00')", [week]);
+    await step('daniel and legacy person', "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('QA-DANI','Daniel','Fictional-Reyes','555-0105','MANAGER','loc-2'),('LEG-1','Lucia','Fictional-Legacy','555-0126','EMPLOYEE','loc-1')");
+    await step('daniel login', "INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('QA-DANI',$1,false)", [await hashPassword(TEST_PASSWORD)]);
+    await step('eligibility 2', "INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('QA-DANI','loc-2'),('LEG-1','loc-1')");
+    try { const owner = await fixtureProof(app.database.executor, 'QAOWNER'); const sc = await readOwnerOperationalScope(owner, 'QA-DANI', app.database.executor); if (sc.state !== 'ready') throw Error('scope ' + sc.state); const c = sc.data.current;
+      const r = await assignOperationalScope(owner, 'QA-DANI', { action: 'ASSIGN', operationId: randomUUID(), expectedEmployeeVersion: c.employeeUpdatedAt, expectedRoleGeneration: c.roleGeneration, expectedScopeRevision: c.scopeRevision, scope: { mode: 'LOCATIONS', locationIds: ['loc-2'] } }, app.database.executor); setupLog.push('daniel scope ' + r.state); } catch (e) { setupLog.push('daniel scope failed: ' + String((e as Error).message).slice(0, 200)); }
+    await step('daniel APPROVE_LEAVE at West Office', "INSERT INTO workforce_permission_revisions(workspace_id,employee_id,location_id,permission,revision,role_generation,granted,actor_employee_id) SELECT workspace_id,employee_id,'loc-2','APPROVE_LEAVE',1,generation,true,'QAOWNER' FROM operational_subject_versions WHERE employee_id='QA-DANI'");
+    if (process.env.NEVORA_SWEEP_LEAVE === '1') await step('time off requests', "INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('sweep-to-1','SWEEP-A',($1::date + 14),($1::date + 15),'Fictional family visit','PENDING',now()),('sweep-to-2','SWEEP-B',($1::date + 21),($1::date + 21),'Fictional appointment','PENDING',now()),('sweep-to-3','SWEEP-C',($1::date + 7),($1::date + 8),'Fictional trip','APPROVED',now())", [week]);
+    const views: Record<string, unknown>[] = [];
+    const browser = await runtime.chromium.launch({ headless: true });
+    const LOGINS = (process.env.NEVORA_SWEEP_LOGINS ?? 'QAOWNER').split(',');
+    const ROUTES_BY: Record<string, string[]> = { QAOWNER: (process.env.NEVORA_SWEEP_ROUTES_OWNER ?? '').split(' ').filter(Boolean), 'QA-DANI': (process.env.NEVORA_SWEEP_ROUTES_DANI ?? '').split(' ').filter(Boolean) };
+    for (const phase of ['empty', 'full']) {
+    if (phase === 'full') await step('time off requests', "INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('s1-to-1','SWEEP-A',($1::date + 14),($1::date + 15),'Fictional family visit','PENDING',now()),('s1-to-2','SWEEP-C',($1::date + 21),($1::date + 21),'Fictional appointment','PENDING',now())", [week]);
+    for (const login of LOGINS) {
+    for (const view of VIEWS) {
+      const context = await browser.newContext({ viewport: { width: view.width, height: view.width === 390 ? 844 : 900 }, serviceWorkers: 'block', proxy: { server: tls.server }, ignoreHTTPSErrors: true, reducedMotion: 'reduce' });
+      if (view.text) await context.addInitScript(() => { const add = () => { const s = document.createElement('style'); s.textContent = 'html{font-size:32px !important}'; document.head.appendChild(s); }; if (document.head) add(); else document.addEventListener('DOMContentLoaded', add); });
+      await context.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const u = new URL(route.request().url()); if (['http:', 'https:'].includes(u.protocol) && u.origin !== base) await route.abort(); else await route.continue(); });
+      const page = await context.newPage(); page.setDefaultTimeout(20000);
+      const pageErrors: string[] = []; page.on('pageerror', (e: Error) => pageErrors.push(e.message));
+      await page.goto(base + '/login');
+      await page.getByLabel('Employee ID', { exact: true }).fill(login);
+      await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+      await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(base + '/app');
+      for (const raw of ROUTES_BY[login]) {
+        const route = raw.replace('WEEK', week), slug = (route.replace(/^\/app\/?/, '') || 'home').replace(/[^a-z0-9]+/gi, '-').replace(/-+$/, '');
+        const record: Record<string, unknown> = { route, view: view.name, phase, login };
+        pageErrors.length = 0;
+        try {
+          const response = await page.goto(base + route, { waitUntil: 'load' });
+          record.status = response?.status(); record.finalPath = new URL(page.url()).pathname + new URL(page.url()).search;
+          try { await page.waitForLoadState('networkidle', { timeout: 8000 }); } catch { record.networkidle = 'timeout'; }
+          await page.waitForTimeout(600);
+          const shot = join(shots, `${login}-${phase}-${slug}-${view.name}.jpg`);
+          await page.screenshot({ path: shot, fullPage: true, type: 'jpeg', quality: 55 });
+          record.shot = `shots/${login}-${phase}-${slug}-${view.name}.jpg`;
+          record.counts = await page.evaluate(() => Array.from(document.querySelectorAll('[class*="badge"],[class*="count"],[class*="Count"]')).filter(e => (e as HTMLElement).offsetParent !== null).map(e => ((e.closest('a,button,h1,h2,li') as HTMLElement | null)?.innerText ?? '').replace(/\s+/g, ' ').trim().slice(0, 60) + ' => ' + (e as HTMLElement).innerText.trim()).slice(0, 12));
+          record.text = await page.evaluate(() => document.querySelector('main')?.textContent?.replace(/\s+/g, ' ').slice(0, 600) ?? '');
+          record.layout = await page.evaluate(() => {
+            const de = document.documentElement, vis = (el: Element) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && Number(cs.opacity) > 0.05 && !el.closest('[aria-hidden="true"],[hidden],[inert]') && !(el.parentElement && el.parentElement.closest('details:not([open])') && !(el.tagName === 'SUMMARY' && el.parentElement === el.parentElement.closest('details:not([open])'))) && ((el as Element & { checkVisibility?: (o?: object) => boolean }).checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) ?? true); };
+            const name = (el: Element) => (el.getAttribute('aria-label') || (el as HTMLElement).innerText || el.getAttribute('title') || el.getAttribute('name') || el.tagName).replace(/\s+/g, ' ').trim().slice(0, 50);
+            const where = (el: Element) => { const r = el.getBoundingClientRect(); return `${Math.round(r.left)},${Math.round(r.top + scrollY)} ${Math.round(r.width)}x${Math.round(r.height)}`; };
+            const overflowX = de.scrollWidth - de.clientWidth;
+            const wide: string[] = []; if (overflowX > 2) for (const el of Array.from(document.body.querySelectorAll('*'))) { const r = el.getBoundingClientRect(); if (r.right > de.clientWidth + 2 && vis(el) && wide.length < 5 && !el.closest('[data-scroll],[role="tablist"],.scroll-x')) wide.push(`${el.tagName.toLowerCase()}.${String(el.className).slice(0, 40)} right=${Math.round(r.right)}`); }
+            const leaves = Array.from(document.body.querySelectorAll('*')).filter(el => vis(el) && Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent!.trim().length > 1));
+            const clipped: string[] = [];
+            for (const el of leaves) { const cs = getComputedStyle(el); const h = el as HTMLElement; if ((cs.textOverflow === 'ellipsis' || ['hidden', 'clip'].includes(cs.overflowX) || ['hidden', 'clip'].includes(cs.overflowY)) && (h.scrollWidth > h.clientWidth + 1 || h.scrollHeight > h.clientHeight + 2) && !el.closest('.sr-only,.visually-hidden,[class*="sr-only"]') && h.clientWidth > 4) clipped.push(`"${name(el)}" (${where(el)})`); }
+            const overlaps: string[] = []; const boxes = leaves.slice(0, 400).map(el => ({ el, r: el.getBoundingClientRect() }));
+            for (let i = 0; i < boxes.length && overlaps.length < 8; i++) for (let j = i + 1; j < boxes.length && overlaps.length < 8; j++) { const a = boxes[i], b = boxes[j]; if (a.el.contains(b.el) || b.el.contains(a.el)) continue; const w = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left), hh = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top); if (w > 4 && hh > 4 && w * hh > 0.25 * Math.min(a.r.width * a.r.height, b.r.width * b.r.height)) { const pa = getComputedStyle(a.el).position, pb = getComputedStyle(b.el).position; if (['fixed', 'sticky'].includes(pa) || ['fixed', 'sticky'].includes(pb) || a.el.closest('[style*="position: fixed"],header,nav') !== b.el.closest('[style*="position: fixed"],header,nav')) continue; overlaps.push(`"${name(a.el)}" × "${name(b.el)}" (${where(a.el)})`); } }
+            const controls = Array.from(document.querySelectorAll('a[href],button,input:not([type=hidden]),select,textarea,summary,[role=button],[role=link],[role=tab],[role=switch],[role=checkbox],[role=radio],[role=menuitem]')).filter(vis);
+            const small: string[] = [], inlineSmall: string[] = [];
+            const reaches = (el: Element) => { const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; const hits = (x: number, y: number) => { if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return true; const t = document.elementFromPoint(x, y); return !!t && (t === el || el.contains(t) || t.contains(el) && false); }; const miss: string[] = []; for (const [label, x, y] of [['left', cx - 21.5, cy], ['right', cx + 21.5, cy], ['up', cx, cy - 21.5], ['down', cx, cy + 21.5]] as [string, number, number][]) if (!hits(x, y)) { const t = document.elementFromPoint(x, y); miss.push(label + '→' + (t ? t.tagName.toLowerCase() + '.' + String(t.className).slice(0, 30) : 'none')); } (el as unknown as { __miss?: string }).__miss = miss.join(' '); return miss.length === 0; };
+            for (const el of controls) { const r = el.getBoundingClientRect(); if (r.width >= 44 && r.height >= 44) continue; if (!(r.top >= 60 && r.bottom <= innerHeight - 90)) { el.scrollIntoView({ block: 'center', inline: 'nearest' }); } if (reaches(el)) continue; if ((el as HTMLInputElement).type === 'checkbox' || (el as HTMLInputElement).type === 'radio') { const label = el.closest('label'); if (label) { const lr = label.getBoundingClientRect(); if (lr.width >= 44 && lr.height >= 44) continue; } } const inline = el.tagName === 'A' && getComputedStyle(el).display === 'inline' && el.parentElement && /\S/.test(Array.from(el.parentElement.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent).join('')); (inline ? inlineSmall : small).push(`${el.tagName.toLowerCase()} "${name(el)}" ${Math.round(r.width)}x${Math.round(r.height)} ${(el as unknown as { __miss?: string }).__miss ?? ''}`); }
+            return { overflowX, wide, clipped: clipped.slice(0, 8), clippedCount: clipped.length, overlaps, small: small.slice(0, 10), smallCount: small.length, inlineSmallCount: inlineSmall.length, controls: controls.length, title: document.title, h1: document.querySelector('h1')?.textContent?.trim().slice(0, 60) ?? null };
+          });
+          if (route === '/app/employees' && view.name === '1440') { try { await page.locator('input[type="search"]').first().screenshot({ path: join(evidence, 'team-search-1440.png') }); } catch (e) { record.searchShot = String(e).slice(0, 100); } }
+          await page.addScriptTag({ path: axePath });
+          record.axe = await page.evaluate(async () => { const w = window as unknown as { axe: { run(ctx: Document, o: unknown): Promise<{ violations: { id: string; impact: string; nodes: { target: string[] }[] }[] }> } }; const r = await w.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }, resultTypes: ['violations'] }); return r.violations.map(v => ({ id: v.id, impact: v.impact, count: v.nodes.length, targets: v.nodes.slice(0, 3).map(n => n.target.join(' ')), detail: v.nodes.slice(0, 2).map(n => (n as unknown as { any: { data?: unknown }[] }).any.map(x => x.data)) })); });
+        } catch (e) { record.error = String((e as Error).message).slice(0, 300); }
+        record.pageErrors = [...pageErrors];
+        results.push(record);
+      }
+      await context.close();
+      views.push({ view: view.name });
+    }
+    }
+    }
+    {
+      const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, serviceWorkers: 'block', proxy: { server: tls.server }, ignoreHTTPSErrors: true });
+      const page = await context.newPage(); page.setDefaultTimeout(20000); const r: Record<string, unknown> = { route: 'legacy-phone-edit' };
+      try {
+        await page.goto(base + '/login'); await page.getByLabel('Employee ID', { exact: true }).fill('QAOWNER'); await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(base + '/app');
+        await page.goto(base + '/app/employees/LEG-1?edit=1');
+        r.phoneShown = await page.locator('input[name="phone"]').first().inputValue();
+        await page.locator('input[name="lastName"]').first().fill('Fictional-Legacy-Edited');
+        await page.getByRole('button', { name: 'Save', exact: true }).first().click();
+        await page.waitForTimeout(4000);
+        r.errors = await page.getByText(/valid contact phone/i).count();
+        r.db = await q("SELECT last_name, phone FROM employees WHERE id='LEG-1'");
+        await page.screenshot({ path: join(shots, 'QAOWNER-legacy-phone-after-save-1440.jpg'), fullPage: true, type: 'jpeg', quality: 55 });
+        r.pass = r.errors === 0 && JSON.stringify(r.db).includes('Fictional-Legacy-Edited') && JSON.stringify(r.db).includes('555-0126');
+      } catch (e) { r.error = String((e as Error).message).slice(0, 300); }
+      results.push(r); await context.close();
+    }
+    await browser.close();
+    expect(results.length).toBeGreaterThan(0);
+  } finally {
+    await writeFile(resolve(evidence, 'sweep.json'), JSON.stringify({ week, setupLog, results }, null, 2));
+    await tls.close(); await app.close();
+  }
+}, 3600000);

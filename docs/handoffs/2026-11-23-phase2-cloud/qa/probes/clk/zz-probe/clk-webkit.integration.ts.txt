@@ -1,0 +1,288 @@
+// QA probe (not committed): WebKit pass of the Owner's "Clock in at" row and sheet, Chromium for comparison.
+// Production build at the owned https origin. Fictional data only.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, seedOwnedScenario, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+
+const CLK_SEED = [
+  "INSERT INTO locations(id,name,short_name,workspace_id,clocker_key) SELECT 'loc-3','Northside Old San Juan','Old San Juan',workspace_id,'scan-kiosk-osj' FROM locations WHERE id='loc-1' ON CONFLICT (id) DO NOTHING",
+  "UPDATE locations SET short_name=CASE id WHEN 'loc-1' THEN 'Main Office' WHEN 'loc-2' THEN 'West Office' ELSE short_name END WHERE id IN ('loc-1','loc-2')",
+  "UPDATE employees SET first_name='Daniel',last_name='Reyes',primary_location_id='loc-1' WHERE id='QA-SCAN-A'",
+  "UPDATE employees SET first_name='Carmen',last_name='Ortiz',primary_location_id='loc-1' WHERE id='QA-SCAN-B'",
+  "INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('QA-SCAN-A','loc-1'),('QA-SCAN-A','loc-2'),('QA-SCAN-B','loc-1'),('QA-SCAN-B','loc-2'),('QA-SCAN-B','loc-3') ON CONFLICT DO NOTHING",
+  "UPDATE employees SET clocker_location_mode='SELECTED',clocker_location_ids='{loc-2,loc-3}' WHERE id='QA-SCAN-B'",
+  "UPDATE employees SET clocker_location_mode='ALL',clocker_location_ids='{}' WHERE id='QA-SCAN-C'",
+];
+const D = '/app/employees/QA-SCAN-A', C = '/app/employees/QA-SCAN-B', E = '/app/employees/QA-SCAN-C';
+
+it('clocker locations webkit pass', async () => {
+  const evidence = process.env.NEVORA_CLK_EVIDENCE!, shots = join(evidence, 'shots'); await mkdir(shots, { recursive: true });
+  const runtimePackage = process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!;
+  const runtime = createRequire(runtimePackage)('playwright');
+  const axePath = createRequire(import.meta.url).resolve('axe-core/axe.min.js');
+  const app = await createOwnedNextApp(evidence, { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, payrollEnabled: true, clockerPunchEnabled: true, clockerPinKey: 'ab'.repeat(32) });
+  const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+  const front = OWNED_COLLAB_ORIGIN, net = { proxy: { server: tls.server }, ignoreHTTPSErrors: true };
+  const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
+  const rows = async (text: string) => { const r: any = await q(text); return Array.isArray(r) ? r : r.rows; };
+  const out: any = { setup: [], views: [], focus: [], states: [], roundTrip: {}, stale: {} };
+  try {
+    await seedOwnedApp(app.database.executor); await seedOwnedScenario(app.database.executor, 'SCAN', 0);
+    for (const sql of CLK_SEED) await q(sql).then(() => out.setup.push('ok')).catch((e: unknown) => out.setup.push('seed failed: ' + String(e).slice(0, 200)));
+    const resetCarmen = () => q("UPDATE employees SET clocker_location_mode='SELECTED',clocker_location_ids='{loc-2,loc-3}' WHERE id='QA-SCAN-B'");
+    // One sign-in per engine (login rate limit), reused for every context.
+    const states: Record<string, unknown> = {};
+    const sign = async (engine: string) => {
+      const b = await runtime[engine].launch({ headless: true });
+      const ctx = await b.newContext({ ...net, viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); p.setDefaultTimeout(30000);
+      await p.goto(front + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill('QAOWNER'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+      await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL((u: URL) => u.pathname.startsWith('/app'));
+      states[engine] = await ctx.storageState(); await ctx.close(); return b;
+    };
+    const browsers: Record<string, any> = { webkit: await sign('webkit'), chromium: await sign('chromium') };
+    const open = async (engine: string, width: number, lang = 'en', big = false) => {
+      const ctx = await browsers[engine].newContext({ ...net, storageState: states[engine], viewport: { width, height: width > 1000 ? 900 : 844 }, hasTouch: width <= 768, deviceScaleFactor: 1, reducedMotion: 'reduce', serviceWorkers: 'block' });
+      await ctx.addCookies([{ name: 'nv-lang', value: lang, url: front }]);
+      if (big) await ctx.addInitScript(() => { const add = () => { const s = document.createElement('style'); s.textContent = 'html{font-size:200% !important}'; document.head.appendChild(s); }; if (document.head) add(); else document.addEventListener('DOMContentLoaded', add); });
+      const page = await ctx.newPage(); page.setDefaultTimeout(20000);
+      const errors: string[] = []; page.on('pageerror', (e: Error) => errors.push('pageerror ' + e.message.slice(0, 200))); page.on('console', (m: any) => { if (m.type() === 'error') errors.push('console ' + m.text().slice(0, 200)); });
+      return { ctx, page, errors };
+    };
+    const settle = async (page: any) => { await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {}); await page.waitForTimeout(600); };
+    const measure = (page: any) => page.evaluate(() => {
+      const root = (document.querySelector('.clk') || document.getElementById('clock-in-at')) as HTMLElement | null;
+      const over = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+      const scope = root ? [...root.querySelectorAll('*')] : [];
+      const clipped = scope.filter(e => [...e.childNodes].some(n => n.nodeType === 3 && n.textContent!.trim()) && (e as HTMLElement).clientWidth > 4 && ((e as HTMLElement).scrollWidth > (e as HTMLElement).clientWidth + 1 || (e as HTMLElement).scrollHeight > (e as HTMLElement).clientHeight + 2) && getComputedStyle(e).overflow !== 'visible').map(e => (e.textContent || '').trim().slice(0, 40));
+      const controls = [...new Set(scope.filter(e => e.matches('a[href],button,input,select,textarea,summary') && (e as HTMLElement).getBoundingClientRect().width > 0).map(e => (e.tagName === 'INPUT' && e.closest('label')) || e))] as HTMLElement[];
+      const reach = controls.map(e => {
+        e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        const lab = e.tagName === 'INPUT' ? e.closest('label') : null;
+        const hit = (x: number, y: number) => { const t = document.elementFromPoint(x, y); return !!t && (t === e || e.contains(t) || (!!lab && (t === lab || lab.contains(t)))); };
+        const miss = ([['left', cx - 21.5, cy], ['right', cx + 21.5, cy], ['up', cx, cy - 21.5], ['down', cx, cy + 21.5]] as [string, number, number][]).filter(([, x, y]) => !hit(x, y)).map(([k, x, y]) => { const t = document.elementFromPoint(x, y); return k + '→' + (t ? t.tagName.toLowerCase() + '.' + String(t.className).slice(0, 30) : 'none'); });
+        return { c: (e.getAttribute('aria-label') || lab?.textContent || e.textContent || e.tagName).trim().replace(/\s+/g, ' ').slice(0, 40), w: Math.round(r.width), h: Math.round(r.height), miss };
+      });
+      window.scrollTo(0, 0);
+      return { root: !!root, over, clipped: clipped.slice(0, 8), controls: reach.length, reachMiss: reach.filter(r => r.miss.length), text: root ? root.innerText.replace(/\s+/g, ' ').slice(0, 300) : null };
+    });
+    const axe = async (page: any) => { await page.addScriptTag({ path: axePath }); return page.evaluate(async () => { const r = await (window as any).axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } }); return r.violations.map((v: any) => ({ id: v.id, n: v.nodes.length, t: v.nodes.slice(0, 3).map((n: any) => String(n.target)).join(' | ') })); }); };
+    const view = async (s: any, engine: string, name: string, width: number, lang: string, big: boolean) => {
+      const m = await measure(s.page); const a = await axe(s.page);
+      const file = `${engine}-${name}-${lang}-${width}${big ? '-200' : ''}.png`;
+      if (width < 1000) await s.page.evaluate(() => { (document.querySelector('.clk') || document.getElementById('clock-in-at'))?.scrollIntoView({ block: 'center' }); });
+      await s.page.screenshot({ path: join(shots, file), fullPage: width >= 1000 });
+      out.views.push({ ...m, engine, name, width, lang, textSize: big ? 200 : 100, axe: a, errors: [...s.errors], shot: file }); s.errors.length = 0;
+    };
+    if (!process.env.NEVORA_CLK_ONLY) try {
+    // ---- 1. views: rows and sheets, 390 (touch) and 1440 (mouse), 100% and 200%, EN; ES at 390 ----
+    const VIEWS: [string, string][] = [['row-daniel-assigned', D], ['sheet-daniel-assigned', D + '?edit=clocker'], ['row-carmen-selected', C], ['sheet-carmen-selected', C + '?edit=clocker'], ['row-every', E], ['sheet-every', E + '?edit=clocker']];
+    for (const engine of ['webkit', 'chromium']) for (const width of [390, 1440]) for (const big of [false, true]) {
+      const s = await open(engine, width, 'en', big);
+      for (const [name, path] of VIEWS) { await s.page.goto(front + path); await settle(s.page); await view(s, engine, name, width, 'en', big); }
+      // nothing ticked (Carmen, Only these locations, every box cleared)
+      await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+      for (let i = 0; i < 8 && await s.page.locator('.clk input[type=checkbox]:checked').count(); i++) await s.page.locator('.clk input[type=checkbox]:checked').first().uncheck();
+      await s.page.waitForTimeout(300); await view(s, engine, 'state-nothing-ticked', width, 'en', big);
+      out.states.push({ engine, width, big, nothingTicked: { saveDisabled: await s.page.getByRole('button', { name: 'Save', exact: true }).isDisabled(), hint: await s.page.locator('.clk').innerText().then((t: string) => /Choose at least one/.test(t)) } });
+      await s.ctx.close();
+    }
+    for (const engine of ['webkit', 'chromium']) for (const big of [false, true]) {
+      const s = await open(engine, 390, 'es', big);
+      for (const [name, path] of [['row-carmen-selected', C], ['sheet-carmen-selected', C + '?edit=clocker']] as [string, string][]) { await s.page.goto(front + path); await settle(s.page); await view(s, engine, name, 390, 'es', big); }
+      await s.ctx.close();
+    }
+    }catch(e){ out.setup.push('section failed: '+String((e as Error).message).slice(0,300)); }
+    if (process.env.NEVORA_CLK_ONLY !== 'extra') try {
+    // ---- 2. focus walk and focus return (390 touch-free keyboard, and 1440) ----
+    for (const engine of ['webkit', 'chromium']) for (const width of [390, 1440]) {
+      const s = await open(engine, width);
+      await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+      await s.page.evaluate(() => { (document.activeElement as HTMLElement | null)?.blur(); window.scrollTo(0, 0); });
+      const walk: any[] = [];
+      for (let i = 0; i < 40; i++) {
+        await s.page.keyboard.press('Tab'); await s.page.waitForTimeout(60);
+        const st = await s.page.evaluate(() => { const e = document.activeElement as HTMLElement | null; if (!e || e === document.body) return null; const cs = getComputedStyle(e); const lab = e.closest('label'); const inClk = !!e.closest('.clk'); const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2) || cs.boxShadow !== 'none' || (lab ? getComputedStyle(lab).boxShadow !== 'none' || getComputedStyle(lab).outlineStyle !== 'none' : false); return { inClk, el: e.tagName.toLowerCase() + ((e as HTMLInputElement).type ? '[' + (e as HTMLInputElement).type + ']' : ''), label: (e.getAttribute('aria-label') || lab?.textContent || e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40), outline: cs.outlineStyle + ' ' + cs.outlineWidth + ' ' + cs.outlineColor, shadow: cs.boxShadow.slice(0, 60), ring }; });
+        if (!st) break; if (st.inClk) walk.push(st);
+        if (walk.length && !st.inClk && walk.length > 3) break;
+      }
+      // Cancel returns focus to the row
+      const cancelInfo = await s.page.evaluate(() => [...document.querySelectorAll('a.c-formhead__link, a')].filter(a => /Cancel/.test(a.textContent || '')).map(a => (a as HTMLAnchorElement).getAttribute('href') + ' vis=' + (a as HTMLElement).getBoundingClientRect().width));
+      await s.page.screenshot({ path: join(shots, `${engine}-focus-walk-end-${width}.png`) });
+      try { await s.page.locator('a.c-formhead__link').filter({ hasText: 'Cancel' }).first().click({ timeout: 8000 }); } catch (e) { out.focus.push({ engine, width, cancelError: String((e as Error).message).slice(0, 200), cancelInfo, url: s.page.url().replace(front, ''), walk }); await s.ctx.close(); continue; }
+      await s.page.waitForURL((u: URL) => u.hash === '#clock-in-at' || !u.search.includes('edit')).catch(() => {}); await settle(s.page);
+      const afterCancel = await s.page.evaluate(() => { const e = document.activeElement as HTMLElement | null; return e ? (e.closest('#clock-in-at') ? 'row: ' : 'elsewhere: ') + e.tagName.toLowerCase() + ' ' + (e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 50) : null; });
+      out.focus.push({ engine, width, walk, afterCancel, url: s.page.url().replace(front, '') });
+      await s.ctx.close();
+    }
+    }catch(e){ out.setup.push('section failed: '+String((e as Error).message).slice(0,300)); }
+    if (process.env.NEVORA_CLK_ONLY !== 'extra') try {
+    // ---- 2b. focus return: Cancel; Save then Cancel; tabbing out of the page ----
+    for (const engine of ['webkit', 'chromium']) for (const width of [390, 1440]) {
+      await resetCarmen();
+      const s = await open(engine, width); const r: any = { engine, width };
+      const where = () => s.page.evaluate(() => { const e = document.activeElement as HTMLElement | null; return e ? (e.closest('#clock-in-at') ? 'ROW ' : 'other ') + e.tagName.toLowerCase() + '.' + String(e.className).slice(0, 30) + ' "' + (e.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40) + '"' : null; });
+      await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+      await s.page.locator('a.c-formhead__link').filter({ hasText: 'Cancel' }).first().focus(); await s.page.keyboard.press('Enter');
+      await s.page.waitForURL((u: URL) => !u.search.includes('edit')).catch(() => {}); await settle(s.page);
+      r.cancelKeyboard = { focus: await where(), url: s.page.url().replace(front, '') };
+      await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+      await s.page.locator('a.c-formhead__link').filter({ hasText: 'Cancel' }).first().click();
+      await s.page.waitForURL((u: URL) => !u.search.includes('edit')).catch(() => {}); await settle(s.page);
+      r.cancelClick = { focus: await where(), url: s.page.url().replace(front, '') };
+      await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+      await s.page.getByRole('checkbox', { name: /^Main Office/ }).check(); await s.page.getByRole('button', { name: 'Save', exact: true }).click();
+      await s.page.locator('.clk-result [role=status]').waitFor({ timeout: 20000 }).catch(() => {}); await s.page.waitForTimeout(400);
+      r.afterSave = { focus: await where(), url: s.page.url().replace(front, '') };
+      await s.page.locator('a.c-formhead__link').filter({ hasText: /Cancel|Done|Back/ }).first().click().catch((e: Error) => { r.afterSaveClose = String(e.message).slice(0, 120); });
+      await s.page.waitForURL((u: URL) => !u.search.includes('edit')).catch(() => {}); await settle(s.page);
+      r.afterSaveThenClose = { focus: await where(), url: s.page.url().replace(front, ''), row: await s.page.locator('#clock-in-at').innerText().catch(() => null) };
+      // Tab out of the page from the last checkbox: does the sheet survive?
+      await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+      await s.page.getByRole('checkbox', { name: /^Main Office/ }).check(); await s.page.getByRole('checkbox', { name: /^Old San Juan/ }).focus();
+      await s.page.keyboard.press('Tab'); await s.page.waitForTimeout(1500);
+      r.tabOut = { active: await s.page.evaluate(() => document.activeElement?.tagName), hasFocus: await s.page.evaluate(() => document.hasFocus()), sheet: await s.page.locator('.clk').count(), paused: await s.page.getByText('View paused').count() };
+      await s.page.screenshot({ path: join(shots, `${engine}-tabout-${width}.png`) });
+      await s.page.bringToFront(); await s.page.mouse.click(5, 5).catch(() => {}); await s.page.waitForTimeout(1500);
+      r.afterReturn = { sheet: await s.page.locator('.clk').count(), paused: await s.page.getByText('View paused').count(), mainChecked: await s.page.getByRole('checkbox', { name: /^Main Office/ }).isChecked().catch(() => null) };
+      out.focus.push(r); await s.ctx.close();
+    }
+    }catch(e){ out.setup.push('section failed: '+String((e as Error).message).slice(0,300)); }
+    if (!process.env.NEVORA_CLK_ONLY) try {
+    // ---- 3. states on Carmen's sheet: changed, saving (POST held), couldn't confirm, saved + focus after Save ----
+    for (const engine of ['webkit', 'chromium']) {
+      await resetCarmen();
+      const s = await open(engine, 390); const st: any = { engine };
+      await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+      await s.page.getByRole('checkbox', { name: /^Main Office/ }).check();
+      await s.page.route(front + C + '?edit=clocker', async (r: any) => { if (r.request().method() === 'POST') { await new Promise(res => setTimeout(res, 5000)); await r.abort().catch(() => {}); } else await r.continue(); });
+      await s.page.getByRole('button', { name: /^Sav/ }).click(); await s.page.waitForTimeout(600);
+      st.saving = { button: await s.page.locator('.clk button[type=submit], .clk button').filter({ hasText: /Sav/ }).first().innerText().catch(() => null), disabled: await s.page.locator('.clk button').filter({ hasText: /Sav/ }).first().isDisabled().catch(() => null) };
+      await view(s, engine, 'state-saving', 390, 'en', false);
+      await s.page.locator('.clk-result [role=alert]').waitFor({ timeout: 15000 }).catch(() => {}); await s.page.waitForTimeout(300);
+      st.unconfirmed = { text: await s.page.locator('.clk-result').innerText().catch(() => null), focus: await s.page.evaluate(() => (document.activeElement?.className || document.activeElement?.tagName || '').toString().slice(0, 60)) };
+      await view(s, engine, 'state-unconfirmed', 390, 'en', false);
+      await s.page.unroute(front + C + '?edit=clocker');
+      await s.page.getByRole('button', { name: 'Reload profile' }).click(); await settle(s.page);
+      st.afterReload = await s.page.evaluate(() => [...document.querySelectorAll('.clk input:checked')].map(e => (e as HTMLInputElement).value));
+      out.states.push(st); await s.ctx.close();
+      for (const width of [390, 1440]) {
+        await resetCarmen();
+        const t = await open(engine, width); const sv: any = { engine, width };
+        await t.page.goto(front + C + '?edit=clocker'); await settle(t.page);
+        await t.page.getByRole('checkbox', { name: /^Main Office/ }).check();
+        await t.page.getByRole('button', { name: 'Save', exact: true }).click(); await t.page.locator('.clk-result [role=status]').waitFor({ timeout: 20000 }).catch(() => {}); await t.page.waitForTimeout(400);
+        sv.saved = { text: await t.page.locator('.clk-result').innerText().catch(() => null), focus: await t.page.evaluate(() => { const e = document.activeElement as HTMLElement | null; return e ? (e.closest('#clock-in-at') ? 'row: ' : '') + e.tagName.toLowerCase() + '.' + String(e.className).slice(0, 40) + ' ' + (e.textContent || '').trim().slice(0, 40) : null; }), url: t.page.url().replace(front, '') };
+        await view(t, engine, 'state-saved', width, 'en', false);
+        out.states.push(sv); await t.ctx.close();
+      }
+    }
+    }catch(e){ out.setup.push('section failed: '+String((e as Error).message).slice(0,300)); }
+    if (!process.env.NEVORA_CLK_ONLY) try {
+    // ---- 4. real round trip (WebKit): Daniel to SELECTED (West only), reload; then ALL, reload ----
+    for (const engine of ['webkit', 'chromium']) {
+      await q("UPDATE employees SET clocker_location_mode='ASSIGNED',clocker_location_ids='{}' WHERE id='QA-SCAN-A'");
+      const s = await open(engine, 1440); const rt: any = {};
+      const db = async () => (await rows("SELECT clocker_location_mode AS mode,clocker_location_ids AS ids FROM employees WHERE id='QA-SCAN-A'"))[0];
+      rt.before = await db();
+      await s.page.goto(front + D + '?edit=clocker'); await settle(s.page);
+      await s.page.getByRole('radio', { name: /^Only these locations/ }).check();
+      const main = s.page.getByRole('checkbox', { name: /^Main Office/ }); if (await main.isChecked()) await main.uncheck();
+      const west = s.page.getByRole('checkbox', { name: /^West Office/ }); if (!(await west.isChecked())) await west.check();
+      await s.page.getByRole('button', { name: 'Save', exact: true }).click(); await s.page.locator('.clk-result [role=status]').waitFor({ timeout: 20000 }).catch(() => {});
+      await s.page.reload(); await settle(s.page);
+      rt.selected = { ui: await s.page.evaluate(() => [...document.querySelectorAll('.clk input:checked')].map(e => (e as HTMLInputElement).value)), db: await db() };
+      await s.page.getByRole('radio', { name: /^Every location/ }).check(); await s.page.getByRole('button', { name: 'Save', exact: true }).click(); await s.page.locator('.clk-result [role=status]').waitFor({ timeout: 20000 }).catch(() => {});
+      await s.page.reload(); await settle(s.page);
+      rt.all = { ui: await s.page.evaluate(() => [...document.querySelectorAll('.clk input:checked')].map(e => (e as HTMLInputElement).value)), db: await db() };
+      await s.page.goto(front + D); await settle(s.page); rt.row = await s.page.locator('#clock-in-at').innerText().catch(() => null);
+      rt.errors = [...s.errors]; out.roundTrip[engine] = rt; await s.ctx.close();
+    }
+    }catch(e){ out.setup.push('section failed: '+String((e as Error).message).slice(0,300)); }
+    if (!process.env.NEVORA_CLK_ONLY) try {
+    // ---- 5. stale: two contexts on Carmen; A saves, B's save refused ----
+    for (const engine of ['webkit', 'chromium']) {
+      await resetCarmen();
+      const A = await open(engine, 390), B = await open(engine, 390); const sr: any = {};
+      for (const x of [A, B]) { await x.page.goto(front + C + '?edit=clocker'); await settle(x.page); }
+      await A.page.getByRole('checkbox', { name: /^Main Office/ }).check(); await A.page.getByRole('button', { name: 'Save', exact: true }).click(); await A.page.locator('.clk-result [role=status]').waitFor({ timeout: 20000 }).catch(() => {});
+      await B.page.getByRole('radio', { name: /^Every location/ }).check(); await B.page.getByRole('button', { name: 'Save', exact: true }).click(); await B.page.locator('.clk-result [role=alert]').waitFor({ timeout: 20000 }).catch(() => {}); await B.page.waitForTimeout(300);
+      sr.text = await B.page.locator('.clk-result').innerText().catch(() => null); sr.focus = await B.page.evaluate(() => String(document.activeElement?.className || document.activeElement?.tagName).slice(0, 60)); sr.saveDisabled = await B.page.getByRole('button', { name: 'Save', exact: true }).isDisabled().catch(() => null);
+      await view(B, engine, 'state-stale', 390, 'en', false);
+      await B.page.setViewportSize({ width: 1440, height: 900 }); await view(B, engine, 'state-stale', 1440, 'en', false);
+      await B.page.getByRole('button', { name: 'Reload profile' }).click(); await settle(B.page);
+      sr.afterReload = await B.page.evaluate(() => [...document.querySelectorAll('.clk input:checked')].map(e => (e as HTMLInputElement).value));
+      out.stale[engine] = sr; await A.ctx.close(); await B.ctx.close();
+    }
+    }catch(e){ out.setup.push('section failed: '+String((e as Error).message).slice(0,300)); }
+    if (process.env.NEVORA_CLK_ONLY === 'extra') try {
+    // ---- 6. double press, tab-out recovery and other pages, other pause triggers ----
+    out.extra = [];
+    for (const engine of ['webkit', 'chromium']) {
+      const x: any = { engine };
+      // (1) double press: count POSTs to the action
+      for (const how of ['dblclick', 'double-enter']) {
+        await resetCarmen();
+        const s = await open(engine, 390); const posts: string[] = [];
+        s.page.on('request', (r: any) => { if (r.method() === 'POST') posts.push(new URL(r.url()).pathname + new URL(r.url()).search); });
+        await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+        await s.page.getByRole('checkbox', { name: /^Main Office/ }).check();
+        const save = s.page.getByRole('button', { name: 'Save', exact: true });
+        if (how === 'dblclick') await save.dblclick(); else { await save.focus(); await s.page.keyboard.press('Enter'); await s.page.keyboard.press('Enter'); }
+        await s.page.locator('.clk-result').waitFor({ timeout: 20000 }).catch(() => {}); await s.page.waitForTimeout(1500);
+        x[how] = { posts: posts.length, paths: posts, result: await s.page.locator('.clk-result').innerText().catch(() => null), db: (await rows("SELECT clocker_location_mode AS mode,clocker_location_ids AS ids FROM employees WHERE id='QA-SCAN-B'"))[0], errors: [...s.errors] };
+        await s.ctx.close();
+      }
+      // (2) tab-out, Try again, other scoped pages; count window blur events
+      const tabOut = async (path: string, prep?: (p: any) => Promise<void>) => {
+        const s = await open(engine, 390); const r: any = { path };
+        await s.ctx.addInitScript(() => { (window as any).__blur = 0; (window as any).__vis = []; window.addEventListener('blur', () => { (window as any).__blur++; }); document.addEventListener('visibilitychange', () => (window as any).__vis.push(document.visibilityState)); });
+        await s.page.goto(front + path); await settle(s.page);
+        if (prep) await prep(s.page);
+        // focus the last tabbable element in the document, then Tab out
+        await s.page.evaluate(() => { const list = [...document.querySelectorAll<HTMLElement>('a[href],button:not(:disabled),input:not(:disabled),select,textarea,[tabindex]:not([tabindex="-1"])')].filter(e => e.tabIndex >= 0 && e.getBoundingClientRect().width > 0); list[list.length - 1]?.focus(); });
+        r.lastFocused = await s.page.evaluate(() => (document.activeElement?.textContent || document.activeElement?.tagName || '').trim().slice(0, 40));
+        await s.page.keyboard.press('Tab'); await s.page.waitForTimeout(1500);
+        r.after = await s.page.evaluate(() => ({ active: document.activeElement?.tagName, hasFocus: document.hasFocus(), blur: (window as any).__blur, vis: (window as any).__vis }));
+        r.paused = await s.page.getByText('View paused').count();
+        await s.page.screenshot({ path: join(shots, `${engine}-tabout${path.replace(/[^a-z]+/gi, '-')}.png`) });
+        const again = s.page.getByRole('button', { name: 'Try again' });
+        if (r.paused && await again.count()) { await s.page.mouse.move(5, 300); await again.click(); await settle(s.page); r.afterTryAgain = { paused: await s.page.getByText('View paused').count(), sheet: await s.page.locator('.clk').count(), url: s.page.url().replace(front, ''), checked: await s.page.evaluate(() => [...document.querySelectorAll('.clk input:checked')].map(e => (e as HTMLInputElement).value)) }; }
+        await s.ctx.close(); return r;
+      };
+      await resetCarmen();
+      x.tabOutSheet = await tabOut(C + '?edit=clocker', async p => { await p.getByRole('checkbox', { name: /^Main Office/ }).check(); });
+      x.tabOutPayrollExport = await tabOut('/app/payroll-export');
+      x.tabOutTimecards = await tabOut('/app/timecards');
+      // (3) other triggers: alert, confirm, a second page brought to front, a file input click
+      const trig = async (name: string, act: (s: any) => Promise<void>) => {
+        const s = await open(engine, 390); const r: any = { name };
+        await s.ctx.addInitScript(() => { (window as any).__blur = 0; window.addEventListener('blur', () => { (window as any).__blur++; }); });
+        await s.page.goto(front + C + '?edit=clocker'); await settle(s.page);
+        try { await act(s); } catch (e) { r.error = String((e as Error).message).slice(0, 160); }
+        await s.page.waitForTimeout(1500);
+        r.blur = await s.page.evaluate(() => (window as any).__blur).catch(() => null); r.paused = await s.page.getByText('View paused').count().catch(() => null);
+        await s.ctx.close(); return r;
+      };
+      x.triggers = [
+        await trig('alert', async s => { s.page.once('dialog', async (d: any) => { await new Promise(r => setTimeout(r, 800)); await d.accept(); }); await s.page.evaluate(() => { setTimeout(() => alert('QA fictional alert'), 0); }); }),
+        await trig('confirm', async s => { s.page.once('dialog', async (d: any) => { await new Promise(r => setTimeout(r, 800)); await d.dismiss(); }); await s.page.evaluate(() => { setTimeout(() => confirm('QA fictional confirm'), 0); }); }),
+        await trig('second-tab-front', async s => { const p2 = await s.ctx.newPage(); await p2.goto('about:blank'); await p2.bringToFront(); await s.page.waitForTimeout(800); await s.page.bringToFront(); }),
+        await trig('print', async s => { await s.page.evaluate(() => { setTimeout(() => window.print(), 0); }); }),
+        await trig('file-input', async s => { const chooser = s.page.waitForEvent('filechooser', { timeout: 3000 }).catch(() => null); await s.page.evaluate(() => { const i = document.createElement('input'); i.type = 'file'; i.style.position = 'fixed'; i.style.top = '0'; document.body.append(i); i.click(); }); const c = await chooser; if (c) await c.setFiles([]); }),
+      ];
+      out.extra.push(x);
+    }
+    }catch(e){ out.setup.push('section failed: '+String((e as Error).message).slice(0,300)); }
+    for (const b of Object.values(browsers)) await b.close();
+    expect(out.views.length).toBeGreaterThan(0);
+  } finally {
+    await writeFile(join(evidence, 'clk.json'), JSON.stringify(out, null, 1));
+    await tls.close(); await app.close();
+  }
+}, 3600000);

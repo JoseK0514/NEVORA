@@ -1,0 +1,78 @@
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { resolve, join } from 'node:path';
+import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { hashPassword } from '../src/lib/auth/password';
+
+// QA probe (not committed): does the production /app/schedule RSC prefetch hang, and does it cost a person anything?
+it('production prefetch probe', async () => {
+  const evidence = process.env.NEVORA_PROBE_EVIDENCE!;
+  await mkdir(evidence, { recursive: true });
+  const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!)('playwright');
+  const app = await createOwnedNextApp(evidence, { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, payrollEnabled: true });
+  const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+  const base = OWNED_COLLAB_ORIGIN;
+  const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
+  const report: Record<string, unknown> = { runs: [] };
+  try {
+    await seedOwnedApp(app.database.executor);
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PROBE-MGR','Fictional','Probe Manager','NONE','MANAGER','loc-1')");
+    await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('PROBE-MGR',$1,false)", [await hashPassword(TEST_PASSWORD)]);
+    await assignOwnedManagerCompanyAccess(app.database.executor, 'PROBE-MGR');
+    const conns = async () => (await q<{ state: string | null; n: number }>("SELECT state, count(*)::int n FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid() GROUP BY state ORDER BY state"));
+    report.connectionsBefore = await conns();
+    for (const engine of ['chromium', 'webkit']) {
+      const browser = await runtime[engine].launch({ headless: true });
+      const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block', proxy: { server: tls.server }, ignoreHTTPSErrors: true });
+      const page = await context.newPage(); page.setDefaultTimeout(20000);
+      const t0 = Date.now();
+      const rsc: { url: string; prefetch: boolean; start: number; status?: number; headersAt?: number; finishedAt?: number; failed?: string; bodyBytes?: number }[] = [];
+      const byReq = new Map<unknown, (typeof rsc)[number]>();
+      page.on('request', (r: { url(): string; headers(): Record<string, string>; method(): string }) => {
+        const h = r.headers(); if (h.rsc !== '1' || r.method() !== 'GET') return;
+        const e = { url: new URL(r.url()).pathname + new URL(r.url()).search.replace(/_rsc=[^&]+/, '_rsc=…'), prefetch: h['next-router-prefetch'] === '1', start: Date.now() - t0 };
+        rsc.push(e); byReq.set(r, e);
+      });
+      page.on('response', (res: { request(): unknown; status(): number }) => { const e = byReq.get(res.request()); if (e) { e.status = res.status(); e.headersAt = Date.now() - t0; } });
+      page.on('requestfinished', async (r: { sizes(): Promise<{ responseBodySize: number }> }) => { const e = byReq.get(r); if (e) { e.finishedAt = Date.now() - t0; try { e.bodyBytes = (await r.sizes()).responseBodySize; } catch { /* sizes unavailable */ } } });
+      page.on('requestfailed', (r: { failure(): { errorText: string } | null }) => { const e = byReq.get(r); if (e) { e.failed = r.failure()?.errorText ?? 'failed'; e.finishedAt = Date.now() - t0; } });
+      const pageErrors: string[] = []; page.on('pageerror', (e: Error) => pageErrors.push(e.message));
+      await page.goto(base + '/login');
+      await page.getByLabel('Employee ID', { exact: true }).fill('PROBE-MGR');
+      await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+      await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(base + '/app');
+      await page.waitForTimeout(12000); // let prefetches start and, if they will, finish
+      const homeSnapshot = rsc.map(e => ({ ...e }));
+      const connectionsOnHome = await conns();
+      // Real click navigation to Schedule from Home, three times (Home <-> Schedule).
+      const clicks: { ms: number; heading: boolean }[] = [];
+      for (let i = 0; i < 3; i++) {
+        const link = page.getByRole('link', { name: 'Schedule', exact: true }).first();
+        const start = Date.now();
+        await link.click();
+        await page.waitForURL(/\/app\/schedule(\?|$)/);
+        await page.getByRole('heading', { name: 'Schedule', exact: true }).first().waitFor();
+        clicks.push({ ms: Date.now() - start, heading: true });
+        await page.waitForTimeout(1500);
+        await page.getByRole('link', { name: 'Home', exact: true }).first().click(); await page.waitForURL(base + '/app');
+        await page.waitForTimeout(3000);
+      }
+      const connectionsAfterNav = await conns();
+      await page.waitForTimeout(5000);
+      (report.runs as unknown[]).push({ engine, homeSnapshot, clicks, connectionsOnHome, connectionsAfterNav, connectionsAfterIdle: await conns(), allRsc: rsc, pageErrors });
+      await browser.close();
+    }
+    await new Promise(r => setTimeout(r, 3000));
+    report.connectionsAfterClose = await conns();
+    const dir = (await readdir(evidence)).find(n => n.startsWith('owned-next-'));
+    if (dir) { const log = await readFile(join(evidence, dir, 'next.log'), 'utf8'); report.nextLogErrors = log.split('\n').filter(l => /error|⨯|warn|abort/i.test(l)).slice(0, 40); report.nextLogScheduleLines = log.split('\n').filter(l => l.includes('/app/schedule')).slice(0, 40); }
+    expect(true).toBe(true);
+  } finally {
+    await writeFile(resolve(evidence, 'probe.json'), JSON.stringify(report, null, 2));
+    await tls.close(); await app.close();
+  }
+});

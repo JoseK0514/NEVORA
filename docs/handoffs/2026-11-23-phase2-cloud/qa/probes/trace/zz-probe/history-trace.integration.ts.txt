@@ -1,0 +1,195 @@
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { createOwnedNextApp, ownedProductionRequested } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, assignOwnedManagerCompanyAccess, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { fixtureProof } from '../src/test/integration/shift-change-api';
+import { hashPassword } from '../src/lib/auth/password';
+import { readOwnerOperationalScope, assignOperationalScope } from '../src/lib/company-access/operational-scope.server';
+import { readTimecards, mutateTimecard } from '../src/lib/timecards/service';
+import { neutralProfile } from '../src/lib/payroll-export/model';
+import { saveExportProfile, createPayrollExport } from '../src/lib/payroll-export/service';
+import { readPeriodClose, savePeriodPopulation, preparePeriodManifest } from '../src/lib/period-close/service';
+
+it('connects original shift reviews and explicit period history in owned Chromium and WebKit', async () => {
+  const evidence = process.env.NEVORA_READINESS_UI_EVIDENCE;
+  if (!evidence) throw Error('Choose an external readiness UI evidence directory');
+  await mkdir(evidence, { recursive: true });
+  const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
+  // A production build sets the session cookie `secure`, which WebKit keeps only over https. Production runs therefore
+  // serve the app at the owned test origin through the owned loopback TLS proxy (a throwaway certificate made at run
+  // time), as the Clocker production run does; development keeps plain http on 127.0.0.1.
+  const production = ownedProductionRequested();
+  const app = await createOwnedNextApp(evidence, { payrollEnabled: true, ...(production ? { portalHttpsOrigin: OWNED_COLLAB_ORIGIN } : {}) });
+  const tls = production ? await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url }).catch(async error => { await app.close(); throw error; }) : null;
+  const base = production ? OWNED_COLLAB_ORIGIN : app.url;
+  const network = tls ? { proxy: { server: tls.server }, ignoreHTTPSErrors: true } : {};
+  const q = <T = Record<string, unknown>>(text: string, values: unknown[] = []) => app.database.executor.query<T>({ text, values });
+  const checks: string[] = [], errors: string[] = [];
+  const browsers: { close(): Promise<void> }[] = [];
+  let complete = false, failureShot: (() => Promise<void>) | undefined;
+  try {
+    await seedOwnedApp(app.database.executor);
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('UI-COMPANY','Fictional','Company Manager','NONE','MANAGER','loc-1'),('UI-LOCAL','Fictional','Location Manager','NONE','MANAGER','loc-1'),('UI-WORKER','Fictional','Worker','NONE','EMPLOYEE','loc-1')");
+    await q("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('UI-COMPANY',$1,false),('UI-LOCAL',$1,false)", [await hashPassword(TEST_PASSWORD)]);
+    await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('UI-WORKER','loc-1')");
+    await q("INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) SELECT 'ui-availability-'||d,'UI-WORKER',d,'00:00','24:00' FROM generate_series(0,6)d; INSERT INTO weekly_availability_submissions(week_start,employee_id,uses_normal_availability) VALUES('2026-10-12','UI-WORKER',true)");
+    await assignOwnedManagerCompanyAccess(app.database.executor, 'UI-COMPANY');
+    const owner = await fixtureProof(app.database.executor, 'QAOWNER');
+    const scope = await readOwnerOperationalScope(owner, 'UI-LOCAL', app.database.executor);
+    if (scope.state !== 'ready') throw Error('Owned scope unavailable');
+    const c = scope.data.current;
+    expect((await assignOperationalScope(owner, 'UI-LOCAL', { action: 'ASSIGN', operationId: randomUUID(), expectedEmployeeVersion: c.employeeUpdatedAt, expectedRoleGeneration: c.roleGeneration, expectedScopeRevision: c.scopeRevision, scope: { mode: 'LOCATIONS', locationIds: ['loc-1'] } }, app.database.executor)).state).toBe('saved');
+    await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('ui-review','loc-1','2026-10-12','DRAFT','QAOWNER')");
+
+    // Real services prepare an immutable manifest; only the fictional event volume is seeded directly.
+    const period = { startDate: '2026-09-21', endDate: '2026-09-27' }, ex = app.database.executor;
+    await q("INSERT INTO clocker_devices(id,location_id,name) VALUES('ui-period-device','loc-1','Owned device'); INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status) VALUES('ui-period-entry','UI-WORKER','loc-1','ui-period-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT')");
+    for (const action of ['APPROVE', 'FINALIZE'] as const) {
+      const view = await readTimecards(owner, period, ex); if (view.state !== 'ready') throw Error('Owned cards unavailable');
+      const card = view.cards.find(x => x.card.employeeId === 'UI-WORKER')!;
+      await mutateTimecard(owner, { ...period, operationId: randomUUID(), employeeId: 'UI-WORKER', expectedRevision: card.revision, expectedSourceHash: card.sourceHash, action }, ex);
+    }
+    const cards = await readTimecards(owner, period, ex); if (cards.state !== 'ready') throw Error('Owned cards unavailable');
+    const card = cards.cards.find(x => x.card.employeeId === 'UI-WORKER')!;
+    const profile = await saveExportProfile(owner, { operationId: randomUUID(), id: randomUUID(), expectedRevision: 0, profile: { ...neutralProfile(), name: 'Owned mapping', employeeMappings: [{ employeeId: 'UI-WORKER', providerEmployeeId: 'OWNED-001' }] } }, ex);
+    const exported = await createPayrollExport(owner, { ...period, operationId: randomUUID(), profileId: profile.id, profileRevision: profile.revision, cards: [{ employeeId: 'UI-WORKER', revision: card.revision, sourceHash: card.sourceHash, finalizationOperationId: card.history[0].operationId }] }, ex);
+    const review = await readPeriodClose(owner, period, ex);
+    const population = await savePeriodPopulation(owner, { ...period, operationId: randomUUID(), expectedRevision: 0, sourceHash: review.sourceHash, members: review.members.map(m => ({ employeeId: m.employeeId, disposition: m.employeeId === 'UI-WORKER' ? 'INCLUDE' : 'ZERO_TIME', reason: 'Owned review', employmentFacts: 'Fictional employment facts', employmentBasis: 'MANAGER_ATTESTED' })) }, ex);
+    const manifest = await preparePeriodManifest(owner, { ...period, operationId: randomUUID(), populationRevision: population.revision, receipts: [{ actorId: 'QAOWNER', operationId: exported.operationId }] }, ex);
+    await q("INSERT INTO payroll_period_events(workspace_id,manifest_id,id,actor_employee_id,kind,command_hash,payload,created_at) SELECT 'workspace-fuel',$1::uuid,md5('ui-event-'||n)::uuid,'QAOWNER','ARTIFACT_SERVED',repeat('a',64),jsonb_build_object('filename','owned-'||n||'.csv'), '2026-09-28'::timestamptz + n*interval '1 microsecond' FROM generate_series(1,1001) n", [manifest.id]);
+    const originalArtifact = await q('SELECT manifest_hash FROM payroll_period_manifests WHERE id=$1', [manifest.id]);
+
+    for (const engine of ['webkit']) {
+      const browser = await runtime[engine].launch({ headless: true }); browsers.push(browser);
+      for (const actor of ['UI-COMPANY']) {
+        const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', reducedMotion: 'reduce', ...network });
+        await context.addInitScript(() => {
+          const log = (m: string) => console.log('[qa] ' + Math.round(performance.now()) + ' ' + m);
+          log('document start ' + location.pathname + location.search);
+          addEventListener('visibilitychange', () => log('visibility ' + document.visibilityState));
+          addEventListener('pagehide', () => log('pagehide'));
+          addEventListener('pageshow', () => log('pageshow'));
+          const watch = () => new MutationObserver(records => { for (const r of records) {
+            for (const n of Array.from(r.removedNodes)) if (n instanceof Element && (n.matches('[aria-label="Period artifact and handoff history"]') || n.querySelector('[aria-label="Period artifact and handoff history"]'))) log('history region removed (parent ' + (r.target as Element).tagName + '.' + String((r.target as Element).className).slice(0, 40) + ')');
+            for (const n of Array.from(r.addedNodes)) if (n instanceof Element && (n.matches('.route-skeleton,[class*="skeleton"],[class*="Skeleton"]') || n.querySelector('.route-skeleton'))) log('skeleton added: ' + String(n.className).slice(0, 60) + ' in ' + String((r.target as Element).className).slice(0, 40));
+            if (r.type === 'attributes' && r.target instanceof Element && r.target.matches('[aria-label="Period artifact and handoff history"]')) {} } }).observe(document, { childList: true, subtree: true });
+          if (document.documentElement) watch(); else addEventListener('DOMContentLoaded', watch);
+        });
+        const page = await context.newPage(); page.setDefaultTimeout(20000);
+        const t0 = Date.now(), trace: Record<string, unknown>[] = []; (globalThis as Record<string, unknown>).__qaTrace = trace;
+        page.on('console', (m: { text(): string }) => { if (m.text().startsWith('[qa]')) trace.push({ t: Date.now() - t0, ev: 'dom', text: m.text() }); });
+        page.on('framenavigated', (f: unknown) => { if (f === page.mainFrame()) trace.push({ t: Date.now() - t0, ev: 'navigated', url: page.url().replace(/^https?:\/\/[^/]+/, '') }); });
+        const rscIds = new Map<unknown, number>(); let rscN = 0;
+        page.on('request', (r: { url(): string; method(): string; headers(): Record<string, string>; isNavigationRequest(): boolean }) => { const h = r.headers(); if (h.rsc === '1' || h['next-action'] || r.isNavigationRequest()) { const id = ++rscN; rscIds.set(r, id); trace.push({ t: Date.now() - t0, ev: 'request', id, url: r.url().replace(/^https?:\/\/[^/]+/, '').replace(/_rsc=[^&]+/, '_rsc'), method: r.method(), rsc: h.rsc === '1', prefetch: h['next-router-prefetch'] === '1', action: !!h['next-action'], document: r.isNavigationRequest() }); } });
+        for (const k of ['requestfinished', 'requestfailed']) page.on(k, (r: unknown) => { const id = rscIds.get(r); if (id) trace.push({ t: Date.now() - t0, ev: k, id }); });
+        // G69 (Nov 23, 2026): `networkidle` belongs to the last document load, so after a client-side move (sign-in lands on
+        // Home that way) it is already met while Home's shell is still reading (inbox count, notifications, access check).
+        // Leaving then cancels those reads, which WebKit reports as page errors. Wait until this page's own fetches have
+        // finished for a quiet half second before leaving; the error check below stays exactly as strict.
+        const reads = new Set<unknown>();
+        page.on('request', (request: { resourceType(): string }) => { if (['fetch', 'xhr'].includes(request.resourceType())) reads.add(request); });
+        for (const done of ['requestfinished', 'requestfailed']) page.on(done, (request: unknown) => { reads.delete(request); });
+        const settled = async () => {
+          const deadline = Date.now() + 20000; let quietSince = Date.now();
+          while (Date.now() < deadline) { if (reads.size) quietSince = Date.now(); else if (Date.now() - quietSince >= 500) return; await page.waitForTimeout(100); }
+          throw Error(`Page reads never settled: ${[...reads].map(request => (request as { url(): string }).url()).join(', ')}`);
+        };
+        const pause = async () => { await settled(); await page.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page.waitForLoadState('networkidle'); await settled(); };
+        const visit = async (path: string) => { if (page.url() !== 'about:blank') await pause(); return page.goto(base + path); };
+        failureShot = () => page.screenshot({ path: resolve(evidence, `${engine}-${actor}-failure.png`), fullPage: true });
+        page.on('pageerror', (error: Error) => errors.push(`${engine} ${actor}: ${error.message}`));
+        await context.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => {
+          const url = new URL(route.request().url());
+          if (['http:', 'https:'].includes(url.protocol) && url.origin !== base) await route.abort(); else await route.continue();
+        });
+        await visit('/login');
+        await page.getByLabel('Employee ID', { exact: true }).fill(actor);
+        await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(base + '/app');
+        const id = `${engine}-${actor}`;
+        await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'ui-review','UI-WORKER','2026-10-12','08:00','16:00')", [id]);
+        await visit('/app/schedule/edit?shiftId=' + id);
+        const form = page.locator('form').filter({ has: page.locator('[name="employeeId"]') });
+        await form.locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' });
+        const version = await form.locator('[name="expectedReviewVersion"]').inputValue(); expect(version).toMatch(/^[a-f0-9]{64}$/);
+        await form.locator('[name="notes"]').fill('Retained fictional draft');
+        await q("UPDATE shifts SET notes='Concurrent edit',updated_at=clock_timestamp() WHERE id=$1", [id]);
+        await form.evaluate((element: HTMLFormElement) => element.requestSubmit());
+        await form.getByRole('alert').filter({ hasText: 'changed since you opened' }).waitFor();
+        expect(await form.locator('[name="notes"]').inputValue()).toBe('Retained fictional draft');
+        expect(await form.locator('[name="expectedReviewVersion"]').inputValue()).toBe(version);
+        await form.getByText('Unsaved changes to copy', { exact: true }).click();
+        expect(await form.getByLabel('Submitted shift changes').inputValue()).toContain('Retained fictional draft');
+        expect(await q('SELECT notes FROM shifts WHERE id=$1', [id])).toEqual([{ notes: 'Concurrent edit' }]);
+        await page.getByRole('button', { name: 'Delete shift', exact: true }).click();
+        const deleteButton = page.getByRole('button', { name: 'Delete', exact: true });
+        await deleteButton.focus(); await page.keyboard.press('Enter');
+        await page.getByText('This shift changed since you opened it.', { exact: false }).last().waitFor();
+        expect(await q('SELECT count(*)::int n FROM shifts WHERE id=$1', [id])).toEqual([{ n: 1 }]);
+        for (const width of [320, 390, 768, 1440]) {
+          await page.setViewportSize({ width, height: 1000 });
+          expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+        }
+        await page.screenshot({ path: resolve(evidence, `${engine}-${actor}-conflict.png`), fullPage: true });
+        checks.push(`${engine} ${actor}: edit/delete reject original stale review, keep draft, keyboard confirmation, 320/390/768/1440`);
+        await page.waitForLoadState('networkidle');
+        // "Reload current shift" is window.location.reload(). The old document still has [name="notes"] with the retained
+        // draft, and WebKit can start the reload after the click resolves, so wait for the new document's load before
+        // reading the field (QA, Nov 23, 2026: 3 of 13 WebKit runs read the old page).
+        await Promise.all([page.waitForEvent('load'), page.getByRole('button', { name: 'Reload current shift', exact: true }).first().click()]);
+        await form.locator('[name="notes"]').waitFor();
+        expect(await form.locator('[name="notes"]').inputValue()).toBe('Concurrent edit');
+        await form.locator('[name="notes"]').fill('Fresh reviewed edit');
+        await form.evaluate((element: HTMLFormElement) => element.requestSubmit());
+        await page.waitForURL(/\/app\/schedule\?/);
+        expect(await q('SELECT notes FROM shifts WHERE id=$1', [id])).toEqual([{ notes: 'Fresh reviewed edit' }]);
+        checks.push(`${engine} ${actor}: explicit reload and valid review save`);
+        await visit('/app/schedule/edit?shiftId=' + id);
+        await page.getByRole('button', { name: 'Delete shift', exact: true }).click();
+        await page.getByRole('button', { name: 'Delete', exact: true }).click();
+        await page.waitForURL(/\/app\/schedule\?/);
+        expect(await q('SELECT count(*)::int n FROM shifts WHERE id=$1', [id])).toEqual([{ n: 0 }]);
+        checks.push(`${engine} ${actor}: fresh original-review delete`);
+
+        if (actor === 'UI-COMPANY') {
+          await visit('/app/payroll-export?start=' + period.startDate + '&end=' + period.endDate);
+          await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
+          const mobile = page.getByRole('button', { name: 'Choose who’s included', exact: true });
+          if (await mobile.isVisible()) await mobile.click();
+          const history = page.getByRole('region', { name: 'Period artifact and handoff history' });
+          await history.getByRole('button', { name: 'Load history', exact: true }).click();
+          await history.getByText('More events are available.', { exact: true }).waitFor();
+          expect(await history.locator('li').count()).toBe(50);
+          await history.getByRole('button', { name: 'Load older events', exact: true }).focus(); await page.keyboard.press('Enter');
+          await history.getByText(/100 of 1001 events loaded/).waitFor();
+          for (let i = 0; i < 19; i++) { await history.getByRole('button', { name: 'Load older events', exact: true }).click(); await history.getByRole('button', { name: 'Refresh history', exact: true }).waitFor({ state: 'visible' }); await page.waitForFunction(() => document.querySelector('[aria-label="Period artifact and handoff history"]')?.getAttribute('aria-busy') === 'false'); }
+          await history.getByText('All events in this history snapshot are loaded.', { exact: true }).waitFor();
+          expect(await history.locator('li').count()).toBe(1001);
+          expect(await history.getByRole('button', { name: 'Load older events', exact: true }).count()).toBe(0);
+          await page.setViewportSize({ width: 390, height: 1000 });
+          if (await mobile.isVisible()) await mobile.click();
+          await history.getByRole('heading', { name: 'Full period history', exact: true }).scrollIntoViewIfNeeded();
+          expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2)).toBe(true);
+          await page.screenshot({ path: resolve(evidence, `${engine}-history.png`), fullPage: false });
+          await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+          await history.waitFor({ state: 'detached' });
+          expect(await q('SELECT manifest_hash FROM payroll_period_manifests WHERE id=$1', [manifest.id])).toEqual(originalArtifact);
+          checks.push(`${engine}: 1001 real events, explicit 50-row pages, complete traversal, unchanged artifact hash, blur retirement`);
+        }
+        await pause(); await context.unrouteAll({behavior:'wait'}); await context.close();
+      }
+    }
+    expect(errors).toEqual([]); complete = true;
+  } catch (error) { await failureShot?.().catch(() => {}); throw error; }
+  finally {
+    await Promise.all(browsers.map(browser => browser.close()));
+    await tls?.close();
+    await app.close();
+    await writeFile(resolve(evidence, 'report.json'), JSON.stringify({ complete, checks, errors, trace: (globalThis as Record<string, unknown>).__qaTrace, fictionalOnly: true, source: app.sourceHashes }, null, 2));
+  }
+}, 480000);

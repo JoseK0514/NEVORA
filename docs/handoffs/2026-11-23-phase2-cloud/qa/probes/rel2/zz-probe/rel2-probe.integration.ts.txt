@@ -1,0 +1,159 @@
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { resolve, join } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { hashPassword } from '../src/lib/auth/password';
+
+// QA probe (not committed): release follow-ups on a production build over https. Fictional data only.
+type Page = any;
+const ENGINES = (process.env.NEVORA_REL2_ENGINES ?? 'chromium,webkit').split(',');
+
+async function measure(page: Page, axePath: string) {
+  const layout = await page.evaluate(() => {
+    const de = document.documentElement;
+    const vis = (el: Element) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && !el.closest('[aria-hidden="true"],[hidden],[inert]') && ((el as any).checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) ?? true); };
+    const leaves = Array.from(document.body.querySelectorAll('*')).filter(el => vis(el) && Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent!.trim().length > 1));
+    const clipped: string[] = [];
+    for (const el of leaves) { const cs = getComputedStyle(el), h = el as HTMLElement; if ((cs.textOverflow === 'ellipsis' || ['hidden', 'clip'].includes(cs.overflowX) || ['hidden', 'clip'].includes(cs.overflowY)) && (h.scrollWidth > h.clientWidth + 1 || h.scrollHeight > h.clientHeight + 2) && h.clientWidth > 4 && h.clientHeight > 4 && !el.closest('.sr-only,.visually-hidden,.b-sr,[class*="sr-only"]')) clipped.push(h.innerText.trim().slice(0, 40)); }
+    return { overflowX: de.scrollWidth - de.clientWidth, clipped, rem: getComputedStyle(de).fontSize };
+  });
+  await page.addScriptTag({ path: axePath });
+  const axe = await page.evaluate(async () => { const r = await (window as any).axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }, resultTypes: ['violations'] }); return r.violations.map((v: any) => ({ id: v.id, impact: v.impact, count: v.nodes.length, targets: v.nodes.slice(0, 3).map((n: any) => n.target.join(' ')) })); });
+  return { ...layout, axe };
+}
+
+async function signIn(page: Page, base: string, id: string) {
+  await page.goto(base + '/login');
+  await page.getByLabel('Employee ID', { exact: true }).fill(id);
+  await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+  await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+}
+
+const bigText = () => { const add = () => { const s = document.createElement('style'); s.textContent = 'html{font-size:32px !important}'; document.head.appendChild(s); }; if (document.head) add(); else document.addEventListener('DOMContentLoaded', add); };
+
+it('release follow-ups probe', async () => {
+  const evidence = process.env.NEVORA_REL2_EVIDENCE!, shots = join(evidence, 'shots'); await mkdir(shots, { recursive: true });
+  const runtimePackage = process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!;
+  const runtime = createRequire(runtimePackage)('playwright'), axePath = createRequire(runtimePackage).resolve('axe-core/axe.min.js');
+  const results: Record<string, unknown>[] = [], setupLog: string[] = [], notifInjected: string[] = [];
+  const base = OWNED_COLLAB_ORIGIN;
+  const ctxOpts = (width: number, height: number) => ({ viewport: { width, height }, serviceWorkers: 'block', proxy: { server: '' }, ignoreHTTPSErrors: true, reducedMotion: 'reduce' });
+  const record = async (name: string, fn: (r: Record<string, unknown>) => Promise<void>) => { const r: Record<string, unknown> = { name }; try { await fn(r); } catch (e) { r.error = String((e as Error).message).slice(0, 400); } results.push(r); };
+  try {
+    // ---------- Part A: main app ----------
+    {
+      const app = await createOwnedNextApp(join(evidence, 'main'), { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, payrollEnabled: true, ownerAdvisorEnabled: true, managerAdvisorEnabled: true });
+      const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+      try {
+        await seedOwnedApp(app.database.executor);
+        const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
+        try { await q("INSERT INTO notifications(id,employee_id,type,title,body) SELECT 'rel2-n'||g,'QAOWNER','fictional','Fictional update '||g,'Fictional body' FROM generate_series(1,7) g"); setupLog.push('notifications ok'); } catch (e) { setupLog.push('notifications failed: ' + String((e as Error).message).slice(0, 200)); }
+        for (const engine of ENGINES) {
+          const browser = await runtime[engine].launch({ headless: true });
+          let storageState: unknown = null;
+          { const o = ctxOpts(1440, 900); o.proxy.server = tls.server; const c = await browser.newContext(o); const p = await c.newPage(); p.setDefaultTimeout(20000); await signIn(p, base, 'QAOWNER'); await p.waitForURL(base + '/app'); storageState = await c.storageState(); await c.close(); }
+          const open = async (width: number, height: number, big: boolean) => { const o: any = ctxOpts(width, height); o.proxy.server = tls.server; o.storageState = storageState; const c = await browser.newContext(o); if (big) await c.addInitScript(bigText);
+            await c.route('**/api/notifications', async (route: any) => { if (route.request().method() !== 'GET') { await route.continue(); return; } const res = await route.fetch(); let body = await res.text(); try { const j = JSON.parse(body); if (j && j.state === 'ready' && Array.isArray(j.items)) { const now = new Date().toISOString(); j.items = [...Array.from({ length: 7 }, (_, i) => ({ id: 'rel2-u' + i, label: 'Fictional update ' + (i + 1), at: now, href: '/app/notifications/open?notificationId=rel2-u' + i, reviewState: 'unread', actionState: 'available' })), ...Array.from({ length: 2 }, (_, i) => ({ id: 'rel2-r' + i, label: 'Fictional read notice ' + (i + 1), at: now, href: '/app/notifications/open?notificationId=rel2-r' + i, reviewState: 'read', actionState: 'available' }))]; body = JSON.stringify(j); notifInjected.push('ok'); } else notifInjected.push('shape ' + String(j?.state)); } catch (e) { notifInjected.push('parse ' + String(e).slice(0, 80)); } await route.fulfill({ response: res, body }); });
+            const p = await c.newPage(); p.setDefaultTimeout(20000); const errs: string[] = []; p.on('pageerror', (e: Error) => errs.push(e.message)); return { c, p, errs }; };
+          // Tab bar at 320 and 390, 200% text.
+          for (const width of [320, 390]) await record(`${engine} tabbar ${width} 200%`, async r => {
+            const { c, p, errs } = await open(width, 800, true);
+            await p.goto(base + '/app'); await p.waitForTimeout(1500);
+            r.tabs = await p.evaluate(() => Array.from(document.querySelectorAll('.mobile-nav .mobile-nav-link')).map(a => { const s = Array.from(a.querySelectorAll(':scope > span:not(.b-tab-badge)')).pop() as HTMLElement | undefined; const ar = a.getBoundingClientRect(); const cs = s ? getComputedStyle(s) : null; return { label: s?.innerText ?? '', w: Math.round(ar.width), h: Math.round(ar.height), fontSize: cs?.fontSize, lineHeight: cs?.lineHeight, lines: s ? Math.round(s.getBoundingClientRect().height / parseFloat(cs!.lineHeight)) : null, cut: s ? s.scrollWidth > s.clientWidth + 1 || s.getBoundingClientRect().right > ar.right + 1 || s.getBoundingClientRect().left < ar.left - 1 : null }; }));
+            r.navBox = await p.evaluate(() => { const n = document.querySelector('.mobile-nav'); if (!n) return null; const b = n.getBoundingClientRect(); return { top: Math.round(b.top), h: Math.round(b.height), bottomGap: Math.round(innerHeight - b.bottom) }; });
+            await p.locator('.mobile-nav').first().screenshot({ path: join(shots, `${engine}-tabbar-${width}-200.png`) });
+            await p.screenshot({ path: join(shots, `${engine}-home-${width}-200.jpg`), type: 'jpeg', quality: 60 });
+            Object.assign(r, await measure(p, axePath)); r.pageErrors = errs; await c.close();
+          });
+          // Notifications segment counts at 390, 200% text.
+          await record(`${engine} notifications segments 390 200%`, async r => {
+            const { c, p, errs } = await open(390, 844, true);
+            await p.goto(base + '/app/notifications'); await p.waitForTimeout(1500);
+            r.pills = await p.evaluate(() => Array.from(document.querySelectorAll('.mb-segn')).filter(e => (e as HTMLElement).offsetParent).map(e => { const b = e.closest('button,a') as HTMLElement; const pr = e.getBoundingClientRect(); const range = document.createRange(); const tn = Array.from(b.childNodes).find(n => n.nodeType === 3 && n.textContent!.trim()); let lr: DOMRect | null = null; if (tn) { range.selectNodeContents(tn); lr = range.getBoundingClientRect(); } const nr = document.createRange(); nr.selectNodeContents(e); const numr = nr.getBoundingClientRect(); return { label: b.innerText.replace(/\s+/g, ' '), pill: [Math.round(pr.width), Math.round(pr.height)], pillMidY: Math.round(pr.top + pr.height / 2), labelMidY: lr ? Math.round(lr.top + lr.height / 2) : null, numeralMidY: Math.round(numr.top + numr.height / 2), numeralInPill: numr.top >= pr.top - 1 && numr.bottom <= pr.bottom + 1 && numr.left >= pr.left - 1 && numr.right <= pr.right + 1, buttonH: Math.round(b.getBoundingClientRect().height) }; }));
+            await p.locator('.mb-segn').first().locator('xpath=ancestor::*[self::div or self::nav][1]').screenshot({ path: join(shots, `${engine}-notifications-segments-390-200.png`) }).catch(() => {});
+            await p.screenshot({ path: join(shots, `${engine}-notifications-390-200.jpg`), type: 'jpeg', quality: 60 });
+            Object.assign(r, await measure(p, axePath)); r.pageErrors = errs; await c.close();
+          });
+          // Insights at 1440, 200% text (and 100% for comparison).
+          for (const big of [true, false]) await record(`${engine} insights 1440 ${big ? '200%' : '100%'}`, async r => {
+            const { c, p, errs } = await open(1440, 900, big);
+            await p.goto(base + '/app/reports'); await p.waitForTimeout(2000);
+            r.range = await p.evaluate(() => { const e = document.querySelector('p.c-ins__range') as HTMLElement | null; if (!e) return null; const cs = getComputedStyle(e); const b = e.getBoundingClientRect(); return { text: e.innerText, clip: cs.backgroundClip || (cs as any).webkitBackgroundClip, color: cs.color, bg: cs.backgroundColor, box: [Math.round(b.left), Math.round(b.top), Math.round(b.width), Math.round(b.height)] }; });
+            const el = p.locator('p.c-ins__range').first(); if (await el.count()) { const b = await el.boundingBox(); if (b) await p.screenshot({ path: join(shots, `${engine}-insights-range-1440-${big ? 200 : 100}.png`), clip: { x: Math.max(0, b.x - 40), y: Math.max(0, b.y - 60), width: Math.min(900, b.width + 80), height: b.height + 120 } }); }
+            await p.screenshot({ path: join(shots, `${engine}-insights-1440-${big ? 200 : 100}.jpg`), type: 'jpeg', quality: 60 });
+            Object.assign(r, await measure(p, axePath)); r.pageErrors = errs; await c.close();
+          });
+          // "‹ Things to do" back link reach with a mouse at 768 and 1440.
+          for (const width of [768, 1440]) await record(`${engine} back link ${width} mouse`, async r => {
+            const { c, p, errs } = await open(width, 900, false);
+            await p.goto(base + '/app/requests'); await p.waitForTimeout(1500);
+            const link = p.locator('main .q-nav > .q-nav__l').first(); r.found = await link.count();
+            r.link = await link.evaluate((a: HTMLElement) => { const b = a.getBoundingClientRect(), cs = getComputedStyle(a), af = getComputedStyle(a, '::after'); const cx = b.left + b.width / 2, cy = b.top + b.height / 2; const hit = (x: number, y: number) => { const t = document.elementFromPoint(x, y); return !!t && (t === a || a.contains(t)); }; const pts: Record<string, boolean> = {}; for (const [k, x, y] of [['c', cx, cy], ['up22', cx, cy - 21.5], ['down22', cx, cy + 21.5], ['up17', cx, cy - 17], ['down17', cx, cy + 17], ['left', b.left + 2, cy], ['right', b.right - 2, cy]] as [string, number, number][]) pts[k] = hit(x, y); const missUp = document.elementFromPoint(cx, cy - 21.5); return { text: a.innerText.trim(), href: a.getAttribute('href'), box: [Math.round(b.left), Math.round(b.top), Math.round(b.width), Math.round(b.height)], position: cs.position, after: { content: af.content, position: af.position, w: af.width, h: af.height, top: af.top, bottom: af.bottom }, pts, upLandsOn: missUp ? `${missUp.tagName.toLowerCase()}.${String(missUp.className).slice(0, 40)}` : null }; });
+            const b = await link.boundingBox();
+            if (b) { await p.mouse.move(b.x + b.width / 2, b.y + b.height / 2 - 20); await p.mouse.down(); await p.mouse.up(); await p.waitForTimeout(2500); r.pressAbove20 = new URL(p.url()).pathname; }
+            await p.goto(base + '/app/requests'); await p.waitForTimeout(1500);
+            // Keyboard focus ring.
+            let ring = null; for (let i = 0; i < 40; i++) { await p.keyboard.press('Tab'); const isIt = await p.evaluate(() => document.activeElement?.matches('main .q-nav > .q-nav__l') ?? false); if (isIt) { ring = await p.evaluate(() => { const a = document.activeElement as HTMLElement, cs = getComputedStyle(a), af = getComputedStyle(a, '::after'); return { outline: `${cs.outlineStyle} ${cs.outlineWidth} ${cs.outlineColor}`, boxShadow: cs.boxShadow.slice(0, 80), afterOutline: `${af.outlineStyle} ${af.outlineWidth}`, afterShadow: af.boxShadow.slice(0, 80), focusVisible: a.matches(':focus-visible') }; }); const lb = await link.boundingBox(); if (lb) await p.screenshot({ path: join(shots, `${engine}-backlink-focus-${width}.png`), clip: { x: Math.max(0, lb.x - 30), y: Math.max(0, lb.y - 30), width: lb.width + 60, height: lb.height + 60 } }); break; } }
+            r.focus = ring;
+            Object.assign(r, await measure(p, axePath)); r.pageErrors = errs; await c.close();
+          });
+          await browser.close();
+        }
+      } finally { await tls.close(); await app.close(); }
+    }
+    // ---------- Part B: billing recovery ----------
+    {
+      const app = await createOwnedNextApp(join(evidence, 'billing'), { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, commerceRecoveryEnabled: true, payrollEnabled: true });
+      const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+      try {
+        await seedOwnedApp(app.database.executor);
+        await app.database.executor.query({ text: "INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('REL2-EMP','Fictional','Staff','555-0131','EMPLOYEE','loc-1')", values: [] });
+        await app.database.executor.query({ text: 'INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)', values: ['REL2-EMP', await hashPassword(TEST_PASSWORD)] });
+        const restricted = { state: 'restricted', operational: false, trialEndsAt: '2026-11-12T12:00:00.000Z', paidThrough: null, graceEndsAt: null, plan: 'small', employeeLimit: 15, activeEmployees: 2, reason: 'trial_ended', billing: true, export: true, observedAt: new Date().toISOString(), validForMs: 15000 };
+        for (const engine of ENGINES) {
+          const browser = await runtime[engine].launch({ headless: true });
+          for (const width of [390, 1440]) {
+            const o = ctxOpts(width, width === 390 ? 844 : 900); o.proxy.server = tls.server; const c = await browser.newContext(o); const p = await c.newPage(); p.setDefaultTimeout(20000);
+            const errs: string[] = []; p.on('pageerror', (e: Error) => errs.push(e.message));
+            let mode = 'actual';
+            await c.route('**/*', async (route: any) => { const u = new URL(route.request().url()); if (['http:', 'https:'].includes(u.protocol) && u.origin !== base) { await route.abort('blockedbyclient'); return; } if (u.pathname === '/api/commerce/status' && mode !== 'actual') { if (mode === 'slow') await new Promise(res => setTimeout(res, 3500)); await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(mode === 'invalid' ? { ...restricted, state: 'unknown' } : { ...restricted, observedAt: new Date().toISOString() }) }); return; } await route.continue(); });
+            await record(`${engine} billing owner slow ${width}`, async r => {
+              await signIn(p, base, 'QAOWNER'); await p.waitForURL(/\/app\/billing/); r.landed = new URL(p.url()).pathname + new URL(p.url()).search;
+              await p.getByRole('button', { name: 'Refresh status', exact: true }).first().waitFor();
+              mode = 'slow'; const t0 = Date.now(); await p.reload(); 
+              await p.waitForTimeout(1500); r.at1_5 = await p.locator('[data-commerce-recovery] [role="status"]').first().innerText().catch(() => null);
+              await p.waitForTimeout(1500); r.at3_0 = await p.locator('[data-commerce-recovery] [role="status"]').first().innerText().catch(() => null);
+              await p.screenshot({ path: join(shots, `${engine}-billing-slow-${width}.png`), fullPage: true });
+              r.slowMeasure = await measure(p, axePath); r.slowMeasuredAtMs = Date.now() - t0;
+              await p.getByText('Access paused', { exact: true }).waitFor({ timeout: 15000 }); r.settledMs = Date.now() - t0;
+              r.settledStatusLines = await p.locator('[data-commerce-recovery] [role="status"]').allInnerTexts();
+              r.settledOrder = await p.evaluate(() => Array.from(document.querySelectorAll('[data-commerce-recovery] :is(button,a)')).filter(e => (e as HTMLElement).offsetParent).map(e => `${(e as HTMLElement).innerText.trim()} [${(e as HTMLElement).className.split(' ')[0]?.split('_')[1] ?? ''}]`));
+              await p.screenshot({ path: join(shots, `${engine}-billing-settled-${width}.png`), fullPage: true });
+              r.settledMeasure = await measure(p, axePath);
+              mode = 'invalid'; await p.getByRole('button', { name: 'Refresh status', exact: true }).click(); await p.getByText('We can’t check billing right now. Try again in a few minutes.', { exact: true }).waitFor();
+              r.failedOrder = await p.evaluate(() => Array.from(document.querySelectorAll('[data-commerce-recovery] :is(button,a)')).filter(e => (e as HTMLElement).offsetParent).map(e => `${(e as HTMLElement).innerText.trim()} [${(e as HTMLElement).className.split(' ')[0]?.split('_')[1] ?? ''}]`));
+              await p.screenshot({ path: join(shots, `${engine}-billing-failed-${width}.png`), fullPage: true });
+              r.failedMeasure = await measure(p, axePath); mode = 'actual';
+              r.pageErrors = [...errs];
+            });
+            await c.clearCookies(); errs.length = 0;
+            await record(`${engine} billing staff ${width}`, async r => {
+              await signIn(p, base, 'REL2-EMP'); await p.waitForURL(/\/app\/billing/);
+              await p.getByRole('heading', { name: 'Workplace access needs attention', exact: true }).waitFor();
+              r.staff = await p.evaluate(() => { const root = document.querySelector('[data-commerce-recovery]') ?? document.body; const els = Array.from(root.querySelectorAll('p,a,button')).filter(e => (e as HTMLElement).offsetParent) as HTMLElement[]; return els.map(e => { const b = e.getBoundingClientRect(); return `${e.tagName.toLowerCase()} "${e.innerText.trim().slice(0, 40)}" y=${Math.round(b.top)} h=${Math.round(b.height)}`; }); });
+              await p.screenshot({ path: join(shots, `${engine}-billing-staff-${width}.png`), fullPage: true });
+              Object.assign(r, await measure(p, axePath)); r.pageErrors = [...errs];
+            });
+            await c.close();
+          }
+          await browser.close();
+        }
+      } finally { await tls.close(); await app.close(); }
+    }
+    expect(results.length).toBeGreaterThan(0);
+  } finally { await writeFile(resolve(evidence, 'rel2.json'), JSON.stringify({ setupLog, notifInjected: notifInjected.slice(0, 20), results }, null, 2)); }
+}, 3600000);

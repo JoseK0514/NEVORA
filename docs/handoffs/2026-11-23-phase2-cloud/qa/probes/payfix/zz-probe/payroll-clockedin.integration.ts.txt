@@ -1,0 +1,117 @@
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { randomUUID } from 'node:crypto';
+import { fixtureProof } from '../src/test/integration/shift-change-api';
+import { readTimecards, mutateTimecard } from '../src/lib/timecards/service';
+import { neutralProfile } from '../src/lib/payroll-export/model';
+import { saveExportProfile, createPayrollExport } from '../src/lib/payroll-export/service';
+import { readPeriodClose, savePeriodPopulation, preparePeriodManifest } from '../src/lib/period-close/service';
+
+// QA probe (not committed): Payroll export with someone clocked in; typed text and the history list must survive 45 s.
+it('payroll export keeps typed text and history while someone is clocked in', async () => {
+  const evidence = process.env.NEVORA_PAYFIX_EVIDENCE!;
+  await mkdir(evidence, { recursive: true });
+  const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!)('playwright');
+  const app = await createOwnedNextApp(evidence, { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, payrollEnabled: true });
+  const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+  const base = OWNED_COLLAB_ORIGIN;
+  const q = (text: string, values: unknown[] = []) => app.database.executor.query({ text, values });
+  const results: Record<string, unknown>[] = [];
+  try {
+    await seedOwnedApp(app.database.executor);
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('PAY-A','Maria','Fictional-Lopez','555-0101','EMPLOYEE','loc-1'),('PAY-B','James','Fictional-Ortiz','555-0102','EMPLOYEE','loc-1')");
+    await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('PAY-A','loc-1'),('PAY-B','loc-1')");
+    await q("INSERT INTO clocker_devices(id,location_id,name) VALUES('pay-device','loc-1','Fictional tablet')");
+    // A past period with a prepared manifest and 1,001 fictional history events (as readiness-ui-browser seeds it).
+    const owner = await fixtureProof(app.database.executor, 'QAOWNER'), ex = app.database.executor, period = { startDate: '2026-09-21', endDate: '2026-09-27' };
+    await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status) VALUES('pay-period','PAY-B','loc-1','pay-device','2026-09-22T12:00:00Z','2026-09-22T20:00:00Z','CLOCKED_OUT')");
+    for (const action of ['APPROVE', 'FINALIZE'] as const) { const v = await readTimecards(owner, period, ex); if (v.state !== 'ready') throw Error('cards'); const c = v.cards.find(x => x.card.employeeId === 'PAY-B')!; await mutateTimecard(owner, { ...period, operationId: randomUUID(), employeeId: 'PAY-B', expectedRevision: c.revision, expectedSourceHash: c.sourceHash, action }, ex); }
+    const cv = await readTimecards(owner, period, ex); if (cv.state !== 'ready') throw Error('cards'); const card = cv.cards.find(x => x.card.employeeId === 'PAY-B')!;
+    const profile = await saveExportProfile(owner, { operationId: randomUUID(), id: randomUUID(), expectedRevision: 0, profile: { ...neutralProfile(), name: 'Fictional mapping', employeeMappings: [{ employeeId: 'PAY-B', providerEmployeeId: 'FIC-001' }] } }, ex);
+    const exported = await createPayrollExport(owner, { ...period, operationId: randomUUID(), profileId: profile.id, profileRevision: profile.revision, cards: [{ employeeId: 'PAY-B', revision: card.revision, sourceHash: card.sourceHash, finalizationOperationId: card.history[0].operationId }] }, ex);
+    const review = await readPeriodClose(owner, period, ex);
+    const population = await savePeriodPopulation(owner, { ...period, operationId: randomUUID(), expectedRevision: 0, sourceHash: review.sourceHash, members: review.members.map(m => ({ employeeId: m.employeeId, disposition: m.employeeId === 'PAY-B' ? 'INCLUDE' : 'ZERO_TIME', reason: 'Fictional review', employmentFacts: 'Fictional employment facts', employmentBasis: 'MANAGER_ATTESTED' })) }, ex);
+    const manifest = await preparePeriodManifest(owner, { ...period, operationId: randomUUID(), populationRevision: population.revision, receipts: [{ actorId: 'QAOWNER', operationId: exported.operationId }] }, ex);
+    await q("INSERT INTO payroll_period_events(workspace_id,manifest_id,id,actor_employee_id,kind,command_hash,payload,created_at) SELECT 'workspace-fuel',$1::uuid,md5('pay-event-'||n)::uuid,'QAOWNER','ARTIFACT_SERVED',repeat('a',64),jsonb_build_object('filename','fictional-'||n||'.csv'), '2026-09-28'::timestamptz + n*interval '1 microsecond' FROM generate_series(1,1001) n", [manifest.id]);
+    // Someone on the clock now.
+    await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('pay-open','PAY-A','loc-1','pay-device',now() - interval '2 hours','CLOCKED_IN')");
+    results.push({ clockedIn: await q("SELECT employee_id,status FROM time_entries WHERE clock_out_at IS NULL") });
+    for (const engine of ['chromium', 'webkit']) {
+      const browser = await runtime[engine].launch({ headless: true });
+      const context = await browser.newContext({ viewport: { width: 390, height: 1000 }, serviceWorkers: 'block', proxy: { server: tls.server }, ignoreHTTPSErrors: true, reducedMotion: 'reduce' });
+      await context.route('**/*', async (route: { request(): { url(): string }; abort(): Promise<void>; continue(): Promise<void> }) => { const u = new URL(route.request().url()); if (['http:', 'https:'].includes(u.protocol) && u.origin !== base) await route.abort(); else await route.continue(); });
+      const page = await context.newPage(); page.setDefaultTimeout(20000);
+      const pageErrors: string[] = []; page.on('pageerror', (e: Error) => pageErrors.push(e.message));
+      const r: Record<string, unknown> = { engine };
+      try {
+        await page.goto(base + '/login');
+        await page.getByLabel('Employee ID', { exact: true }).fill('QAOWNER');
+        await page.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click(); await page.waitForURL(base + '/app');
+        await page.goto(base + '/app/payroll-export');
+        await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
+        const mobile = page.getByRole('button', { name: 'Choose who’s included', exact: true });
+        if (await mobile.isVisible().catch(() => false)) await mobile.click();
+        const history = page.getByRole('region', { name: 'Period artifact and handoff history' });
+        r.historyPresent = await history.count();
+        if (r.historyPresent) { const load = history.getByRole('button', { name: 'Load history', exact: true }); if (await load.count()) { await load.click(); await page.waitForTimeout(1500); } const older = history.getByRole('button', { name: 'Load older events', exact: true }); if (await older.count()) { await older.click(); await page.waitForTimeout(1500); } r.historyItemsLoaded = await history.locator('li').count(); await history.evaluate((el: Element) => { (el as unknown as { __qa: number }).__qa = 1; }); }
+        const reason = page.locator('input[name$=".reason"]').first(), employment = page.locator('textarea[name$=".employment"]').first(), disposition = page.locator('select[name$=".disposition"]').first();
+        for (let i = 0; i < 3 && !(await page.locator('input[name$=".reason"]').first().isVisible().catch(() => false)); i++) {
+          const b = page.getByRole('button', { name: 'Choose who’s included', exact: true });
+          if (await b.isVisible().catch(() => false) && (await b.getAttribute('aria-expanded')) !== 'true') await b.click(); else await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
+          await page.waitForTimeout(1500);
+        }
+        await page.locator('input[name$=".reason"]').first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {});
+        r.reasonFields = await page.locator('input[name$=".reason"]').count();
+        if (r.reasonFields) {
+          await disposition.selectOption('EXCLUDE'); await reason.fill('QA typed reason, fictional'); await employment.fill('QA typed employment facts, fictional');
+          await reason.evaluate((el: Element) => { (el as unknown as { __qa: number }).__qa = 1; });
+        }
+        const samples: unknown[] = [];
+        for (let s = 0; s < 8; s++) {
+          await page.waitForTimeout(5000);
+          samples.push({ at: (s + 1) * 5, reason: r.reasonFields ? await reason.inputValue().catch(() => 'GONE') : null, employment: r.reasonFields ? await employment.inputValue().catch(() => 'GONE') : null,
+            disposition: r.reasonFields ? await disposition.inputValue().catch(() => 'GONE') : null, historyItems: r.historyPresent ? await history.locator('li').count().catch(() => -1) : null, reasonSameNode: r.reasonFields ? await reason.evaluate((el: Element) => (el as unknown as { __qa?: number }).__qa === 1).catch(() => false) : null,
+            historySameNode: r.historyPresent ? await history.evaluate((el: Element) => (el as unknown as { __qa?: number }).__qa === 1).catch(() => false) : null });
+        }
+        r.samples = samples;
+        r.pass = Boolean(r.reasonFields) && samples.every((x: any) => (r.reasonFields ? x.reason === 'QA typed reason, fictional' && x.employment === 'QA typed employment facts, fictional' && x.disposition === 'EXCLUDE' && x.reasonSameNode : true) && (r.historyPresent ? x.historySameNode && x.historyItems === r.historyItemsLoaded : true));
+        await page.screenshot({ path: resolve(evidence, `${engine}-form-after-40s.png`), fullPage: true });
+        // Phase 2: the seeded past period's history, someone still on the clock.
+        await page.goto(base + '/app/payroll-export?start=2026-09-21&end=2026-09-27');
+        await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
+        const h2 = page.getByRole('region', { name: 'Period artifact and handoff history' });
+        for (let i = 0; i < 6 && !(await h2.getByRole('button', { name: 'Load history', exact: true }).isVisible().catch(() => false)); i++) {
+          await page.waitForTimeout(1000);
+          if (await mobile.isVisible().catch(() => false) && (await mobile.getAttribute('aria-expanded')) !== 'true') await mobile.click();
+          else if (!(await mobile.isVisible().catch(() => false))) await page.getByText(/^(Who’s included and sent files|Export history)$/).filter({ visible: true }).click();
+        }
+        await h2.getByRole('button', { name: 'Load history', exact: true }).waitFor({ state: 'visible', timeout: 30000 });
+        await h2.getByRole('button', { name: 'Load history', exact: true }).click();
+        await h2.getByText('More events are available.', { exact: true }).waitFor();
+        await h2.getByRole('button', { name: 'Load older events', exact: true }).click();
+        await h2.getByText(/100 of 1001 events loaded/).waitFor();
+        r.historyLoaded = await h2.locator('li').count();
+        await h2.evaluate((el: Element) => { (el as unknown as { __qa: number }).__qa = 1; });
+        const hs: unknown[] = [];
+        for (let s = 0; s < 8; s++) { await page.waitForTimeout(5000); hs.push({ at: (s + 1) * 5, items: await h2.locator('li').count().catch(() => -1), sameNode: await h2.evaluate((el: Element) => (el as unknown as { __qa?: number }).__qa === 1).catch(() => false) }); }
+        r.historySamples = hs;
+        r.historyPass = hs.every((x: any) => x.items === r.historyLoaded && x.sameNode);
+        await page.screenshot({ path: resolve(evidence, `${engine}-history-after-40s.png`), fullPage: true });
+      } catch (e) { r.error = String((e as Error).message).slice(0, 300); await page.screenshot({ path: resolve(evidence, `${engine}-error.png`), fullPage: true }).catch(() => {}); }
+      r.pageErrors = pageErrors;
+      results.push(r);
+      await browser.close();
+    }
+    expect(results.length).toBeGreaterThan(0);
+  } finally {
+    await writeFile(resolve(evidence, 'payfix.json'), JSON.stringify(results, null, 2));
+    await tls.close(); await app.close();
+  }
+}, 900000);
