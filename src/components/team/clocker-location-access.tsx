@@ -56,8 +56,10 @@ export function ClockerLocationView({ lang, mode: current, picked, places, work,
     </fieldset>
     {invalid ? <p id={ids.hint} className="clk-hint">{t.chooseOne}</p> : null}
     <div ref={resultRef} tabIndex={-1} className="clk-result">{result}</div>
+    {/* Saving keeps the Solid teal look (Jose's pick for the saving button): the button stays enabled with the busy label,
+      * and the sheet ignores a second press (the container's busy guard). A disabled .b-btn turns grey. */}
     <button type="button" className="b-btn b-btn--teal b-btn--full clk-save" aria-busy={busy || undefined} aria-describedby={invalid ? ids.hint : undefined}
-      disabled={busy || locked || invalid || !changed || undefined} onClick={onSave}>
+      disabled={(!busy && (locked || invalid || !changed)) || undefined} onClick={busy ? undefined : onSave}>
       <BBusyLabel busy={busy} busyLabel={t.saving}>{t.save}</BBusyLabel>
     </button>
   </div>;

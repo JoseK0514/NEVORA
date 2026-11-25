@@ -117,7 +117,9 @@ describe('every state, drawn', () => {
   });
   it('saving: Save keeps its place with the busy label, the choices are off', () => {
     const html = view({ status: { kind: 'saving' }, changed: true });
-    expect(saveButton(html)).toContain('aria-busy="true"');expect(saveButton(html)).toContain('disabled');
+    // Jose's pick: the saving button stays Solid teal, so it isn't disabled (a disabled kit button turns grey); a second
+    // press does nothing because the button has no handler while busy.
+    expect(saveButton(html)).toContain('aria-busy="true"');expect(saveButton(html)).not.toContain('disabled');
     expect(html).toContain('Saving…');expect(html).toMatch(/<fieldset[^>]*clk-modes[^>]*disabled/);
   });
   it('saved: a green notice, announced, in the focusable result', () => {
