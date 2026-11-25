@@ -74,7 +74,9 @@ function revealCard(field:HTMLInputElement|null){
  if(top>0)window.scrollBy({top,behavior:'instant'});
 }
 
-export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,initialRoster}:{locationKey:string;timeZone?:string;punchEnabled?:boolean;
+export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,initialRoster,layoutHint}:{locationKey:string;timeZone?:string;punchEnabled?:boolean;
+ /** The layout hint the server read (the setup check drew the same waiting shape). */
+ layoutHint?:RosterHint|null;
  /** Tests only: the roster's first state (the screen otherwise waits for the first read). */
  initialRoster?:RosterState}){
  const t=useClockerCopy(),{locale}=useClockerPresentation(),intl=useClockerIntlLocale();
@@ -199,7 +201,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false,in
   * The read is bounded by its 6s timeout, and a failed read still shows the form with its line. */
  const [slowRoster,setSlowRoster]=useState(false);
  // The last mode this tablet saw here, only to size the waiting area (the gate mounts on the client, after setup).
- const [hint]=useState<RosterHint|null>(()=>typeof window==='undefined'?null:readRosterHint(locationKey));
+ const [hint]=useState<RosterHint|null>(()=>layoutHint!==undefined?layoutHint:typeof document==='undefined'?null:readRosterHint());
  // A tablet that lost its setup forgets its hint, where the roster is dropped for it.
  useEffect(()=>{if(blocked&&tone==='device')clearRosterHint(locationKey);},[blocked,tone,locationKey]);
  useEffect(()=>{if(!rosterLoading)return;const timer=window.setTimeout(()=>setSlowRoster(true),1000);return()=>{clearTimeout(timer);setSlowRoster(false);};},[rosterLoading]);

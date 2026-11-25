@@ -64,23 +64,28 @@ export function rosterReplyCurrent(started: number, current: number) {
 }
 
 /* The layout hint (lead, Nov 25): a tablet's sign-in mode rarely changes, so it remembers only its last mode, 'picker' or
- * 'id', per location, to reserve the right height while the roster loads. Never names, selections or counts. A wrong hint
- * costs one layout shift. Every read and write is guarded (private mode, blocked storage). */
+ * 'id', per location, to reserve the right height while the setup check and the roster load. Never names, selections or
+ * counts. A wrong hint costs one layout shift. It is a cookie scoped to the location's path, so the server can draw the
+ * first paint in the right shape (a never-set-up tablet has none and keeps the setup screen). Every access is guarded. */
 export type RosterHint = 'picker' | 'id';
-const hintKey = (locationKey: string) => `nevora.clocker.signin-layout.${locationKey}`;
+export const ROSTER_HINT_COOKIE = 'nv_clocker_layout';
+const hintPath = (locationKey: string) => `/clocker/${encodeURIComponent(locationKey)}`;
+/** Only 'picker' or 'id' is ever read back; anything else is no hint. */
+export function parseRosterHint(value: unknown): RosterHint | null { return value === 'picker' || value === 'id' ? value : null; }
 /** What a roster reply says about the layout: only 'picker' or 'id'; a failed or pending read says nothing. */
 export function rosterHintFor(state: RosterState): RosterHint | null {
   return state.kind === 'picker' ? 'picker' : state.kind === 'id' ? 'id' : null;
 }
-export function readRosterHint(locationKey: string): RosterHint | null {
-  try { const value = window.localStorage.getItem(hintKey(locationKey)); return value === 'picker' || value === 'id' ? value : null; } catch { return null; }
+/** The hint for this page (the cookie is path-scoped, so the browser only shows this location's). */
+export function readRosterHint(): RosterHint | null {
+  try { const match = document.cookie.split(/;\s*/).find(part => part.startsWith(ROSTER_HINT_COOKIE + '=')); return parseRosterHint(match?.slice(ROSTER_HINT_COOKIE.length + 1)); } catch { return null; }
 }
 export function writeRosterHint(locationKey: string, state: RosterState) {
   const hint = rosterHintFor(state); if (!hint) return;
-  try { window.localStorage.setItem(hintKey(locationKey), hint); } catch { /* Storage blocked: no hint next time. */ }
+  try { document.cookie = `${ROSTER_HINT_COOKIE}=${hint}; Path=${hintPath(locationKey)}; Max-Age=31536000; SameSite=Lax; Secure`; } catch { /* Cookies blocked: no hint next time. */ }
 }
 export function clearRosterHint(locationKey: string) {
-  try { window.localStorage.removeItem(hintKey(locationKey)); } catch { /* Storage blocked: nothing stored. */ }
+  try { document.cookie = `${ROSTER_HINT_COOKIE}=; Path=${hintPath(locationKey)}; Max-Age=0; SameSite=Lax; Secure`; } catch { /* Cookies blocked: nothing stored. */ }
 }
 /** A roster read that failed because the tablet is no longer set up (401). */
 export class RosterReadError extends Error { constructor(readonly status: number) { super('roster ' + status); } }
