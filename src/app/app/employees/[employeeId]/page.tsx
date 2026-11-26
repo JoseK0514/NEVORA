@@ -278,8 +278,13 @@ export default async function EmployeeProfilePage({
   </ScopedReadFrame>);
 
   if (editing === "rules") return (<ScopedReadFrame observation={scopedObservation(source)}>
-    <CorpPage className="c-forms wa-page wa-member" labelledBy="person-rules-title">
-      <CorpNav back={{ href: `${base}?edit=1`, label: t.edit }} title={t.hoursRules} titleId="person-rules-title" />
+    {/* QA, Nov 26, 2026 (D1, both languages): this sheet had the older Wave A header, whose back link was drawn white on a
+      * white band on phones (invisible), sat over the title at 1440, and cut "Hours and rules" at large text. It now uses
+      * the person sheets' own teal header (as Positions and Clock in at do): "‹ Edit" back, the title, no Save (each rule
+      * saves on its own). */}
+    <CorpPage className="c-sheetpage c-editpos c-forms wa-member" labelledBy="person-rules-title">
+      <SheetMarker />
+      <FormHead titleId="person-rules-title" title={t.hoursRules} left={<FormHeadLink href={`${base}?edit=1`}>{t.edit}</FormHeadLink>} />
       <CorpCard id="member-rules" label={t.operationalRules}>
         {profileUnavailable ? <CorpBody><p className="c-error" role="alert">{t.rulesFailed}</p></CorpBody>
           : operational ? <OperationalRuleFields employeeId={employee.id} profile={operational} canEdit={actor.role === "OWNER"} />
