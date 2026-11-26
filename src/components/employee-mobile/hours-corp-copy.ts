@@ -45,7 +45,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:88
     takeBreaksAndClockOutOnYourLocationSTablet: "Take breaks and clock out on your location’s tablet.",
     // src/components/employee-mobile/hours-corp.tsx:91
-    thisWeek: "This week · ",
+    thisWeek: "This week · ",
     // src/components/employee-mobile/hours-corp.tsx:93
     thisWeekSTime: "This week’s time",
     // src/components/employee-mobile/hours-corp.tsx:95
@@ -361,7 +361,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:88
     takeBreaksAndClockOutOnYourLocationSTablet: "Toma tus descansos y marca tu salida en la tableta de tu localidad.",
     // src/components/employee-mobile/hours-corp.tsx:91
-    thisWeek: "Esta semana · ",
+    thisWeek: "Esta semana · ",
     // src/components/employee-mobile/hours-corp.tsx:93
     thisWeekSTime: "Tu tiempo esta semana",
     // src/components/employee-mobile/hours-corp.tsx:95

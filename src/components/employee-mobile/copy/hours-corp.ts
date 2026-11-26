@@ -34,7 +34,7 @@ const en = {
     clockInOn: (tablet: string) => `Clock in on ${tablet}.`,
     endBreak: 'End your break on your location’s tablet.',
     takeBreaks: 'Take breaks and clock out on your location’s tablet.',
-    thisWeek: 'This week · ', inProgress: 'In progress', hours: 'Hours', breaks: 'Breaks', weekTime: 'This week’s time',
+    thisWeek: 'This week · ', inProgress: 'In progress', hours: 'Hours', breaks: 'Breaks', weekTime: 'This week’s time',
     breakDetail: (duration: string) => ` · ${duration} break`,
     noTimeYet: 'No time recorded yet this week',
     fixMissed: 'Fix a missed punch',
