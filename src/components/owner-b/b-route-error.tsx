@@ -29,7 +29,7 @@ export function BRouteError({ title, sub, back, spoken, cardTitle, line, referen
   const t = ERROR_SCREENS_COPY[usePortalLang() === "es" ? "es" : "en"];
   // Nov 26, 2026 (Jose): a real loading state. The button says "Trying again…" with the spinner, at the same width, while
   // the page is read again, and keeps focus (keepFocus) so focusAfterRetry can return to it if it fails again.
-  const { busy, retry } = useRetry(() => { onRetry?.(); focusAfterRetry("#main-content h1:not(#b-route-error-title)", "[data-b-route-error] .b-btn--teal"); });
+  const { busy, retry } = useRetry(() => { onRetry?.(); focusAfterRetry("#main-content h1:not(#b-route-error-title)", "[data-b-route-error] .b-btn--teal", undefined, { waitForGone: "[data-b-route-error]" }); });
   return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="" data-b-route-error="">
     <BStateScreen title={title} titleId="b-route-error-title" sub={sub} back={back}>
       <p className="b-sr" role="alert">{spoken}</p>

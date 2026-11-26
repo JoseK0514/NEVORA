@@ -1,22 +1,38 @@
 /** IS-58: after "Try again", keep keyboard and screen-reader users where they were.
  * Once the recovered content appears, focus its heading (or card); if the retry fails and the
- * button comes back, focus the button again. Stops as soon as the user moves focus themselves. */
-export function focusAfterRetry(target: string, retry: string, timeout = 15000) {
+ * button comes back, focus the button again. Stops as soon as the user moves focus themselves.
+ * Nov 26, 2026 (QA O1): a recovered page can re-render once more after it first appears (the refresh's second pass), which
+ * dropped the focus just given to its heading back to <body>. For SETTLE_MS after landing, focus that falls back to <body>
+ * is put on the heading again. A full-page error screen passes `waitForGone`, so the heading is only taken once the error
+ * screen itself has left the page. */
+export const SETTLE_MS = 2000;
+
+export function focusAfterRetry(target: string, retry: string, timeout = 15000, { waitForGone }: { waitForGone?: string } = {}) {
   const start = performance.now();
   const from = document.activeElement;
+  let landed: HTMLElement | null = null, landedAt = 0;
   const land = (element: HTMLElement) => {
     if (!element.matches("a, button, input, select, textarea, summary, [tabindex]")) element.tabIndex = -1;
     element.focus();
+    landed = element; landedAt = performance.now();
   };
   const tick = () => {
-    const active = document.activeElement;
+    const now = performance.now(), active = document.activeElement;
     // The user went somewhere else: leave them there.
-    if (active && active !== document.body && active !== from && !(active as HTMLElement).matches(retry)) return;
-    const found = document.querySelector<HTMLElement>(target);
-    if (found) return land(found);
+    if (active && active !== document.body && active !== from && active !== landed && !(active as HTMLElement).matches(retry)) return;
+    if (landed) {
+      // Settling: keep the heading focused through a late re-render, then stop.
+      if (now - landedAt > SETTLE_MS) return;
+      if (active === document.body || active === null) { const found = document.querySelector<HTMLElement>(target); if (found) land(found); }
+      window.setTimeout(tick, 100);
+      return;
+    }
+    const screenGone = !waitForGone || !document.querySelector(waitForGone);
+    const found = screenGone ? document.querySelector<HTMLElement>(target) : null;
+    if (found) { land(found); window.setTimeout(tick, 100); return; }
     const again = document.querySelector<HTMLElement>(retry);
     if (again && again !== from && document.activeElement === document.body) return land(again);
-    if (performance.now() - start < timeout) window.setTimeout(tick, 100);
+    if (now - start < timeout) window.setTimeout(tick, 100);
   };
   window.setTimeout(tick, 100);
 }

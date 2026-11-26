@@ -64,7 +64,7 @@ export function ErrorAdvice({digest, className, lang = 'en'}: {digest?: string; 
  * Same words as that boundary, drawn with the kit itself: the teal band with the wordmark, a white card, kit buttons. */
 export function AppErrorScreen({reset, digest}: {reset: () => void; digest?: string}) {
   // Nov 26, 2026 (Jose): Try again shows it is working ("Trying again…", the arrow turning) and keeps focus.
-  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('main:not(.app-error-screen) h1, #main-content h1', '.app-error-screen .nv-btn[data-kind="primary"]'); });
+  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('main:not(.app-error-screen) h1, #main-content h1', '.app-error-screen .nv-btn[data-kind="primary"]', undefined, { waitForGone: '.app-error-screen' }); });
   const lang = useErrorLang(), t = ERROR_SCREENS_COPY[lang];
   return <main className="nv-page app-error-screen" lang={lang}>
     <Masthead title={t.didntLoad} summary={t.nothingChanged} />

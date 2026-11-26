@@ -37,7 +37,7 @@ export function PublicErrorScreen({reset, digest, error}: {reset: () => void; di
   const support = supportReferenceOfState(error);
   const found = support ? null : errorReference(digest), reference = found ? words.reference.replace('{reference}', found) : null;
   // Nov 26, 2026 (Jose): Try again shows it is working and keeps focus while the page is read again.
-  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('main:not(.pe-page) h1, .q-auth h1', '.pe-page .pe-retry'); });
+  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('main:not(.pe-page) h1, .q-auth h1', '.pe-page .pe-retry', undefined, { waitForGone: '.pe-page' }); });
   return <main className="nf-page pe-page" lang={lang}>
     <header className="nf-band">
       <div className="nf-top"><span className="nf-wordmark"><BrandWordmark/></span><LangSwitch lang={lang} label={t.langLabel} quiet/></div>
