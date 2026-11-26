@@ -22,14 +22,15 @@ const safeText=(v:unknown,max=300):v is string=>typeof v==='string'&&v===v.trim(
 export function parseTimecardsResponse(v:unknown,period:Period):TimecardProjection {
   if(!object(v)||!safeText(v.observedAt,100)||!Array.isArray(v.cards))throw new Error('Invalid timecards');
   const paging=completeReadManifest(v.paging,v.cards.length,TIMECARD_READ_PAGE_SIZE);
-  let entries=0,corrections=0;
+  let entries=0,corrections=0,shiftOutcomes=0;
   const cards=v.cards.map((raw):TimecardItem=>{
     if(!object(raw)||!sourceHash(raw.sourceHash)||!Number.isSafeInteger(raw.revision)||Number(raw.revision)<0||
       !['DRAFT','APPROVED','FINALIZED','REOPENED','NEEDS_REVIEW'].includes(String(raw.state))||!Array.isArray(raw.history)||raw.history.length>100)throw new Error('Invalid card');
     const card=projectTimecard(raw.source,v.observedAt as string);
     if(card.startDate!==period.startDate||card.endDate!==period.endDate)throw new Error('Incorrect period');
     entries+=card.entries.length;corrections+=card.corrections.length;
-    if(entries>10000||corrections>10000)throw new Error('Timecard source limit');
+    shiftOutcomes+=card.shiftOutcomes?.length??0;
+    if(entries>10000||corrections>10000||shiftOutcomes>10000)throw new Error('Timecard source limit');
     const history=raw.history.map((h):TimecardHistory=>{
       if(!object(h)||!uuid(h.operationId)||!Number.isSafeInteger(h.revision)||Number(h.revision)<1||
         !['APPROVE','FINALIZE','REOPEN'].includes(String(h.action))||!safeText(h.occurredAt,100)||!safeText(h.actorName)||

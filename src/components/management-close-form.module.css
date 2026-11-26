@@ -17,6 +17,8 @@
 
 /* Extend the label around the 20px checkbox without moving the attestation. */
 :global(.c-dcorr):lang(es) .confirmation { position: relative; }
+/* Keep the checkbox above the label’s extended hit area. */
+:global(.c-dcorr):lang(es) .confirmation input { position: relative; z-index: 1; }
 :global(.c-dcorr):lang(es) .confirmation::before {
   content: "";
   position: absolute;

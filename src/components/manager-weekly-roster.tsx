@@ -549,7 +549,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     </BHero>
     <BStack>
       {b.notes ? <div className="b-notes">{b.notes}</div> : null}
-      {b.toPlan.length ? <BCard label={t.cantSeeYet}><BList label={t.cantSeeYet}>{b.toPlan.map(row =>
+      {b.toPlan.length ? <BCard id="schedule-locations-to-plan" label={t.cantSeeYet}><BList label={t.cantSeeYet}>{b.toPlan.map(row =>
         // Phase 8 (a.md #33): the warning glyph is for failures; a week the team can't see yet is the amber "not seen" glyph.
         <BRow key={row.id} lead={<BIcon tone="amber"><EyeSlashIcon weight="bold" /></BIcon>} title={row.title} sub={row.detail} href={row.href} label={row.label}
           end={<span className="b-link">{row.action}<CaretRightIcon size={16} weight="bold" aria-hidden="true" /></span>} chevron={false} />)}</BList></BCard> : null}

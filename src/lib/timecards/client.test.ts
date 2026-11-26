@@ -9,3 +9,10 @@ it('D8 only accepts the submitted action/operation and next revision as a termin
 });
 it('D8 retains an uncertain command only on its own bound outcome receipt',()=>{const receipt={status:'outcome-unknown',operationId:command.operationId};expect(parseTimecardReceipt(receipt,command,503)).toEqual(receipt);expect(()=>parseTimecardReceipt({...receipt,operationId:'other'},command,503)).toThrow();expect(parseTimecardReceipt({status:'conflict'},command,409)).toEqual({status:'conflict'});});
 it('D8 rejects unconfirmed, expired, excessive or absent current-read lifetimes',()=>{const ready={state:'ready',observedAt:'2026-10-07T12:00:00Z',validForMs:10000,cards:[]};expect(parseCurrentTimecards(ready,command).validForMs).toBe(10000);for(const validForMs of [undefined,0,-1,45001,Infinity,'10000'])expect(()=>parseCurrentTimecards({...ready,validForMs},command)).toThrow();expect(()=>parseCurrentTimecards({...ready,state:'unavailable'},command)).toThrow();});
+
+it.each(['missing_shift_disposition','payroll_approved'])('reads the private %s refusal only on HTTP 409',reason=>{
+ const result={status:'blocked',reason};
+ expect(parseTimecardReceipt(result,command,409)).toEqual(result);
+ expect(()=>parseTimecardReceipt(result,command,200)).toThrow();
+ expect(()=>parseTimecardReceipt({...result,employeeId:'other'},command,409)).toThrow();
+});

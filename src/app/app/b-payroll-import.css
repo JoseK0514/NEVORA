@@ -137,10 +137,15 @@
   font-size: 14px; line-height: 20px; font-weight: 600; color: var(--b-ink); cursor: pointer; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-opt input { flex: none; width: 18px; height: 18px; margin: 0; accent-color: var(--b-teal); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-opt:has(input:checked) { background: var(--b-teal-50); box-shadow: inset 0 0 0 1.5px var(--b-teal); color: var(--b-teal); }
-:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-opt:has(input:focus-visible) { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-opt:has(input:focus-visible),
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-break .pim-opt:focus-within { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-choice:disabled .pim-opt { cursor: default; color: var(--b-grey); }
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-break .pim-opt { min-width: 0; font-size: var(--b-fs-body-sm); line-height: var(--b-lh-body-sm); overflow-wrap: anywhere; }
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-break-action { margin-block: var(--b-space-8); }
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-break-action .b-btn { min-height: var(--b-target); height: auto; white-space: normal; text-align: center; }
 @media (min-width: 768px) {
   :is(#c-root, html) body .app-shell[data-nv-b] .pim :is(.pim-miss, .pim-break) .pim-choice { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--b-space-20); }
+  :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-break .pim-choice { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim :is(.pim-miss, .pim-break) .pim-choice__l { float: left; }
 }
 /* A person's breaks: the summary is the row (name, count, what is left), 48px tall; the list opens under it. */

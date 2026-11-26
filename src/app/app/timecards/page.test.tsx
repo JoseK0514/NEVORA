@@ -2,9 +2,10 @@ import type {ReactElement, ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach, beforeEach, expect, it, rs} from '@rstest/core';
 
-const fixture=rs.hoisted(()=>({role:'MANAGER',denied:false,payroll:null as null|{enabled:boolean;canReview:boolean}|'fails',company:rs.fn(),observation:{state:'ready',data:{private:'never-client'},authority:'fictional-company',observedAt:'2026-10-20T12:00:00Z',validForMs:15000}}));
+const fixture=rs.hoisted(()=>({role:'MANAGER',denied:false,payroll:null as null|{enabled:boolean;canReview:boolean}|'fails',company:rs.fn(),locations:rs.fn(),observation:{state:'ready',data:{private:'never-client'},authority:'fictional-company',observedAt:'2026-10-20T12:00:00Z',validForMs:15000}}));
 rs.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:fixture.role}),requireSessionMutationProof:async()=>({employee:{id:'actor',role:fixture.role},sessionTokenHash:'a'.repeat(64)})}));
-rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async()=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:fixture.observation;}}));
+rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{fixture.company();return fixture.denied?{state:'unavailable',reason:'access_denied'}:{...fixture.observation,data:await load()};}}));
+rs.mock('@/lib/data/locations',()=>({listLocations:fixture.locations}));
 rs.mock('@/lib/data/employees',()=>({listEmployees:async()=>[{role:'OWNER',firstName:'Jose',lastName:'Natal'},{role:'MANAGER',firstName:'Elena',lastName:'Ruiz'}]}));
 rs.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'fictional-workspace',timeZone:'America/Puerto_Rico'})}));
 rs.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:ReactNode;unavailable?:ReactNode})=><section data-company-frame="">{children??unavailable}</section>}));
@@ -13,7 +14,7 @@ rs.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>fixture.payroll!
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import TimecardsPage from './page';
 
-beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.payroll=null;fixture.company.mockReset();rs.useFakeTimers();rs.setSystemTime(new Date('2026-10-20T12:00:00Z'));});
+beforeEach(()=>{fixture.role='MANAGER';fixture.denied=false;fixture.payroll=null;fixture.company.mockReset();fixture.locations.mockReset().mockResolvedValue([{id:'site-a',name:'Main Office',address:'private street',clockerKey:'private key'}]);rs.useFakeTimers();rs.setSystemTime(new Date('2026-10-20T12:00:00Z'));});
 afterEach(()=>{ rs.useRealTimers(); });
 
 it.each(['MANAGER','OWNER'])('keeps the clean current-week %s view inside the current Company lifetime frame',async role=>{
@@ -60,4 +61,17 @@ it('opens an Employee’s timecards as Time’s Past timecards on every screen (
 it.each([[{enabled:true,canReview:true},'prepare'],[{enabled:true,canReview:false},'owner'],[{enabled:false,canReview:false},'none'],[null,'none'],['fails','none']] as const)('names the step after finalizing from payroll access %j',async(payroll,step)=>{
  fixture.payroll=payroll;
  expect(renderToStaticMarkup(await TimecardsPage({searchParams:Promise.resolve({})}))).toContain(`data-payroll-step="${step}"`);
+});
+
+it('passes only the scoped site ID and name to the reviewer, including retired sites',async()=>{
+ const page=await TimecardsPage({searchParams:Promise.resolve({})});
+ const body=page.props.children as ReactElement<{children:ReactElement<{locations:unknown}>}>;
+ expect(fixture.locations).toHaveBeenCalledWith({includeInactive:true});
+ expect(body.props.children.props.locations).toEqual([{id:'site-a',name:'Main Office'}]);
+});
+it('keeps timecard review available when a site name cannot be read',async()=>{
+ fixture.locations.mockRejectedValueOnce(new Error('unavailable'));
+ const page=await TimecardsPage({searchParams:Promise.resolve({})});
+ const body=page.props.children as ReactElement<{children:ReactElement<{locations:unknown}>}>;
+ expect(body.props.children.props.locations).toEqual([]);
 });

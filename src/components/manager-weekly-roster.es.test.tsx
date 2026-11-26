@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from "@rstest/core";
@@ -71,4 +73,12 @@ it("keeps English exactly as it was outside Spanish", () => {
   const out = render({ corp, b, absences: { state: "ready", employeeIds: ["ana", "luis"], rows: [] } }, "en");
   for (const words of ["Today · Tue, Oct 6", "2 open shifts, Tue Oct 6, 1 already over", "Edit Ana Colón’s shift, Mon Oct 5, 10:00\u00a0PM to 6:00\u00a0AM, Condado", ", Ends Oct 6", "4 h over the 40 h limit",
     "aria-label=\"Today, go to this week\">Today</a>", "No one assigned", "Covered this week"]) expect(out).toContain(words);
+});
+
+it("keeps the full Spanish planning note available on a narrow phone", () => {
+  const task = { ...b.toPlan[0], detail: "Nada programado esta semana", action: "Planificar" };
+  const html = render({ corp, b: { ...b, toPlan: [task] } });
+  expect(html).toMatch(/<section[^>]+id="schedule-locations-to-plan"[^>]*>[\s\S]*?<span class="b-row__s">Nada programado esta semana<\/span>/);
+  const css = readFileSync(join(__dirname, "../app/app/owner-b-schedule.css"), "utf8");
+  expect(css).toMatch(/@media \(max-width: 767px\)\s*\{\s*#schedule-locations-to-plan:lang\(es\) \.b-row__s\s*\{[^}]*-webkit-line-clamp: none !important;[^}]*overflow: visible !important;/);
 });

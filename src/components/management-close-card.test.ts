@@ -48,5 +48,6 @@ describe('Close open punch card',()=>{
 });
 
 test('gives the Spanish delegated attestation a full target around the checkbox', () => {
+  expect(css).toMatch(/:global\(\.c-dcorr\):lang\(es\) \.confirmation input \{[^}]*position: relative;[^}]*z-index: 1;/);
   expect(css).toMatch(/:global\(\.c-dcorr\):lang\(es\) \.confirmation::before \{[^}]*width: 44px;[^}]*height: 44px;/);
 });

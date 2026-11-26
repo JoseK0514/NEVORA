@@ -527,7 +527,7 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
       <CorpButton full kind={fixes.length ? 'secondary' : undefined} disabled={!canApproveNow} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>{c.approvePayroll}</CorpButton>
       <p className="c-note c-note--center">{fixes.length ? c.fixToApprove(fixes.length) : c.approvingLocks}</p>
     </div> : <p className="c-note c-note--center">{c.someoneApprove}</p>) : null}
-    {approved && unpublished ? (capabilities.canApprove ? <div className="c-pay__approve">
+    {approved && unpublished && !jobs.some(job=>job.status==='FAILED' && requiresIndependentApproval(job)) ? (capabilities.canApprove ? <div className="c-pay__approve">
       <Check checked={publishConfirmed} onChange={setPublishConfirmed} disabled={locked}>{c.shareConfirm}</Check>
       <CorpButton full disabled={locked || !publishConfirmed} onClick={() => void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision })}>{c.sharePayStatements}</CorpButton>
     </div> : <p className="c-note c-note--center">{c.someoneShare}</p>) : null}
@@ -547,12 +547,14 @@ function Documents({ run, native, names }: { run: PayrollRun; native: boolean; n
   </PayGroup>;
 }
 
+const requiresIndependentApproval = (job: PayrollJob) => job.kind === 'PUBLISH' && job.error === 'INDEPENDENT_PAYROLL_APPROVAL_REQUIRED';
+
 function Jobs({ jobs, canApprove, locked, operation }: { jobs: PayrollJob[]; canApprove: boolean; locked: boolean; operation: Operation }) {
-  const { runs: c, lang } = usePayrollCopy();
+  const { runs: c, lang, status } = usePayrollCopy();
   return <PayGroup id="payroll-jobs" label={c.preparationDelivery}>
     <CorpRows label={c.preparationDelivery}>{jobs.map(job => <li key={job.id}>
-      <CorpRow title={c.job[job.kind]} detail={job.error ?? (job.kind === 'REMINDER' ? noticeOutcome(job.outcome, lang) : c.attempts(job.attempts))}
-        trail={job.status === 'FAILED' && canApprove
+      <CorpRow title={c.job[job.kind]} detail={requiresIndependentApproval(job) ? status.api.INDEPENDENT_PAYROLL_APPROVAL_REQUIRED : job.error ?? (job.kind === 'REMINDER' ? noticeOutcome(job.outcome, lang) : c.attempts(job.attempts))}
+        trail={job.status === 'FAILED' && canApprove && !requiresIndependentApproval(job)
           ? <CorpButton kind="secondary" size="xs" className="c-pay__tap" disabled={locked} onClick={() => void operation.submit({ action: 'RETRY_JOB', jobId: job.id })} aria-label={c.retryJob[job.kind]}>{c.retry}</CorpButton>
           : <CorpPill tone={job.status === 'FAILED' ? 'red' : 'neutral'}>{job.status === 'SUCCEEDED' ? c.jobState.done : job.status === 'FAILED' ? c.jobState.failed : job.status === 'RUNNING' ? c.jobState.running : c.jobState.waiting}</CorpPill>} />
     </li>)}</CorpRows>

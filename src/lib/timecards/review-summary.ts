@@ -4,10 +4,10 @@ export type TimecardReviewClassification='awaiting_approval'|'awaiting_finalizat
 
 /** Display review work from an already validated projection, never command eligibility.
  * Entry presence matters: a newly opened entry can validly have zero elapsed time.
- * History retains reviewed zero-time cards until finalization. */
+ * History and assignment outcomes retain zero-time cards for review. */
 export function classifyTimecardReview(item:TimecardItem):TimecardReviewClassification{
  if(item.state==='FINALIZED')return 'finalized';
- if(!item.card.entries.length&&!item.history.length)return 'untouched';
+ if(!item.card.entries.length&&!item.history.length&&!item.card.shiftOutcomes?.length)return 'untouched';
  return item.state==='APPROVED'?'awaiting_finalization':'awaiting_approval';
 }
 

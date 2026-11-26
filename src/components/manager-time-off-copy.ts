@@ -44,7 +44,7 @@ export const managerTimeOffCopy = {
     // manager-time-off.tsx:122
     none: "No one",
     // manager-time-off.tsx:129
-    notified: "{name} gets a notification either way.",
+    notified: "{name} can check your decision in Time off. A notification may arrive later.",
     // manager-time-off.tsx:131
     review: "Review time off for {name}",
     // manager-time-off.tsx:147
@@ -108,7 +108,7 @@ export const managerTimeOffCopy = {
     week: "Esa semana",
     seeSchedule: "Ver el horario de esa semana",
     none: "Nadie",
-    notified: "{name} recibe un aviso con cualquiera de las dos decisiones.",
+    notified: "{name} puede ver tu decisión en Días libres. El aviso puede llegar después.",
     review: "Revisar los días libres de {name}",
     by: " por {name}",
     alreadyApproved: "Ya se aprobó",
@@ -178,7 +178,7 @@ export const copy = {
     // src/components/manager-time-off.tsx:121
     seeWeekSchedule: 'See that week’s schedule',
     // src/components/manager-time-off.tsx:129
-    getsNotificationEitherWay: '{first} gets a notification either way.',
+    getsNotificationEitherWay: '{first} can check your decision in Time off. A notification may arrive later.',
     // src/components/manager-time-off.tsx:131
     reviewTimeOff: 'Review time off for {employeeName}',
     // src/components/manager-time-off.tsx:147
@@ -260,7 +260,7 @@ export const copy = {
     // src/components/manager-time-off.tsx:121
     seeWeekSchedule: 'Vea el horario de esa semana',
     // src/components/manager-time-off.tsx:129
-    getsNotificationEitherWay: '{first} recibirá una notificación de cualquier manera',
+    getsNotificationEitherWay: '{first} puede ver tu decisión en Días libres. El aviso puede llegar después.',
     // src/components/manager-time-off.tsx:131
     reviewTimeOff: 'Revisar los días libres de {employeeName}',
     // src/components/manager-time-off.tsx:147

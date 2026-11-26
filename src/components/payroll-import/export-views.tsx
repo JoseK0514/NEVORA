@@ -31,7 +31,11 @@ export function BreaksStep({ copy, headingId, people, decisions, gate, timeZone,
       : !gate.total ? <BState kind="empty" title={b.noneTitle} line={b.noneLine} />
       : <>
         {/* Phase 9: the statement a choice makes is the kit's information note (teal, Info glyph, a hairline edge). */}
-        <BCallout tone="teal">{b.attest}</BCallout>
+        <BCallout tone="teal">
+          <p>{b.attest}</p>
+          <p id={`${base}-worked`}>{b.workedThrough}</p>
+          <p>{b.partialWork}</p>
+        </BCallout>
         <div className="pim-sec__h pim-progress" role="status"><span className="pim-meta">{b.progress(gate.decided, gate.total)}</span>{gate.undecided ? <BChip tone="amber">{b.undecided(gate.undecided)}</BChip> : null}</div>
         {locked ? <p className="pim-p">{b.lockedLine}</p> : null}
         {people.map(person => <PersonSection key={person.employeeId} copy={copy} base={base} person={person} open={opened.has(person.employeeId)} locked={!!locked} timeZone={timeZone} onDecide={onDecide}
@@ -52,17 +56,29 @@ const PersonSection = memo(function PersonSection({ copy, base, person, open, lo
       <span className="pim-meta">{person.breaks.length ? b.personBreaks(person.breaks.length) : b.personNone}</span>
       {left ? <BChip tone="amber">{b.undecided(left)}</BChip> : person.breaks.length ? <span className="pim-meta pim-person__done">{b.personDone}</span> : null}
       <CaretDownIcon className="pim-person__caret" weight="bold" aria-hidden="true" /></summary>
-    {person.breaks.length ? <ul className="pim-rows">{person.breaks.map((item, index) => {
-      const at = breakWhen(item.startAt, item.endAt, timeZone, copy.locale), choice = choices[index];
-      return <li key={item.key} className="pim-break" data-state={choice ? "ok" : "open"}>
-        <fieldset className="pim-choice" disabled={locked}>
-          <legend className="pim-choice__l"><span className="pim-match__t">{at.when}</span><span className="pim-match__s">{at.length} · {b.recordedAs(item.label, item.place)}</span><span className="c-sr">{b.choiceFor(person.name, at.day)}</span></legend>
-          <div className="pim-choice__opts">{TREATMENTS.map(option => <label key={option} className="pim-opt">
-            <input type="radio" name={`${base}-${item.key}`} checked={choice === option} onChange={() => onDecide(item.key, option)} /><span>{b.treatment[option]}</span>
-          </label>)}</div>
-        </fieldset>
-      </li>;
-    })}</ul> : null}
+    {person.breaks.length ? <>
+      <div className="pim-break-action">
+        <BButtonLink href={`/app/timecards/corrections/new/${encodeURIComponent(person.employeeId)}`} kind="ghost" label={b.correctionFor(person.name)}>{b.correction}</BButtonLink>
+      </div>
+      <ul className="pim-rows">{person.breaks.map((item, index) => {
+        const at = breakWhen(item.startAt, item.endAt, timeZone, copy.locale), choice = choices[index];
+        const original = item.original && breakWhen(item.original.startAt, item.original.endAt, timeZone, copy.locale);
+        return <li key={item.key} className="pim-break" data-state={choice ? "ok" : "open"}>
+          <fieldset className="pim-choice" disabled={locked}>
+            <legend className="pim-choice__l">
+              <span className="pim-match__t">{at.when}</span>
+              <span className="pim-match__s">{at.length} · {b.recordedAs(item.label, item.place)}</span>
+              {original ? <span className="pim-match__s">{item.original?.endAt ? b.originalPunch(original.when) : b.originalOpenPunch(original.when)}</span> : null}
+              <span className="c-sr">{b.choiceFor(person.name, at.day)}</span>
+            </legend>
+            <div className="pim-choice__opts">{TREATMENTS.map(option => <label key={option} className="pim-opt">
+              <input type="radio" name={`${base}-${item.key}`} value={option} checked={choice === option} aria-describedby={option === "PAID_AS_WORKED" ? `${base}-worked` : undefined}
+                onChange={() => onDecide(item.key, option)} /><span>{b.treatment[option]}</span>
+            </label>)}</div>
+          </fieldset>
+        </li>;
+      })}</ul>
+    </> : null}
   </details>;
 }, (before, after) => before.person === after.person && before.chosen === after.chosen && before.open === after.open && before.locked === after.locked && before.copy === after.copy && before.timeZone === after.timeZone);
 

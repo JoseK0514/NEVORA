@@ -665,3 +665,13 @@
     }
   }
 }
+
+@layer nv-b {
+  @media (max-width: 767px) {
+    #schedule-locations-to-plan:lang(es) .b-row__s {
+      display: block !important;
+      -webkit-line-clamp: none !important;
+      overflow: visible !important;
+    }
+  }
+}

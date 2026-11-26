@@ -13,6 +13,7 @@ export const copy = {
     pending_correction: "Correction awaiting review",
     // src/components/payroll-review-copy.ts:9
     overlapping_time: "Overlapping recorded time",
+    missing_shift_disposition: "Published shift needs a time review",
     // src/components/payroll-review-copy.ts:12
     DRAFT: "Draft timecard",
     // src/components/payroll-review-copy.ts:13
@@ -35,6 +36,7 @@ export const copy = {
     pending_correction: "Corrección por revisar",
     // src/components/payroll-review-copy.ts:9
     overlapping_time: "Horas registradas solapadas",
+    missing_shift_disposition: "Hay que revisar las horas de un turno publicado",
     // src/components/payroll-review-copy.ts:12
     DRAFT: "Tarjeta de tiempo en borrador",
     // src/components/payroll-review-copy.ts:13

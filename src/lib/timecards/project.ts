@@ -16,11 +16,16 @@ export type TimecardCorrection = {
   id: string; kind: string; status: 'PENDING' | 'APPROVED' | 'REJECTED';
   reason: string; startAt: string; endAt: string; revision: number;
 };
+export type TimecardShiftOutcome = {
+  assignmentId: string; locationId: string; date: string;
+  status: 'UNRESOLVED' | 'APPROVED_CALLOUT';
+};
 export type TimecardSource = Period & {
   employeeId: string; employeeName: string; timeZone: string;
   pendingCorrections: number; entries: TimecardEntry[]; corrections: TimecardCorrection[];
+  shiftOutcomes?: TimecardShiftOutcome[];
 };
-export type TimecardIssue = 'period_open' | 'open_entry' | 'open_break' | 'pending_correction' | 'overlapping_time';
+export type TimecardIssue = 'period_open' | 'open_entry' | 'open_break' | 'pending_correction' | 'overlapping_time' | 'missing_shift_disposition';
 export type Timecard = TimecardSource & {
   observedAt: string; startAt: string; endAt: string; recordedNanoseconds: string; breakNanoseconds: string;
   issues: TimecardIssue[];
@@ -102,9 +107,19 @@ export function projectTimecard(source: unknown, observedAt: string): Timecard {
     if (ns(endAt) <= ns(startAt)) throw new Error('Invalid correction interval');
     return { id:v.id,kind:String(v.kind),status:v.status as TimecardCorrection['status'],reason:v.reason,revision:Number(v.revision),startAt,endAt };
   });
+  const outcomes = source.shiftOutcomes === undefined ? [] : source.shiftOutcomes;
+  if (!Array.isArray(outcomes) || outcomes.length > 10000) throw new Error('Invalid shift outcomes');
+  const shiftOutcomes = outcomes.map((v): TimecardShiftOutcome => {
+    if (!record(v) || !text(v.assignmentId) || !text(v.locationId) || !text(v.date,10) ||
+        (v.status!=='UNRESOLVED' && v.status!=='APPROVED_CALLOUT')) throw new Error('Invalid shift outcome');
+    parsePeriod(v.date,v.date);
+    return {assignmentId:v.assignmentId,locationId:v.locationId,date:v.date,status:v.status};
+  });
+  if (new Set(shiftOutcomes.map(outcome=>outcome.assignmentId)).size!==shiftOutcomes.length) throw new Error('Duplicate shift outcome');
   const issues = new Set<TimecardIssue>();
   if (observed < end) issues.add('period_open');
   if (source.pendingCorrections) issues.add('pending_correction');
+  if (shiftOutcomes.some(outcome=>outcome.status==='UNRESOLVED')) issues.add('missing_shift_disposition');
   let recorded = BigInt(0), breakTime = BigInt(0), previousEnd: bigint | null = null;
   const elapsed = (a: string, b: string | null) => {
     const left = ns(a) > start ? ns(a) : start;
@@ -124,7 +139,7 @@ export function projectTimecard(source: unknown, observedAt: string): Timecard {
     }
   }
   return { ...period,...boundaries,employeeId:source.employeeId,employeeName:source.employeeName,timeZone:source.timeZone,
-    pendingCorrections:Number(source.pendingCorrections),entries,corrections,observedAt:instant(observedAt),
+    pendingCorrections:Number(source.pendingCorrections),entries,corrections,...(shiftOutcomes.length?{shiftOutcomes}:{}),observedAt:instant(observedAt),
     recordedNanoseconds:recorded.toString(),breakNanoseconds:breakTime.toString(),issues:[...issues] };
 }
 

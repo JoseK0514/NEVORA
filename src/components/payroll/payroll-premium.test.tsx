@@ -383,3 +383,11 @@ it('batch 1 item 2: People for a replaced payroll says so in its period line', (
   expect(people).toContain('>Employee amounts</h2><div class="c-pay__sec-aside"><span class="c-pay__aside">Net pay</span></div>');
   expect(people).not.toContain('<span class="c-row__detail"><span>Net pay</span></span>');
 });
+
+it('keeps an independently blocked publication failed and withholds retry and sharing',()=>{
+ const run=nativeRun({status:'APPROVED'}), job={id:'fictional-publication',runId:run.id,kind:'PUBLISH' as const,status:'FAILED' as const,attempts:1,error:'INDEPENDENT_PAYROLL_APPROVAL_REQUIRED'};
+ boundary.data={version:'PAYROLL_API_V1',capabilities:nativeCapabilities,runs:[run],jobs:[job]};
+ const html=renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId={run.id}/>);
+ expect(html).toContain('Ask another authorized payroll approver');expect(html).not.toContain('Retry pay statement sharing');
+ expect(html).not.toContain('INDEPENDENT_PAYROLL_APPROVAL_REQUIRED');expect(html).not.toContain('>Share pay statements</button>');
+});
