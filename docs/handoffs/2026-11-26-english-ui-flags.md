@@ -16,6 +16,7 @@ narrow screen; **P3** polish.
 | A3 | Public plans · signed out | The selected language pill fades over 150 ms (instant under reduced motion). Content, selected state and `lang` change at once. Draw the focus ring inside its own segment, visible on both fills. | P3 |
 | A4 | Public plans · signed out | Switching language also updates the browser title, description and document `lang`, both ways. | P2 |
 | A5 | Schedule after saving a shift | At narrow widths, the week action sits below the date and location. Review the "Show full week" and "Opened for review" wording (Spanish: "Ver semana", "En revisión"). | P3 |
+| A6 | In-card "Try again" (about 25 places: Who's working, Payroll runs and statements, My pay, Things to do, Timecards, Requests, Hours, Passkeys and others) | Jose, Nov 26: Try again needs a real loading state. The three full-page error screens have it (useRetry: "Trying again…", spinner, same width, keeps focus). Bring the in-card retries onto the same pattern; some already hide or disable the button while refreshing. | P2 |
 
 ## B. Large text and narrow screens (320 px or 768 px at 200% text unless noted)
 
