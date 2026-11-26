@@ -363,20 +363,3 @@
     pointer-events: auto;
   }
 }
-
-/* Spanish integration QA (Nov 26, 2026): every sheet header, not just Add employee, takes the approved stacked header on
- * phones at enlarged text. "Cancelar" overlapped "Puede marcar en…" (Clock in at) at 390 with 200% text, and "Hours and
- * rules" / "Horas y reglas" was cut. The title and step get their own centred row, wrapping rather than cut; Cancel sits
- * left and Save right on the row under it. Both languages behave the same (Jose: one interaction in both); at the
- * default text size nothing changes. */
-@layer nv-b {
-  @media (max-width: 767px) {
-    @container not style(--nv-rem: 16px) {
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage > .c-formhead:not(#t31a):not(#t31b):not(#t31c):not(#t31d):not(#t31e):not(#t31f) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-rows: auto auto !important; row-gap: var(--b-space-4) !important; height: auto !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage > .c-formhead > .c-formhead__t:not(#t31a):not(#t31b):not(#t31c):not(#t31d):not(#t31e):not(#t31f) { grid-column: 1 / -1 !important; grid-row: 1 !important; min-width: 0 !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage > .c-formhead > .c-formhead__l:not(#t31a):not(#t31b):not(#t31c):not(#t31d):not(#t31e):not(#t31f) { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage > .c-formhead > .c-nav__right:not(#t31a):not(#t31b):not(#t31c):not(#t31d):not(#t31e):not(#t31f) { grid-column: 2 !important; grid-row: 2 !important; justify-self: end !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage > .c-formhead .c-nav__title:not(#t31a):not(#t31b):not(#t31c):not(#t31d):not(#t31e):not(#t31f) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere !important; }
-    }
-  }
-}

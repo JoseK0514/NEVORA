@@ -60,6 +60,7 @@ import "./b-review-details.css";
 // Review 30 (Nov 18, 2026): the 30-day phase screens (Edit employee's band, the date fields, Christmas bonus hours, Shift
 // matching, the attendance review). After the area and feature sheets.
 import "./b-thirty-day.css";
+import "./b-sheet-heads.css";
 // Phase 4 (Nov 17, 2026): the Employee and Lead screens, one sheet per group of screens.
 import "./employee-b-work.css";
 import "./employee-b-account.css";
