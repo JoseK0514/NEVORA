@@ -27,7 +27,10 @@ sits word for word in the copy tables.
 ## QA so far (on 0f61b708)
 
 - The readiness-ui production gate and the concurrency run passed: Chromium 7, WebKit 7, 20 and 20, 0 errors.
-- The full sweep in both languages reached about 1,572 of 2,200 views. It found no hydration errors, raw keys, html
+- QA paused cleanly at 06:31 UTC and pushed everything to `claude-codex-collab-nevora-qa` at **49362f53**: the partial
+  sweep, 2,000 shots, probes and RESUME.md. Nothing is running. The sweep reached **2,000 of 2,148 views**: Chromium is
+  complete, and WebKit still needs Employee ES at 390 at 200% and 1440, the public pages and the kiosk (148 views).
+- Before the pause, the full sweep in both languages had reached about 1,572 of 2,200 views. It found no hydration errors, raw keys, html
   lang mismatches, overflow or HTTP errors. Its two findings are fixed: the copy slips (f0c2edbd) and the header
   collision (e9d92a7b).
 
