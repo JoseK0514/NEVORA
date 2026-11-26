@@ -42,15 +42,16 @@ export function WhosWorkingCorp({ children, homeHref = "/app" }: { children?: Re
 
 function WhosWorkingLive({ children, homeHref }: { children?: ReactNode; homeHref: string }) {
   const { monitor, refreshing } = useClockMonitor();
-  const { snapshot: today, refresh } = useToday();
+  const { snapshot: today, refresh, refreshing: todayRefreshing } = useToday();
   const shared = useSharedAttendanceReview();
   const review = shared?.state.review?.state === "ready" && !shared.state.paused ? shared.state.review : null;
-  return <WhosWorkingView monitor={monitor} today={today} refreshing={refreshing} onRetry={refresh} homeHref={homeHref}
+  return <WhosWorkingView monitor={monitor} today={today} refreshing={refreshing} todayRefreshing={todayRefreshing} onRetry={refresh} homeHref={homeHref}
     toCheck={review ? review.signalCount : null} openPastLimit={openPastLimitEntries(review)}>{children}</WhosWorkingView>;
 }
 
-export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, homeHref = "/app", children, toCheck = null, openPastLimit = new Set(), place }: {
-  monitor: ClockMonitor | null; today: Today | null; refreshing?: boolean; onRetry?: () => void; homeHref?: string; children?: ReactNode;
+export function WhosWorkingView({ monitor, today, refreshing = false, todayRefreshing = false, onRetry, homeHref = "/app", children, toCheck = null, openPastLimit = new Set(), place }: {
+  monitor: ClockMonitor | null; today: Today | null; refreshing?: boolean; onRetry?: () => void;
+  /** Today's shifts are being read again: Try again stays busy until that read settles (English flag A6). */ todayRefreshing?: boolean; homeHref?: string; children?: ReactNode;
   /** Review 30 (D29): how many clock-ins the attendance review flags, when its read is ready. */
   toCheck?: number | null;
   /** The time entries the review flags as open past 12 hours with no clock-out. */
@@ -110,7 +111,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     </CorpCard>
     {today?.state === "unavailable" ? <CorpCard as="div" ariaLabel={t.shiftsToday}><CorpBody>
       <p className="c-who__state">{t.shiftsUnavailable}</p>
-      {onRetry ? <RetryButton as={CorpButton} kind="secondary" size="md" onClick={onRetry}>{t.tryAgain}</RetryButton> : null}
+      {onRetry ? <RetryButton as={CorpButton} kind="secondary" size="md" busy={todayRefreshing} onClick={onRetry}>{t.tryAgain}</RetryButton> : null}
     </CorpBody></CorpCard> : null}
     {late.length ? <CorpCard id="who-late" label={headed(ATTENDANCE_WORDS.notClockedIn, late.length)}><ul className="c-rows" aria-label={ATTENDANCE_WORDS.notClockedIn}>{late.map(shift => <li key={shift.id}>
       <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}

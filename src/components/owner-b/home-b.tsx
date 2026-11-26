@@ -39,6 +39,7 @@ import { WholeWordHeading } from "@/components/whole-word-heading";
 import { useViewLang } from "./use-owner-lang";
 import type { ReviewCopy } from "@/components/review-details/copy";
 import { BAvatar, BButtonLink, BCard, BChip, BFaces, BGlyph, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, BStatusText, BSwapNames, BWhen, partOfDay, type BLiveItem } from "./b-kit";
+import { ERROR_SCREENS_COPY } from "@/components/error-screens-copy";
 
 /* Direction B, Owner and Manager Home on a phone (mock screen "Owner · Home"). The same reads as the corporate Home: Today's
  * shifts and the clock-in monitor for the live figures, the shared needs-you read for the sentence, the card and the count,
@@ -278,10 +279,16 @@ export function HomeB(props: HomeBProps) {
 
 function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, onRetry, w }: HomeBProps & { gapRows: (ReturnType<typeof gapRow> & { isToday: boolean })[]; openHref: string; w: Words }) {
   const { c, t, lang } = w, A = ATTENDANCE[lang];
-  const failed = !value && !offline && (connection === "unavailable" || connection === "ready");
+  const failedNow = !value && !offline && (connection === "unavailable" || connection === "ready");
+  // English flag A6 (Nov 26, 2026): Try again reads again ("loading") without swapping the failed card for "Checking…",
+  // so its button stays on screen, busy and focused, until the answer arrives. One button element throughout.
+  const [failedBefore, setFailedBefore] = useState(false);
+  const reading = connection === "loading" || connection === "reconnecting";
+  if (!reading && failedBefore !== failedNow) setFailedBefore(failedNow);
+  const retrying = !value && !offline && reading && failedBefore;
   // Closing F1 (NV-123, NV-075): a failed read is the kit's state card with its one way forward (Try again).
-  if (failed) return <BCard title={c.thingsToDo} id="b-home-needs"><BState kind="failed" title={c.didntLoad} line={c.checkConnection}
-    action={onRetry ? { retry: true, label: c.tryAgain, onClick: onRetry } : undefined} /></BCard>;
+  if (failedNow || retrying) return <BCard title={c.thingsToDo} id="b-home-needs"><BState kind="failed" title={c.didntLoad} line={c.checkConnection}
+    action={onRetry ? { label: c.tryAgain, onClick: onRetry, busy: retrying, busyLabel: ERROR_SCREENS_COPY[lang].tryingAgain } : undefined} /></BCard>;
   if (!value) return <BCard title={c.thingsToDo} id="b-home-needs"><p className="b-state" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>
     {offline || connection === "offline" ? c.updatesReconnect : connection === "paused" ? c.updatesBack : connection === "access_lost" ? c.signInAgain : connection === "not_allowed" ? c.noAccess : c.checkingNeeds}</p></BCard>;
   const rows: ReactNode[] = [];

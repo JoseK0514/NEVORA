@@ -55,7 +55,7 @@ export function BStateCard({text, denied, retry, busy, label, kind}: {text: Reac
   const look: BStateKind = kind ?? (denied ? 'locked' : retry ? 'failed' : 'loading');
   const lang = usePortalLang(), copy = requestsCopy(lang);
   return <BCard label={label}>
-    <BState kind={look} line={text} action={denied ? {label: copy.signIn, href: '/login'} : retry ? {label: copy.tryAgain, onClick: retry, busy, busyLabel: busy ? ERROR_SCREENS_COPY[lang].tryingAgain : undefined} : undefined}/>
+    <BState kind={look} line={text} action={denied ? {label: copy.signIn, href: '/login'} : retry ? {label: copy.tryAgain, onClick: retry, busy, busyLabel: busy === undefined ? undefined : ERROR_SCREENS_COPY[lang].tryingAgain} : undefined}/>
   </BCard>;
 }
 
