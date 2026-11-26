@@ -61,7 +61,6 @@ it('javascript_disabled_native_signout_exits_after_cleanup_rejection', async () 
 rs.mock('@/components/brand-mark', () => ({ BrandMark: () => null, BrandWordmark: () => null }));
 rs.mock('@/components/brand-lockup', () => ({ BrandLockup: () => null }));
 rs.mock('@/components/brand-legal', () => ({ BrandLegal: () => null }));
-rs.mock('@/components/phone-input', () => ({ PhoneInput: () => null }));
 
 
 function hiddenReturns(node: unknown): unknown[] {

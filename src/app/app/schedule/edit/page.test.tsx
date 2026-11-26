@@ -1,6 +1,5 @@
 import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
-import { shiftDurationLabel } from "./shift-edit-timing";
 
 const mocks = rs.hoisted(() => ({
   roles: rs.fn(),
@@ -77,14 +76,6 @@ it("exposes the complete selected employee name when a native select may truncat
   const { default: Page } = await import("./page");
   const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({ shiftId: "test-shift" }) }));
   expect(html).toContain("Selected employee: Alexandra Montgomery-Williams");
-});
-
-it("uses the canonical nominal shift period for fractional, overnight, midnight, and invalid durations", () => {
-  expect(shiftDurationLabel("2026-10-14", "08:00", "16:30")).toBe("8 h 30 min scheduled");
-  expect(shiftDurationLabel("2026-10-14", "08:00", "08:15")).toBe("15 min scheduled");
-  expect(shiftDurationLabel("2026-10-14", "22:00", "06:00")).toBe("8 h scheduled · Ends next day");
-  expect(shiftDurationLabel("2026-10-14", "16:00", "24:00")).toBe("8 h scheduled");
-  for (const end of ["", "08:00", "25:00"]) expect(shiftDurationLabel("2026-10-14", "08:00", end)).toBe("Enter a valid start and end time.");
 });
 
 // Server composition tests; actual mounted finite-body behavior is checked separately.

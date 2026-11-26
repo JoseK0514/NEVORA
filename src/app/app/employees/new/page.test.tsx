@@ -23,12 +23,6 @@ rs.mock("@/lib/data/employees", () => ({
   ],
 }));
 rs.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
-rs.mock("@/components/phone-input", () => ({
-  PhoneInput: (props: React.ComponentProps<"input">) => createElement("input", props),
-}));
-rs.mock("@/components/employee-scheduling-fields", () => ({
-  EmployeeSchedulingFields: () => null,
-}));
 
 rs.mock("@/app/app/employees/actions", () => ({ createEmployeeFormAction: rs.fn() }));
 

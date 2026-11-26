@@ -63,13 +63,11 @@ rs.mock("@/lib/employee-display", () => ({
   employeeRoleLabel: (role: string) => role,
 }));
 rs.mock("@/lib/phone", () => ({ formatPhoneNumber: (value: string) => value, normalizePhoneNumber: (value: string) => value }));
-rs.mock("@/components/page-header", () => ({ PageHeader: ({ title }: { title: string }) => createElement("h1", null, title) }));
 rs.mock("@/components/employee-core-profile-form", () => ({
   EmployeeCoreProfileForm: ({ownerScope,more,employmentDates}:{ownerScope?:{scopeRevision:number};more?:React.ReactNode;employmentDates?:{hireDate:string|null;birthDate:string|null}}) => createElement("div", { "data-testid": "employee-core-form", "data-scope-revision":ownerScope?.scopeRevision??"none", "data-hire":employmentDates?.hireDate, "data-birth":employmentDates?.birthDate }, "Employee details", more),
   EmployeeStatusForm: ({employee}:{employee:{firstName:string}}) => createElement("button", { "data-testid": "employee-status-form" }, `Deactivate ${employee.firstName}`),
   SheetField: ({label,href}:{label:string;href:string}) => createElement("a", { href }, label),
 }));
-rs.mock("@/components/employee-scheduling-fields", () => ({ EmployeeSchedulingFields: () => null }));
 rs.mock("@/components/configuration-form", () => ({ ConfigurationForm: ({ children }: { children: React.ReactNode }) => createElement("form", null, children) }));
 rs.mock("@/components/operational-rule-fields", () => ({ OperationalRuleFields: () => null }));
 rs.mock("../actions", () => ({

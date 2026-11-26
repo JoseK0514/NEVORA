@@ -1,14 +1,10 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from '@rstest/core';
 
 const cssPath = fileURLToPath(new URL("../app/globals.css", import.meta.url));
 
-rs.mock("@/components/phone-input", () => ({
-  PhoneInput: (props: Record<string, unknown>) => createElement("input", props),
-}));
 
 
 import { EmployeeCoreProfileForm, EmployeeStatusForm } from "./employee-core-profile-form";

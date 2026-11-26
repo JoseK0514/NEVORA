@@ -23,7 +23,6 @@ rs.mock("./shift-change-form", () => ({
 }));
 
 import { ShiftAssignmentFields } from "./shift-assignment-fields";
-import { EmployeeSchedulingFields } from "./employee-scheduling-fields";
 import { OperationalRuleFields } from "./operational-rule-fields";
 import { ShiftChangePolicyFields } from "./shift-change-policy-fields";
 import { ReviewedCalloutForm } from "./reviewed-callout-form";
@@ -102,24 +101,3 @@ it("offers the board's four reasons as one required choice for reviewed inabilit
   expect(html).not.toContain('checked=""');
 });
 
-it("progressively discloses large location catalogs but leaves small catalogs direct", () => {
-  const many = Array.from({ length: 20 }, (_, index) => ({
-    id:`loc-${index}`,
-    workspaceId:"w",
-    clockerKey:`loc-${index}`,
-    name:`Regional Operations Center ${index}`,
-    shortName:`Center ${index}`,
-    active:true,
-  }));
-  const large = renderToStaticMarkup(
-    <EmployeeSchedulingFields employee={employee} locations={many} positions={[]} />,
-  );
-  expect(large).toContain('class="employee-choice-disclosure"');
-  expect(large).toContain("20 available");
-  expect(large).not.toMatch(/\d+ selected/);
-
-  const small = renderToStaticMarkup(
-    <EmployeeSchedulingFields employee={employee} locations={many.slice(0, 3)} positions={[]} />,
-  );
-  expect(small).not.toContain('class="employee-choice-disclosure"');
-});

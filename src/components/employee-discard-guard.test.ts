@@ -6,7 +6,7 @@ const source = (file: string) => readFile(new URL(file, import.meta.url), 'utf8'
 /* "Discard changes?" on Employee and Lead forms (Jose, Nov 21, 2026). The guard itself is tested in kit/; these keep each
  * form wired to it with the condition that decides when it asks. */
 it('asks before leaving unsaved availability hours, in both layouts, and not while saving or on a closed week', async () => {
-  for (const file of ['./availability-editor.tsx', './availability-signature.tsx'])
+  for (const file of ['./availability-signature.tsx'])
     expect(await source(file), file).toContain('<DiscardGuard dirty={dirty && !disabled} />');
 });
 it('asks before leaving the Employee availability page with unsaved hours, and never when moving between its weeks', async () => {

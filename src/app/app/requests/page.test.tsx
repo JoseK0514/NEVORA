@@ -9,7 +9,6 @@ rs.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'ficti
   requireSessionMutationProof: async () => ({ employee: { id: 'fictional', firstName: 'Fictional', lastName: 'Employee', role: 'EMPLOYEE', primaryLocationId: 'loc-1' }, sessionTokenHash: 'a'.repeat(64) }) }));
 rs.mock('@/lib/auth/permissions', () => ({ isTimeOffReviewerRole: () => false }));
 rs.mock('@/components/manager-time-off', () => ({ ManagerTimeOff: () => null }));
-rs.mock('@/app/app/requests/time-off-form', () => ({ TimeOffForm: () => null }));
 rs.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () => [
   { id: 'pending', employeeId: 'fictional', status: 'PENDING', startDate: '2030-10-07', endDate: '2030-10-08', allDay: true, reason: 'Fictional pending request' },
   { id: 'approved', status: 'APPROVED', startDate: '2030-10-09', endDate: '2030-10-10', allDay: true, reason: 'Fictional approved request', createdAt: '2030-10-01T15:00:00.000Z', reviewedAt: '2030-10-02T15:00:00.000Z', reviewerName: 'Fictional Manager' },

@@ -8,7 +8,6 @@ rs.mock('next/link',()=>({default:({children,...props}:React.ComponentProps<'a'>
 rs.mock('@/lib/scheduling/validate-shift',()=>({schedulingIssueMessage:()=>''}));
 
 
-rs.mock('@/components/page-header',()=>({PageHeader:()=>null}));
 rs.mock('@/components/status-pill',()=>({StatusPill:()=>null}));
 rs.mock('@/components/employee-weekly-confirmation',()=>({EmployeeWeeklyConfirmation:()=>createElement('button',null,'Confirm schedule')}));
 

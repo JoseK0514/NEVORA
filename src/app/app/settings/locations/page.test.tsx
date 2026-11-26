@@ -24,7 +24,6 @@ rs.mock("@/lib/data/schedule-health", () => ({
 
 
 import LocationsPage from "./page";
-import { LocationsSearch } from "./locations-search";
 import LocationsError from "./error";
 import { createElement } from "react";
 
@@ -102,11 +101,8 @@ it("propagates unavailable data rather than claiming there are no locations", as
   data.locations.mockRejectedValueOnce(new Error("Location configuration is unavailable."));
   await expect(render()).rejects.toThrow("Location configuration is unavailable.");
 });
-it("renders a progressive native search form and an unavailable state with recovery controls", () => {
-  const search = renderToStaticMarkup(createElement(LocationsSearch, { query: "Office", status: "inactive" }));
-  expect(search).toContain('method="get"'); expect(search).toContain('action="/app/settings/locations"');
-  expect(search).toContain('value="Office"'); expect(search).toContain('name="status" value="inactive"');
-  expect(search).toContain('role="status"'); expect(search).not.toContain('disabled=""');
+
+it("renders an unavailable state with recovery controls", () => {
   const error = renderToStaticMarkup(createElement(LocationsError, { reset: rs.fn() }));
   expect(error).toContain('role="alert"'); expect(error).toContain("Try again"); expect(error).toContain('href="/app/settings"');
 });

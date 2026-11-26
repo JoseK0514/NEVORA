@@ -13,11 +13,9 @@ rs.mock('@/components/employee-updates',()=>({EmployeeUpdates:({mode}:{mode:stri
 rs.mock('@/components/communication-detail',()=>({CommunicationDetail:({mode}:{mode:string})=><p>Detail: {mode}</p>}));
 rs.mock('@/components/communication-compose',()=>({CommunicationCompose:({mode}:{mode:string})=><p>Compose: {mode}</p>}));
 rs.mock('@/components/timecards',()=>({Timecards:({manager}:{manager:boolean})=><p>{manager?'Team timecards':'Own timecards'}</p>}));
-rs.mock('@/components/timecards-heading',()=>({TimecardsHeading:()=>null}));
 rs.mock('@/components/reports',()=>({Reports:()=> <p>Protected reports</p>}));
 rs.mock('@/components/reports-entrance',()=>({ReportsEntrance:({children}:{children:React.ReactNode})=>children}));
 rs.mock('@/components/payroll-export',()=>({PayrollExport:()=> <p>Protected operational export</p>}));
-rs.mock('@/components/payroll-export-motion',()=>({PayrollExportMotion:()=>null}));
 rs.mock('@/components/account-recovery',()=>({AccountRecovery:()=> <p>Protected assisted recovery</p>}));
 rs.mock('@/components/clocker-recovery-review',()=>({ClockerRecoveryReview:()=> <p>Protected device recovery</p>}));
 import Updates from './updates/page';import Detail from './updates/[id]/page';import Compose from './updates/compose/page';import Timecards from './timecards/page';import Reports from './reports/page';import Export from './payroll-export/page';import Recovery from './account-recovery/page';import DeviceRecovery from './clocker-recovery/page';

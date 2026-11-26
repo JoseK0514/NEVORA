@@ -9,7 +9,6 @@ rs.mock('./manager-today', () => ({useToday: () => ({snapshot: {state: 'ready', 
 rs.mock('next/navigation', () => ({useRouter: () => ({push: rs.fn(), replace: rs.fn()}), usePathname: () => '/app/employees', useSearchParams: () => new URLSearchParams()}));
 rs.mock('./clean/use-clock-monitor', () => ({useClockMonitor: () => ({monitor: {state: 'ready', employees: []}})}));
 rs.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => createElement('a', props, children)}));
-rs.mock('@/components/phone-input', () => ({PhoneInput: (props: Record<string, unknown>) => createElement('input', props)}));
 
 import {PortalLangProvider} from '@/lib/i18n/portal-lang';
 import {EmployeeDirectory} from './employee-directory';

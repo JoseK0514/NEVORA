@@ -19,7 +19,6 @@ rs.mock("next/link", () => ({
 }));
 rs.mock("next/image", () => ({ default: () => null }));
 rs.mock("@/components/brand-mark", () => ({ BrandMark: () => createElement("span", { "data-brand-mark": true }), BrandWordmark: () => createElement("span", { "aria-label": "NEVORA", "data-brand-wordmark": true }) }));
-rs.mock("@/components/phone-input", () => ({ PhoneInput: (props: ComponentProps<"input">) => createElement("input", props) }));
 rs.mock("@/app/login/actions", () => ({ login: rs.fn() }));
 rs.mock("@/app/activate/actions", () => ({ activateAccountAction: rs.fn() }));
 

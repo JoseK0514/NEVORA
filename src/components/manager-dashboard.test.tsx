@@ -2,8 +2,7 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from '@rstest/core';
 import { withoutB } from "./owner-b/test-support";
-import { ManagerDashboard, homeDateLabel, homeWeek } from "./manager-dashboard";
-import { WeekSummary } from "./clean/week-summary";
+import { ManagerDashboard, homeDateLabel } from "./manager-dashboard";
 rs.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps<"a">) => createElement("a",{href,...props},children) }));
 
 
@@ -43,30 +42,6 @@ it("loads the current Action Center without exposing unverified server-provided 
 
 
 
-it("summarizes the selected planning week and counts only explicitly published schedules", () => {
-  // The summary moved from Home to Schedule (clean Manager v3); it is built from the same dashboard read.
-  const html = renderToStaticMarkup(<WeekSummary week={homeWeek({...dashboardProps,
-    readyLocationCount: 3,
-    days: [
-      {date:"2026-09-28",weekday:"Mon",day:"28",shiftCount:3,gapCount:0},
-      {date:"2026-09-29",weekday:"Tue",day:"29",shiftCount:4,gapCount:0},
-    ],
-    locations: [
-      {locationId:"published",locationName:"North",state:"PUBLISHED",scheduleStatus:"PUBLISHED",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
-      {locationId:"draft",locationName:"South",state:"READY",scheduleStatus:"DRAFT",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
-      {locationId:"unspecified",locationName:"West",state:"PUBLISHED",totalBlocks:1,coveredBlocks:1,uncoveredBlocks:0},
-    ],
-  })} />);
-  const week = (html.split('id="home-week"')[1] ?? '').replace(/\u00a0/g, ' ');
-  expect(week).toContain('7 shifts planned, drafts included');
-  // O2: the denominator is the people asked for availability, not every active role.
-  expect(week).toContain('>2 of 3 people<');
-  expect(week).toContain('Employees and leads only');
-  expect(week).not.toContain('of 10');
-  // Only an explicit PUBLISHED status counts; the others are named as drafts.
-  expect(week).toContain('1 of 3 locations');
-  expect(week).toContain('2 locations aren’t published yet.');
-});
 
 it("offers Home's own views only; Schedule and Requests live in one place each (R1)", () => {
   // The views' pills are on the display-only composition (Hours this week and Activity are kit pages when live).

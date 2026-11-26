@@ -1,7 +1,5 @@
 import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
-import { createElement } from "react";
-import { LocationConfigurationFields } from "@/components/location-configuration-fields";
 
 const mocks = rs.hoisted(() => ({ requireRoles: rs.fn(), create: rs.fn() }));
 rs.mock("@/lib/auth/permissions", () => ({ requireRoles: mocks.requireRoles }));
@@ -34,11 +32,3 @@ it("retains the creation contract and automatic optional Clocker key", async () 
   expect(html).toContain('type="submit" form="new-location-form"');
 });
 
-it("preserves edit-location controls and its immutable Clocker contract", () => {
-  const html = renderToStaticMarkup(createElement(LocationConfigurationFields, {
-    location: { id: "existing", workspaceId: "test", name: "Existing office", shortName: "Office", clockerKey: "existing-office", active: true },
-  }));
-  expect(html).toContain('name="active"');
-  expect(html).toContain('name="id"');
-  expect(html).not.toContain('name="clockerKey"');
-});

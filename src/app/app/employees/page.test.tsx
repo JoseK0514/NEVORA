@@ -16,7 +16,6 @@ rs.mock("@/lib/auth/permissions", () => ({
   MANAGER_ROLES: ["OWNER", "MANAGER"],
   requireRoles: async () => { fixture.events.push("authorize"); if (fixture.denied) throw new Error("forbidden"); return { id: "manager", role: fixture.owner ? "OWNER" : "MANAGER" }; },
 }));
-rs.mock("@/components/page-header", () => ({ PageHeader: () => null }));
 
 rs.mock("@/lib/employee-display", () => ({
   employeeInitials: (firstName: string, lastName: string) => firstName[0] + lastName[0],

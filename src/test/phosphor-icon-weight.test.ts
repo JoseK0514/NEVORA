@@ -18,12 +18,9 @@ const skippedFolders: Record<string, string> = {
 
 /** Files that keep an explicit duotone icon, each with the reason. */
 const duotoneFiles: Record<string, string> = {
-  "app/app/requests/time-off-form.tsx": "calendar mark beside the request heading, explicit before SY-012",
-  "components/auth-access-symbol.tsx": "24px sign-in symbol, explicit before SY-012",
   "components/company-access/employee-invitation-panel.tsx": "22px panel heading mark, explicit before SY-012",
   "components/company-access/manager-operational-scope-panel.tsx": "22px panel heading mark, explicit before SY-012",
   "components/employee-time-panel.tsx": "20px section marks in My time, explicit before SY-012",
-  "components/payroll-export-motion.tsx": "28px payroll export illustration, explicit before SY-012",
   "components/payroll/payroll-ui.tsx": "23px payroll document tile, explicit before SY-012",
 };
 
