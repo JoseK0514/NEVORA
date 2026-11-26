@@ -16,6 +16,7 @@ import type {AttentionItem} from '../lib/employee-home/types';
 import {EmployeeHomeB, type HomeBExtras} from './employee-b/home-b';
 import {reviewCopy} from './review-details/copy';
 import {homeTaskTotal} from '../lib/action-center/review-routing';
+import {AssignmentAddress} from "./employee-b/assignment-address";
 import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDestinations, todoTitle, weekRange, type EmployeeHomeQuietViewProps, type HomeWeek} from './employee-home-quiet';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 import {employeeHomeCopy, type HomeLang} from './employee-home-copy';
@@ -79,6 +80,7 @@ function ShiftCard({snapshot, lang}: {snapshot: HomeSnapshot; lang: HomeLang}) {
     <Link className="c-card__body c-ehome__shift" href={href} tabIndex={-1}>
       <b className="c-big"><time dateTime={shift.startAt}>{clock(shift.startAt, zone, lang)}</time><span aria-hidden="true"> – </span><span className="nv-sr">{c.to}</span><time dateTime={shift.endAt}>{clock(shift.endAt, zone, lang)}</time></b>
       <span className="c-ehome__where">{today ? where : keepWhole(`${shortDay(shift.date, lang)} · ${where}`)}{!today && businessDate(shift.endAt, zone) !== shift.date ? keepWhole(` · ${c.ends(shortDay(businessDate(shift.endAt, zone), lang))}`) : null}</span>
+      <AssignmentAddress address={shift.locationAddress}/>
     </Link>
   </CorpCard>;
 }
@@ -105,8 +107,8 @@ function ComingUp({week, snapshot, lang}: {week: HomeWeek; snapshot: HomeSnapsho
         const at = utcDay(shift.date);
         const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
         return <li key={`${shift.date}-${shift.startTime}`}><CorpRow href={href}
-          lead={`${fmt('UTC', {weekday: 'short'}, lang).format(at)} ${at.getUTCDate()}`} title={keepWhole(`${wall(shift.startTime, lang)} – ${wall(shift.endTime, lang)}`)} detail={shift.where || undefined}
-          label={keepWhole(c.rowLabel(fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(at), wall(shift.startTime, lang), wall(shift.endTime, lang), shift.where))}/></li>;
+          lead={`${fmt('UTC', {weekday: 'short'}, lang).format(at)} ${at.getUTCDate()}`} title={keepWhole(`${wall(shift.startTime, lang)} – ${wall(shift.endTime, lang)}`)} detail={shift.locationAddress ? <>{shift.where}<AssignmentAddress address={shift.locationAddress}/></> : shift.where || undefined}
+          label={keepWhole(c.rowLabel(fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(at), wall(shift.startTime, lang), wall(shift.endTime, lang), [shift.where, shift.locationAddress].filter(Boolean).join(", ")))}/></li>;
       })}
     </CorpRows>
   </CorpCard>;

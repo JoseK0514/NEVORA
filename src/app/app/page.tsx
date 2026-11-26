@@ -80,7 +80,7 @@ export default async function DashboardPage({
     // Upscale M7: the following week too (same read), so "Coming up" can list the next shifts across the week boundary.
     const followingWeek=addDays(currentWeek,7);
     const [review,following]=await Promise.all([readEmployeeWeeklyReview(proof,currentWeek),readEmployeeWeeklyReview(proof,followingWeek)]);
-    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName,isDesignatedLead})=>({id,date,startTime,endTime,lead:isDesignatedLead,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
+    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,locationAddress,positionName,isDesignatedLead})=>({id,date,startTime,endTime,locationAddress,lead:isDesignatedLead,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
     const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:own(review),next:following.state==='unavailable'?null:{weekStart:followingWeek,shifts:own(following)}};
     // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
     const presentation=await currentPresentation();

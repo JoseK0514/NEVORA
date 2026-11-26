@@ -5,6 +5,7 @@ import { ALL_MODULES_ON } from '@/lib/workspace-presentation/modules';
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
+import { AssignmentAddress } from "./employee-b/assignment-address";
 import { BlockedOpenShifts } from './blocked-open-shifts';
 import { Celebration } from './celebration';
 import { ShiftSheetCorpRow, type ShiftSheetShift } from './employee-shift-sheet';
@@ -112,7 +113,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
     return {
       id: shift.id, day: sheetDay(shift, today, lang, t), hours: hours(shift, lang), length: hoursLabel(shiftMinutes(shift)),
       ends: ends ? dayFmt(ends, { weekday: 'short', month: 'short', day: 'numeric' }, lang) : null,
-      location: nameOf(shift.locationId) || t.locationUnavailable, position: shift.positionName ?? null,
+      location: nameOf(shift.locationId) || t.locationUnavailable, locationAddress: shift.locationAddress, position: shift.positionName ?? null,
       lead: shift.isDesignatedLead, calloutApproved: shift.isCalloutApproved,
       canSwap: modules.marketplace && swappable(shift, today, observedAt, timeZone),
       canReport: modules.marketplace && !shift.isCalloutApproved && hasNotEnded(shift, observedAt, timeZone),
@@ -210,7 +211,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
             : shifts.some(shift => shift.date === wideDay) ? w.noMorePublishedToday : t.emptyLabel(state) } : null,
         // Gaps G66: a row is named by what it shows ("Tue 24 9:00 AM – 5:00 PM Barista, Condado"); its own label differed.
         rows: listed.map(shift => <PhoneOnly key={shift.id} fallback={<li className="b-li"><Link className="b-row b-row--link" href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} scroll={false}>
-          {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift, lang)}</span>{bChip(shift) ?? null}</span><span className="b-row__s">{bSub(shift)}</span></span>
+          {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift, lang)}</span>{bChip(shift) ?? null}</span><span className="b-row__s">{bSub(shift)}</span><AssignmentAddress address={shift.locationAddress}/></span>
           <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" /></Link></li>}>
           <ShiftSheetCorpRow shift={sheetShift(shift)} title={hours(shift, lang)} detail={rowDetail(shift)} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id}
             b={{ lead: bLead(shift), chip: bChip(shift), sub: bSub(shift) }} />

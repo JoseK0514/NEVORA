@@ -26,6 +26,7 @@ import {employeeHomeCopy} from '../employee-home-copy';
 import {BCardNote, BDay, Dotted, Range, shiftEndedWhileOpen, sinceSpan, wallTime} from './parts';
 import './employee-b.css';
 import {reviewCopy} from '../review-details/copy';
+import {AssignmentAddress} from "./assignment-address";
 import {HomeWeekCard} from './home-week';
 import type {HomeTaskTotal} from '../../lib/action-center/review-routing';
 
@@ -237,6 +238,7 @@ function ShiftCard({snapshot, lead, week, lang}: {snapshot: HomeSnapshot; lead?:
         * 200% text) the range breaks after its dash, as parts.tsx Range does ("5:30 AM –" over "1:30 PM"); it broke before. */}
       <p className="eb-shift__time"><span className="eb-nb"><time dateTime={shift.startAt}>{keepWhole(clockL(shift.startAt, zone, lang))}</time><span aria-hidden="true">{'\u00a0–'}</span></span> <span className="eb-nb"><span className="b-sr">{t.rangeTo}</span><time dateTime={shift.endAt}>{keepWhole(clockL(shift.endAt, zone, lang))}</time></span></p>
       <p className="eb-shift__where"><Dotted lang={lang} text={[today ? null : shortDay(shift.date, lang), where, !today && ends !== shift.date ? t.endsOn(shortDay(ends, lang)) : null].filter(Boolean).join(' · ')}/></p>
+      <AssignmentAddress address={shift.locationAddress}/>
       {/* Phase 8 (review C, row 15): the Shift lead chip says it once; no sentence repeats it (as review B6 decided for
         * the On shift now card). */}
       {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">{t.shiftLead}</BChip></p> : null}
@@ -305,6 +307,7 @@ function ComingUp({week, snapshot, lead, note, lang}: {week: HomeWeek; snapshot:
       // its own label ("Tuesday, November 24, 9:00 AM to 5:00 PM, …") differed from it.
       return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date} spoken lang={lang}/>} title={<Range text={keepWhole(`${wallTime(shift.startTime, lang)} – ${wallTime(shift.endTime, lang)}`)}/>}
         // Review B6 (NV-163): "Shift lead" leads the sub-line, as on Schedule, so it never competes with a chip.
+        extra={<AssignmentAddress address={shift.locationAddress}/>}
         sub={lead && shift.lead && !allLed || shift.where ? <Dotted lang={lang} text={[lead && shift.lead && !allLed ? t.shiftLead : null, shift.where].filter(Boolean).join(' · ')}/> : undefined}/>;
     })}</BList>
     {/* Review B6 (NV-273): the note about what isn't published yet qualifies these shifts, so it is the card's footer. */}

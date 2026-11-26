@@ -21,7 +21,8 @@ export function NewLocationForm({
   /** Company words (B2). */
   words?: { location: string; locations: string };
 }) {
-  const t = LOCATION_FORMS_COPY[usePortalLang()], words = givenWords ?? t.defaultWords;
+  const lang = usePortalLang();
+  const t = LOCATION_FORMS_COPY[lang], words = givenWords ?? t.defaultWords;
   const place = lower(words.location), Places = words.locations;
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
@@ -98,6 +99,7 @@ export function NewLocationForm({
                 placeholder={t.namePlaceholder} autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
               <FieldB label={t.shortName} id="new-location-short-name" name="shortName" required pattern=".*\S.*" maxLength={48} value={shortName} onChange={(event) => setShortName(event.target.value)}
                 placeholder={t.shortPlaceholder} autoComplete="off" autoCapitalize="words" enterKeyHint="next" />
+              <FieldB kind="textarea" label={t.addressOptional} id="new-location-address" name="address" rows={2} maxLength={300} autoComplete="off" />
               <FieldB label={t.clockerKey} helpId="location-clocker-help" help={t.clockerKeyHelp}
                 id="new-location-clocker-key" name="clockerKey" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={64}
                 placeholder={t.keyPlaceholder} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" />
@@ -110,7 +112,7 @@ export function NewLocationForm({
         </CorpFormFooter>}
         <p className="c-sr" role="status">{pending ? t.savingPlace(place) : ""}</p>
         {/* Leaving with typed entries that are not added asks first (Nov 21, 2026); not once it is added. */}
-        <FormDiscardGuard off={success} />
+        <FormDiscardGuard off={success} lang={lang} />
       </form>
       {result.error ? <ResultB innerRef={feedback} tone="urgent" title={unconfirmed ? t.notSavedYet : t.notAdded(words.location)}
         action={<CorpLink large href="/app/settings/locations">{t.checkPlaces(Places)}</CorpLink>}>{result.error}</ResultB> : null}

@@ -9,6 +9,7 @@ import {UserMinusIcon} from '@phosphor-icons/react/dist/ssr/UserMinus';
 import {UserPlusIcon} from '@phosphor-icons/react/dist/ssr/UserPlus';
 import './employee-shift-sheet.css';
 import {QuietSheet, SheetCancel} from './quiet/quiet-sheet';
+import {AssignmentAddress} from "./employee-b/assignment-address";
 import {Dotted} from './employee-b/parts';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 import {employeeScheduleCopy} from './employee-schedule-copy';
@@ -27,6 +28,7 @@ export type ShiftSheetShift = {
   length: string;
   ends?: string | null;
   location: string;
+  locationAddress?: string | null;
   position?: string | null;
   lead: boolean;
   calloutApproved: boolean;
@@ -56,7 +58,7 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
       <div className="q-nav"><span/><span className="q-nav__t">{t.shift}</span><SheetCancel href={closeHref} className="q-nav__r q-nav__r--b">{t.done}</SheetCancel></div>
       <div className="q-hd"><h1 id={`shift-${shift.id}-title`}>{shift.day}</h1><p>{shift.hours} · {shift.length}{shift.ends ? ` · ${t.endsLower(shift.ends)}` : ''}</p></div>
       <ul className="q-list" style={{marginTop: 16}}>
-        <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.location}</b></span><span className="q-rv q-rv--l">{shift.location}</span></div></li>
+        <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.location}</b></span><span className="q-rv q-rv--l">{shift.location}<AssignmentAddress address={shift.locationAddress}/></span></div></li>
         {shift.position ? <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.position}</b></span><span className="q-rv q-rv--l">{shift.position}</span></div></li> : null}
         {shift.lead ? <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.shiftLead}</b></span><span className="q-rv q-rv--l">{t.you}</span></div></li> : null}
         {shift.calloutApproved ? <li><div className="q-row q-row--one"><span className="q-rt"><b>{t.cantWork}</b></span><span className="q-rv q-rv--l">{t.approved}</span></div></li> : null}
@@ -92,11 +94,11 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
   return <li className={b ? 'b-li' : undefined}>
     {b ? <Link className="b-row b-row--link" href={href} scroll={false} aria-haspopup="dialog" aria-label={b.label} onClick={opener}>
       {b.lead}
-      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span>{b.chip ?? null}</span><span className="b-row__s">{b.sub ?? <Dotted text={detail}/>}</span></span>
+      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span>{b.chip ?? null}</span><span className="b-row__s">{b.sub ?? <Dotted text={detail}/>}</span><AssignmentAddress address={shift.locationAddress}/></span>
       <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true"/>
     </Link> : <Link className="c-row" href={href} scroll={false} aria-haspopup="dialog" onClick={opener}>
       {lead ? <span className="c-row__lead">{lead}</span> : null}
-      <span className="c-row__main"><span className="c-row__title">{title}</span><span className="c-row__detail"><span>{detail}</span>{trail ?? null}</span></span>
+      <span className="c-row__main"><span className="c-row__title">{title}</span><span className="c-row__detail"><span>{detail}</span>{trail ?? null}</span><AssignmentAddress address={shift.locationAddress}/></span>
       {/* Board G-E-Schedule: a row with a status pill has no chevron. */}
       {trail ? null : <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/>}
     </Link>}
@@ -109,6 +111,7 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
         <div className="c-card c-sheet__shift c-esheet__card">
           <b className="c-big">{shift.hours}</b>
           <span className="c-sheet__place">{facts}</span>
+          <AssignmentAddress address={shift.locationAddress}/>
         </div>
         {shift.canSwap || shift.canReport ? <>
           <ul className="c-card c-rows c-sheet__actions" aria-label={t.changeShift} onClick={event => { if ((event.target as HTMLElement).closest('a')) setOpen(false); }}>

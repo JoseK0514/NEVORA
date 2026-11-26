@@ -19,7 +19,7 @@ import { ButtonLabel, FieldErrors, useFieldErrors } from "@/app/app/settings/wav
 /** TC-17: the notice title already says it was updated; keep only what the server adds. */
 const successBody = (text?: string) => text?.replace(/^[^.]*updated\.\s*/i, "") || undefined;
 
-type Draft = Pick<CatalogLocation, "name" | "shortName" | "active">;
+type Draft = Pick<CatalogLocation, "name" | "shortName" | "active" | "address">;
 
 /** Edit location in Settings' Direction B form. Save shows once something changes;
  * a lost answer keeps the entries and asks to check Locations before trying again. */
@@ -50,7 +50,7 @@ export function EditLocationForm({ location, action, readCurrent, words: givenWo
   const submitting = useRef(false);
   const feedback = useRef<HTMLDivElement>(null);
   const keep = useRef<HTMLButtonElement>(null);
-  const dirty = draft.name !== saved.name || draft.shortName !== saved.shortName || draft.active !== saved.active;
+  const dirty = draft.name !== saved.name || draft.shortName !== saved.shortName || draft.active !== saved.active || (draft.address ?? "") !== (saved.address ?? "");
   const retiring = saved.active && !draft.active;
   const clockerHref = `/clocker/${location.clockerKey}`;
   const { errors, handlers, clear } = useFieldErrors({
@@ -102,6 +102,7 @@ export function EditLocationForm({ location, action, readCurrent, words: givenWo
         name: draft.name === saved.name ? current.name : draft.name,
         shortName: draft.shortName === saved.shortName ? current.shortName : draft.shortName,
         active: draft.active === saved.active ? current.active : draft.active,
+        address: (draft.address ?? "") === (saved.address ?? "") ? current.address : draft.address,
       });
       setSaved(current);
       if (retiring && !current.active) setNotice("inactive");
@@ -135,7 +136,7 @@ export function EditLocationForm({ location, action, readCurrent, words: givenWo
       setNotice("blocked");
     } else if (!response.error && response.success && response.updatedAt) {
       const confirmed = { ...saved, name: draft.name.trim(), shortName: draft.shortName.trim(),
-        active: draft.active, updatedAt: response.updatedAt };
+        active: draft.active, address: draft.address?.trim() || null, updatedAt: response.updatedAt };
       setSaved(confirmed);
       setDraft(confirmed);
       setResult(response);
@@ -182,6 +183,8 @@ export function EditLocationForm({ location, action, readCurrent, words: givenWo
                 onChange={(event) => change({ name: event.target.value })} autoComplete="off" />
               <FieldB label={t.shortName} id="edit-location-short-name" name="shortName" required maxLength={48} value={draft.shortName}
                 onChange={(event) => change({ shortName: event.target.value })} autoComplete="off" />
+              <FieldB kind="textarea" label={t.addressOptional} id="edit-location-address" name="address" maxLength={300}
+                rows={2} autoComplete="off" value={draft.address ?? ""} onChange={event => change({ address: event.target.value })} />
             </div>
             <CorpRows>
               <li><SwitchRowB id="edit-location-active" name="active" label={status.active} checked={draft.active} onChange={(active) => change({ active })} describedBy="edit-location-active-help" /></li>
@@ -226,7 +229,7 @@ export function EditLocationForm({ location, action, readCurrent, words: givenWo
       {notice === "review" && <ResultB innerRef={feedback} tone="info" title={rt.checked}>
         {dirty ? <>{rt.review}<span className="location-review-values">
           <strong>{rt.current}</strong><span>{t.name} · {saved.name}</span><span>{t.shortName} · {saved.shortName}</span>
-          <span>{saved.active ? rt.active : rt.inactiveStatus}</span>
+          <span>{t.address} · {saved.address || t.notSet}</span><span>{saved.active ? rt.active : rt.inactiveStatus}</span>
         </span></> : rt.matches}
       </ResultB>}
     </>

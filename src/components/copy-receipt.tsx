@@ -1,3 +1,5 @@
+import { shortPersonName as shortName } from "@/lib/short-person-name";
+export { shortName };
 import { RECEIPT_WORDS, esTimes, esWeekRange, esWeekday, type ReceiptLang } from "./copy-receipt-copy";
 import type { ReactNode } from "react";
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
@@ -21,11 +23,6 @@ const skipWords = (code: string | null, kind: CopyCommand["kind"], W = RECEIPT_W
   : code ? W.skips[code] ?? W.didntPass : W.didntPass;
 
 type Row = CopyReceipt["rows"][number];
-/** Owner and Manager screens name people by first name and last initial ("Ana R."). */
-export function shortName(name: string) {
-  const parts = name.trim().split(/\s+/);
-  return parts.length > 1 ? `${parts[0]} ${parts[parts.length - 1].charAt(0)}.` : parts[0];
-}
 /** Receipts written before rows carried their person, day and time have the source reference only. */
 const described = (row: Row): row is Row & { date: string; startTime: string; endTime: string } =>
   typeof row.date === "string" && typeof row.startTime === "string" && typeof row.endTime === "string";

@@ -67,3 +67,8 @@ it("restricts read-back to the requested Owner catalog record and its current ve
   await expect(readEditedLocation("east")).rejects.toThrow("denied");
   expect(mocks.list).not.toHaveBeenCalled();
 });
+
+it("loads the saved multiline address into the editable draft", async () => {
+  mocks.list.mockResolvedValue([{...location, address: "15 Calle Clara\nSan Juan"}]);
+  expect(await render()).toMatch(/<textarea(?=[^>]*name="address")(?=[^>]*maxLength="300")[^>]*>15 Calle Clara\nSan Juan<\/textarea>/);
+});

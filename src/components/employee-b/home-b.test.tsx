@@ -212,3 +212,16 @@ it('DEC1: a Lead on shift now sees the shift once, in the "On shift now" card; t
   expect(strip).not.toContain('On shift now');expect(strip).not.toContain('b-dot--live');
   expect(html).not.toContain('>Your shift<');
 });
+
+it('shows multiline addresses from authorized assignments and clears them with Home', () => {
+  const address = "12 Calle Norte\nSuite <A>";
+  const future = {...shift('2026-11-19', '09:00', '17:00'), locationAddress: "42 Calle Sur"};
+  const data = {week: {...week(), shifts: [future]}, snapshot: snapshot({nextShift: {...tomorrow, locationAddress: address}})};
+  const ready = draw(data);
+  expect(ready).toContain('12 Calle Norte\nSuite &lt;A&gt;');
+  expect(ready).toContain("42 Calle Sur");
+  const paused = draw({...data, snapshot: null, paused: true});
+  expect(paused).not.toContain("Calle Norte");
+  expect(paused).not.toContain("Calle Sur");
+  expect(draw()).not.toContain('class="assignment-address"');
+});
