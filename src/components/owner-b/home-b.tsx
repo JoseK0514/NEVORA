@@ -182,7 +182,8 @@ export function HomeB(props: HomeBProps) {
   // Phase 4 (U03): with today's clock-ins unread the figure is unknown ("—"), never a zero. Phase 8 (a.md #16): someone
   // waiting to clock in is the amber dot, as an open shift is; on narrow phones the dots sit beside the figures instead
   // (owner-b-home.css), so the label keeps its one line.
-  const attendanceLabel = lang === "es" ? <HomeFitLabel full={A.notClockedIn} short={c.notClockedInShort} kind="attendance" /> : A.notClockedIn;
+  // English flag B16 (Nov 26, 2026): the label measures itself and wraps before it crosses the next figure, in both languages.
+  const attendanceLabel = <HomeFitLabel full={A.notClockedIn} short={c.notClockedInShort} kind="attendance" />;
   const attendance: BLiveItem = !noClockIn || today?.state === "unavailable" ? { label: attendanceLabel, value: CORP_NO_VALUE }
     // Gaps G39 (Nov 23, 2026): a tile's spoken name is what it shows ("Missed 2"), with no label that says it differently.
     : missedOnly ? { label: A.missed, dot: "warn", value: noClockIn.ended.length, href: "/app/inbox#todo-missed" }
@@ -451,7 +452,7 @@ function DayChart({ shifts, timeZone, observedAt, w }: { shifts: TodayShift[]; t
   const labelsRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const axis = labelsRef.current;
-    if (w.lang !== "es" || !axis) return;
+    if (!axis) return;
     const ticks = Array.from(axis.children);
     const current = ticks.find(tick => tick.getAttribute("data-state") === "now");
     if (!current) return;

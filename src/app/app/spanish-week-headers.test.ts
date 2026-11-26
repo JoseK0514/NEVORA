@@ -23,7 +23,7 @@ it('uses the narrow recovery field arrangement at enlarged Spanish phone text', 
   const css = readFileSync(join(__dirname, 'owner-b-settings.css'), 'utf8').split('/* Recovery uses the narrow-phone arrangement')[1];
   expect(css).toContain('@media (max-width: 767px)');
   expect(css).toContain('@container not style(--nv-rem: 16px)');
-  expect(css).toContain('.wc-recovery:lang(es) .q-select-row > .q-rt');
+  expect(css).toContain('.wc-recovery:not(.nv-any-lang) .q-select-row > .q-rt');
   expect(css).toContain('flex: 1 0 100% !important');
-  expect(css).toContain('.wc-recovery:lang(es) .q-select-row > .q-select-row__control');
+  expect(css).toContain('.wc-recovery:not(.nv-any-lang) .q-select-row > .q-select-row__control');
 });

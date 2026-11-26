@@ -320,16 +320,16 @@
 
 /* Keep a rule and its count readable when the user's text size uses most of the row. */
 @layer nv-b {
-  html:lang(es) .c-rules .c-rules__rule { container: schedule-rule / inline-size; }
-  html:lang(es) .c-rules__sum :is(.c-rules__t, .c-rules__d) { hyphens: none !important; }
+  html:not(.nv-any-lang) .c-rules .c-rules__rule { container: schedule-rule / inline-size; }
+  html:not(.nv-any-lang) .c-rules__sum :is(.c-rules__t, .c-rules__d) { hyphens: none !important; }
   @container schedule-rule (max-width: 12rem) {
-    html:lang(es) .c-rules .c-rules__sum {
+    html:not(.nv-any-lang) .c-rules .c-rules__sum {
       display: grid !important;
       grid-template-columns: minmax(0, 1fr) auto;
       row-gap: var(--b-space-2);
     }
-    html:lang(es) .c-rules .c-rules__tx { grid-column: 1 / -1; }
-    html:lang(es) .c-rules .c-rules__v { max-width: none; justify-self: end; }
+    html:not(.nv-any-lang) .c-rules .c-rules__tx { grid-column: 1 / -1; }
+    html:not(.nv-any-lang) .c-rules .c-rules__v { max-width: none; justify-self: end; }
   }
 }
 

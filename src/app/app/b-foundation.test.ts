@@ -111,8 +111,8 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
 
 it('gives Spanish attendance details enough room for a whole time beside a status', () => {
   const home = css('app/app/owner-b-home.css');
-  expect(home).toMatch(/#b-home-on:lang\(es\) \.b-row:has\([^)]+\.b-chip\) \{[^}]*flex-wrap: wrap/);
-  expect(home).toMatch(/#b-home-on:lang\(es\)[^{]*> \.b-row__tx \{[^}]*flex-basis: min-content/);
+  expect(home).toMatch(/#b-home-on:not\(\.nv-any-lang\) \.b-row:has\([^)]+\.b-chip\) \{[^}]*flex-wrap: wrap/);
+  expect(home).toMatch(/#b-home-on:not\(\.nv-any-lang\)[^{]*> \.b-row__tx \{[^}]*flex-basis: min-content/);
 });
 
 it('keeps the enlarged two-row Spanish Pendientes filters inside their own bounds', () => {
@@ -125,14 +125,14 @@ it('lets the Spanish request counts keep each caption in its own column', () => 
 
 it('wraps the Spanish no-shift notice inside the update composer', () => {
   const work = css('app/app/employee-b-work.css');
-  expect(work).toMatch(/\.eb-compose:lang\(es\) \.em-request-notice\[aria-labelledby="compose-unavailable-title"\] > p \{[^}]*white-space: normal/);
+  expect(work).toMatch(/\.eb-compose \.em-request-notice\[aria-labelledby="compose-unavailable-title"\] > p:not\(#b20-none\) \{[^}]*white-space: normal/);
 });
 
 it('keeps the Spanish partial updates notice legible where the list rises over the teal header', () => {
   const work = css('app/app/employee-b-work.css');
-  const notice = '.b-screen:lang(es):has(#b-updates-title) .b-stack > .b-note[role="status"]:first-child';
+  const notice = '.b-screen:has(#b-updates-title) .b-stack > .b-note[role="status"]:first-child:not(#d5-none)';
   expect(contexts(work, notice).some(stack => stack.every(atRule => !atRule.startsWith('@media')))).toBe(true);
-  expect(work).toMatch(/#b-updates-title\) \.b-stack > \.b-note\[role="status"\]:first-child \{[^}]*background-color: var\(--b-canvas\)/);
+  expect(work).toMatch(/#b-updates-title\) \.b-stack > \.b-note\[role="status"\]:first-child:not\(#d5-none\) \{[^}]*background-color: var\(--b-canvas\)/);
 });
 
 it('gives the update form fields the kit keyboard outline on phones, in both languages (English flag D4)', () => {
@@ -145,7 +145,7 @@ it('gives the update form fields the kit keyboard outline on phones, in both lan
 
 
 it('keeps the bottom edge of the Spanish directory link above the first person', () => {
-  expect(css('components/employee-directory-corp.css')).toMatch(/#team-people:lang\(es\) > \.c-section__head \.c-link \{[^}]*position: relative;[^}]*z-index: 2;/);
+  expect(css('components/employee-directory-corp.css')).toMatch(/#team-people:not\(\.nv-any-lang\) > \.c-section__head \.c-link \{[^}]*position: relative;[^}]*z-index: 2;/);
 });
 
 

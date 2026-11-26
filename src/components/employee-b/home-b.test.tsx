@@ -80,7 +80,7 @@ it('round 2 (H2, H4): a request that waits for your answer is amber with Request
   expect(card.slice(card.indexOf('item=fyi'), card.indexOf('item=req'))).toContain('b-ico--teal');
   // H4: 1:00 PM UTC is 9:00 AM in Puerto Rico. Both forms are in the row; the short one is not read aloud.
   expect(text(row)).toContain('Respond by Nov 23, 9:00 AM');
-  expect(row).toMatch(/<span class="eb-dl">Respond by Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span><span class="eb-dl-s" aria-hidden="true">By Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span>/);
+  expect(row).toMatch(/<span class="eb-dl" data-home-deadline="">Respond by Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span><span class="eb-dl-s" data-home-deadline="" aria-hidden="true">By Nov[ \u00a0]23,[ \u00a0]9:00[ \u00a0\u202f]AM<\/span>/);
   // The hour loses ":00"; any other minute stays.
   expect(todoDeadline('2026-11-24T16:00:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12:00 PM');
   expect(todoDeadline('2026-11-24T16:30:00Z', zone).short.replace(/[\u00a0\u202f]/g, ' ')).toBe('By Nov 24, 12:30 PM');

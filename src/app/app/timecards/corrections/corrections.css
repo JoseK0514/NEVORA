@@ -44,11 +44,11 @@
 :is(#c-root, html) .c-tcx .manager-correction-reason q { quotes: "“" "”"; }
 
 @media (max-width: 390px) {
-  html:lang(es) .c-tcx .manager-correction-row { grid-template-columns: minmax(0, 1fr); }
-  html:lang(es) .c-tcx .manager-corrections-list { min-width: 0; }
-  html:lang(es) .c-tcx .manager-correction-actions { flex-wrap: wrap; }
+  html:not(.nv-any-lang) .c-tcx .manager-correction-row { grid-template-columns: minmax(0, 1fr); }
+  html:not(.nv-any-lang) .c-tcx .manager-corrections-list { min-width: 0; }
+  html:not(.nv-any-lang) .c-tcx .manager-correction-actions { flex-wrap: wrap; }
 }
 
 @media (width < 360px) {
-  :is(#c-root, html):lang(es)[data-text-step="200"] .c-tcx .manager-correction-actions button { flex: 1 0 max-content; }
+  :is(#c-root, html):not(.nv-any-lang)[data-text-step="200"] .c-tcx .manager-correction-actions button { flex: 1 0 max-content; }
 }

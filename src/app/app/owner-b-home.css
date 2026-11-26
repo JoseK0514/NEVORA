@@ -443,17 +443,17 @@
 
 /* Let the setup count follow the heading when the two cannot share a line at the reader's text size. */
 @layer nv-b {
-  html:lang(es) #fw-setup .b-card__h { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
-  html:lang(es) #fw-setup .b-card__h h2 { flex: 1 1 max-content !important; min-inline-size: 0; max-inline-size: 100%; white-space: normal !important; hyphens: none !important; }
-  html:lang(es) #fw-setup .b-card__meta { max-inline-size: 100%; margin-inline-start: auto; white-space: normal !important; }
-  html:lang(es) #fw-setup .fw-count { white-space: normal !important; }
-  html:lang(es) #fw-setup .b-row__tt { hyphens: none !important; }
+  html:not(.nv-any-lang) #fw-setup .b-card__h { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
+  html:not(.nv-any-lang) #fw-setup .b-card__h h2 { flex: 1 1 max-content !important; min-inline-size: 0; max-inline-size: 100%; white-space: normal !important; hyphens: none !important; }
+  html:not(.nv-any-lang) #fw-setup .b-card__meta { max-inline-size: 100%; margin-inline-start: auto; white-space: normal !important; }
+  html:not(.nv-any-lang) #fw-setup .fw-count { white-space: normal !important; }
+  html:not(.nv-any-lang) #fw-setup .b-row__tt { hyphens: none !important; }
 }
 
 @layer nv-b {
-  html:lang(es) #b-home-needs { container: home-needs / inline-size; }
+  html:not(.nv-any-lang) #b-home-needs { container: home-needs / inline-size; }
   @container home-needs (max-width: 10rem) {
-    html:lang(es) #b-home-needs .b-row[href$="#todo-corrections"] {
+    html:not(.nv-any-lang) #b-home-needs .b-row[href$="#todo-corrections"] {
       display: grid !important;
       grid-template-columns: auto minmax(0, 1fr) auto !important;
       grid-template-areas: "icon title title" "icon detail arrow";
@@ -469,19 +469,19 @@
 }
 
 @layer nv-b {
-  html:lang(es) .c-home .b-title__text { min-inline-size: 0 !important; max-inline-size: 100%; }
+  html:not(.nv-any-lang) .c-home .b-title__text { min-inline-size: 0 !important; max-inline-size: 100%; }
 }
 
 @layer nv-b {
-  html:lang(es) .b-home-open-label { hyphens: none !important; }
-  html:lang(es) .b-tdy-l > [data-collides-with-now] { visibility: hidden; }
+  html:not(.nv-any-lang) .b-home-open-label { hyphens: none !important; }
+  html:not(.nv-any-lang) .b-tdy-l > [data-collides-with-now] { visibility: hidden; }
   /* Leave room for the longest whole word in the attendance figure. */
-  html:lang(es) .b-home-strip .b-live:has(.b-home-attendance-label) {
+  html:not(.nv-any-lang) .b-home-strip .b-live:has(.b-home-attendance-label) {
     grid-template-columns: minmax(0, 1fr) minmax(min-content, 1fr) minmax(0, 1fr);
   }
-  html:lang(es) .b-home-strip .b-live:has(.b-home-attendance-label[data-wrap]) .b-live__a { height: 100%; }
-  html:lang(es) .b-home-strip .b-live:has(.b-home-attendance-label[data-wrap]) .b-live__v { margin-block-start: auto; }
-  html:lang(es) .b-home-attendance-label {
+  html:not(.nv-any-lang) .b-home-strip .b-live:has(.b-home-attendance-label[data-wrap]) .b-live__a { height: 100%; }
+  html:not(.nv-any-lang) .b-home-strip .b-live:has(.b-home-attendance-label[data-wrap]) .b-live__v { margin-block-start: auto; }
+  html:not(.nv-any-lang) .b-home-attendance-label {
     min-inline-size: 0;
     white-space: normal;
     word-break: normal;
@@ -492,28 +492,28 @@
 
 @layer nv-b {
   @container home-needs (max-width: 12rem) {
-    html:lang(es) #b-home-needs .b-row__s {
+    html:not(.nv-any-lang) #b-home-needs .b-row__s {
       display: block !important;
       overflow: visible !important;
       -webkit-line-clamp: unset !important;
       line-clamp: unset !important;
     }
-    html:lang(es) #b-home-needs .b-card__h { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
-    html:lang(es) #b-home-needs .b-card__a { margin-inline-start: auto !important; }
+    html:not(.nv-any-lang) #b-home-needs .b-card__h { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
+    html:not(.nv-any-lang) #b-home-needs .b-card__a { margin-inline-start: auto !important; }
   }
-  html:lang(es) #b-home-week .b-kv { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
+  html:not(.nv-any-lang) #b-home-week .b-kv { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
 }
 
 @layer nv-b {
-  html:lang(es) body .app-shell[data-nv-b] .c-home .b-screen .b-ink__r2 > span:last-child:not(:first-child) {
+  html:not(.nv-any-lang) body .app-shell[data-nv-b] .c-home .b-screen .b-ink__r2 > span:last-child:not(:first-child) {
     max-inline-size: 100%;
     white-space: normal !important;
   }
 }
 
 @layer nv-b {
-  html:lang(es) #b-home-week .b-wk__b { container: home-week-plot / inline-size; }
-  html:lang(es) #b-home-week .b-days-l > span {
+  html:not(.nv-any-lang) #b-home-week .b-wk__b { container: home-week-plot / inline-size; }
+  html:not(.nv-any-lang) #b-home-week .b-days-l > span {
     min-inline-size: 0;
     display: flex;
     justify-content: center;
@@ -521,7 +521,7 @@
   /* Keep each full weekday centred on its bar. In a narrow plot, adjacent labels
    * use alternating baselines so all seven labels remain visible. */
   @container home-week-plot (max-width: 12.5rem) {
-    html:lang(es) #b-home-week .b-days-l > span:nth-child(even) {
+    html:not(.nv-any-lang) #b-home-week .b-days-l > span:nth-child(even) {
       padding-block-start: var(--b-lh-caption);
     }
   }
@@ -530,19 +530,19 @@
 @layer nv-b {
   @media (min-width: 768px) {
     /* An attendance exception can move to the next line before it squeezes a clock time. */
-    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) {
+    #b-home-on:not(.nv-any-lang) .b-row:has(> .b-row__end > .b-chip) {
       flex-wrap: wrap;
       row-gap: var(--b-space-4);
     }
-    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) > .b-row__tx {
+    #b-home-on:not(.nv-any-lang) .b-row:has(> .b-row__end > .b-chip) > .b-row__tx {
       flex-basis: min-content;
       min-inline-size: min-content;
     }
-    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) .b-row__s {
+    #b-home-on:not(.nv-any-lang) .b-row:has(> .b-row__end > .b-chip) .b-row__s {
       overflow-wrap: normal;
       word-break: normal;
     }
-    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) > .b-row__end {
+    #b-home-on:not(.nv-any-lang) .b-row:has(> .b-row__end > .b-chip) > .b-row__end {
       margin-inline-start: auto;
       max-inline-size: 100%;
     }

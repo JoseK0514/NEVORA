@@ -42,14 +42,14 @@ describe('Spanish account deletion targets', () => {
   const css = read('../../components/employee-b/account.css');
 
   it('keeps a full tap target centred on the native confirmation checkbox', () => {
-    const ring = css.match(/html:lang\(es\) \.em-delete \.em-delete-check input::after\s*\{([^}]+)\}/)?.[1];
+    const ring = css.match(/html:not\(\.nv-any-lang\) \.em-delete \.em-delete-check input::after\s*\{([^}]+)\}/)?.[1];
     expect(ring).toContain('width: var(--b-btn-h)');
     expect(ring).toContain('height: var(--b-btn-h)');
     expect(ring).toContain('transform: translate(-50%, -50%)');
   });
 
   it('gives the contact address continuous reach when it wraps', () => {
-    expect(css).toMatch(/html:lang\(es\) \.em-delete \.em-delete-link\s*\{[^}]*display: inline-block;[^}]*max-inline-size: 100%/);
-    expect(css).toMatch(/html:lang\(es\) \.em-delete \.em-delete-link::after\s*\{[^}]*inset-block: min\(0px, calc\(\(100% - var\(--b-btn-h\)\) \/ 2\)\)/);
+    expect(css).toMatch(/html:not\(\.nv-any-lang\) \.em-delete \.em-delete-link\s*\{[^}]*display: inline-block;[^}]*max-inline-size: 100%/);
+    expect(css).toMatch(/html:not\(\.nv-any-lang\) \.em-delete \.em-delete-link::after\s*\{[^}]*inset-block: min\(0px, calc\(\(100% - var\(--b-btn-h\)\) \/ 2\)\)/);
   });
 });

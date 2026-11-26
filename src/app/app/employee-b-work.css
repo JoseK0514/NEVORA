@@ -389,13 +389,13 @@
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-keep.eb-compose .em-message-field > small:not(#e-none) { white-space: normal !important; overflow-wrap: anywhere !important; }
 
 @layer nv-b {
-  .eb-compose:lang(es) .em-request-notice[aria-labelledby="compose-unavailable-title"] > p {
+  .eb-compose .em-request-notice[aria-labelledby="compose-unavailable-title"] > p:not(#b20-none) {
     white-space: normal !important;
     max-inline-size: 100%;
   }
 
   /* The notice can straddle the teal band and the canvas at either text size. */
-  .b-screen:lang(es):has(#b-updates-title) .b-stack > .b-note[role="status"]:first-child {
+  .b-screen:has(#b-updates-title) .b-stack > .b-note[role="status"]:first-child:not(#d5-none) {
     background-color: var(--b-canvas);
     color: var(--b-ink2) !important;
     border-radius: var(--b-radius-field);

@@ -50,7 +50,6 @@ import {
 export async function generateMetadata() { return { title: EMPLOYEES_COPY[await readPageLang()].teamMember }; }
 
 import { TeamProfileBack } from "@/components/owner-b/team-return";
-import { Fragment } from "react";
 
 export default async function EmployeeProfilePage({
   params, searchParams,
@@ -141,11 +140,10 @@ export default async function EmployeeProfilePage({
   const shiftsHref = primaryLocation?.active ? `/app/schedule?location=${encodeURIComponent(primaryLocation.id)}` : "/app/schedule";
 
   // Release 1, board O-Person: who they are with Call and Message, their work, then one row to Access and sign-in.
-  const ProfileBack = lang === "es" ? TeamProfileBack : Fragment;
   if (!editing && !accessView) return (<ScopedReadFrame observation={scopedObservation(source)}>
     <TeamLiveProvider>
     <CorpPage className="c-person c-page--narrow" labelledBy="person-title">
-      <ProfileBack><CorpNav back={{ href: "/app/employees", label: t.team }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>{t.edit}</Link> : undefined} phoneOnly /></ProfileBack>
+      <TeamProfileBack><CorpNav back={{ href: "/app/employees", label: t.team }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>{t.edit}</Link> : undefined} phoneOnly /></TeamProfileBack>
       <CorpTitle id="person-title" title={name} sub={signIn ?? undefined} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">{t.edit}</CorpButtonLink> : undefined} />
       {/* Owner premium R7: what they do and where first; the employee ID moves to the detail line, and their state is grey
         words beside it (R3), not a header or a pill. */}

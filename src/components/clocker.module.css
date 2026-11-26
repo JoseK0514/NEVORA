@@ -696,6 +696,6 @@
 .helpStack + .reference { margin-top: 0; }
 
 /* Let the workplace name use its own line when the brand and the name exceed the header. */
-.page:lang(es) .brand { flex-wrap: wrap; min-inline-size: 0; max-inline-size: 100%; }
-.page:lang(es) .wordmark { min-inline-size: 0; max-inline-size: 100%; }
-.page:lang(es) .workspace { box-sizing: border-box; flex: 0 1 auto; inline-size: max-content; max-inline-size: 100%; block-size: auto; white-space: normal; }
+.page:not(.nv-any-lang) .brand { flex-wrap: wrap; min-inline-size: 0; max-inline-size: 100%; }
+.page:not(.nv-any-lang) .wordmark { min-inline-size: 0; max-inline-size: 100%; }
+.page:not(.nv-any-lang) .workspace { box-sizing: border-box; flex: 0 1 auto; inline-size: max-content; max-inline-size: 100%; block-size: auto; white-space: normal; }

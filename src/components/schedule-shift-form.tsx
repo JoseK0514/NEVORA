@@ -93,7 +93,8 @@ export type ScheduleShiftFormProps = {
 export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
   const { mode, formId, employees, positions, weekStart } = props;
   const lang = usePortalLang();
-  const spanishEdit = mode === "edit" && lang === "es";
+  // English flag A2 (Nov 26, 2026): Edit shift says "Saving…" in its button, at its resting width, in both languages.
+  const editFeedback = mode === "edit";
   const [saving, setSaving] = useState(false);
   const words = scheduleCopy(lang), w = words.shiftForm, dayText = words.dayText;
   const everyone = employees.filter(item => item.active);
@@ -120,7 +121,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
   const midnightKept = !!props.keepMidnightEnd && props.endTime === "24:00" && end === "00:00";
   const fixedHelp = props.fixedLocationHelp === undefined ? w.fixedHelp : props.fixedLocationHelp;
 
-  const saveLabel = (resting: string) => spanishEdit ? <span className="c-shift__save-label">
+  const saveLabel = (resting: string) => editFeedback ? <span className="c-shift__save-label">
     <span aria-hidden="true">{resting}</span><span aria-hidden="true">{w.saving}</span>
     <span>{saving ? w.saving : resting}</span>
   </span> : resting;
@@ -146,7 +147,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
         : <h1 className="c-shift__title">{title}</h1>}
       <button type="submit" form={formId} className="c-shift__save c-only-phone" disabled={!!props.blocked || saving}>{saveLabel(w.save)}</button>
     </header>
-    <ConfigurationForm pendingFeedback={spanishEdit ? {label: w.saving, onChange: setSaving} : undefined} action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form" holdAfterUnconfirmed={props.holdAfterUnconfirmed}>
+    <ConfigurationForm pendingFeedback={editFeedback ? {label: w.saving, onChange: setSaving, lang} : undefined} action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form" holdAfterUnconfirmed={props.holdAfterUnconfirmed}>
       {Object.entries(props.hidden).map(([field, value]) => <input key={field} type="hidden" name={field} value={value} />)}
       {/* Premium pass (Nov 21, 2026; Jose's board pick 3A): the kit's red note, not a pink box. Words and alert role unchanged. */}
       {props.blocked ? <BCallout tone="red" role="alert">{props.blocked}</BCallout> : null}

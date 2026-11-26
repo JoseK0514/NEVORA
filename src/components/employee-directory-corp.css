@@ -57,7 +57,7 @@
 
 @layer nv-b {
   /* The next row's enlarged hit area reaches the last pixel of the directory link. */
-  #team-people:lang(es) > .c-section__head .c-link {
+  #team-people:not(.nv-any-lang) > .c-section__head .c-link {
     position: relative;
     z-index: 2;
   }

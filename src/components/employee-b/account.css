@@ -375,17 +375,17 @@
 }
 
 /* At large text the search needs enough room for its placeholder and icon. */
-:is(#c-root, html):lang(es):is([data-text-step="150"], [data-text-step="200"]) .eb-tools:has(#b-updates-search) {
+:is(#c-root, html):not(.nv-any-lang):is([data-text-step="150"], [data-text-step="200"]) .eb-tools:has(#b-updates-search) {
   flex-wrap: wrap;
 }
-:is(#c-root, html):lang(es):is([data-text-step="150"], [data-text-step="200"]) .eb-tools:has(#b-updates-search) > .eb-tools__search {
+:is(#c-root, html):not(.nv-any-lang):is([data-text-step="150"], [data-text-step="200"]) .eb-tools:has(#b-updates-search) > .eb-tools__search {
   flex-basis: min(100%, calc(6.25 * var(--b-fs-body) + 56px));
 }
 
 @layer nv-b {
   @media (max-width: 767px) {
     @container not style(--nv-rem: 16px) {
-      html:lang(es) #b-updates-confirm .eb-upd__acts {
+      html:not(.nv-any-lang) #b-updates-confirm .eb-upd__acts {
         grid-template-columns: repeat(auto-fit, minmax(min(100%, 6rem), 1fr)) !important;
       }
     }
@@ -394,11 +394,11 @@
 
 /* The drawn checkbox stays 20px. The transparent hit area belongs to the native input. */
 @layer nv-b {
-  html:lang(es) .em-delete .em-delete-check input {
+  html:not(.nv-any-lang) .em-delete .em-delete-check input {
     position: relative;
   }
 
-  html:lang(es) .em-delete .em-delete-check input::after {
+  html:not(.nv-any-lang) .em-delete .em-delete-check input::after {
     content: "";
     position: absolute;
     width: var(--b-btn-h);
@@ -409,13 +409,13 @@
   }
 
   /* A single link box also gives a wrapped address a continuous tap target. */
-  html:lang(es) .em-delete .em-delete-link {
+  html:not(.nv-any-lang) .em-delete .em-delete-link {
     position: relative;
     display: inline-block;
     max-inline-size: 100%;
   }
 
-  html:lang(es) .em-delete .em-delete-link::after {
+  html:not(.nv-any-lang) .em-delete .em-delete-link::after {
     content: "";
     position: absolute;
     inset-inline: 0;

@@ -77,7 +77,7 @@ export const copy = {
     // src/app/app/schedule/page.tsx:446
     deadlineUnset: 'Not set',
     // src/app/app/schedule/page.tsx:472
-    shiftUpdated: 'Shift updated',
+    shiftUpdated: 'Shift saved',
     // src/app/app/schedule/page.tsx:472
     publishWhenReady: 'Publish changes when you’re ready to tell your team.',
     // src/app/app/schedule/page.tsx:472
@@ -135,9 +135,9 @@ export const copy = {
     // src/app/app/schedule/page.tsx:540, src/app/app/schedule/page.tsx:617
     planLocation: 'Plan {shortName}',
     // src/app/app/schedule/page.tsx:549, src/app/app/schedule/page.tsx:577
-    shiftUpdatedPublishNotice: 'Shift updated. Publish changes when you’re ready to tell your team.',
+    shiftUpdatedPublishNotice: 'Shift saved. Publish changes when you’re ready to tell your team.',
     // src/app/app/schedule/page.tsx:549, src/app/app/schedule/page.tsx:577
-    shiftUpdatedNotice: 'Shift updated.',
+    shiftUpdatedNotice: 'Shift saved.',
     // src/app/app/schedule/page.tsx:550, src/app/app/schedule/page.tsx:578
     shiftDeletedNotice: 'Shift deleted.',
     // src/app/app/schedule/page.tsx:551, src/app/app/schedule/page.tsx:579

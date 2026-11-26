@@ -40,7 +40,8 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   const lang = useViewLang(langProp), c = ownerBCopy(lang).team;
   const live = useTeamLive();
   const [filter, setFilter] = useState<Filter>("all");
-  const rememberRow = useTeamReturn(lang === "es", live.ready, filter, setFilter);
+  // English flag A1 (Nov 26, 2026): Back from a profile keeps the filter, the row's place and focus, in both languages.
+  const rememberRow = useTeamReturn(live.ready, filter, setFilter);
   const state = (id: string) => teamStateOf(live, id);
   const working = people.filter(person => ["working", "break"].includes(state(person.id) ?? "")).length;
   const late = people.filter(person => state(person.id) === "late").length;

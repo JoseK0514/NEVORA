@@ -53,10 +53,10 @@ export function ConfigurationForm({
   holdAfterUnconfirmed?: boolean;
   /** A form that knows a better place to check after an unconfirmed outcome (G58: Review replacement checks Find cover):
    * its note and its check link replace the generic ones. */
-  pendingFeedback?: { label: string; onChange: (pending: boolean) => void };
+  pendingFeedback?: { label: string; onChange: (pending: boolean) => void; lang?: "en" | "es" };
   unconfirmedCheck?: { title: string; label: string; href: string };
 }) {
-  const recovery = SMALL_PARTS_COPY[pendingFeedback ? "es" : "en"].configuration;
+  const recovery = SMALL_PARTS_COPY[pendingFeedback?.lang ?? (pendingFeedback ? "es" : "en")].configuration;
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
   // Double tap (Wave A ST, Oct 19): a second submit can arrive before the disabled fieldset renders; only one save runs.

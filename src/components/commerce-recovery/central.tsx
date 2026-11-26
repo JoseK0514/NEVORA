@@ -116,7 +116,7 @@ export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal,
  const back=<a className={primaryBack?styles.action:styles.quiet} href={known?known.url+'/app':'/login'}>{known?known.name?t.backTo(known.name):t.backWorkplace:signIn}</a>;
  function chooseLanguage(value: BillingLanguage) {
   if (value === lang || client.current?.hasPending()) return;
-  if (publicPlans && initialLanguage === 'es') setAnimateSelection(true);
+  if (publicPlans) setAnimateSelection(true); // English flag A3: the pill fades in both languages.
   setLang(value);
  }
  const language=<fieldset className={styles.language}><legend className={styles.srOnly}>{t.language}</legend><div className={styles.seg} data-public-plans={publicPlans ? "" : undefined} data-fade={animateSelection ? "" : undefined}>{(['en','es'] as const).map(value=><button key={value} type="button" lang={value} disabled={pending||opening} aria-pressed={lang===value} onClick={()=>chooseLanguage(value)}>{value==='en'?'English':'Español'}</button>)}</div></fieldset>;

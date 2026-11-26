@@ -21,11 +21,11 @@ export function TeamReturnScope({children}: {children: ReactNode}) {
   return <TeamVisit.Provider value={history}>{children}</TeamVisit.Provider>;
 }
 
-export function useTeamReturn(enabled: boolean, ready: boolean, filter: Filter, setFilter: (value: Filter) => void) {
+export function useTeamReturn(ready: boolean, filter: Filter, setFilter: (value: Filter) => void) {
   const visit = useContext(TeamVisit);
   useLayoutEffect(() => {
     const saved = visit?.read();
-    if (!enabled || !visit || !saved || saved.directory !== currentDirectory()) return;
+    if (!visit || !saved || saved.directory !== currentDirectory()) return;
     if (filter !== saved.filter) { setFilter(saved.filter); return; }
     if (!ready) return;
     const frame = requestAnimationFrame(() => {
@@ -41,8 +41,8 @@ export function useTeamReturn(enabled: boolean, ready: boolean, filter: Filter, 
       visit.save(null);
     });
     return () => cancelAnimationFrame(frame);
-  }, [enabled, ready, filter, setFilter, visit]);
-  return enabled && visit ? (event: MouseEvent<HTMLAnchorElement>) => {
+  }, [ready, filter, setFilter, visit]);
+  return visit ? (event: MouseEvent<HTMLAnchorElement>) => {
     if (!sameTab(event)) return;
     const row = event.currentTarget;
     visit.save({directory: currentDirectory(), profile: row.pathname, filter, top: row.getBoundingClientRect().top, keyboard: event.detail === 0});

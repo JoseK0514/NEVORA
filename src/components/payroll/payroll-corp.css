@@ -417,9 +417,9 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 
 /* At enlarged text sizes each amount stays with its label, with room for complete Spanish words. */
 @layer nv-b {
-  html:lang(es) :is(#payroll-run, #payroll-people-totals) .c-pay__totals { container: payroll-totals / inline-size; }
+  html:not(.nv-any-lang) :is(#payroll-run, #payroll-people-totals) .c-pay__totals { container: payroll-totals / inline-size; }
   @container payroll-totals (max-width: 12rem) {
-    html:lang(es) :is(#payroll-run, #payroll-people-totals) .c-pay__totals > div {
+    html:not(.nv-any-lang) :is(#payroll-run, #payroll-people-totals) .c-pay__totals > div {
       flex-wrap: wrap !important;
       row-gap: var(--b-space-2) !important;
       & > dt { flex: 1 1 max-content !important; hyphens: none !important; word-break: normal !important; overflow-wrap: normal !important; }
@@ -429,26 +429,26 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 }
 
 @layer nv-b {
-  html:lang(es) :is(#payroll-people, #payroll-people-totals) { container: payroll-people-section / inline-size; }
+  html:not(.nv-any-lang) :is(#payroll-people, #payroll-people-totals) { container: payroll-people-section / inline-size; }
   @container payroll-people-section (max-width: 12rem) {
-    html:lang(es) :is(#payroll-people, #payroll-people-totals) .c-pay__sec h2 {
+    html:not(.nv-any-lang) :is(#payroll-people, #payroll-people-totals) .c-pay__sec h2 {
       hyphens: none !important;
       overflow-wrap: normal !important;
       word-break: normal !important;
     }
-    html:lang(es) #payroll-people .c-pay__sec {
+    html:not(.nv-any-lang) #payroll-people .c-pay__sec {
       flex-wrap: wrap !important;
       row-gap: var(--b-space-2) !important;
     }
-    html:lang(es) #payroll-people .c-pay__sec h2 { flex: 1 1 max-content !important; }
-    html:lang(es) #payroll-people .c-pay__sec-aside { margin-inline-start: auto !important; justify-content: flex-end !important; }
+    html:not(.nv-any-lang) #payroll-people .c-pay__sec h2 { flex: 1 1 max-content !important; }
+    html:not(.nv-any-lang) #payroll-people .c-pay__sec-aside { margin-inline-start: auto !important; justify-content: flex-end !important; }
   }
 }
 
 
 /* Keep the full Spanish reminders heading when enlarged text needs a second line. */
 @layer nv-b {
-  html:lang(es) #payroll-notices #payroll-notices-label {
+  html:not(.nv-any-lang) #payroll-notices #payroll-notices-label {
     white-space: normal !important;
     overflow: visible !important;
     text-overflow: clip !important;
@@ -458,7 +458,7 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 /* Give a payroll setting its natural label width. When the value needs another
    line it can use the space below, with the disclosure arrow still at the edge. */
 @layer nv-b {
-  html:lang(es) :is(#payroll-notices, #payroll-people-settings) .c-pset__item { container: payroll-notice / inline-size; }
+  html:not(.nv-any-lang) :is(#payroll-notices, #payroll-people-settings) .c-pset__item { container: payroll-notice / inline-size; }
   @container payroll-notice (max-width: 32rem) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(#payroll-notices, #payroll-people-settings) summary.c-row:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       position: relative !important;

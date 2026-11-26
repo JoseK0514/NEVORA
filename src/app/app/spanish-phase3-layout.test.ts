@@ -25,11 +25,13 @@ describe('Phase 3 Spanish layout boundaries', () => {
   });
 
   for (const file of files) {
-    it(`${file}: every new selector is Spanish-only and preserves type size and visibility`, () => {
+    it(`${file}: every new selector is Spanish-only or deliberately shared, and preserves type size and visibility`, () => {
       const css = patch(file);
       const selectors = [...css.matchAll(/([^{}]+)\{/g)].map(match => match[1].trim()).filter(selector => !selector.startsWith('@'));
       expect(selectors.length).toBeGreaterThan(0);
-      for (const selector of selectors) expect(selector).toContain(':lang(es)');
+      // English UI flags (Nov 26, 2026): an approved Spanish fix extended to English is marked :not(.nv-any-lang), the same
+      // specificity as :lang(es), so the cascade is unchanged.
+      for (const selector of selectors) expect(selector).toMatch(/:lang\(es\)|:not\(\.nv-any-lang\)/);
       expect(css).not.toMatch(/font-size:|letter-spacing:|display:\s*none|text-overflow:\s*ellipsis|line-clamp:\s*\d/);
     });
   }
@@ -116,7 +118,7 @@ it('Spanish Team filter hit regions retain transparent stacking priority down al
 it('Spanish Team live status and recovery help can use their own readable lines', () => {
   const css = patch('owner-b-settings.css');
   expect(css).toMatch(/> \.c-row__trail \{ grid-column: 2 !important; grid-row: 2 !important;/);
-  expect(css).toMatch(/\.wc-recovery:lang\(es\) \.wc-recovery__pins \.q-rt > i \{ white-space: normal !important;/);
+  expect(css).toMatch(/\.wc-recovery:not\(\.nv-any-lang\) \.wc-recovery__pins \.q-rt > i \{ white-space: normal !important;/);
 });
 
 it('Spanish swap title and field labels stay inside their available width', () => {

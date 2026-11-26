@@ -210,14 +210,14 @@ it.each(['updated','deleted'])('a scoped %s route hint prompts inspection withou
  f.role='MANAGER';operationalPageFixture.scoped=true;
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',[field]:'1'})}));
  expect(output).toContain('Review the current schedule to confirm your change.');expect(output).toContain('role="status"');
- expect(output).not.toContain('Shift updated.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('form-success');
+ expect(output).not.toContain('Shift saved.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('form-success');
 });
 it('unknown scoped route codes stay generic and cannot manufacture success or echo arbitrary text',async()=>{
  f.role='MANAGER';operationalPageFixture.scoped=true;
  const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',location:'loc',error:'UNTRUSTED_QUERY_TEXT',warning:'constructor',updated:'untrusted',deleted:'untrusted',published:'loc'})}));
  expect(output).toContain('The schedule could not be updated.');expect(output).toContain('Review the current schedule for any scheduling warnings.');
  expect(output).not.toContain('UNTRUSTED_QUERY_TEXT');expect(output).not.toContain('constructor');expect(output).not.toContain('form-success');
- expect(output).not.toContain('Shift saved');expect(output).not.toContain('Shift updated.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('Managed published');
+ expect(output).not.toContain('Shift saved');expect(output).not.toContain('Shift saved.');expect(output).not.toContain('Shift deleted.');expect(output).not.toContain('Managed published');
 });
 it('preserves the existing Company error and warning messages',async()=>{
  f.role='MANAGER';

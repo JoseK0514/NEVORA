@@ -367,8 +367,8 @@ export function EmployeeHomeB({snapshot, partial, todos, tasks, week, name, date
     const deadline = !confirm && item.deadlineAt && snapshot ? todoDeadline(item.deadlineAt, snapshot.timeZone, lang) : null;
     // Round 2 (H4): under 360px the short form shows; the full sentence stays in the page for screen readers.
     const sub = confirm ? weekTodo(item).detail : deadline ? <>
-      <span className="eb-dl" data-home-deadline={lang === 'es' || undefined}>{deadline.full}</span>
-      <span className="eb-dl-s" data-home-deadline={lang === 'es' || undefined} aria-hidden="true">{deadline.short}</span>
+      <span className="eb-dl" data-home-deadline="">{deadline.full}</span>
+      <span className="eb-dl-s" data-home-deadline="" aria-hidden="true">{deadline.short}</span>
     </> : undefined;
     // Review F2 (NV-078): every required to-do is a row with an amber "Action needed" chip and a chevron; only the most
     // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.

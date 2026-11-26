@@ -288,12 +288,12 @@
 /* Clear the count above the compact notification link at enlarged text. */
 :is(#c-root, html) .app-shell[data-nv-b] #b-home-todo .b-card__h:has(> .b-card__a [data-compact]) > h2 { padding-block-end: var(--b-space-8); }
 /* Keep the hours and deadline text inside its own Home card when text is enlarged. */
-html:lang(es) .c-ehome .eb-of-n,
-html:lang(es) .app-shell[data-nv-b] #b-home-todo .b-row__s .eb-dl-s[data-home-deadline],
+html:not(.nv-any-lang) .c-ehome .eb-of-n,
+html:not(.nv-any-lang) .app-shell[data-nv-b] #b-home-todo .b-row__s .eb-dl-s[data-home-deadline],
 #b-home-todo .eb-home-status { white-space: normal; }
 #b-home-todo .b-chip:has(.eb-home-status) { max-inline-size: 100%; min-inline-size: 0; }
 /* The chart must not intercept the lower edge of the existing 44px timecard link. */
-html:lang(es) .c-ehome #b-home-week .b-card__a { position: relative; z-index: 1; }
+html:not(.nv-any-lang) .c-ehome #b-home-week .b-card__a { position: relative; z-index: 1; }
 
 
 
@@ -353,6 +353,6 @@ html:lang(es) .c-ehome #b-home-week .b-card__a { position: relative; z-index: 1;
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-employee-mobile] .b-screen:has(#b-requests-title) .b-chip:not(#eb-hub-full) { max-width: 100% !important; height: auto !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 }
 
-html:lang(es):is([data-text-step="150"], [data-text-step="200"]) .eb-dots__p {
+html:not(.nv-any-lang):is([data-text-step="150"], [data-text-step="200"]) .eb-dots__p {
   overflow-wrap: normal;
 }

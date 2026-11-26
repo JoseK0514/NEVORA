@@ -30,51 +30,51 @@
 /* Keep the decision labels inside their own buttons when the text size grows. */
 @layer nv-b {
   @media (max-width: 359px) {
-    .q-timeoff:lang(es) > nav.c-seg {
+    .q-timeoff:not(.nv-any-lang) > nav.c-seg {
       --b-seg-item-h: var(--b-target);
     }
   }
   @media (max-width: 767px) {
-    html:lang(es):is([data-text-step="150"], [data-text-step="200"]) .q-page.q-timeoff {
+    html:not(.nv-any-lang):is([data-text-step="150"], [data-text-step="200"]) .q-page.q-timeoff {
       container: time-off-page / inline-size;
     }
-    :is(#c-root, html):lang(es):is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-timeoff .q-request form .q-acts {
+    :is(#c-root, html):not(.nv-any-lang):is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-timeoff .q-request form .q-acts {
       --b-request-action-flex: 1 0 max-content;
       flex-wrap: wrap !important;
     }
     @container time-off-page (max-width: 11rem) {
-      :is(#c-root, html):lang(es):is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-timeoff .q-request form .q-acts {
+      :is(#c-root, html):not(.nv-any-lang):is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-timeoff .q-request form .q-acts {
         --b-request-action-flex: 1 0 100%;
       }
     }
     @container time-off-page (max-width: 14rem) {
-      :is(#c-root, html):lang(es) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide] {
+      :is(#c-root, html):not(.nv-any-lang) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide] {
         display: grid !important;
         grid-template-columns: minmax(0, 1fr) !important;
         height: auto !important;
         --b-seg-r: var(--b-radius-card);
         --b-seg-item-r: var(--b-radius-field);
       }
-      :is(#c-root, html):lang(es) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide] > a {
+      :is(#c-root, html):not(.nv-any-lang) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide] > a {
         min-height: var(--b-target) !important;
         height: auto !important;
         white-space: nowrap !important;
       }
-      .q-timeoff:lang(es) > nav.c-seg > a::before,
-      .q-timeoff:lang(es) > nav.c-seg > a::after {
+      .q-timeoff:not(.nv-any-lang) > nav.c-seg > a::before,
+      .q-timeoff:not(.nv-any-lang) > nav.c-seg > a::after {
         /* The stacked links already include the full touch target. */
         pointer-events: none !important;
       }
-      :is(#c-root, html):lang(es) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide]::before {
+      :is(#c-root, html):not(.nv-any-lang) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide]::before {
         display: none !important;
       }
-      :is(#c-root, html):lang(es) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide] > a[aria-current="page"] {
+      :is(#c-root, html):not(.nv-any-lang) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .q-page.q-timeoff > nav.c-seg[data-slide] > a[aria-current="page"] {
         background: var(--b-btn-surface) !important;
       }
     }
   }
   @media (min-width: 768px) {
-    html:lang(es):is([data-text-step="150"], [data-text-step="200"]) .q-timeoff .q-request {
+    html:not(.nv-any-lang):is([data-text-step="150"], [data-text-step="200"]) .q-timeoff .q-request {
       --b-request-main-column: 1;
       --b-request-row-padding: var(--b-space-8);
       --b-request-action-width: max(104px, 5rem);

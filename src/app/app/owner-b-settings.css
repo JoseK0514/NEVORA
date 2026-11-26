@@ -393,7 +393,7 @@
 
 @layer nv-b {
   @media (max-width: 767px) {
-    html:lang(es)[data-text-step="200"] :is(#profile-details-list > li > .q-row:has(.q-rv):not(.pmp-email), #profile-notifications > summary, #profile-passkeys > summary) {
+    html:not(.nv-any-lang)[data-text-step="200"] :is(#profile-details-list > li > .q-row:has(.q-rv):not(.pmp-email), #profile-notifications > summary, #profile-passkeys > summary) {
       display: grid !important;
       grid-template-columns: minmax(0, 1fr) auto !important;
       gap: var(--b-space-2) var(--b-space-8) !important;
@@ -406,7 +406,7 @@
 }
 @layer nv-b {
   @media (max-width: 767px) {
-    html:lang(es)[data-text-step="200"] .c-more a.c-row[href="/app/reports"] {
+    html:not(.nv-any-lang)[data-text-step="200"] .c-more a.c-row[href="/app/reports"] {
       display: grid !important;
       grid-template-columns: auto minmax(0, 1fr) auto !important;
       grid-template-areas: "icon title chevron" "icon hours chevron";
@@ -431,14 +431,14 @@
 /* Phase 3 Spanish Team shortcuts: remove the narrow-screen description clamp
  * at enlarged text and give long product titles the card's full text width. */
 @layer nv-b {
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:lang(es) .b-row:has(> .b-ico) .b-row__s { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:not(.nv-any-lang) .b-row:has(> .b-ico) .b-row__s { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; }
   @container not style(--nv-rem: 16px) {
     @media (max-width: 359px) {
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:lang(es) .b-row:has(> .b-ico) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; gap: var(--b-space-8) !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:lang(es) .b-row:has(> .b-ico) > .b-ico { grid-column: 1 !important; grid-row: 1 !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:lang(es) .b-row:has(> .b-ico) > .b-row__tx { grid-column: 1 / -1 !important; grid-row: 2 !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:lang(es) .b-row:has(> .b-ico) > .b-chev { grid-column: 2 !important; grid-row: 1 !important; justify-self: end !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:lang(es) .b-row:has(> .b-ico) .b-row__tt { overflow-wrap: normal !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:not(.nv-any-lang) .b-row:has(> .b-ico) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; gap: var(--b-space-8) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:not(.nv-any-lang) .b-row:has(> .b-ico) > .b-ico { grid-column: 1 !important; grid-row: 1 !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:not(.nv-any-lang) .b-row:has(> .b-ico) > .b-row__tx { grid-column: 1 / -1 !important; grid-row: 2 !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:not(.nv-any-lang) .b-row:has(> .b-ico) > .b-chev { grid-column: 2 !important; grid-row: 1 !important; justify-self: end !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-team:not(.nv-any-lang) .b-row:has(> .b-ico) .b-row__tt { overflow-wrap: normal !important; }
     }
   }
 }
@@ -447,9 +447,9 @@
  * 44px target above the following row at their fractional hit-test boundary, as for rows 1–2. */
 @layer nv-b {
   @container not style(--nv-rem: 16px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team:lang(es) .b-filters:has(> :nth-child(4)) > button:nth-child(3):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team:lang(es) .b-filters:has(> :nth-child(4)) > button:nth-child(2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 2 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team:lang(es) .b-filters:has(> :nth-child(4)) > button:first-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 3 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team:not(.nv-any-lang) .b-filters:has(> :nth-child(4)) > button:nth-child(3):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team:not(.nv-any-lang) .b-filters:has(> :nth-child(4)) > button:nth-child(2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 2 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team:not(.nv-any-lang) .b-filters:has(> :nth-child(4)) > button:first-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 3 !important; }
   }
 }
 
@@ -458,23 +458,23 @@
 @layer nv-b {
   @media (min-width: 768px) {
     @container not style(--nv-rem: 16px) {
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:lang(es) .c-row:has(> .c-av):has(> .c-row__trail) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto !important; column-gap: var(--b-space-12) !important; row-gap: var(--b-space-4) !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:lang(es) .c-row:has(> .c-row__trail) > .c-av { grid-column: 1 !important; grid-row: 1 / span 2 !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:lang(es) .c-row:has(> .c-av):has(> .c-row__trail) > .c-row__main { grid-column: 2 !important; grid-row: 1 !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:lang(es) .c-row:has(> .c-av) > .c-row__trail { grid-column: 2 !important; grid-row: 2 !important; justify-self: start !important; max-width: 100% !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:lang(es) .c-row:has(> .c-av):has(> .c-row__trail) > .c-chev { grid-column: 3 !important; grid-row: 1 / span 2 !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:not(.nv-any-lang) .c-row:has(> .c-av):has(> .c-row__trail) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto !important; column-gap: var(--b-space-12) !important; row-gap: var(--b-space-4) !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:not(.nv-any-lang) .c-row:has(> .c-row__trail) > .c-av { grid-column: 1 !important; grid-row: 1 / span 2 !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:not(.nv-any-lang) .c-row:has(> .c-av):has(> .c-row__trail) > .c-row__main { grid-column: 2 !important; grid-row: 1 !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:not(.nv-any-lang) .c-row:has(> .c-av) > .c-row__trail { grid-column: 2 !important; grid-row: 2 !important; justify-self: start !important; max-width: 100% !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-team:not(.nv-any-lang) .c-row:has(> .c-av):has(> .c-row__trail) > .c-chev { grid-column: 3 !important; grid-row: 1 / span 2 !important; }
     }
   }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .wc-recovery:lang(es) .wc-recovery__pins .q-rt > i { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .wc-recovery:not(.nv-any-lang) .wc-recovery__pins .q-rt > i { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
 }
 
 /* Recovery uses the narrow-phone arrangement when enlarged Spanish labels need a second row. */
 @layer nv-b {
   @media (max-width: 767px) {
     @container not style(--nv-rem: 16px) {
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery:lang(es) .q-select-row:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex-wrap: wrap !important; row-gap: 0 !important; padding-top: 10px !important; padding-bottom: 6px !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery:lang(es) .q-select-row > .q-rt:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: 1 0 100% !important; }
-      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery:lang(es) .q-select-row > .q-select-row__control:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: 1 1 0 !important; max-width: none !important; height: 40px !important; text-align: left !important; text-align-last: left !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery:not(.nv-any-lang) .q-select-row:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex-wrap: wrap !important; row-gap: 0 !important; padding-top: 10px !important; padding-bottom: 6px !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery:not(.nv-any-lang) .q-select-row > .q-rt:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: 1 0 100% !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.wc-recovery:not(.nv-any-lang) .q-select-row > .q-select-row__control:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) { flex: 1 1 0 !important; max-width: none !important; height: 40px !important; text-align: left !important; text-align-last: left !important; }
     }
   }
 }
