@@ -141,3 +141,6 @@
 @media (max-width: 767px) {
   :is(#q-root, html) .premium-manager-profile .pmp-language__seg { max-width: none; }
 }
+/* QA, Nov 26, 2026: each choice measured 36px tall here; the kit's segment makes every choice a 44px target that overhangs
+ * its 36px track, so this row restates that rule where the profile's own button styles had won. */
+:is(#q-root, html) .premium-manager-profile .pmp-language .pmp-language__seg > button { height: 44px; min-height: 44px; margin: -6px 0; }

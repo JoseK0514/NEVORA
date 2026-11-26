@@ -53,6 +53,8 @@ export function AssistedReceipt({ issued, timeZone, lang = "en", feedback, onSta
     return () => { clearTimeout(first); clearInterval(timer); };
   }, []);
   const until = keepWhole(formatWithZone(lang === "es" ? "es-PR" : "en-US", { hour: "numeric", minute: "2-digit" }, new Date(issued.expiresAt), timeZone));
+  // QA, Nov 26, 2026: Spanish says "hasta la 1:15" for one o'clock and "hasta las 2:15" otherwise.
+  const fillTime = (text: string, values: Record<string, string>) => lang === "es" && /^1:/.test(until) ? fill(text.replace(/hasta las\b/, "hasta la"), values) : fill(text, values);
   // Drawn after hydration only: the link needs this browser's own address.
   const mounted = now !== null;
   const qr = useMemo(() => (mounted ? encodeQr(resetLink(issued.proof), QR_MAX_VERSION) : undefined), [issued.proof, mounted]);
@@ -62,12 +64,12 @@ export function AssistedReceipt({ issued, timeZone, lang = "en", feedback, onSta
     const done = navigator.clipboard?.writeText(text);
     if (done) done.then(() => setCopied(ok), () => setCopied(failed)); else setCopied(failed);
   };
-  const status = copied === "link" ? fill(u.linkCopied, { time: until }) : copied === "linkFailed" ? u.linkCopyFailed : copied === "code" ? u.copied : copied === "codeFailed" ? u.copyFailed : "";
+  const status = copied === "link" ? fillTime(u.linkCopied, { time: until }) : copied === "linkFailed" ? u.linkCopyFailed : copied === "code" ? u.copied : copied === "codeFailed" ? u.copyFailed : "";
   const size = qr ? qr.size + QUIET * 2 : 0;
   return <section className="ar-issued b-card" aria-labelledby="assisted-receipt-title">
     <div ref={feedback} tabIndex={-1} role="status" aria-labelledby="assisted-receipt-title" className="q-lead">
       <b id="assisted-receipt-title">{u.readyTitle}</b>
-      <i>{`${fill(u.readyFor, { id: issued.employeeId })} `}<time dateTime={issued.expiresAt}>{until}</time></i>
+      <i>{`${fillTime(u.readyFor, { id: issued.employeeId })} `}<time dateTime={issued.expiresAt}>{until}</time></i>
     </div>
     <div className="ar-share">
       <div className="ar-qr" data-empty={qr ? undefined : ""}>
@@ -75,7 +77,7 @@ export function AssistedReceipt({ issued, timeZone, lang = "en", feedback, onSta
           : qr === null ? <p>{u.qrTooLong}</p> : null}
       </div>
       <div className="ar-share__side">
-        {qr === null ? null : <p className="ar-share__scan">{fill(u.scan, { time: until })}</p>}
+        {qr === null ? null : <p className="ar-share__scan">{fillTime(u.scan, { time: until })}</p>}
         <p className="ar-share__left"><TimerIcon size={16} weight="bold" aria-hidden="true" /><span>{left}</span></p>
         <div className="ar-codeacts">
           <button type="button" className="b-btn b-btn--teal" onClick={() => write(resetLink(issued.proof), "link", "linkFailed")}>
@@ -104,7 +106,7 @@ export function AssistedReceipt({ issued, timeZone, lang = "en", feedback, onSta
         <li><span className="ar-handover__ico" aria-hidden="true"><HandshakeIcon size={18} weight="bold" /></span><span className="ar-handover__main"><b>{u.you}</b><span>{fill(u.youDo, { id: issued.employeeId })}</span></span></li>
         <li><span className="ar-handover__ico" aria-hidden="true"><UserIcon size={18} weight="bold" /></span><span className="ar-handover__main"><b>{u.they}</b><span>{u.theyDo}</span>
           <Link className="ar-handover__link" href="/reset-access">{u.seePage}</Link></span></li>
-        <li><span className="ar-handover__ico" aria-hidden="true"><TimerIcon size={18} weight="bold" /></span><span className="ar-handover__main"><b>{u.time}</b><span>{fill(u.timeDo, { time: until })}</span></span></li>
+        <li><span className="ar-handover__ico" aria-hidden="true"><TimerIcon size={18} weight="bold" /></span><span className="ar-handover__main"><b>{u.time}</b><span>{fillTime(u.timeDo, { time: until })}</span></span></li>
       </ul>
       <p className="ar-handover__after">{u.after}</p>
     </section>
