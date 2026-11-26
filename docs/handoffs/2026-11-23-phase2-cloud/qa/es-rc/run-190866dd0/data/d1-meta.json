@@ -1,0 +1,665 @@
+{
+ "setupLog": [
+  "people ok",
+  "login SWEEP-A ok",
+  "login SWEEP-B ok",
+  "login SWEEP-C ok",
+  "login SWEEP-M ok",
+  "login QA-DANI ok",
+  "eligibility ok",
+  "manager company access ok",
+  "scoped manager ok",
+  "this week ok",
+  "next week draft ok",
+  "time off ok",
+  "clocker keys ok",
+  "rules row ok",
+  "clocker pin ok"
+ ],
+ "extra": {
+  "spot": [
+   {
+    "engine": "chromium",
+    "lang": "es",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Equipo",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Ir al contenidoWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        136,
+        17,
+        119,
+        22
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 119,
+       "clientW": 119,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        64
+       ],
+       "gridCols": "113.5px 119px 113.5px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        85,
+        6,
+        220,
+        88
+       ],
+       "whiteSpace": "normal",
+       "overflow": "visible",
+       "textOverflow": "clip",
+       "scrollW": 220,
+       "clientW": 220,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        156
+       ],
+       "gridCols": "177px 177px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 768,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        108,
+        88,
+        200,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 200,
+       "clientW": 200,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        108,
+        88,
+        632,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     },
+     {
+      "width": 1440,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        296,
+        88,
+        200,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 200,
+       "clientW": 200,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        296,
+        88,
+        812,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     }
+    ],
+    "ruleSelectName": "minimumRest.status",
+    "ruleOptions": [
+     "UNKNOWN",
+     "NOT_APPLICABLE",
+     "CONFIGURED"
+    ],
+    "ruleWant": "NOT_APPLICABLE",
+    "ruleSaveLabel": "Guardar revisión operativa",
+    "ruleSavingLabel": "Guardar revisión operativa",
+    "rulePosts": 1,
+    "ruleAfterText": "Editar Horas y reglas Reglas operativas Reglas operativas revisadas por el dueño Las proyecciones del horario no son tiempo trabajado, prueba de descansos tomados, pago final de horas extra ni certificación legal. Revisa explícitamente si aplican; ningún valor se deduce del rol del empleado. Descans",
+    "ruleRevisionBefore": null,
+    "ruleRevisionAfter": 1,
+    "ruleSaved": "NOT_APPLICABLE",
+    "timeInputs": 0,
+    "saveLabelBefore": "Guardar cambios",
+    "savingLabel": "GuardarGuardando…Guardando…",
+    "after": "Editar turno Publicado Persona JF Elige a alguien Ana Fictional-Rivera Daniel Fictional-Reyes Elena Fictional-Cruz Fictional Owner James Fictional-Ortiz Maria Fictional-Lopez Localidad Un turno mantie",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "chromium",
+    "lang": "en",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Team",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Skip to contentWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        131,
+        17,
+        129,
+        22
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 129,
+       "clientW": 129,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        64
+       ],
+       "gridCols": "108.5px 129px 108.5px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        85,
+        6,
+        220,
+        88
+       ],
+       "whiteSpace": "normal",
+       "overflow": "visible",
+       "textOverflow": "clip",
+       "scrollW": 220,
+       "clientW": 220,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        156
+       ],
+       "gridCols": "177px 177px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 768,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        108,
+        88,
+        220,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 220,
+       "clientW": 220,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        108,
+        88,
+        632,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     },
+     {
+      "width": 1440,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        296,
+        88,
+        220,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 220,
+       "clientW": 220,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        296,
+        88,
+        812,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     }
+    ],
+    "ruleSelectName": "minimumRest.status",
+    "ruleOptions": [
+     "UNKNOWN",
+     "NOT_APPLICABLE",
+     "CONFIGURED"
+    ],
+    "ruleWant": "UNKNOWN",
+    "ruleSaveLabel": "Save operational review",
+    "ruleSavingLabel": "Save operational review",
+    "rulePosts": 1,
+    "ruleAfterText": "Edit Hours and rules Operational rules Owner-reviewed operational rules Scheduled projections are not worked time, proof of breaks taken, final overtime pay or legal certification. Review applicability explicitly; no values are inferred from the employee’s role. Minimum rest Review status Unknown — ",
+    "ruleRevisionBefore": 1,
+    "ruleRevisionAfter": 2,
+    "ruleSaved": "UNKNOWN",
+    "timeInputs": 0,
+    "saveLabelBefore": "Save changes",
+    "savingLabel": null,
+    "after": "Edit shift Published Person JF Choose someone Ana Fictional-Rivera Daniel Fictional-Reyes Elena Fictional-Cruz Fictional Owner James Fictional-Ortiz Maria Fictional-Lopez Location A shift keeps its lo",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "webkit",
+    "lang": "es",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Equipo",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Ir al contenidoWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        136,
+        17,
+        119,
+        22
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 119,
+       "clientW": 119,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        64
+       ],
+       "gridCols": "113.5625px 118.875px 113.5625px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        85,
+        6,
+        220,
+        88
+       ],
+       "whiteSpace": "normal",
+       "overflow": "visible",
+       "textOverflow": "clip",
+       "scrollW": 220,
+       "clientW": 220,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        156
+       ],
+       "gridCols": "177px 177px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 768,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        108,
+        88,
+        210,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 210,
+       "clientW": 210,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        108,
+        88,
+        632,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     },
+     {
+      "width": 1440,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        296,
+        88,
+        210,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 210,
+       "clientW": 210,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        296,
+        88,
+        812,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     }
+    ],
+    "ruleSelectName": "minimumRest.status",
+    "ruleOptions": [
+     "UNKNOWN",
+     "NOT_APPLICABLE",
+     "CONFIGURED"
+    ],
+    "ruleWant": "NOT_APPLICABLE",
+    "ruleSaveLabel": "Guardar revisión operativa",
+    "ruleSavingLabel": "Guardar revisión operativa",
+    "rulePosts": 1,
+    "ruleAfterText": "Editar Horas y reglas Reglas operativas Reglas operativas revisadas por el dueño Las proyecciones del horario no son tiempo trabajado, prueba de descansos tomados, pago final de horas extra ni certificación legal. Revisa explícitamente si aplican; ningún valor se deduce del rol del empleado. Descans",
+    "ruleRevisionBefore": 2,
+    "ruleRevisionAfter": 3,
+    "ruleSaved": "NOT_APPLICABLE",
+    "timeInputs": 0,
+    "saveLabelBefore": "Guardar cambios",
+    "savingLabel": "GuardarGuardando…Guardando…",
+    "after": "Editar turno Publicado Persona JF Localidad Un turno mantiene su localidad. Para moverlo, bórralo y añade uno nuevo. Puesto Fecha Inicio Fin Líder del turno Debe ser Dueño, Gerente o Líder. Nota Cance",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "webkit",
+    "lang": "en",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Team",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Skip to contentWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        129,
+        17,
+        131,
+        22
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 131,
+       "clientW": 131,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        64
+       ],
+       "gridCols": "107.421875px 131.140625px 107.4375px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        85,
+        6,
+        220,
+        88
+       ],
+       "whiteSpace": "normal",
+       "overflow": "visible",
+       "textOverflow": "clip",
+       "scrollW": 220,
+       "clientW": 220,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        0,
+        0,
+        390,
+        156
+       ],
+       "gridCols": "177px 177px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 768,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        108,
+        88,
+        232,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 232,
+       "clientW": 232,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        108,
+        88,
+        632,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     },
+     {
+      "width": 1440,
+      "big": false,
+      "back": null,
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        296,
+        88,
+        232,
+        38
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 232,
+       "clientW": 232,
+       "truncated": false,
+       "color": "rgb(255, 255, 255)",
+       "fontSize": "32px"
+      },
+      "nav": {
+       "box": [
+        296,
+        88,
+        812,
+        80
+       ],
+       "gridCols": "none",
+       "display": "flex"
+      }
+     }
+    ],
+    "ruleSelectName": "minimumRest.status",
+    "ruleOptions": [
+     "UNKNOWN",
+     "NOT_APPLICABLE",
+     "CONFIGURED"
+    ],
+    "ruleWant": "UNKNOWN",
+    "ruleSaveLabel": "Save operational review",
+    "ruleSavingLabel": "Save operational review",
+    "rulePosts": 1,
+    "ruleAfterText": "Edit Hours and rules Operational rules Owner-reviewed operational rules Scheduled projections are not worked time, proof of breaks taken, final overtime pay or legal certification. Review applicability explicitly; no values are inferred from the employee’s role. Minimum rest Review status Unknown — ",
+    "ruleRevisionBefore": 3,
+    "ruleRevisionAfter": 4,
+    "ruleSaved": "UNKNOWN",
+    "timeInputs": 0,
+    "saveLabelBefore": "Save changes",
+    "savingLabel": null,
+    "after": "Edit shift Published Person JF Location A shift keeps its location. To move it, delete it and add a new one. Position Date Start End Shift lead Must be an Owner, Manager or Lead. Note Cancel Save chan",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   }
+  ]
+ },
+ "week": "2026-11-23",
+ "next": "2026-11-30"
+}
