@@ -1,0 +1,127 @@
+views 2012 Counter({('chromium', 'en'): 540, ('chromium', 'es'): 540, ('webkit', 'en'): 483, ('webkit', 'es'): 449})
+
+== errors: 12
+  1x  employee /app/exchange :: page.waitForTimeout: Target page, context or browser has been closed
+  1x  employee /app/exchange/open-shifts :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/availability :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/availability/agreement :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/notifications :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/inbox :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/more :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/help :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/updates :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/profile :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/profile/calendar :: page.goto: Target page, context or browser has been closed
+  1x  employee /app/account/delete :: page.goto: Target page, context or browser has been closed
+
+== http>=400: 24
+  6x  public /welcome 404 -> /welcome
+  6x  public /access-help 404 -> /access-help
+  6x  public /access-help/id?from=login 404 -> /access-help/id?from=login
+  6x  public /clocker/access/paused?from=%2Fclocker%2Fes-kiosk-main&reason=billing_status_unavailable 404 -> /clocker/access/paused?from=%2Fclocker%2Fes-kiosk-main&reason=billing_status_unavailable
+
+== overflow: 2
+  1x  chromium en 390-200 clocker /clocker/not-a-real-key +41 []
+  1x  chromium es 390-200 clocker /clocker/not-a-real-key +28 []
+
+== clipped: 35
+  2x  ch en 390 /app/timecards ['"6 timecards this week." (0,-10 28x22)']
+  2x  we en 390 /app/timecards ['"P" (0,-10 28x22)']
+  2x  ch en 390-200 /app/timecards ['"6 timecards this week." (0,-10 28x22)']
+  2x  we en 390-200 /app/timecards ['"P" (0,-10 28x22)']
+  2x  ch es 390 /app/timecards ['"6 tarjetas de tiempo esta semana." (0,-10 28x22)']
+  2x  ch es 390-200 /app/timecards ['"6 tarjetas de tiempo esta semana." (0,-10 28x22)']
+  2x  we es 390 /app/timecards ['"P" (0,-10 28x22)']
+  2x  we es 390-200 /app/timecards ['"P" (0,-10 28x22)']
+  1x  we en 390-200 /app/requests ['"Approve time off for Maria Fictional-Lopez" (243,509 112x44)', '"Approve time off for James Fictional-Ortiz" (243,715 112x44)']
+  1x  ch en 1440 /app/settings/features ['"Saved" (295,108 860x1)', '"Saved" (295,108 860x1)']
+  1x  ch en 1440 /app/settings/locations ['"2 active of 2 locations" (295,108 860x1)']
+  1x  ch en 1440 /app/settings/positions ['"2 active and 0 archived positions" (295,108 860x1)']
+  1x  ch en 1440 /app/settings/breaks ['"Showing 0 of 0 break types" (295,108 860x1)']
+  1x  we en 1440 /app/settings/features ['"Saved" (295,108 860x1)', '"Saved" (295,108 860x1)']
+  1x  we en 1440 /app/settings/locations ['"2 active of 2 locations" (295,108 860x1)']
+  1x  we en 1440 /app/settings/positions ['"2 active and 0 archived positions" (295,108 860x1)']
+  1x  we en 1440 /app/settings/breaks ['"Showing 0 of 0 break types" (295,108 860x1)']
+  1x  ch es 390-200 /app/employees/SWEEP-A?edit=clocker ['"Puede marcar en" (85,6 220x44)']
+  1x  ch es 1440 /app/settings/features ['"Guardado" (295,108 860x1)', '"Guardado" (295,108 860x1)']
+  1x  ch es 1440 /app/settings/locations ['"localidades · en uso: 2 de 2" (295,108 860x1)']
+  1x  ch es 1440 /app/settings/positions ['"2 puestos activos y 0 archivados" (295,108 860x1)']
+  1x  ch es 1440 /app/settings/breaks ['"Se muestran 0 de 0 tipos de descanso" (295,108 860x1)']
+  1x  we es 390-200 /app/employees/SWEEP-A?edit=clocker ['"Puede marcar en" (85,6 220x44)']
+  1x  we es 1440 /app/settings/features ['"Guardado" (295,108 860x1)', '"Guardado" (295,108 860x1)']
+  1x  we es 1440 /app/settings/locations ['"localidades · en uso: 2 de 2" (295,108 860x1)']
+  1x  we es 1440 /app/settings/positions ['"2 puestos activos y 0 archivados" (295,108 860x1)']
+  1x  we es 1440 /app/settings/breaks ['"Se muestran 0 de 0 tipos de descanso" (295,108 860x1)']
+
+== overlaps: 29
+  2x  ch en 390-200 /app/schedule ['"Action needed" × "Open shifts and changes" (81,809 132x88)']
+  2x  ch es 390 /app/schedule ['"Pendiente" × "Turnos disponibles y cambios" (81,340 69x22)']
+  2x  ch es 390-200 /app/schedule ['"Pendiente" × "Turnos disponibles y cambios" (81,897 107x88)']
+  2x  ch es 390-200 /app/my-time ['"Esta semana ·" × "23–29 nov" (33,568 199x85)']
+  2x  we en 390-200 /app/schedule ['"Action needed" × "Open shifts and changes" (81,813 126x88)']
+  2x  we es 390 /app/schedule ['"Pendiente" × "Turnos disponibles y cambios" (81,366 70x22)']
+  1x  ch en 1440 /app/schedule ['"Staffing 30%" × "Mon" (429,533 92x20)']
+  1x  ch en 1440 /app/schedule?week=2026-11-30 ['"12 h of 336 h" × "Wed" (696,642 90x18)']
+  1x  ch en 1440 /app/schedule/coverage ['"Staffing 30%" × "Mon" (429,533 92x20)']
+  1x  we en 1440 /app/schedule ['"Staffing 30%" × "Mon" (430,533 93x20)']
+  1x  we en 1440 /app/schedule?week=2026-11-30 ['"12 h of 336 h" × "Wed" (697,642 88x18)']
+  1x  we en 1440 /app/schedule/coverage ['"Staffing 30%" × "Mon" (430,533 93x20)']
+  1x  ch es 390-200 /app/employees/SWEEP-A?edit=clocker ['"Cancelar" × "Puede marcar en" (10,6 130x44)']
+  1x  we es 390-200 /app/employees/SWEEP-A?edit=clocker ['"Cancelar" × "Puede marcar en" (10,6 138x44)']
+  1x  ch en 1440 /app/schedule ['"Staffing 30%" × "Mon" (429,315 92x20)']
+  1x  ch en 1440 /app/schedule?week=2026-11-30 ['"12 h of 336 h" × "Wed" (696,424 90x18)']
+  1x  we en 1440 /app/schedule ['"Staffing 30%" × "Mon" (430,315 93x20)']
+  1x  we en 1440 /app/schedule?week=2026-11-30 ['"12 h of 336 h" × "Wed" (697,424 88x18)']
+  1x  ch en 390-200 /privacy ['"Terms" × "Account deletion" (211,2675 76x62)']
+  1x  ch en 390-200 /support ['"Terms" × "Account deletion" (211,1712 76x62)']
+  1x  ch es 390-200 /privacy ['"Términos" × "Eliminar cuenta" (212,2943 112x62)']
+  1x  ch es 390-200 /support ['"Términos" × "Eliminar cuenta" (212,2040 112x62)']
+  1x  we es 390-200 /app/schedule ['"Pendiente" × "Turnos disponibles y cambios" (81,901 99x88)']
+
+== axe: 60
+  12x  en /app/schedule [('label-content-name-mismatch', 1)]
+  12x  en /app/schedule?week=2026-11-30 [('label-content-name-mismatch', 2)]
+  12x  es /app/schedule [('label-content-name-mismatch', 1)]
+  12x  es /app/schedule?week=2026-11-30 [('label-content-name-mismatch', 2)]
+  6x  en /app/schedule/coverage [('label-content-name-mismatch', 1)]
+  6x  es /app/schedule/coverage [('label-content-name-mismatch', 1)]
+
+== console/page errors: 84
+  3x  we en /app ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /app ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  we en /app/notifications ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /app/notifications ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /app ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /app/notifications ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  we es /app ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  we es /app/notifications ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /app/timecards/corrections ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+  3x  ch es /app/timecards/corrections ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+  3x  ch en /app/inbox ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+  3x  we en /app/timecards/corrections ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+  3x  ch es /app/inbox ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+  3x  we es /app/timecards/corrections ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+  3x  we en /app/inbox ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+  3x  ch en /welcome ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /access-help ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /access-help/id?from=login ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /clocker/access/paused?from=%2Fclocker%2Fes-kiosk-main&reason=billing_status_unavailable ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /no-such-page-here ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /welcome ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /access-help ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /access-help/id?from=login ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /clocker/access/paused?from=%2Fclocker%2Fes-kiosk-main&reason=billing_status_unavailable ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /no-such-page-here ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch en /clocker/not-a-real-key ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  ch es /clocker/not-a-real-key ['error Failed to load resource: the server responded with a status of 404 (Not Found)']
+  3x  we es /app/inbox ['error Failed to load resource: the server responded with a status of 403 (Forbidden)']
+
+== HYDRATION: 0
+
+== html lang mismatch: 0
+
+== raw keys/undefined: 0
+
+== EN in ES: 0
+
+== ES in EN: 0

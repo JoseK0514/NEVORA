@@ -1,0 +1,31 @@
+import json,sys,collections
+ROLE_ROUTES={'owner':69,'manager':29,'scoped':29,'lead':17,'employee':17,'public':16,'clocker':3}
+VIEWS=3
+path=sys.argv[1]
+recs=[json.loads(l) for l in open(path)]
+seq=collections.defaultdict(int)
+for r in recs:
+    k=(r['engine'],r['role']); n=seq[k]; seq[k]+=1
+    per=ROLE_ROUTES[r['role']]*VIEWS
+    r['L']='en' if n<per else 'es'
+    r['chk']=r.get('lang') if isinstance(r.get('lang'),dict) else {}
+print('views',len(recs),collections.Counter((r['engine'],r['L']) for r in recs))
+def f(cond,label,fmt,limit=40):
+    hits=[r for r in recs if cond(r)]
+    print(f'\n== {label}: {len(hits)}')
+    seen=collections.Counter()
+    for r in hits:
+        key=fmt(r); seen[key]+=1
+    for k,c in seen.most_common(limit): print(f'  {c}x  {k}')
+f(lambda r:r.get('error'),'errors',lambda r:f"{r['role']} {r['route']} :: {r['error'][:120]}")
+f(lambda r:r.get('status') and r['status']>=400 and '/no-such' not in r['route'] and 'not-a-real' not in r['route'],'http>=400',lambda r:f"{r['role']} {r['route']} {r['status']} -> {r.get('finalPath')}")
+f(lambda r:(r.get('layout') or {}).get('overflowX',0)>2,'overflow',lambda r:f"{r['engine']} {r['L']} {r['view']} {r['role']} {r['route']} +{r['layout']['overflowX']} {r['layout'].get('wide',[])[:2]}")
+f(lambda r:(r.get('layout') or {}).get('clipped'),'clipped',lambda r:f"{r['engine'][:2]} {r['L']} {r['view']} {r['route']} {r['layout']['clipped'][:2]}")
+f(lambda r:(r.get('layout') or {}).get('overlaps'),'overlaps',lambda r:f"{r['engine'][:2]} {r['L']} {r['view']} {r['route']} {r['layout']['overlaps'][:1]}")
+f(lambda r:r.get('axe'),'axe',lambda r:f"{r['L']} {r['route']} {[(a['id'],a['count']) for a in r['axe']]}")
+f(lambda r:[e for e in r.get('errors',[]) if 'access control checks' not in e],'console/page errors',lambda r:f"{r['engine'][:2]} {r['L']} {r['route']} {[e[:140] for e in r['errors'] if 'access control checks' not in e][:2]}")
+f(lambda r:any(('418' in e or 'ydrat' in e or '#423' in e or '#425' in e) for e in r.get('errors',[])),'HYDRATION',lambda r:f"{r['engine'][:2]} {r['L']} {r['role']} {r['route']}")
+f(lambda r:r['chk'].get('htmlLang') and not r['chk']['htmlLang'].startswith(r['L']),'html lang mismatch',lambda r:f"{r['L']} html={r['chk']['htmlLang']} {r['role']} {r['route']}")
+f(lambda r:r['chk'].get('keys'),'raw keys/undefined',lambda r:f"{r['L']} {r['route']} {r['chk']['keys'][:3]}")
+f(lambda r:r['L']=='es' and r['chk'].get('leaks'),'EN in ES',lambda r:f"{r['role']} {r['route']} {r['chk']['leaks'][:3]}",80)
+f(lambda r:r['L']=='en' and r['chk'].get('leaks'),'ES in EN',lambda r:f"{r['role']} {r['route']} {r['chk']['leaks'][:3]}",60)

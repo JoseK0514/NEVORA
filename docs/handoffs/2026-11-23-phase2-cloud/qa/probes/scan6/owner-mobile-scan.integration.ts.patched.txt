@@ -1,0 +1,166 @@
+// SCRATCH (not committed): capture Owner mobile screens for a UI scan. Fictional data only.
+import {it} from '@rstest/core';
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {createOwnedNextApp} from '../src/test/integration/owned-next-app';
+import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture';
+import {publishScheduleWithRevision} from '../src/test/integration/management-api';
+import {seedPayrollFixture} from '../src/test/integration/payroll-fixture';
+import {businessDate} from '../src/lib/business-time';
+import {weekStartFor,addDays} from '../src/lib/date-utils';
+import {seedEmployeeRich} from './seed-employee';
+import {runStates} from './states';
+import {seedOwnerBefore,seedOwnerSchedules,seedOwnerAfter,ownerPayExtra} from './seed-owner';
+import {runOwnerStates} from './states-owner';
+import {runDeskStates} from './states-desk';
+import {runPublic} from './public';
+import {CLK_SEED,clkSeedAfter,runClkVerify} from './clk-verify';
+import {pressProbe} from './press-probe';
+import {runClockerFlow} from './clocker-flow';
+import {OWNED_COLLAB_ORIGIN} from '../src/test/integration/owned-collab-origin';
+import {startOwnedTlsProxy} from '../src/test/integration/owned-tls-proxy';
+import {nativeUserAgent,installNativeBridge,runNativeFlow,runDevicePopover} from './native-flow';
+import {seedLeave,runLeaveFlow,runLeaveNegatives,runCorrectionFlow,type LeaveSeed} from './leave-flow';
+
+it('captures Owner mobile screens',async()=>{
+ const evidence=process.env.NEVORA_SCAN_EVIDENCE!;await mkdir(evidence,{recursive:true});
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE||import.meta.url)('playwright');
+ // The production build sets up a Clocker tablet only on its https origin (clockerOriginFailure), so a production kiosk run
+ // serves the app at the owned test origin through the owned TLS proxy (fictional, loopback only; as the step 4 test does).
+ const ckHttps=(Boolean(process.env.NEVORA_SCAN_CLOCKER_FLOW)||process.env.NEVORA_SCAN_CLK==='1')&&process.env.NEVORA_OWNED_APP_PRODUCTION==='1';
+ const app=await createOwnedNextApp(evidence,{commerceRecoveryEnabled:process.env.NEVORA_SCAN_COMMERCE_RECOVERY==='1',...(ckHttps?{portalHttpsOrigin:OWNED_COLLAB_ORIGIN}:{}),mobileAccessEnabled:process.env.NEVORA_SCAN_MOBILEACCESS==='1',deviceAlertsEnabled:process.env.NEVORA_SCAN_DEVICE_ALERTS==='1',nativeAlertsEnabled:process.env.NEVORA_SCAN_NATIVE_ALERTS==='1',mobileSupportEnabled:process.env.NEVORA_SCAN_MOBILEACCESS==='1',passkeysEnabled:process.env.NEVORA_SCAN_PASSKEYS==='1',clockerPunchEnabled:process.env.NEVORA_SCAN_PUNCH==='1',clockerUiV2:process.env.NEVORA_SCAN_CLOCKER_V2==='1',payrollEnabled:process.env.NEVORA_SCAN_PAYROLL==='1',...(process.env.NEVORA_SCAN_ADVISOR==='1'?{ownerAdvisorEnabled:true,managerAdvisorEnabled:true,ownerAdvisorWeeklyEnabled:true,ownerAdvisorKnowledgeEnabled:true,ownerAdvisorBusinessImportsEnabled:true}:{}),...(process.env.NEVORA_SCAN_PINKEY==='1'?{clockerPinKey:'ab'.repeat(32)}:{})}),log:unknown[]=[];
+ const q=(text:string,values:unknown[]=[])=>app.database.executor.query({text,values});
+ let proxy:Awaited<ReturnType<typeof startOwnedTlsProxy>>|null=null;
+ try{
+  proxy=ckHttps?await startOwnedTlsProxy({[OWNED_COLLAB_ORIGIN]:app.url}):null;
+  const front=proxy?OWNED_COLLAB_ORIGIN:app.url,net=proxy?{proxy:{server:proxy.server},ignoreHTTPSErrors:true}:{};
+  await seedOwnedApp(app.database.executor);const f=await seedOwnedScenario(app.database.executor,'SCAN',0);
+  const names=[['Maria','Rivera'],['James','Ortiz'],['Ana','Colon']];
+  for(const [i,id] of f.actors.entries())await q('UPDATE employees SET first_name=$2,last_name=$3 WHERE id=$1',[id,names[i][0],names[i][1]]);
+  await q("UPDATE employees SET first_name='Jose',last_name='Natal' WHERE id='QAOWNER'");
+  if(process.env.NEVORA_SCAN_CLK==='1')for(const sql of CLK_SEED)await q(sql).catch((e:unknown)=>log.push('clk seed: '+String(e).slice(0,200)));
+  // Clocker kiosk evidence: a fictional key on the main location so /clocker/<key> renders.
+  if(process.env.NEVORA_SCAN_CLOCKER)await q("UPDATE locations SET clocker_key=$1 WHERE id='loc-1'",[process.env.NEVORA_SCAN_CLOCKER]).catch(e=>log.push('clocker key: '+String(e)));
+  if(process.env.NEVORA_SCAN_AS==='emp'&&process.env.NEVORA_SCAN_EMPROLE)await q("UPDATE employees SET role=$2 WHERE id=$1",[f.actors[Number(process.env.NEVORA_SCAN_ACTOR??'0')],process.env.NEVORA_SCAN_EMPROLE]).catch(e=>log.push('role: '+String(e)));
+  const ownerRich=process.env.NEVORA_SCAN_RICH_OWNER==='1';
+  if(ownerRich)await seedOwnerBefore(app.database.executor,{actors:f.actors},log).catch(e=>log.push('owner before: '+String(e?.stack??e)));
+  const today=businessDate(new Date(),'America/Puerto_Rico'),week=weekStartFor(today);
+  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('scan-week','loc-1',$1,'DRAFT','QAOWNER')",[week]);
+  let n=0;for(let d=0;d<7;d++)for(const [i,id] of f.actors.entries()){if((d+i)%3===2)continue;const s=['07:00','09:00','12:00'][i],e=['15:00','17:00','20:00'][i];await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES($1,'scan-week',$2,$3,$4,$5,'qa-pos')",['scan-'+(n++),id,addDays(week,d),s,e]);}
+  // A NULL employee is not how NEVORA opens coverage; the rich seed offers real coverage instead (kept as before otherwise).
+  if(process.env.NEVORA_SCAN_RICH!=='1'&&process.env.NEVORA_SCAN_RICH_OWNER!=='1')await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,position_id) VALUES('scan-open','scan-week',NULL,$1,'16:00','22:00','qa-pos')",[addDays(today,1)]).catch(e=>log.push('open shift: '+String(e)));
+  await publishScheduleWithRevision({locationId:'loc-1',weekStart:week,managerId:'QAOWNER'},app.database.executor);
+  if(process.env.NEVORA_SCAN_CLK==='1')await clkSeedAfter(app.database.executor,week,addDays,log);
+  const rich=process.env.NEVORA_SCAN_RICH==='1'||ownerRich;
+  if(ownerRich)await seedOwnerSchedules(app.database.executor,{actors:f.actors,today,week},log).catch(e=>log.push('owner schedules: '+String(e?.stack??e)));
+  if(process.env.NEVORA_SCAN_PAYROLL==='1'&&!rich)await seedPayrollFixture(app.database.executor).catch(e=>log.push('payroll: '+String(e)));
+  if(rich)await seedEmployeeRich(app.database.executor,{actors:f.actors,actor:f.actors[ownerRich?1:Number(process.env.NEVORA_SCAN_ACTOR??'1')],today,week,scenario:{sourceId:f.sourceId,week:f.week},...(ownerRich?{payWeeks:[4,3],correctionWeek:3,payAnchor:addDays(week,-28),payExtra:ownerPayExtra(app.database.executor)}:{})},log).catch(e=>log.push('rich: '+String(e?.stack??e)));
+  if(ownerRich)await seedOwnerAfter(app.database.executor,{actors:f.actors,today,week},log).catch(e=>log.push('owner after: '+String(e?.stack??e)));
+  // Leave and staffing (NEVORA_SCAN_LEAVE=1): fictional leave over published shifts this week.
+  let leave:LeaveSeed={week};
+  if(process.env.NEVORA_SCAN_LEAVE==='1')leave=await seedLeave(q,f.actors,week,today,log).catch(e=>{log.push('leave seed: '+String(e?.stack??e));return {week};});
+  // Coverage not set up (NEVORA_SCAN_NO_COVERAGE=1): no coverage windows or staffing, so coverage reads "Not set up".
+  if(process.env.NEVORA_SCAN_NO_COVERAGE==='1')for(const t of ['location_coverage_windows','location_staffing_settings'])await q(`DELETE FROM ${t}`).catch(e=>log.push('no coverage '+t+': '+String(e)));
+  const browser=await runtime[process.env.NEVORA_SCAN_ENGINE||'chromium'].launch({headless:true});
+  if(process.env.NEVORA_SCAN_CLK==='1'){try{await runClkVerify(browser,front,net,q,evidence,log).catch(e=>log.push('clk: '+String(e?.stack??e).slice(0,400)));}finally{await browser.close();}return;}
+  // K15 (NEVORA_SCAN_CLOCKER_FLOW=paused, with NEVORA_SCAN_COMMERCE_RECOVERY=1): the paused page only; commerce is on with no
+  // binding or provider (the commerce recovery fixture), so nothing signs in first.
+  if(process.env.NEVORA_SCAN_CLOCKER_FLOW==='paused'){try{await runClockerFlow(browser,front,app.database.executor,f.actors,evidence,log,'paused',net).catch(e=>log.push('clocker flow: '+String(e?.stack??e)));}finally{await browser.close();}return;}
+  try{
+   const desk=process.env.NEVORA_SCAN_DESK==='1',ua=nativeUserAgent(process.env.NEVORA_SCAN_UA);const context=await browser.newContext({...net,...(desk?{viewport:{width:1440,height:900},deviceScaleFactor:1,reducedMotion:'reduce',serviceWorkers:'block'}:{viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true,reducedMotion:'reduce',serviceWorkers:'block'}),...(ua?{userAgent:ua}:{})}),page=await context.newPage();
+   if(ua)await installNativeBridge(context,page);page.setDefaultTimeout(20000);
+   let staffingView:string|null=null;page.on('request',(r:{url():string;headers():Record<string,string>})=>{if(r.url().includes('/time-off-staffing'))staffingView=r.headers()['x-nevora-employee-view']??staffingView;});
+   page.on('pageerror',(e:Error)=>log.push('pageerror '+e.message));
+   page.on('console',(m:{type():string;text():string;args():{jsonValue():Promise<unknown>}[]})=>{if(m.type()==='error'){log.push('console '+m.text().slice(0,300));if(m.text().includes('unique "key"'))void Promise.all(m.args().map(a=>a.jsonValue().catch(()=>'?'))).then(a=>log.push({keyArgs:a.map(x=>String(x).slice(0,1500))}));}});
+   await page.goto(front+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(process.env.NEVORA_SCAN_LOGIN||(process.env.NEVORA_SCAN_AS==='emp'?f.actors[Number(process.env.NEVORA_SCAN_ACTOR??'0')]:'QAOWNER'));await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();
+   await page.waitForURL((u:URL)=>u.pathname.startsWith('/app'));await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(1500);
+   if(desk)await page.setViewportSize({width:390,height:844});const tabs:string[]=await page.locator('.mobile-nav a').evaluateAll((els:HTMLAnchorElement[])=>els.map(a=>new URL(a.href).pathname+new URL(a.href).search));
+   const tabLabels:string[]=await page.locator('.mobile-nav a').evaluateAll((els:HTMLAnchorElement[])=>els.map(a=>(a.getAttribute('aria-label')||a.textContent||'').trim()));
+   log.push({tabs,tabLabels});
+   const runIds=((await q('SELECT id::text AS id FROM payroll_runs ORDER BY end_date DESC,(correction_of IS NULL) DESC').catch((e:unknown)=>{log.push('runs '+String(e));return {rows:[]};})) as unknown as {id:string}[]|{rows:{id:string}[]});const runList=(Array.isArray(runIds)?runIds:runIds.rows).map(r=>r.id);
+   const only=process.env.NEVORA_SCAN_ONLY==='1';
+   const routes=[...new Set([...(only?[]:['/app',...tabs,'/app/inbox']),...(process.env.NEVORA_SCAN_EXTRA??'').split(',').filter(Boolean).map(r=>r.replace('{actor}',f.actors[0]).replace('{leaveMaria}','03300000-0000-4000-8000-000000000001').replace('{leaveJames}','03300000-0000-4000-8000-000000000002').replace('{leaveAna}','03300000-0000-4000-8000-000000000003').replace('{actor}',f.actors[0]).replace(/\{run(\d)\}/,(_,i)=>runList[Number(i)]??'none'))])];
+   log.push({runList});
+   for(const route of routes){
+    await page.goto(front+route);await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(2500);
+    const slug=(process.env.NEVORA_SCAN_AS==='emp'?'':'')+route.replace(/^\/app\/?/,'').replace(f.actors[0],'person').replace(/[^a-z0-9]+/gi,'-').replace(/-$/,'')||'home';
+    if(route==='/app/notifications')for(let t=0;t<2;t++)log.push({route,api:await page.evaluate(async()=>{const s=performance.now();const r=await fetch('/api/notifications',{headers:{accept:'application/json'}});const b=await r.text();return {status:r.status,ms:Math.round(performance.now()-s),body:b.slice(0,400)};}).catch((e:unknown)=>String(e))});
+    const kit=await page.evaluate(()=>{const p=document.querySelector('.page-frame .c-page, .page-frame .q-page, .page-frame [data-nv-page]');return {page:p?p.className.slice(0,80):'none',first:p?.firstElementChild?.className?.toString().slice(0,60)??'',nav:!!document.querySelector('.c-page > .c-nav--phone'),title:!!document.querySelector('.c-page > .c-title')};});log.push({route,kit});
+    if(process.env.NEVORA_SCAN_FRAME==='1'){await page.setViewportSize({width:1440,height:900});await page.waitForTimeout(500);log.push({route,frame:await page.evaluate(()=>{const vis=(e:Element)=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0;};const d=(e:Element,depth:number):unknown=>{const r=e.getBoundingClientRect();const cs=getComputedStyle(e);return {t:e.tagName.toLowerCase()+'.'+[...e.classList].join('.').slice(0,60),txt:(e.textContent||'').trim().replace(/\s+/g,' ').slice(0,40),r:[Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height)].join(','),pos:cs.position,k:depth?[...e.children].filter(vis).slice(0,8).map(c=>d(c,depth-1)):undefined};};const f=document.querySelector('main.page-frame');return f?[...f.children].filter(vis).map(c=>d(c,3)):null;})});}
+    if(process.env.NEVORA_SCAN_SHELL==='1'){await page.setViewportSize({width:1440,height:900});await page.waitForTimeout(500);log.push({route,shell:await page.evaluate(()=>{const d=(e:Element,depth:number):unknown=>{const cs=getComputedStyle(e);const r=e.getBoundingClientRect();return {t:e.tagName.toLowerCase()+'.'+[...e.classList].join('.').slice(0,70),txt:(e.childElementCount?'':(e.textContent||'').trim().slice(0,24)),css:[cs.display,cs.position,'x='+Math.round(r.left),'y='+Math.round(r.top),'w='+Math.round(r.width),'h='+Math.round(r.height),'pad='+cs.padding,'mt='+cs.marginTop,'bg='+cs.backgroundColor].join('|'),k:depth?[...e.children].slice(0,10).map(c=>d(c,depth-1)):undefined};};const s=document.querySelector('.app-shell');return s?d(s,5):null;})});}
+    if(process.env.NEVORA_SCAN_DOM==='1')log.push({route,dom:await page.evaluate(()=>{const root=document.querySelector('.page-frame :is(.c-page,.q-page)');if(!root)return null;
+      const d=(e:Element,depth:number):unknown=>{const cs=getComputedStyle(e);return {t:e.tagName.toLowerCase()+'.'+[...e.classList].join('.'),txt:(e.childElementCount?'':(e.textContent||'').trim().slice(0,24)),
+        css:[cs.display,cs.position,'top='+Math.round(e.getBoundingClientRect().top),'bot='+Math.round(e.getBoundingClientRect().bottom),'mt='+cs.marginTop,'mb='+cs.marginBottom,cs.backgroundColor,cs.boxShadow.slice(0,40)].join('|'),k:depth?[...e.children].slice(0,6).map(c=>d(c,depth-1)):undefined};};
+      return {root:root.className,pad:getComputedStyle(root).padding,kids:[...root.children].slice(0,9).map(c=>d(c,2))};})});
+    for(const width of (process.env.NEVORA_SCAN_WIDTHS??'390,320,1440').split(',').map(Number)){await page.setViewportSize({width,height:width>1000?900:844});await page.waitForTimeout(600);
+     const check=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth-innerWidth,b:!!document.querySelector('.b-screen')&&getComputedStyle(document.querySelector('.b-screen')!).display!=='none',
+      small:[...document.querySelectorAll('.b-screen a,.b-screen button')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&(r.height<36||r.width<36);}).map(e=>(e.textContent||e.getAttribute('aria-label')||'').trim().slice(0,30)).slice(0,8)}));
+     log.push({route,width,...check});
+     if(process.env.NEVORA_SCAN_MOTION==='1'){const press=await pressProbe(page).catch((e:unknown)=>({error:String(e).slice(0,200)}));log.push({route,width,press});if(page.url()!==front+route&&!page.url().endsWith(route)){log.push({route,width,pressNavigated:page.url()});await page.goto(front+route);await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(800);}}
+     if(process.env.NEVORA_SCAN_MOTION==='1')log.push({route,width,motion:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe-motion.js','utf8')+')()') as ()=>unknown)});
+     if(process.env.NEVORA_SCAN_INSET==='1')log.push({route,width,inset:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe-inset.js','utf8')+')()') as ()=>unknown)});
+     if(process.env.NEVORA_SCAN_RECTS==='1'&&(process.env.NEVORA_SCAN_RECTS_ROUTE??'').split(',').map(r=>r.replace('{actor}',f.actors[0]).replace(/\{run(\d)\}/,(_,i)=>runList[Number(i)]??'none')).includes(route))log.push({route,width,rects:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe-rects.js','utf8')+')()') as ()=>unknown)});
+     if(process.env.NEVORA_SCAN_KEYS==='1'&&route.startsWith('/app/schedule'))log.push({route,width,keys:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe-keys.js','utf8')+')()') as ()=>unknown).catch((e:unknown)=>String(e))});
+     if(process.env.NEVORA_SCAN_ANC==='1'&&width>=1000)log.push({route,width,anc:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe-anc.js','utf8')+')()') as ()=>unknown)});
+     if(process.env.NEVORA_SCAN_PROBE_EB==='1'&&width<768)log.push({route,width,eb:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe-eb.js','utf8')+')()') as ()=>unknown)});
+     if(process.env.NEVORA_SCAN_PROBE_DESK==='1'&&width>=1000)log.push({route,width,pd:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe-desk.js','utf8')+')()') as ()=>unknown)});
+     if(process.env.NEVORA_SCAN_PROBE==='1'&&width===390)log.push({route,width,probe:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/probe.js','utf8')+')()') as ()=>unknown)});
+     if(process.env.NEVORA_SCAN_AUDIT==='1'&&(width<1000||process.env.NEVORA_SCAN_AUDIT_DESK==='1'))log.push({route,width,audit:await page.evaluate(new Function('return ('+(await import('node:fs')).readFileSync('zz-scan/audit.js','utf8')+')()') as ()=>unknown)});
+     await page.screenshot({path:`${evidence}/owner-${slug}-${width}-fold.png`,fullPage:false});
+     await page.screenshot({path:`${evidence}/owner-${slug}-${width}.png`,fullPage:true});}
+    if(process.env.NEVORA_SCAN_INTERACT==='1'){const iw=Number(process.env.NEVORA_SCAN_INTERACT_W??'1440');await page.setViewportSize({width:iw,height:iw>1000?900:844});await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(300);
+     const steps:unknown[]=[];await page.mouse.click(700,5).catch(()=>{});await page.evaluate(()=>{(document.activeElement as HTMLElement|null)?.blur();});
+     for(let i=1;i<=14;i++){await page.keyboard.press('Tab');await page.waitForTimeout(120);
+      steps.push(await page.evaluate(()=>{const e=document.activeElement as HTMLElement|null;if(!e||e===document.body)return null;const cs=getComputedStyle(e);const r=e.getBoundingClientRect();
+       return {el:(e.tagName.toLowerCase()+'.'+[...e.classList].slice(0,3).join('.')).slice(0,60),txt:(e.getAttribute('aria-label')||e.textContent||'').trim().replace(/\s+/g,' ').slice(0,40),r:[Math.round(r.left),Math.round(r.top),Math.round(r.width),Math.round(r.height)],outline:cs.outlineStyle+' '+cs.outlineWidth+' '+cs.outlineColor,shadow:cs.boxShadow.slice(0,60)};}));
+      if(i===5||i===11)await page.screenshot({path:`${evidence}/owner-${slug}-focus${i}-${iw}.png`,fullPage:false});}
+     log.push({route,focus:steps});
+     const shot=async(name:string,sel:string)=>{const t=page.locator(sel).first();if(await t.count()&&await t.isVisible().catch(()=>false)){await page.keyboard.press('Escape');await t.click().catch(()=>{});await page.waitForTimeout(500);await page.screenshot({path:`${evidence}/owner-${slug}-${name}.png`,fullPage:false});await page.keyboard.press('Escape');await page.waitForTimeout(250);}};
+     if(route==='/app'){await shot('account','.portal-account-menu button, .portal-account-menu summary');await shot('finder','.command-finder-trigger');}
+     if(route==='/app/schedule'){await shot('locmenu','.c-title button[class*="trigger"], .c-title .c-select-btn, .c-title .c-sched-loc');await shot('moremenu','.c-title .c-sched-more, .c-title .c-icon-btn');}
+     if(route==='/app/employees'){await page.locator('form.c-team-search input').first().click().catch(()=>{});await page.waitForTimeout(300);await page.screenshot({path:`${evidence}/owner-${slug}-searchfocus.png`,fullPage:false});}
+     await page.mouse.move(700,450);const row=page.locator('main.page-frame :is(a.c-row, a.q-row, .b-row a, a.b-row)').first();if(await row.count()){await row.hover().catch(()=>{});await page.waitForTimeout(250);await page.screenshot({path:`${evidence}/owner-${slug}-hover.png`,fullPage:false});}
+    }
+    if(process.env.NEVORA_SCAN_PANEL==='1'&&route.startsWith('/app/schedule')){const pw=Number(process.env.NEVORA_SCAN_PANEL_W??'1440');await page.setViewportSize({width:pw,height:pw>1000?900:844});await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(400);const r=page.locator('.b-screen a.b-row[aria-haspopup="dialog"]').first();log.push({route,panelRows:await r.count()});if(await r.count()){await r.click();await page.waitForTimeout(900);await page.screenshot({path:`${evidence}/owner-${slug}-panel-${pw}.png`,fullPage:false});log.push({route,panelFocus:await page.evaluate(()=>{const e=document.activeElement as HTMLElement|null;return e?(e.tagName+'.'+e.className+' '+(e.textContent||'').trim().slice(0,30)):null;})});await page.keyboard.press('Tab');await page.waitForTimeout(200);await page.screenshot({path:`${evidence}/owner-${slug}-panel-tab-${pw}.png`,fullPage:false});await page.keyboard.press('Escape');await page.waitForTimeout(600);log.push({route,afterEsc:await page.evaluate(()=>({open:!!document.querySelector('dialog.q-sheet[open]'),focus:(document.activeElement?.textContent||'').trim().slice(0,40)}))});await page.screenshot({path:`${evidence}/owner-${slug}-panel-closed-${pw}.png`,fullPage:false});}}
+    if(process.env.NEVORA_SCAN_PANEL==='1'&&route==='/app/timecards'){const pw=Number(process.env.NEVORA_SCAN_PANEL_W??'1440');await page.setViewportSize({width:pw,height:pw>1000?900:844});await page.waitForTimeout(400);const r=page.locator('main :is(.c-tc-table tbody tr a, .c-tc-table tbody tr button, .c-tc-desk a.c-row, .c-tc a.c-row)').first();log.push({route,tcRows:await r.count()});if(await r.count()){await r.click();await page.waitForTimeout(900);await page.screenshot({path:`${evidence}/owner-timecards-sheet-${pw}.png`,fullPage:false});await page.keyboard.press('Escape');await page.waitForTimeout(500);}}
+    await page.setViewportSize({width:390,height:844});
+    log.push({route,url:page.url(),title:await page.title(),h1:await page.locator('h1').allInnerTexts()});
+   }
+   if(process.env.NEVORA_SCAN_FORYOU==='1'){
+    // For you on desktop: the list and the chosen request side by side; Enter moves focus into the pane, Escape returns it.
+    const active=()=>page.evaluate(()=>{const e=document.activeElement as HTMLElement|null;return e?(e.tagName.toLowerCase()+'#'+e.id+' "'+(e.textContent||'').trim().replace(/\s+/g,' ').slice(0,40)+'"'):null;});
+    for(const w of [1440,1024,900,390])try{
+     await page.setViewportSize({width:w,height:w>1000?900:844});const t0=Date.now();await page.goto(app.url+'/app/exchange?tab=foryou');
+     if(w>=1024){await page.waitForSelector('#b-xpane-s-h',{timeout:15000}).then(()=>log.push({foryou:w,paneMs:Date.now()-t0})).catch(()=>log.push({foryou:w,paneMs:'timeout'}));}
+     await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(2500);
+     const row=page.locator('.eb-sib a.b-row[id^="b-exchange-request-"]').first();
+     log.push({foryou:w,rows:await row.count(),pane:await page.locator('#b-xpane').count(),current:await page.locator('.eb-sib a.b-row[aria-current="true"]').count()});
+     await page.screenshot({path:`${evidence}/foryou-${w}.png`,fullPage:true});
+     if(!await row.count())continue;
+     await row.focus();await page.keyboard.press('Enter');await page.waitForTimeout(1800);
+     log.push({foryou:w,afterEnter:{url:page.url().replace(app.url,''),focus:await active()}});
+     await page.screenshot({path:`${evidence}/foryou-${w}-enter.png`,fullPage:false});
+     if(w>=1024){await page.keyboard.press('Shift+Tab');await page.waitForTimeout(200);log.push({foryou:w,backControl:await active()});await page.screenshot({path:`${evidence}/foryou-${w}-back.png`,fullPage:false});
+      await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');await page.keyboard.press('Escape');await page.waitForTimeout(300);log.push({foryou:w,afterEscape:await active()});await page.screenshot({path:`${evidence}/foryou-${w}-escape.png`,fullPage:false});
+      await page.mouse.move(5,5);await row.click({timeout:5000});await page.waitForTimeout(800);log.push({foryou:w,afterClick:{url:page.url().replace(app.url,''),focus:await active()}});}
+    }catch(e){log.push({foryou:w,error:String((e as Error).message).slice(0,200)});}
+   }
+   const actorId=process.env.NEVORA_SCAN_LOGIN||(process.env.NEVORA_SCAN_AS==='emp'?f.actors[Number(process.env.NEVORA_SCAN_ACTOR??'0')]:'QAOWNER');
+   if(process.env.NEVORA_SCAN_CORRECTION_FLOW==='1')await runCorrectionFlow(page,app.url,evidence,log,q).catch(e=>log.push('correction flow: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_LEAVE_FLOW==='1')await runLeaveFlow(page,app.url,evidence,log,leave,{q,actorId,view:async()=>staffingView,publish:async w=>{const {publishScheduleChanges}=await import('../src/test/integration/management-api');
+     return publishScheduleChanges({locationId:'loc-1',weekStart:w,managerId:'QAOWNER'} as never,app.database.executor).catch(async(e:unknown)=>{log.push('publish changes: '+String(e).slice(0,200));return publishScheduleWithRevision({locationId:'loc-1',weekStart:w,managerId:'QAOWNER'},app.database.executor);});}}).catch(e=>log.push('leave flow: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_LEAVE_NEG==='1'){
+    // A staffing read the app made on this page carries the view binding; open a page that reads it if none was seen.
+    if(!staffingView){await page.goto(app.url+(process.env.NEVORA_SCAN_AS==='emp'?'/app/requests?requestId='+(process.env.NEVORA_SCAN_ACTOR==='2'?'03300000-0000-4000-8000-000000000003':'03300000-0000-4000-8000-000000000001'):'/app/requests?tab=pending&requestId=03300000-0000-4000-8000-000000000002'));await page.waitForLoadState('networkidle').catch(()=>{});await page.waitForTimeout(3500);}
+    await runLeaveNegatives(page,app.url,evidence,log,{scope:process.env.NEVORA_SCAN_AS==='emp'?'employee':'management',actorId,view:staffingView,colleague:process.env.NEVORA_SCAN_AS==='emp'?f.actors.find(a=>a!==actorId):undefined,week,q,revoke:process.env.NEVORA_SCAN_LEAVE_REVOKE==='1'}).catch(e=>log.push('leave negatives: '+String(e?.stack??e)));
+   }
+   if(process.env.NEVORA_SCAN_NATIVE_FLOW==='1')await runNativeFlow(page,app.url,evidence,log).catch(e=>log.push('native flow: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_POPOVER==='1')await runDevicePopover(page,app.url,evidence,log).catch(e=>log.push('popover: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_CLOCKER_FLOW)await runClockerFlow(browser,front,app.database.executor,f.actors,evidence,log,process.env.NEVORA_SCAN_CLOCKER_FLOW==='1'?'full':process.env.NEVORA_SCAN_CLOCKER_FLOW,net).catch(e=>log.push('clocker flow: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_PUBLIC==='1')await runPublic(browser,app.url,evidence,log,{clocker:process.env.NEVORA_SCAN_CLOCKER}).catch(e=>log.push('public: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_STATES_DESK==='1')await runDeskStates(browser,context,app.url,evidence,log).catch(e=>log.push('desk states: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_STATES==='1')await runStates(browser,context,app.url,evidence,log).catch(e=>log.push('states: '+String(e?.stack??e)));
+   if(process.env.NEVORA_SCAN_STATES_OWNER==='1')await runOwnerStates(browser,context,app.url,evidence,log,{lastWeek:addDays(week,-7),only:(process.env.NEVORA_SCAN_STATES_OWNER_ONLY??'').split(',').filter(Boolean)}).catch(e=>log.push('owner states: '+String(e?.stack??e)));
+  }finally{await browser.close();}
+ }finally{await proxy?.close().catch(()=>{});await app.close();await writeFile(evidence+'/scan-log.json',JSON.stringify(log,null,2));}
+},2400000);

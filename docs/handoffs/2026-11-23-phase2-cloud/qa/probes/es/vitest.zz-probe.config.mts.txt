@@ -1,0 +1,3 @@
+import {projectConfig} from './vitest.shared.mts';
+import {defineConfig} from './vitest.shared.mts';
+export default projectConfig('zz-probe', defineConfig({test:{include:['zz-probe/es-sweep.integration.ts'],fileParallelism:false,testTimeout:14400000,hookTimeout:30000}}));

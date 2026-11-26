@@ -1,0 +1,56 @@
+// QA probe (not committed): Plan and billing in English and Spanish, and its language switch. A commerce-recovery
+// production build at the owned https origin; the status read is a fixture (Playwright route). Never presses billing.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+
+it('billing language', async () => {
+  const evidence = process.env.NEVORA_BILL_EVIDENCE!, shots = join(evidence, 'shots'); await mkdir(shots, { recursive: true });
+  const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!)('playwright');
+  const axePath = createRequire(import.meta.url).resolve('axe-core/axe.min.js');
+  const app = await createOwnedNextApp(evidence, { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, commerceRecoveryEnabled: true, payrollEnabled: true });
+  const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+  const base = OWNED_COLLAB_ORIGIN, out: any[] = [];
+  const restricted = { state: 'restricted', operational: false, trialEndsAt: '2026-11-12T12:00:00.000Z', paidThrough: null, graceEndsAt: null, plan: 'small', employeeLimit: 15, activeEmployees: 2, reason: 'trial_ended', billing: true, export: true, observedAt: new Date().toISOString(), validForMs: 15000 };
+  try {
+    await seedOwnedApp(app.database.executor);
+    for (const engine of ['chromium', 'webkit']) {
+      const browser = await runtime[engine].launch({ headless: true });
+      for (const width of [390, 1440]) for (const lang of ['en', 'es']) {
+        const ctx = await browser.newContext({ proxy: { server: tls.server }, ignoreHTTPSErrors: true, viewport: { width, height: width > 1000 ? 900 : 844 }, deviceScaleFactor: 1, reducedMotion: 'reduce', serviceWorkers: 'block' });
+        await ctx.addCookies([{ name: 'nv-lang', value: lang, url: base }]);
+        let mode = 'actual';
+        await ctx.route('**/*', async (route: any) => { const u = new URL(route.request().url()); if (['http:', 'https:'].includes(u.protocol) && u.origin !== base) { await route.abort('blockedbyclient'); return; } if (u.pathname === '/api/commerce/status' && mode !== 'actual') { await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ...restricted, observedAt: new Date().toISOString() }) }); return; } await route.continue(); });
+        const page = await ctx.newPage(); page.setDefaultTimeout(20000); const errors: string[] = [];
+        page.on('pageerror', (e: Error) => errors.push('pageerror ' + e.message.slice(0, 300))); page.on('console', (m: any) => { if (m.type() === 'error') errors.push('console ' + m.text().slice(0, 300)); });
+        const r: any = { engine, width, lang };
+        try {
+          await page.goto(base + '/login'); await page.getByLabel(/Employee ID|ID de empleado/).first().fill('QAOWNER'); await page.getByLabel(/^(Password|Contraseña)$/).first().fill(TEST_PASSWORD);
+          await page.getByRole('button', { name: /^(Sign in|Iniciar sesión|Entrar)$/ }).first().click(); await page.waitForURL(/\/app\/billing/, { timeout: 30000 });
+          const grab = async (tag: string) => { await page.waitForTimeout(600); const t = (await page.locator('body').innerText()).replace(/\s+/g, ' ').slice(0, 900); await page.screenshot({ path: join(shots, `${engine}-${lang}-${width}-${tag}.png`), fullPage: true }); return { lang: await page.evaluate(() => document.documentElement.lang), text: t, buttons: await page.locator('button, a').evaluateAll((els: HTMLElement[]) => els.filter(e => e.offsetParent).map(e => e.innerText.trim()).filter(Boolean)), over: await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth) }; };
+          await page.getByText(/We can’t check billing|No podemos comprobar|No pudimos comprobar|facturación/i).first().waitFor({ timeout: 15000 }).catch(() => {});
+          r.unavailable = await grab('unavailable');
+          mode = 'restricted'; await page.getByRole('button', { name: /^(Refresh status|Actualizar estado)/ }).first().click().catch((e: Error) => { r.refreshError = e.message.slice(0, 120); }); await page.waitForTimeout(1500);
+          r.restricted = await grab('restricted');
+          await page.addScriptTag({ path: axePath }); r.axe = await page.evaluate(async () => (await (window as any).axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }, resultTypes: ['violations'] })).violations.map((v: any) => v.id + ':' + v.nodes.length));
+          // The language switch: press the other language, then back.
+          const other = lang === 'es' ? 'English' : 'Español';
+          const sw = page.getByRole('button', { name: new RegExp('^' + other) }).first();
+          r.switchFound = await sw.count();
+          if (r.switchFound) { await sw.click(); await page.waitForTimeout(1200); r.afterSwitch = await grab('switched'); r.focusAfterSwitch = await page.evaluate(() => (document.activeElement?.tagName + ' ' + (document.activeElement?.textContent || '')).trim().slice(0, 40));
+            const back = page.getByRole('button', { name: new RegExp('^' + (lang === 'es' ? 'Español' : 'English')) }).first(); if (await back.count()) { await back.click(); await page.waitForTimeout(1200); r.afterBack = await grab('switched-back'); } }
+          await page.reload(); await page.waitForTimeout(1500); r.afterReload = { lang: await page.evaluate(() => document.documentElement.lang), text: (await page.locator('body').innerText()).replace(/\s+/g, ' ').slice(0, 200) };
+        } catch (e) { r.error = String((e as Error).message).slice(0, 300); }
+        r.errors = [...errors]; out.push(r); await ctx.close();
+      }
+      await browser.close();
+    }
+    expect(out.length).toBeGreaterThan(0);
+  } finally { await writeFile(join(evidence, 'bill.json'), JSON.stringify(out, null, 1)); await tls.close(); await app.close(); }
+}, 3600000);

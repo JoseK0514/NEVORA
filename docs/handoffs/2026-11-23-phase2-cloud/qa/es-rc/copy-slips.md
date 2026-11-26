@@ -54,3 +54,20 @@ PIN de reloj en", "dueños y administradores") already covers some of these.
 | src/components/availability-editor-copy.ts:114 | "Al enviar con cada día disponible no disponible, le indica a tu gerente que no puede trabajar esta semana" | Garbled ("every available day unavailable") and mixes usted ("le indica") with tú. |
 | src/components/manager-action-center-copy.ts:344, :386 | "Actualice una lectura protegida actual antes de revisar" | Literal "protected read"; internal wording shown to people. |
 | src/components/employee-mobile/messages-view-copy.ts:170 | "Algunas notificaciones actuales…" | "Notice" should be Aviso, not notificación. |
+
+## Status (2026-11-26 06:30 UTC)
+
+- **Fixed** on the shared branch at `f0c2edbd`, by the lead: the glossary words, usted → tú and the wrong-sense lines
+  above, plus "shift" → "cambio" in manager-inbox-copy. The guard test now also bans "brecha de cobertura" and "lectura
+  protegida".
+- **Jose's call, not open defects:**
+  - "ponche/ponchar": "Sin ponchar" was approved as a compact label.
+  - "espacio de trabajo" on sign-up and account deletion (onboarding and privacy wording).
+
+## Sightings on screen (sweep of 0f61b708, 2,000 views)
+
+- **Wrong-language text:** the word-list check found no English inside Spanish screens and no Spanish inside English
+  screens, with people data and brand names excluded.
+- **Raw copy:** no raw keys, `undefined`, `NaN` or `{placeholders}` on screen.
+- **Spanish-only layout:** the Puede marcar en header collision. See RESUME.md and report.md; it's fixed by the stacked
+  header after `447e6afe` and still needs the delta recheck.

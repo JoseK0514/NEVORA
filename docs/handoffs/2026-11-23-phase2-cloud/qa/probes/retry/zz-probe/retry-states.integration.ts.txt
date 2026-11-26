@@ -1,0 +1,108 @@
+// QA probe (not committed): Try again's loading state on the three error screens, Chromium and WebKit, EN and ES.
+// Errors are forced on the throwaway database by renaming a table for a moment (and renaming it back to recover).
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+
+const SCREENS: Record<string, { button: string; container: string; candidates: [string, string][] }> = {
+  route: { button: '[data-b-route-error] .b-btn--teal', container: '[data-b-route-error]', candidates: [['/app/schedule', 'shifts'], ['/app/timecards', 'time_entries'], ['/app/employees', 'employee_location_eligibility'], ['/app/settings/locations', 'locations']] },
+  appRoot: { button: '.app-error-screen .nv-btn[data-kind="primary"]', container: '.app-error-screen', candidates: [['/app', 'nevora_workspace_presentation_revisions'], ['/app', 'nevora_workspace_presentation_assets'], ['/app', 'workspaces'], ['/app/schedule', 'workspaces'], ['/app', 'locations'], ['/app', 'onboarding_workspace_identity']] },
+  public: { button: '.pe-retry', container: '.pe-retry', candidates: [['/activate?token=qa-not-real', 'company_invitations'], ['/login', 'nevora_workspace_presentation_revisions'], ['/welcome', 'workspaces'], ['/clocker/qa-kiosk', 'locations'], ['/activate?token=qa-not-real', 'workspaces'], ['/reset-access?token=qa-not-real', 'employees'], ['/login', 'workspaces']] },
+};
+
+it('try again states', async () => {
+  const evidence = process.env.NEVORA_RETRY_EVIDENCE!, shots = join(evidence, 'shots'); await mkdir(shots, { recursive: true });
+  const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!)('playwright');
+  const app = await createOwnedNextApp(evidence, { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, payrollEnabled: true });
+  const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+  const base = OWNED_COLLAB_ORIGIN, net = { proxy: { server: tls.server }, ignoreHTTPSErrors: true };
+  const q = (text: string) => app.database.executor.query({ text, values: [] });
+  const off = (t: string) => q(`ALTER TABLE ${t} RENAME TO ${t}_qa_off`), on = (t: string) => q(`ALTER TABLE ${t}_qa_off RENAME TO ${t}`);
+  const out: any = { found: {}, runs: [], log: [] };
+  try {
+    await seedOwnedApp(app.database.executor);
+    await q("UPDATE locations SET clocker_key='qa-kiosk' WHERE id='loc-1'").catch(() => {});
+    const browsers: Record<string, any> = { chromium: await runtime.chromium.launch({ headless: true }), webkit: await runtime.webkit.launch({ headless: true }) };
+    const states: Record<string, unknown> = {};
+    for (const e of Object.keys(browsers)) { const c = await browsers[e].newContext({ ...net, viewport: { width: 1440, height: 900 } }); const p = await c.newPage(); p.setDefaultTimeout(30000);
+      await p.goto(base + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill('QAOWNER'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL((u: URL) => u.pathname.startsWith('/app')); states[e] = await c.storageState(); await c.close(); }
+    const open = async (engine: string, opts: { lang: string; width: number; big?: boolean; signedIn: boolean; motion?: 'reduce' | 'no-preference' }) => {
+      const ctx = await browsers[engine].newContext({ ...net, ...(opts.signedIn ? { storageState: states[engine] } : {}), viewport: { width: opts.width, height: opts.width > 1000 ? 900 : 844 }, hasTouch: opts.width <= 768, deviceScaleFactor: 1, reducedMotion: opts.motion ?? 'reduce', serviceWorkers: 'block' });
+      await ctx.addCookies([{ name: 'nv-lang', value: opts.lang, url: base }]);
+      if (opts.big) await ctx.addInitScript(() => { const add = () => { const s = document.createElement('style'); s.textContent = 'html{font-size:200% !important}'; document.head.appendChild(s); }; if (document.head) add(); else document.addEventListener('DOMContentLoaded', add); });
+      const page = await ctx.newPage(); page.setDefaultTimeout(20000); const errors: string[] = []; page.on('pageerror', (er: Error) => errors.push(er.message.slice(0, 200)));
+      return { ctx, page, errors };
+    };
+    // 1. Find a forcing for each screen (Chromium, EN).
+    for (const [name, sc] of Object.entries(SCREENS)) {
+      for (const [path, table] of sc.candidates) {
+        const s = await open('chromium', { lang: 'en', width: 1440, signedIn: name !== 'public' });
+        let hit = 0;
+        try { await off(table); await s.page.goto(base + path, { waitUntil: 'load' }).catch(() => {}); await s.page.waitForTimeout(2500); hit = await s.page.locator(sc.button).count(); out.log.push({ name, path, table, hit, url: s.page.url().replace(base, ''), h1: await s.page.locator('h1').first().innerText().catch(() => null) }); }
+        catch (e) { out.log.push({ name, path, table, error: String((e as Error).message).slice(0, 160) }); }
+        finally { await on(table).catch(() => {}); await s.ctx.close(); }
+        if (hit) { out.found[name] = { path, table }; break; }
+      }
+    }
+    // 2. For each found screen: engines × languages; idle, busy, double press, failed again, recovered, motion, 390 at 200%.
+    for (const [name, f] of Object.entries(out.found) as [string, { path: string; table: string }][]) {
+      const sc = SCREENS[name];
+      for (const engine of ['chromium', 'webkit']) for (const lang of ['en', 'es']) for (const view of [{ width: 1440, big: false }, { width: 390, big: true }]) {
+        const r: any = { name, engine, lang, width: view.width, big: view.big };
+        const s = await open(engine, { lang, width: view.width, big: view.big, signedIn: name !== 'public', motion: 'no-preference' });
+        const refreshes: string[] = []; s.page.on('request', (rq: any) => { const h = rq.headers(); if (rq.method() === 'GET' && (h.rsc === '1' || rq.isNavigationRequest())) refreshes.push((h.rsc === '1' ? 'rsc ' : 'nav ') + new URL(rq.url()).pathname); });
+        const tag = `${name}-${engine}-${lang}-${view.width}${view.big ? '-200' : ''}`;
+        try {
+          await off(f.table);
+          // First paint: the words in the error screen over the first 800 ms (an English-to-Spanish swap shows here).
+          await s.page.goto(base + f.path, { waitUntil: 'commit' }).catch(() => {});
+          const t0 = Date.now(); r.firstPaint = [];
+          for (const at of [0, 100, 300, 800]) { const wait = at - (Date.now() - t0); if (wait > 0) await s.page.waitForTimeout(wait);
+            r.firstPaint.push({ at, text: await s.page.evaluate((sel: string) => (document.querySelector(sel)?.closest('main, section, [data-b-route-error]') as HTMLElement | null)?.innerText?.replace(/\s+/g, ' ').slice(0, 120) ?? null, sc.container).catch(() => null), lang: await s.page.evaluate(() => document.documentElement.lang).catch(() => null) });
+            if (at === 100) await s.page.screenshot({ path: join(shots, tag + '-first-100ms.png') }).catch(() => {}); }
+          await s.page.waitForTimeout(1500);
+          const btn = s.page.locator(sc.button).first(); await btn.waitFor({ timeout: 15000 });
+          const look = () => btn.evaluate((b: HTMLElement) => { const cs = getComputedStyle(b); const r = b.getBoundingClientRect(); const spin = b.querySelector('.nv-retry__spin, [class*="spin"]') as HTMLElement | null; const anim = spin ? getComputedStyle(spin).animationName + ' ' + getComputedStyle(spin).animationDuration : null; const running = document.getAnimations().filter(a => (a.effect as any)?.target && b.contains((a.effect as any).target)).map(a => (a as any).animationName || 'anim'); return { text: b.innerText.replace(/\s+/g, ' ').trim(), busy: b.getAttribute('aria-busy'), ariaDisabled: b.getAttribute('aria-disabled'), disabled: (b as HTMLButtonElement).disabled ?? null, bg: cs.backgroundColor, w: Math.round(r.width), h: Math.round(r.height), spinAnim: anim, running, over: document.documentElement.scrollWidth - document.documentElement.clientWidth, clipped: b.scrollWidth > b.clientWidth + 1, pageH1: (document.querySelector('h1')?.textContent || '').trim().slice(0, 60), lang: document.documentElement.lang }; });
+          r.idle = await look(); await s.page.screenshot({ path: join(shots, tag + '-idle.png') });
+          refreshes.length = 0;
+          await btn.focus(); await btn.click(); await s.page.waitForTimeout(80);
+          r.busy = await look(); await s.page.screenshot({ path: join(shots, tag + '-busy.png') });
+          await btn.click({ force: true }).catch(() => {}); await btn.press('Enter').catch(() => {}); await s.page.waitForTimeout(120);
+          r.busyAfterSecondPress = await look();
+          await s.page.waitForTimeout(2500);
+          r.failedAgain = await look(); r.refreshesDuringRetry = [...refreshes];
+          r.focusAfterFail = await s.page.evaluate(() => { const e = document.activeElement as HTMLElement | null; return e ? e.tagName.toLowerCase() + '.' + String(e.className).slice(0, 50) + ' ' + (e.innerText || '').trim().slice(0, 30) : null; });
+          r.focusOnButton = await btn.evaluate((b: HTMLElement) => document.activeElement === b);
+          await s.page.screenshot({ path: join(shots, tag + '-failed-again.png') });
+          // Reduced motion: same busy state in a reduce context.
+          await on(f.table);
+          const btn2 = s.page.locator(sc.button).first(); await btn2.click();
+          await s.page.waitForTimeout(3500);
+          r.recovered = { url: s.page.url().replace(base, ''), errorGone: (await s.page.locator(sc.container).count()) === 0, h1: await s.page.locator('h1').first().innerText().catch(() => null),
+            focus: await s.page.evaluate(() => { const e = document.activeElement as HTMLElement | null; return e ? e.tagName.toLowerCase() + ' ' + (e.innerText || '').trim().slice(0, 50) : null; }) };
+          await s.page.screenshot({ path: join(shots, tag + '-recovered.png') });
+        } catch (e) { r.error = String((e as Error).message).slice(0, 240); await on(f.table).catch(() => {}); }
+        r.pageErrors = [...s.errors]; out.runs.push(r); await s.ctx.close();
+      }
+      // Reduced motion (Chromium and WebKit, EN): the spinner must not turn.
+      for (const engine of ['chromium', 'webkit']) {
+        const s = await open(engine, { lang: 'en', width: 1440, signedIn: name !== 'public', motion: 'reduce' }); const r: any = { name, engine, reduced: true };
+        try { await off(f.table); await s.page.goto(base + f.path, { waitUntil: 'load' }).catch(() => {}); await s.page.waitForTimeout(2000);
+          const btn = s.page.locator(sc.button).first(); await btn.click(); await s.page.waitForTimeout(150);
+          r.busy = await btn.evaluate((b: HTMLElement) => { const spin = b.querySelector('.nv-retry__spin, [class*="spin"]') as HTMLElement | null; return { text: b.innerText.trim(), spin: spin ? getComputedStyle(spin).animationName + ' ' + getComputedStyle(spin).animationDuration + ' ' + getComputedStyle(spin).transform : null, running: document.getAnimations().filter(a => (a.effect as any)?.target && b.contains((a.effect as any).target)).length }; });
+          await s.page.screenshot({ path: join(shots, `${name}-${engine}-reduced-busy.png`) });
+        } catch (e) { r.error = String((e as Error).message).slice(0, 200); }
+        finally { await on(f.table).catch(() => {}); }
+        out.runs.push(r); await s.ctx.close();
+      }
+    }
+    for (const b of Object.values(browsers)) await b.close();
+    expect(true).toBe(true);
+  } finally { await writeFile(join(evidence, 'retry.json'), JSON.stringify(out, null, 1)); await tls.close(); await app.close(); }
+}, 3600000);

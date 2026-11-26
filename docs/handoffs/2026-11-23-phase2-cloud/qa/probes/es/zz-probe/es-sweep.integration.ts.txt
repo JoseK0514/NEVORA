@@ -1,0 +1,216 @@
+// QA probe (not committed): both-language release sweep of the Spanish integration. Production build at the owned https
+// origin, fictional data, Chromium and WebKit in parallel, every role, EN and ES, 390, 390 at 200% text and 1440.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { expect, it } from '@rstest/core';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import { mkdir, writeFile, appendFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { createOwnedNextApp } from '../src/test/integration/owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from '../src/test/integration/owned-collab-origin';
+import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
+import { seedOwnedApp, assignOwnedManagerCompanyAccess, grantOwnedManagerWorkforcePermission, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
+import { fixtureProof } from '../src/test/integration/shift-change-api';
+import { publishScheduleWithRevision } from '../src/test/integration/management-api';
+import { readOwnerOperationalScope, assignOperationalScope } from '../src/lib/company-access/operational-scope.server';
+import { registerClockerDevice } from '../src/lib/clocker/devices.server';
+import { setEmployeeClockerPin } from '../src/lib/clocker/pins.server';
+import { hashPassword } from '../src/lib/auth/password';
+
+const OWNER = ['/app', '/app/inbox', '/app/notifications', '/app/more', '/app/help',
+  '/app/schedule', '/app/schedule?week=NEXT', '/app/schedule/new', '/app/schedule/publish', '/app/schedule/settings', '/app/schedule/templates', '/app/schedule/coverage',
+  '/app/schedule/edit?shiftId=es-shift-1', '/app/availability', '/app/availability/agreement', '/app/exchange', '/app/exchange/open-shifts', '/app/requests', '/app/requests/hub',
+  '/app/timecards', '/app/timecards/corrections', '/app/timecards/corrections/new/SWEEP-A',
+  '/app/payroll', '/app/payroll/prepare', '/app/payroll/review', '/app/payroll/people', '/app/payroll/history', '/app/payroll/import', '/app/payroll/fix',
+  '/app/payroll-export', '/app/payroll-export/paid-time',
+  '/app/employees', '/app/employees/new', '/app/employees/import', '/app/employees/SWEEP-A', '/app/employees/SWEEP-A?edit=clocker', '/app/employees/SWEEP-A?edit=1', '/app/employees/SWEEP-A?edit=positions', '/app/employees/SWEEP-A?edit=rules', '/app/employees/SWEEP-A/pay', '/app/employees/SWEEP-A/restrictions', '/app/employees/SWEEP-A/time-off', '/app/employees/SWEEP-A/clocker-pin',
+  '/app/reports', '/app/reports/christmas-bonus', '/app/ai-manager', '/app/ai-manager/weekly', '/app/ai-manager/knowledge', '/app/ai-manager/business',
+  '/app/updates', '/app/updates/compose',
+  '/app/settings', '/app/settings/workspace', '/app/settings/branding', '/app/settings/features', '/app/settings/locations', '/app/settings/locations/new', '/app/settings/locations/loc-1',
+  '/app/settings/positions', '/app/settings/breaks', '/app/settings/time-off', '/app/settings/company-policies', '/app/settings/payroll',
+  '/app/settings/clocker', '/app/settings/clocker/matching', '/app/settings/clocker/photos', '/app/settings/clocker/photos/review', '/app/settings/clocker/pins',
+  '/app/profile', '/app/profile/calendar', '/app/account/delete', '/app/clocker-recovery'];
+const MANAGER = ['/app', '/app/inbox', '/app/notifications', '/app/more', '/app/help', '/app/schedule', '/app/schedule?week=NEXT', '/app/schedule/new', '/app/schedule/publish', '/app/schedule/edit?shiftId=es-shift-1',
+  '/app/availability', '/app/exchange', '/app/exchange/open-shifts', '/app/requests', '/app/timecards', '/app/timecards/corrections', '/app/payroll-export', '/app/employees', '/app/employees/SWEEP-A', '/app/employees/SWEEP-A/time-off',
+  '/app/reports', '/app/ai-manager', '/app/updates', '/app/updates/compose', '/app/settings', '/app/settings/time-off', '/app/settings/clocker', '/app/profile', '/app/clocker-recovery'];
+const EMPLOYEE = ['/app', '/app/schedule', '/app/my-time', '/app/my-pay', '/app/requests', '/app/exchange', '/app/exchange/open-shifts', '/app/availability', '/app/availability/agreement',
+  '/app/notifications', '/app/inbox', '/app/more', '/app/help', '/app/updates', '/app/profile', '/app/profile/calendar', '/app/account/delete'];
+const PUBLIC = ['/login', '/forgot-access', '/reset-access', '/reset-access?token=expired-or-invalid', '/activate', '/activate?token=not-a-real-token',
+  '/privacy', '/terms', '/support', '/account-deletion', '/welcome', '/access-help', '/access-help/id?from=login', '/pages/plans',
+  '/clocker/access/paused?from=%2Fclocker%2Fes-kiosk-main&reason=billing_status_unavailable', '/no-such-page-here'];
+const CLOCKER = ['/clocker/es-kiosk-main', '/clocker/es-kiosk-west', '/clocker/not-a-real-key'];
+const ROLES: [string, string | null, string[]][] = (process.env.NEVORA_ES_ROLES ?? 'owner,manager,scoped,lead,employee,public,clocker').split(',').map(r => (({
+  owner: ['owner', 'QAOWNER', OWNER], manager: ['manager', 'SWEEP-M', MANAGER], scoped: ['scoped', 'QA-DANI', MANAGER], lead: ['lead', 'SWEEP-C', EMPLOYEE], employee: ['employee', 'SWEEP-A', EMPLOYEE],
+  public: ['public', null, PUBLIC], clocker: ['clocker', null, CLOCKER] } as Record<string, [string, string | null, string[]]>)[r]));
+const VIEWS = (process.env.NEVORA_ES_VIEWS ?? '390,390-200,1440').split(',').map(v => ({ name: v, width: Number(v.split('-')[0]), big: v.endsWith('-200') }));
+const LANGS = (process.env.NEVORA_ES_LANGS ?? 'en,es').split(',');
+const ENGINES = (process.env.NEVORA_ES_ENGINES ?? 'chromium,webkit').split(',');
+const PEOPLE = ['Maria', 'Fictional-Lopez', 'James', 'Fictional-Ortiz', 'Ana', 'Fictional-Rivera', 'Elena', 'Fictional-Cruz', 'Daniel', 'Fictional-Reyes', 'Fictional', 'Owner', 'NEVORA', 'Velani', 'Rondo', 'Workforce', 'Main Office', 'West Office', 'Northside', 'QA', 'Español', 'English', 'Barista', 'Cashier'];
+function monday(d = new Date()) { const x = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); x.setUTCDate(x.getUTCDate() - ((x.getUTCDay() + 6) % 7)); return x.toISOString().slice(0, 10); }
+const addDays = (date: string, n: number) => { const x = new Date(date + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() + n); return x.toISOString().slice(0, 10); };
+
+// Wrong-language text and missing copy keys on screen. Runs in the page.
+const langCheck = (args: { lang: string; people: string[] }) => {
+  const EN = new Set(('the and your you with for from this that will have has are was were not save cancel close back next done edit delete remove search settings schedule team home time payroll request requests open add new view today tomorrow yesterday week hours shift shifts people sign out in up of on off more all none loading error try again approve approved decline declined pending send sent update updates notifications profile help account manager owner employee employees location locations please continue submit start stop clock break breaks pay statement statements what when where which who why how there here than then only also about after before between without nothing things need needs your choose').split(' '));
+  const ES = new Set(('el la los las del de y para con sin por que tu tus su sus este esta estos estas guardar cancelar cerrar volver siguiente listo editar eliminar buscar configuración horario equipo inicio tiempo nómina solicitud solicitudes abrir añadir agregar ver hoy mañana ayer semana horas turno turnos personas entrar salir más todo todos ninguno cargando intenta otra vez aprobar aprobado rechazar rechazado pendiente pendientes enviar enviado aviso avisos notificaciones perfil ayuda cuenta empleado empleados localidad localidades continuar marcar entrada salida pago comprobantes qué cuándo dónde cómo aquí también después antes entre nada elige pendiente').split(' '));
+  const people = args.people;
+  const vis = (el: Element) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && !el.closest('[aria-hidden="true"],[hidden],script,style,noscript,template'); };
+  const leaks: string[] = [], keys: string[] = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const t = (n.textContent || '').replace(/\s+/g, ' ').trim(); if (t.length < 2) continue;
+    const el = n.parentElement; if (!el || !vis(el) || el.closest('[lang]:not(html)') || el.closest('[translate="no"]')) continue;
+    if (/\bundefined\b|\bNaN\b|\[object Object\]|\{[a-zA-Z_]+\}|^[a-z]+[A-Z][A-Za-z0-9]+$|^[a-z]+(\.[a-zA-Z0-9]+){2,}$/.test(t)) keys.push(t.slice(0, 80));
+    const words = t.split(/[^A-Za-zÀ-ÿ']+/).filter(w => w.length > 1 && !people.some(p => p.split(/[\s-]+/).includes(w)));
+    if (!words.length) continue;
+    const set = args.lang === 'es' ? EN : ES;
+    const hits = words.filter(w => set.has(w.toLowerCase()));
+    const accents = args.lang === 'en' ? words.filter(w => /[áéíóúñ¿¡]/i.test(w)) : [];
+    const strong = args.lang === 'en' ? /[¿¡]/.test(t) : false;
+    if (hits.length >= 2 || (hits.length && words.length <= 2 && hits[0].length >= 4) || accents.length || strong) leaks.push(t.slice(0, 90) + ' ⟨' + [...hits, ...accents].slice(0, 5).join(',') + '⟩');
+  }
+  return { htmlLang: document.documentElement.lang, leaks: [...new Set(leaks)].slice(0, 15), keys: [...new Set(keys)].slice(0, 10) };
+};
+
+it('spanish integration sweep', async () => {
+  const evidence = process.env.NEVORA_ES_EVIDENCE!, shots = join(evidence, 'shots'); await mkdir(shots, { recursive: true });
+  const runtimePackage = process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!;
+  const runtime = createRequire(runtimePackage)('playwright');
+  const axePath = createRequire(import.meta.url).resolve('axe-core/axe.min.js');
+  const app = await createOwnedNextApp(evidence, { production: true, portalHttpsOrigin: OWNED_COLLAB_ORIGIN, payrollEnabled: true, ownerAdvisorEnabled: true, managerAdvisorEnabled: true, ownerAdvisorWeeklyEnabled: true, ownerAdvisorKnowledgeEnabled: true, ownerAdvisorBusinessImportsEnabled: true, clockerPunchEnabled: true, clockerPinKey: 'ab'.repeat(32) });
+  const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
+  const base = OWNED_COLLAB_ORIGIN, week = monday(), next = addDays(week, 7);
+  const ex = app.database.executor;
+  const q = (text: string, values: unknown[] = []) => ex.query({ text, values });
+  const setupLog: string[] = [], out = join(evidence, 'views.jsonl'); await writeFile(out, '');
+  const extra: Record<string, unknown> = {};
+  try {
+    await seedOwnedApp(ex);
+    const step = async (name: string, fn: () => Promise<unknown>) => { try { await fn(); setupLog.push(name + ' ok'); } catch (e) { setupLog.push(name + ' failed: ' + String((e as Error).message).slice(0, 200)); } };
+    const hash = await hashPassword(TEST_PASSWORD);
+    await step('people', () => q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('SWEEP-A','Maria','Fictional-Lopez','555-0101','EMPLOYEE','loc-1'),('SWEEP-B','James','Fictional-Ortiz','555-0102','EMPLOYEE','loc-1'),('SWEEP-C','Ana','Fictional-Rivera','555-0103','LEAD','loc-1'),('SWEEP-M','Elena','Fictional-Cruz','555-0104','MANAGER','loc-1'),('QA-DANI','Daniel','Fictional-Reyes','555-0105','MANAGER','loc-2')"));
+    for (const id of ['SWEEP-A', 'SWEEP-B', 'SWEEP-C', 'SWEEP-M', 'QA-DANI']) await step('login ' + id, () => q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)', [id, hash]));
+    await step('eligibility', () => q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('SWEEP-A','loc-1'),('SWEEP-B','loc-1'),('SWEEP-C','loc-1'),('SWEEP-M','loc-1'),('QA-DANI','loc-2'),('SWEEP-A','loc-2') ON CONFLICT DO NOTHING"));
+    await step('manager company access', () => assignOwnedManagerCompanyAccess(ex, 'SWEEP-M'));
+    await step('scoped manager', async () => { const owner = await fixtureProof(ex, 'QAOWNER'); const v = await readOwnerOperationalScope(owner, 'QA-DANI', ex); if (v.state !== 'ready') throw Error(v.state); const c = v.data.current;
+      const r = await assignOperationalScope(owner, 'QA-DANI', { action: 'ASSIGN', operationId: randomUUID(), expectedEmployeeVersion: c.employeeUpdatedAt, expectedRoleGeneration: c.roleGeneration, expectedScopeRevision: c.scopeRevision, scope: { mode: 'LOCATIONS', locationIds: ['loc-2'] } }, ex);
+      for (const g of ['APPROVE_LEAVE', 'PUBLISH_SCHEDULE', 'REVIEW_TIME_EXCEPTION']) await grantOwnedManagerWorkforcePermission(ex, 'QA-DANI', 'loc-2', g as never); return r; });
+    await step('this week', async () => { await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('es-week','loc-1',$1,'DRAFT','QAOWNER')", [week]);
+      let n = 1; for (let d = 0; d < 7; d++) for (const [id, s, e] of [['SWEEP-A', '07:00', '15:00'], ['SWEEP-B', '13:00', '21:30'], ['SWEEP-C', '09:00', '17:00']] as const) await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES($1,'es-week',$2,$3,$4,$5)", ['es-shift-' + (n++), id, addDays(week, d), s, e]);
+      await publishScheduleWithRevision({ locationId: 'loc-1', weekStart: week, managerId: 'QAOWNER' }, ex); });
+    await step('next week draft', async () => { await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('es-next','loc-1',$1,'DRAFT','QAOWNER')", [next]);
+      await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('es-next-1','es-next','SWEEP-A',$1,'08:00','16:00'),('es-next-2','es-next','SWEEP-B',$1,'12:00','20:00')", [addDays(next, 1)]); });
+    await step('time off', () => q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('es-to-1','SWEEP-A',($1::date + 14),($1::date + 15),'Fictional family visit','PENDING',now()),('es-to-2','SWEEP-B',($1::date + 21),($1::date + 21),'Fictional appointment','PENDING',now()),('es-to-3','SWEEP-C',($1::date + 7),($1::date + 8),'Fictional trip','APPROVED',now())", [week]));
+    await step('clocker keys', async () => { await q("UPDATE locations SET clocker_key='es-kiosk-main' WHERE id='loc-1'"); await q("UPDATE locations SET clocker_key='es-kiosk-west' WHERE id='loc-2'"); });
+    const ownerProof = await fixtureProof(ex, 'QAOWNER'); const owner = { employeeId: 'QAOWNER', sessionTokenHash: ownerProof.sessionTokenHash };
+    await step('clocker pin', () => setEmployeeClockerPin(owner, { employeeId: 'SWEEP-A', pin: '2468', expectedVersion: 0 }, Buffer.from('ab'.repeat(32), 'hex'), ex));
+    const browsers: Record<string, any> = {}; for (const e of ENGINES) browsers[e] = await runtime[e].launch({ headless: true });
+    const net = { proxy: { server: tls.server }, ignoreHTTPSErrors: true };
+    // One sign-in per role and engine; the kiosk enrolled once per engine.
+    const states: Record<string, unknown> = {};
+    for (const e of ENGINES) for (const [role, id] of ROLES) {
+      if (role === 'public') continue;
+      const ctx = await browsers[e].newContext({ ...net, viewport: { width: 1440, height: 900 } }); const p = await ctx.newPage(); p.setDefaultTimeout(30000);
+      try {
+        if (role === 'clocker') { const token = (await registerClockerDevice(owner, { name: 'QA tablet ' + e, locationId: 'loc-1' }, ex)).enrollmentToken; await p.goto(base + '/clocker/es-kiosk-main'); await p.waitForLoadState('networkidle').catch(() => {}); await p.locator('textarea[name="enrollmentToken"]').fill(token); await p.locator('form button[type="submit"]').click(); await p.locator('[data-clocker-pin="entry"]').waitFor({ timeout: 30000 }); }
+        else { await p.goto(base + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(id!); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL((u: URL) => u.pathname.startsWith('/app'), { timeout: 30000 }); }
+        states[e + '|' + role] = await ctx.storageState();
+      } catch (err) { setupLog.push(`sign in ${e} ${role} failed: ` + String((err as Error).message).slice(0, 160)); }
+      await ctx.close();
+    }
+    let count = 0;
+    const runEngine = async (engine: string) => {
+      for (const [role, , routes] of ROLES) for (const lang of LANGS) for (const view of VIEWS) {
+        const st = states[engine + '|' + role];
+        if (role !== 'public' && !st) continue;
+        const ctx = await browsers[engine].newContext({ ...net, ...(st ? { storageState: st } : {}), viewport: { width: view.width, height: view.width > 1000 ? 900 : 844 }, hasTouch: view.width <= 768, deviceScaleFactor: 1, reducedMotion: 'reduce', serviceWorkers: 'block' });
+        await ctx.addCookies([{ name: 'nv-lang', value: lang, url: base }]);
+        if (role === 'clocker' && lang === 'es') await ctx.addInitScript(() => { try { localStorage.setItem('nevora.clocker.locale', 'es'); } catch { /* blocked */ } });
+        if (view.big) await ctx.addInitScript(() => { const add = () => { const s = document.createElement('style'); s.textContent = 'html{font-size:200% !important}'; document.head.appendChild(s); }; if (document.head) add(); else document.addEventListener('DOMContentLoaded', add); });
+        await ctx.route('**/*', async (r: any) => { const u = new URL(r.request().url()); if (['http:', 'https:'].includes(u.protocol) && u.origin !== base) await r.abort(); else await r.continue(); });
+        const page = await ctx.newPage(); page.setDefaultTimeout(20000);
+        const errors: string[] = []; page.on('pageerror', (e: Error) => errors.push('pageerror ' + e.message.slice(0, 300))); page.on('console', (m: any) => { if (m.type() === 'error' || (m.type() === 'warning' && /hydrat|#41[89]|#42[35]/i.test(m.text()))) errors.push(m.type() + ' ' + m.text().slice(0, 300)); });
+        const only = (process.env.NEVORA_ES_ROUTES ?? '').split(',').filter(Boolean);
+        for (const raw of routes.filter(r => !only.length || only.includes(r))) {
+          const route = raw.replace('NEXT', next);
+          const rec: Record<string, unknown> = { engine, role, lang, view: view.name, route };
+          errors.length = 0;
+          try {
+            const resp = await page.goto(base + route, { waitUntil: 'load', timeout: 45000 }); rec.status = resp?.status(); rec.finalPath = new URL(page.url()).pathname + new URL(page.url()).search;
+            await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => { rec.networkidle = 'timeout'; }); await page.waitForTimeout(500);
+            const slug = `${engine}-${role}-${lang}-${view.name}-${(route.replace(/^\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/-+$/, '') || 'root')}`;
+            await page.screenshot({ path: join(shots, slug + '.jpg'), fullPage: true, type: 'jpeg', quality: 50 }); rec.shot = 'shots/' + slug + '.jpg';
+            rec.layout = await page.evaluate(() => {
+            const de = document.documentElement, vis = (el: Element) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && Number(cs.opacity) > 0.05 && !el.closest('[aria-hidden="true"],[hidden],[inert]') && !(el.parentElement && el.parentElement.closest('details:not([open])') && !(el.tagName === 'SUMMARY' && el.parentElement === el.parentElement.closest('details:not([open])'))) && ((el as Element & { checkVisibility?: (o?: object) => boolean }).checkVisibility?.({ checkOpacity: true, checkVisibilityCSS: true }) ?? true); };
+            const name = (el: Element) => (el.getAttribute('aria-label') || (el as HTMLElement).innerText || el.getAttribute('title') || el.getAttribute('name') || el.tagName).replace(/\s+/g, ' ').trim().slice(0, 50);
+            const where = (el: Element) => { const r = el.getBoundingClientRect(); return `${Math.round(r.left)},${Math.round(r.top + scrollY)} ${Math.round(r.width)}x${Math.round(r.height)}`; };
+            const overflowX = de.scrollWidth - de.clientWidth;
+            const wide: string[] = []; if (overflowX > 2) for (const el of Array.from(document.body.querySelectorAll('*'))) { const r = el.getBoundingClientRect(); if (r.right > de.clientWidth + 2 && vis(el) && wide.length < 5 && !el.closest('[data-scroll],[role="tablist"],.scroll-x')) wide.push(`${el.tagName.toLowerCase()}.${String(el.className).slice(0, 40)} right=${Math.round(r.right)}`); }
+            const leaves = Array.from(document.body.querySelectorAll('*')).filter(el => vis(el) && Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent!.trim().length > 1));
+            const clipped: string[] = [];
+            for (const el of leaves) { const cs = getComputedStyle(el); const h = el as HTMLElement; if ((cs.textOverflow === 'ellipsis' || ['hidden', 'clip'].includes(cs.overflowX) || ['hidden', 'clip'].includes(cs.overflowY)) && (h.scrollWidth > h.clientWidth + 1 || h.scrollHeight > h.clientHeight + 2) && !el.closest('.sr-only,.visually-hidden,[class*="sr-only"]') && h.clientWidth > 4) clipped.push(`"${name(el)}" (${where(el)})`); }
+            const overlaps: string[] = []; const boxes = leaves.slice(0, 400).map(el => ({ el, r: el.getBoundingClientRect() }));
+            for (let i = 0; i < boxes.length && overlaps.length < 8; i++) for (let j = i + 1; j < boxes.length && overlaps.length < 8; j++) { const a = boxes[i], b = boxes[j]; if (a.el.contains(b.el) || b.el.contains(a.el)) continue; const w = Math.min(a.r.right, b.r.right) - Math.max(a.r.left, b.r.left), hh = Math.min(a.r.bottom, b.r.bottom) - Math.max(a.r.top, b.r.top); if (w > 4 && hh > 4 && w * hh > 0.25 * Math.min(a.r.width * a.r.height, b.r.width * b.r.height)) { const pa = getComputedStyle(a.el).position, pb = getComputedStyle(b.el).position; if (['fixed', 'sticky'].includes(pa) || ['fixed', 'sticky'].includes(pb) || a.el.closest('[style*="position: fixed"],header,nav') !== b.el.closest('[style*="position: fixed"],header,nav')) continue; overlaps.push(`"${name(a.el)}" × "${name(b.el)}" (${where(a.el)})`); } }
+            const controls = Array.from(document.querySelectorAll('a[href],button,input:not([type=hidden]),select,textarea,summary,[role=button],[role=link],[role=tab],[role=switch],[role=checkbox],[role=radio],[role=menuitem]')).filter(vis);
+            const small: string[] = [], inlineSmall: string[] = [];
+            const reaches = (el: Element) => { const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2; const hits = (x: number, y: number) => { if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return true; const t = document.elementFromPoint(x, y); return !!t && (t === el || el.contains(t) || t.contains(el) && false); }; const miss: string[] = []; for (const [label, x, y] of [['left', cx - 21.5, cy], ['right', cx + 21.5, cy], ['up', cx, cy - 21.5], ['down', cx, cy + 21.5]] as [string, number, number][]) if (!hits(x, y)) { const t = document.elementFromPoint(x, y); miss.push(label + '→' + (t ? t.tagName.toLowerCase() + '.' + String(t.className).slice(0, 30) : 'none')); } (el as unknown as { __miss?: string }).__miss = miss.join(' '); return miss.length === 0; };
+            for (const el of controls) { const r = el.getBoundingClientRect(); if (r.width >= 44 && r.height >= 44) continue; if (!(r.top >= 60 && r.bottom <= innerHeight - 90)) { el.scrollIntoView({ block: 'center', inline: 'nearest' }); } if (reaches(el)) continue; if ((el as HTMLInputElement).type === 'checkbox' || (el as HTMLInputElement).type === 'radio') { const label = el.closest('label'); if (label) { const lr = label.getBoundingClientRect(); if (lr.width >= 44 && lr.height >= 44) continue; } } const inline = el.tagName === 'A' && getComputedStyle(el).display === 'inline' && el.parentElement && /\S/.test(Array.from(el.parentElement.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent).join('')); (inline ? inlineSmall : small).push(`${el.tagName.toLowerCase()} "${name(el)}" ${Math.round(r.width)}x${Math.round(r.height)} ${(el as unknown as { __miss?: string }).__miss ?? ''}`); }
+            return { overflowX, wide, clipped: clipped.slice(0, 8), clippedCount: clipped.length, overlaps, small: small.slice(0, 10), smallCount: small.length, inlineSmallCount: inlineSmall.length, controls: controls.length, title: document.title, h1: document.querySelector('h1')?.textContent?.trim().slice(0, 60) ?? null };
+          });
+            rec.lang = await page.evaluate(langCheck, { lang, people: PEOPLE });
+            rec.text = (await page.locator('main').first().innerText().catch(() => page.locator('body').innerText())).replace(/\s+/g, ' ').slice(0, 1500);
+            await page.addScriptTag({ path: axePath });
+            rec.axe = await page.evaluate(async () => { const r = await (window as any).axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }, resultTypes: ['violations'] }); return r.violations.map((v: any) => ({ id: v.id, impact: v.impact, count: v.nodes.length, targets: v.nodes.slice(0, 3).map((n: any) => n.target.join(' ')) })); });
+          } catch (e) { rec.error = String((e as Error).message).slice(0, 300); }
+          rec.errors = [...errors];
+          await appendFile(out, JSON.stringify(rec) + '\n'); count++;
+          if (count % 100 === 0) console.log('[es-sweep] views', count);
+        }
+        await ctx.close();
+      }
+    };
+    await Promise.all(ENGINES.map(runEngine));
+    // ---- item 4 spot checks: Equipo return focus, Editar turno saving label ----
+    if (process.env.NEVORA_ES_SPOT !== '0') for (const engine of ENGINES) {
+      const st = states[engine + '|owner']; if (!st) continue;
+      for (const lang of ['es', 'en']) {
+        const ctx = await browsers[engine].newContext({ ...net, storageState: st, viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1, reducedMotion: 'reduce', serviceWorkers: 'block' });
+        await ctx.addCookies([{ name: 'nv-lang', value: lang, url: base }]);
+        const page = await ctx.newPage(); page.setDefaultTimeout(20000); const r: any = { engine, lang };
+        try {
+          await page.goto(base + '/app/employees'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
+          const row = page.locator('a.b-row[href="/app/employees/SWEEP-B"]').first();
+          r.rowFound = await row.count();
+          await row.focus(); await page.keyboard.press('Enter'); await page.waitForURL(/\/app\/employees\/SWEEP-B/); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
+          r.backLink = await page.locator('main .q-nav > .q-nav__l, main a.c-formhead__link, main a[href="/app/employees"]').first().innerText().catch(() => null);
+          await page.locator('main .q-nav > .q-nav__l, main a[href="/app/employees"]').first().focus(); await page.keyboard.press('Enter');
+          await page.waitForURL(/\/app\/employees(\?|$)/); await page.waitForTimeout(1200);
+          r.focusAfterBack = await page.evaluate(() => { const e = document.activeElement as HTMLAnchorElement | null; return e ? e.tagName + ' ' + (e.getAttribute('href') || '') + ' ' + (e.textContent || '').trim().slice(0, 40) : null; });
+          r.ring = await page.evaluate(() => { const e = document.activeElement as HTMLElement | null; if (!e) return null; const cs = getComputedStyle(e); return cs.outlineStyle + ' ' + cs.outlineWidth + ' | ' + cs.boxShadow.slice(0, 50); });
+          await page.screenshot({ path: join(shots, `spot-team-return-${engine}-${lang}.png`) });
+        } catch (e) { r.teamError = String((e as Error).message).slice(0, 200); }
+        try {
+          await page.goto(base + '/app/schedule/edit?shiftId=es-shift-2'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
+          await page.route('**/app/schedule/edit**', async (rt: any) => { if (rt.request().method() === 'POST') { await new Promise(res => setTimeout(res, 4000)); await rt.continue().catch(() => {}); } else await rt.continue(); });
+          const end = page.locator('input[name="endTime"], input[name="end"], input[type="time"]').last();
+          r.timeInputs = await page.locator('input[type="time"]').count();
+          if (await end.count()) { await end.fill('15:30'); }
+          const save = page.getByRole('button', { name: lang === 'es' ? /^Guardar/ : /^Save/ }).first();
+          r.saveLabelBefore = await save.innerText().catch(() => null);
+          await save.click(); await page.waitForTimeout(700);
+          r.savingLabel = await page.locator('button[aria-busy="true"], button:has-text("Guardando"), button:has-text("Saving")').first().innerText().catch(() => null);
+          await page.screenshot({ path: join(shots, `spot-edit-saving-${engine}-${lang}.png`) });
+          await page.waitForTimeout(4500); r.after = (await page.locator('main').innerText().catch(() => '')).replace(/\s+/g, ' ').slice(0, 200); r.urlAfter = page.url().replace(base, '');
+          await page.unroute('**/app/schedule/edit**');
+        } catch (e) { r.editError = String((e as Error).message).slice(0, 200); }
+        (extra.spot ??= [] as any[]) as any; (extra.spot as any[]).push(r);
+        await ctx.close();
+      }
+    }
+    for (const b of Object.values(browsers)) await b.close();
+    expect(count).toBeGreaterThan(0);
+  } finally {
+    await writeFile(join(evidence, 'meta.json'), JSON.stringify({ setupLog, extra, week, next }, null, 1));
+    await tls.close(); await app.close();
+  }
+}, 4 * 3600000);
