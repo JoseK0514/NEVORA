@@ -10,7 +10,6 @@ import "@/components/access-recovery/access-recovery.css";
 import { ACCESS_COPY } from "@/components/access-recovery/copy";
 import type { AuthLang } from "@/lib/auth-copy";
 
-const t = PASSKEY_COPY.en;
 const subscribe = () => () => {};
 
 type Load = { state: "loading" } | { state: "ready"; passkeys: Passkey[] } | { state: "failed" } | { state: "unsupported" };
@@ -23,6 +22,7 @@ export function passkeySectionLoad(result: Awaited<ReturnType<typeof listPasskey
 /** Profile, every role: "Face ID and passkeys". Set up (named after the device), the saved list with added and
  * last-used dates, and Remove with a confirmation. Nothing renders while NEXT_PUBLIC_NEVORA_PASSKEYS is off. */
 export function PasskeySection({ asRow = false, lang = "en" }: { asRow?: boolean; /** U11: the guidance's language. */ lang?: AuthLang } = {}) {
+  const t = PASSKEY_COPY[lang];
   const a = ACCESS_COPY[lang].passkey;
   const supported = useSyncExternalStore(subscribe, passkeysAvailable, () => false);
   const phone = useSyncExternalStore(subscribe, isPhoneLike, () => false);
@@ -80,9 +80,9 @@ export function PasskeySection({ asRow = false, lang = "en" }: { asRow?: boolean
   if (!asRow) return view;
   // Owner and Manager Profile (Nov 1 upscale): one row like its neighbours, "Face ID · Not set up ›" ("Passkeys" off a
   // phone), that opens to the same explanation, list and actions. The value says only what the read knows.
-  const value = load.state !== "ready" ? "" : passkeys.length ? `${passkeys.length} set up` : "Not set up";
+  const value = load.state !== "ready" ? "" : passkeys.length ? t.setUpCount(passkeys.length) : t.noneSetUp;
   return <details className="q-details pmp-passkeys__row" id="profile-passkeys">
-    <summary className="q-row q-row--one"><span className="q-rt"><b>{phone ? "Face ID" : "Passkeys"}</b></span>
+    <summary className="q-row q-row--one"><span className="q-rt"><b>{phone ? "Face ID" : t.passkeys}</b></span>
       <span className="q-rv q-rv--l">{value}</span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
     {view}
   </details>;

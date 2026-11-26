@@ -2,8 +2,9 @@ import {ResponsiveEmployeePlanning} from '@/components/employee-mobile/planning'
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { getWorkspace } from "@/lib/data/workspaces";
-import { keepWhole } from "@/lib/keep-whole";
-import { dateRange } from "@/lib/duration-format";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { availabilityCopy, esBusinessDateTime } from "@/components/availability-copy";
+import { esWeekRange } from "@/components/copy-receipt-copy";
 import { businessDate, formatBusinessDateTime } from "@/lib/business-time";
 import { ManagerAvailability } from "@/components/manager-availability";
 import Link from "next/link";
@@ -64,45 +65,47 @@ function buildState(
   ) as AvailabilityState;
 }
 
-function submissionStatusCopy(status: AvailabilitySubmissionStatus, hasDeadline = true) {
+function submissionStatusCopy(status: AvailabilitySubmissionStatus, hasDeadline = true, t = availabilityCopy().page) {
   if (status.state === "LOCKED") {
     if (!status.submitted) {
       return {
-        label: "Locked · not submitted",
-        detail: "No weekly availability was submitted before the deadline.",
+        label: t.lockedNotSubmitted,
+        detail: t.lockedNotSubmittedDetail,
       };
     }
 
     return {
-      label: "Locked · submitted",
+      label: t.lockedSubmitted,
       detail:
         status.windowCount === 0
-          ? "You submitted that you are unavailable for the entire week."
-          : "Your submitted weekly availability is locked for this schedule.",
+          ? t.lockedUnavailableDetail
+          : t.lockedDetail,
     };
   }
 
   if (status.state === "SUBMITTED_UNAVAILABLE") {
     return {
-      label: "Submitted · unavailable all week",
-      detail: "Management can see that you intentionally submitted no available hours.",
+      label: t.submittedUnavailable,
+      detail: t.submittedUnavailableDetail,
     };
   }
 
   if (status.state === "SUBMITTED") {
     return {
-      label: "Submitted",
-      detail: "Management can see that your weekly availability is complete.",
+      label: t.submitted,
+      detail: t.submittedDetail,
     };
   }
 
   return {
-    label: "Not submitted",
-    detail: hasDeadline ? "Submit this week before the deadline so management can schedule accurately." : "Submit this week so management can schedule accurately.",
+    label: t.notSubmitted,
+    detail: hasDeadline ? t.notSubmittedDeadline : t.notSubmittedNoDeadline,
   };
 }
 
-export const metadata = { title: "Availability" };
+export async function generateMetadata() {
+  return { title: availabilityCopy(await readPageLang()).page.title };
+}
 
 export default async function AvailabilityPage({
   searchParams,
@@ -122,6 +125,7 @@ export default async function AvailabilityPage({
   if (manager) return ManagerAvailability({ timeZone: workspace.timeZone, week: params.week, currentWeek, employeeId: params.employeeId });
 
   const selectedWeek = validWeek(params.week) ? params.week! : undefined;
+  const lang = await readPageLang(), t = availabilityCopy(lang).page;
 
   const [normalAvailability, upcomingWeek] = await Promise.all([
     listAvailability(session.id),
@@ -153,50 +157,48 @@ export default async function AvailabilityPage({
       requestTime > new Date(settings.availabilityDeadline).getTime(),
   );
   const submissionCopy = submissionStatus
-    ? submissionStatusCopy(submissionStatus, Boolean(settings?.availabilityDeadline))
+    ? submissionStatusCopy(submissionStatus, Boolean(settings?.availabilityDeadline), t)
     : null;
 
   // Release 1 (board E-Availability): one card of seven day rows, a line under it, then Save. The usual week links to
   // one schedule week; a week shows its state and arrows to the weeks around it.
   const deadline = selectedWeek && settings?.availabilityDeadline ? new Date(settings.availabilityDeadline) : null;
-  const inZone = (date: Date, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, ...options }).format(date);
   const nextWeek = upcomingWeek?.weekStart ?? addDays(currentWeek, 7);
-  const weekLabel = (week: string) => `Week of ${keepWhole(dateRange(week, week, { year: "never" }))}`;
-  const pill = !selectedWeek ? null : locked ? <CorpPill tone="neutral">Closed</CorpPill>
-    : submissionStatus?.submitted ? <CorpPill tone="teal">{submissionStatus.windowCount === 0 ? "Unavailable all week" : "Submitted"}</CorpPill>
-    : <CorpPill tone="amber">{deadline ? `Due ${inZone(deadline, { weekday: "short", month: "short", day: "numeric" })}` : "Not submitted"}</CorpPill>;
+  const pill = !selectedWeek ? null : locked ? <CorpPill tone="neutral">{t.closed}</CorpPill>
+    : submissionStatus?.submitted ? <CorpPill tone="teal">{submissionStatus.windowCount === 0 ? t.unavailableAllWeek : t.submitted}</CorpPill>
+    : <CorpPill tone="amber">{deadline ? t.due(deadline, workspace.timeZone) : t.notSubmitted}</CorpPill>;
   const card = selectedWeek
-    ? { label: availabilityWeekLabel(selectedWeek), aside: <>{pill}<span className="c-avail__arrows">
-      <Link href={`/app/availability?week=${addDays(selectedWeek, -7)}`} aria-label="Previous week"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" /></Link>
-      <Link href={`/app/availability?week=${addDays(selectedWeek, 7)}`} aria-label="Next week"><CaretRightIcon className="c-ic" weight="bold" aria-hidden="true" /></Link></span></> }
-    : { label: "Your usual week", aside: <CorpLink href={`/app/availability?week=${nextWeek}`}>Change one week</CorpLink> };
-  const upcomingDue = !selectedWeek && upcomingWeek?.availabilityDeadline ? `Send ${weekLabel(upcomingWeek.weekStart).toLowerCase()} by ${formatBusinessDateTime(upcomingWeek.availabilityDeadline, workspace.timeZone)}.` : null;
+    ? { label: lang === "es" ? esWeekRange(selectedWeek) : availabilityWeekLabel(selectedWeek), aside: <>{pill}<span className="c-avail__arrows">
+      <Link href={`/app/availability?week=${addDays(selectedWeek, -7)}`} aria-label={t.previousWeek}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" /></Link>
+      <Link href={`/app/availability?week=${addDays(selectedWeek, 7)}`} aria-label={t.nextWeek}><CaretRightIcon className="c-ic" weight="bold" aria-hidden="true" /></Link></span></> }
+    : { label: t.usualWeek, aside: <CorpLink href={`/app/availability?week=${nextWeek}`}>{t.changeOneWeek}</CorpLink> };
+  const upcomingDue = !selectedWeek && upcomingWeek?.availabilityDeadline ? t.sendBy(upcomingWeek.weekStart, (lang === "es" ? esBusinessDateTime : formatBusinessDateTime)(upcomingWeek.availabilityDeadline, workspace.timeZone)) : null;
   const note = selectedWeek
-    ? <span>{locked ? (submissionCopy?.detail ?? "The deadline passed. Your submitted hours are kept.") : deadline ? `Send it by ${inZone(deadline, { weekday: "long", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}. Hours for this week only; your usual week stays the same.` : "Hours for this week only; your usual week stays the same."} <Link className="c-link" href="/app/availability">Usual week</Link></span>
-    : <span>Your manager uses this to build the schedule. One-off days off go in Requests.</span>;
-  const sub = selectedWeek ? `Used for the week of ${keepWhole(formatWeekRange(selectedWeek))}` : upcomingDue ?? "Used to build your future schedules";
+    ? <span>{locked ? (submissionCopy?.detail ?? t.deadlinePassed) : deadline ? t.sendItBy(deadline, workspace.timeZone) : t.thisWeekOnly} <Link className="c-link" href="/app/availability">{t.usualWeekLink}</Link></span>
+    : <span>{t.usualNote}</span>;
+  const sub = selectedWeek ? t.usedForWeek(selectedWeek) : upcomingDue ?? t.usedForFuture;
   const notices = <>
     {params.error ? <p className="c-error" role="alert">
       {params.error === "locked"
-        ? "The availability deadline for this week has passed."
+        ? t.errorLocked
         : params.error === "concurrent"
-          ? "Your availability changed while saving. Review this week and try again."
+          ? t.errorConcurrent
           : params.error === "invalid_week"
-          ? "That schedule week is not valid."
-          : "Every available day needs a valid start and end time."}
+          ? t.errorWeek
+          : t.errorTimes}
     </p> : null}
-    {params.saved ? <p className="c-note" role="status">{selectedWeek ? "Your availability for this schedule week has been updated." : "Your usual week has been updated."}</p> : null}
+    {params.saved ? <p className="c-note" role="status">{selectedWeek ? t.savedWeek : t.savedUsual}</p> : null}
   </>;
 
   const proof=await requireSessionMutationProof();
   return (
-    <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail c-page--narrow">
+    <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail c-page--narrow" lang={lang === "es" ? "es" : undefined}>
       {/* Direction B (phones): the phone page replaces this one once it loads; until then the same hero, not the old layout. */}
-      <AvailabilityB sub={availabilitySubB(selectedWeek ?? null, selectedWeek ? formatWeekRange(selectedWeek) : undefined)} change={selectedWeek ? null : `/app/availability?week=${nextWeek}`}>
-        <AvailabilityStatusB message="Loading your planning…" />
+      <AvailabilityB lang={lang} sub={availabilitySubB(selectedWeek ?? null, selectedWeek ? formatWeekRange(selectedWeek) : undefined, lang)} change={selectedWeek ? null : `/app/availability?week=${nextWeek}`}>
+        <AvailabilityStatusB lang={lang} message={t.loading} />
       </AvailabilityB>
-      <CorpNav back={{ href: "/app/schedule", label: "Schedule" }} title="Availability" phoneOnly />
-      <CorpTitle wide title="Availability" sub={sub} />
+      <CorpNav back={{ href: "/app/schedule", label: t.schedule }} title={t.title} phoneOnly />
+      <CorpTitle wide title={t.title} sub={sub} />
       {notices}
       <AvailabilitySignatureEditor key={selectedWeek ?? "normal"} initialAvailability={initialAvailability} weekStart={selectedWeek} locked={locked} card={card} note={note} />
     </CorpPage></ResponsiveEmployeePlanning>

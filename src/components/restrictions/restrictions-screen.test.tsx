@@ -71,7 +71,9 @@ describe("the words", () => {
   it("writes clock times and dates the same way everywhere", () => {
     expect(clockText(480, en)).toBe("8:00 AM"); expect(clockText(1350, en)).toBe("10:30 PM"); expect(clockText(0, en)).toBe("12:00 AM"); expect(clockText(1440, en)).toBe("12:00 AM");
     expect(spanText({ start: 1320, end: 1440 }, en)).toBe("10:00 PM – 12:00 AM");
-    expect(clockText(480, es)).toBe("8:00 a. m."); expect(spanText({ start: 0, end: 360 }, es)).toBe("12:00 a. m. – 6:00 a. m.");
+    expect(clockText(480, es)).toBe("8:00 a.\u00a0m.");
+    expect(spanText({ start: 1320, end: 1440 }, es)).toBe("10:00 p.\u00a0m. – 12:00 a.\u00a0m.");
+    expect(spanText({ start: 0, end: 360 }, es)).toBe("12:00 a.\u00a0m. – 6:00 a.\u00a0m.");
     expect(dayText("2030-10-21", en)).toBe("Mon, Oct 21");
     expect(dayText("2030-10-21", es)).toMatch(/lun, 21 (de )?oct/);
     // 03:30 UTC on the 14th is still the 13th at the workplace.
@@ -379,7 +381,13 @@ describe("Spanish (Puerto Rico): every state renders with no English left and no
   it.each(states)("%s", (_name, props) => {
     const markup = html({ ...props, lang: "es" });
     expect(leaks(markup)).toEqual([]);
+    expect(text(markup)).not.toMatch(/\busted(?:es)?\b/i);
     expect(text(markup).trim().length).toBeGreaterThan(20);
+  });
+  it("names the Spanish copy action with its visible label and weekday", () => {
+    const markup = html({ ...own, lang: "es", initial: { load: ready(IN_EFFECT), step: "edit", draft: { kind: "REQUEST", plan, week: "2030-10-21", note: "" } } });
+    expect(markup).toMatch(/id="([^"]+)-copy-1"[^>]*aria-labelledby="\1-copy-1 \1-n-1"/);
+    expect(markup).toContain("Copiar a otros días");
   });
   it("says the main states in Spanish", () => {
     const words = text(html({ ...management, lang: "es", initial: { load: ready(IN_EFFECT) } }));

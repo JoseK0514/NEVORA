@@ -16,7 +16,10 @@ import type {AttentionItem} from '../lib/employee-home/types';
 import {EmployeeHomeB, type HomeBExtras} from './employee-b/home-b';
 import {reviewCopy} from './review-details/copy';
 import {homeTaskTotal} from '../lib/action-center/review-routing';
-import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type EmployeeHomeQuietViewProps, type HomeWeek} from './employee-home-quiet';
+import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDestinations, todoTitle, weekRange, type EmployeeHomeQuietViewProps, type HomeWeek} from './employee-home-quiet';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {employeeHomeCopy, type HomeLang} from './employee-home-copy';
+import {esTime} from './employee-b/es-format';
 
 /* Employee Home on the corporate kit (Release 1, board C-Employee; Nov 1 upscale S3, S4, M7). Look only: the Home read, its states, links, authority
  * checks and private-data clearing are the original controller's, exactly as in the v5 view. Clock-in happens on the
@@ -26,8 +29,8 @@ import {businessDate, clock, confirmsWeek, dayWord, fmt, isComplete, sourceDesti
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 /** "08:00" → "8:00 AM" (the one time format, date-utils formatTime). */
-function wall(time: string) {
-  return formatTime(time);
+function wall(time: string, lang: HomeLang = 'en') {
+  return esTime(formatTime(time), lang);
 }
 
 /** "2026-10-30 19:45": the read's moment as wall time in the workspace zone, comparable with "<date> <HH:mm>". */
@@ -44,47 +47,50 @@ export function weekShiftAhead(shift: {date: string; startTime: string; endTime:
 }
 
 /** "Starts in 2 h" or "Starts in 45 min" for today's next shift; otherwise "Tomorrow" or the weekday. */
-function startsIn(shift: PublishedAssignment, snapshot: HomeSnapshot) {
+function startsIn(shift: PublishedAssignment, snapshot: HomeSnapshot, lang: HomeLang = 'en') {
+  const c = employeeHomeCopy(lang);
   const minutes = Math.round((Date.parse(shift.startAt) - Date.parse(snapshot.observedAt)) / 60_000);
-  if (dayWord(shift, snapshot) !== 'Today' || minutes <= 0) return dayWord(shift, snapshot);
-  return minutes < 60 ? `Starts in ${minutes} min` : `Starts in ${Math.round(minutes / 60)} h`;
+  if (dayWord(shift, snapshot) !== 'Today' || minutes <= 0) return dayWord(shift, snapshot, lang);
+  return minutes < 60 ? c.startsInMin(minutes) : c.startsInHours(Math.round(minutes / 60));
 }
 
-function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
+function ShiftCard({snapshot, lang}: {snapshot: HomeSnapshot; lang: HomeLang}) {
   const zone = snapshot.timeZone;
-  if (snapshot.publicationState === 'unavailable') return <CorpCard id="home-shift" label="Next shift">
-    <CorpBody><p className="c-ehome__state" role="status">Your schedule couldn’t be checked.</p></CorpBody>
+  const c = employeeHomeCopy(lang);
+  if (snapshot.publicationState === 'unavailable') return <CorpCard id="home-shift" label={c.nextShift}>
+    <CorpBody><p className="c-ehome__state" role="status">{c.scheduleNotChecked}</p></CorpBody>
   </CorpCard>;
   const now = snapshot.currentShift, shift = now ?? snapshot.nextShift;
-  if (!shift) return <CorpCard id="home-shift" label="Next shift">
-    <CorpBody><p className="c-ehome__state">No upcoming shift. New shifts show here once they’re published.</p></CorpBody>
+  if (!shift) return <CorpCard id="home-shift" label={c.nextShift}>
+    <CorpBody><p className="c-ehome__state">{c.noUpcomingShiftLong}</p></CorpBody>
   </CorpCard>;
   const today = dayWord(shift, snapshot) === 'Today';
-  const where = [shift.positionLabel, shift.locationLabel, shift.designatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
+  const where = [shift.positionLabel, shift.locationLabel, shift.designatedLead ? c.shiftLead : null].filter(Boolean).join(' · ');
   const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}&shift=${encodeURIComponent(shift.shiftId)}`;
   // Upscale S4: one left edge. The body is the link to the shift (its text is the link's name); the footer says where to
   // clock in (tablet only) and repeats the way in as "Shift details ›". The body link leaves the tab order so the keyboard
   // meets the shift once, on the footer link.
-  return <CorpCard id="home-shift" label={now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
-    aside={now ? <CorpPill tone="teal">Until {clock(now.endAt, zone)}</CorpPill> : <CorpPill tone="teal">{startsIn(shift, snapshot)}</CorpPill>}
+  return <CorpCard id="home-shift" label={now ? c.onShiftNow : today ? c.todaysShift : c.nextShift}
+    aside={now ? <CorpPill tone="teal">{c.until(clock(now.endAt, zone, lang))}</CorpPill> : <CorpPill tone="teal">{startsIn(shift, snapshot, lang)}</CorpPill>}
     footer={<>
-      <span className="c-ehome__clockin">Clock in on the {shift.locationLabel} tablet</span>
-      <Link className="c-link" href={href}>Shift details<CaretRightIcon className="c-ehome__caret" weight="bold" aria-hidden="true"/></Link>
+      <span className="c-ehome__clockin">{c.clockInOn(shift.locationLabel)}</span>
+      <Link className="c-link" href={href}>{c.shiftDetails}<CaretRightIcon className="c-ehome__caret" weight="bold" aria-hidden="true"/></Link>
     </>}>
     <Link className="c-card__body c-ehome__shift" href={href} tabIndex={-1}>
-      <b className="c-big"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="nv-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></b>
-      <span className="c-ehome__where">{today ? where : keepWhole(`${shortDay(shift.date)} · ${where}`)}{!today && businessDate(shift.endAt, zone) !== shift.date ? keepWhole(` · ends ${shortDay(businessDate(shift.endAt, zone))}`) : null}</span>
+      <b className="c-big"><time dateTime={shift.startAt}>{clock(shift.startAt, zone, lang)}</time><span aria-hidden="true"> – </span><span className="nv-sr">{c.to}</span><time dateTime={shift.endAt}>{clock(shift.endAt, zone, lang)}</time></b>
+      <span className="c-ehome__where">{today ? where : keepWhole(`${shortDay(shift.date, lang)} · ${where}`)}{!today && businessDate(shift.endAt, zone) !== shift.date ? keepWhole(` · ${c.ends(shortDay(businessDate(shift.endAt, zone), lang))}`) : null}</span>
     </Link>
   </CorpCard>;
 }
 
 /** "Mon, Nov 2". */
-const shortDay = (date: string) => fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(date));
+const shortDay = (date: string, lang: HomeLang = 'en') => fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}, lang).format(utcDay(date));
 
 type WeekShift = HomeWeek['shifts'][number] & {weekStart: string};
 
 /** Upscale M7: "Coming up", the next three own shifts after the one on the card, across this week and next. */
-function ComingUp({week, snapshot}: {week: HomeWeek; snapshot: HomeSnapshot}) {
+function ComingUp({week, snapshot, lang}: {week: HomeWeek; snapshot: HomeSnapshot; lang: HomeLang}) {
+  const c = employeeHomeCopy(lang);
   const shown = snapshot.currentShift ?? snapshot.nextShift;
   const shownDay = shown?.date, shownStart = shown ? fmt(snapshot.timeZone, {hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(new Date(shown.startAt)) : null;
   const all: WeekShift[] = [...week.shifts.map(shift => ({...shift, weekStart: week.weekStart})), ...(week.next?.shifts ?? []).map(shift => ({...shift, weekStart: week.next!.weekStart}))];
@@ -93,14 +99,14 @@ function ComingUp({week, snapshot}: {week: HomeWeek; snapshot: HomeSnapshot}) {
   const rows = all.filter(shift => shift.date >= week.today && weekShiftAhead(shift, snapshot.observedAt, snapshot.timeZone) && !(shift.date === shownDay && shift.startTime === shownStart))
     .sort((a, b) => a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime));
   if (!rows.length) return null;
-  return <CorpCard id="home-upcoming" label="Coming up" aside={<CorpLink href="/app/schedule" label="See all shifts">See all</CorpLink>}>
+  return <CorpCard id="home-upcoming" label={c.comingUp} aside={<CorpLink href="/app/schedule" label={c.seeAllShifts}>{c.seeAll}</CorpLink>}>
     <CorpRows>
       {rows.slice(0, 3).map(shift => {
         const at = utcDay(shift.date);
         const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
         return <li key={`${shift.date}-${shift.startTime}`}><CorpRow href={href}
-          lead={`${fmt('UTC', {weekday: 'short'}).format(at)} ${at.getUTCDate()}`} title={keepWhole(`${wall(shift.startTime)} – ${wall(shift.endTime)}`)} detail={shift.where || undefined}
-          label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wall(shift.startTime)} to ${wall(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}`)}/></li>;
+          lead={`${fmt('UTC', {weekday: 'short'}, lang).format(at)} ${at.getUTCDate()}`} title={keepWhole(`${wall(shift.startTime, lang)} – ${wall(shift.endTime, lang)}`)} detail={shift.where || undefined}
+          label={keepWhole(c.rowLabel(fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(at), wall(shift.startTime, lang), wall(shift.endTime, lang), shift.where))}/></li>;
       })}
     </CorpRows>
   </CorpCard>;
@@ -130,13 +136,15 @@ export function homeTodoRows(items: readonly AttentionItem[], snapshot: Pick<Hom
 }
 
 /** "Confirm next week’s schedule" and "Nov 2–8 · 4 shifts" (the count when Home read that week). */
-function weekTodo(item: AttentionItem, week?: HomeWeek | null) {
-  const own = week?.weekStart === item.ref.id ? {when: 'this week’s', shifts: week.shifts} : week?.next?.weekStart === item.ref.id ? {when: 'next week’s', shifts: week.next.shifts} : null;
-  const count = own ? ` · ${own.shifts.length} ${own.shifts.length === 1 ? 'shift' : 'shifts'}` : '';
-  return {title: own ? `Confirm ${own.when} schedule` : 'Confirm your schedule', detail: <><time dateTime={item.ref.id}>{weekRange(item.ref.id)}</time>{count}</>};
+function weekTodo(item: AttentionItem, week?: HomeWeek | null, lang: HomeLang = 'en') {
+  const c = employeeHomeCopy(lang);
+  const own = week?.weekStart === item.ref.id ? {title: c.confirmThisWeek, shifts: week.shifts} : week?.next?.weekStart === item.ref.id ? {title: c.confirmNextWeek, shifts: week.next.shifts} : null;
+  const count = own ? ` · ${c.shifts(own.shifts.length)}` : '';
+  return {title: own ? own.title : c.confirmSchedule, detail: <><time dateTime={item.ref.id}>{weekRange(item.ref.id, lang)}</time>{count}</>};
 }
 
 export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, displayName, timeZone, workspaceName, week, b, teamMessage = false}: EmployeeHomeQuietViewProps & {b?: HomeBExtras}) {
+  const lang = usePortalLang(), c = employeeHomeCopy(lang);
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
   const paused = status === 'paused';
   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
@@ -157,53 +165,53 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
   const firstVisit = useAccessJourney().confirmedId !== null;
   const bScreen = useEmployeeBScreen();
   const date = snapshot
-    ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
+    ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(new Date(snapshot.observedAt)))}</time>
     // Before Home is read, the workspace's public date, so the line is there from the first frame.
-    : <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time>;
+    : <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'long', day: 'numeric'}, lang).format(new Date()))}</time>;
   // Direction B writes the month short ("Saturday, Nov 7"), read or not.
-  const dateB = <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date()))}</time>;
+  const dateB = <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'short', day: 'numeric'}, lang).format(new Date()))}</time>;
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
-  const waiting: ReactNode = paused ? (online ? 'Paused while you’re away. Your shift updates when you come back.' : 'You’re offline. Your shift updates when you reconnect.')
-    : denied ? 'Your session ended. Sign in again to see your shift.' : loading ? 'Loading your shift…' : 'Couldn’t load Home.';
+  const waiting: ReactNode = paused ? (online ? c.waitingPausedAway : c.waitingOffline)
+    : denied ? c.waitingEnded : loading ? c.loadingShift : c.couldntLoadHome;
 
   return <CorpPage className="c-ehome c-page--narrow">
     {/* Direction B: the phone screen (phones only; tablets and desktop keep the cards below). */}
     <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} tasks={tasks} week={week} name={name} date={dateB} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
-      intro={bScreen && firstVisit ? intro : undefined} waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} team={teamMessage} {...b}/>
+      intro={bScreen && firstVisit ? intro : undefined} waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week, lang)} team={teamMessage} {...b}/>
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
-      <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
+      <CorpTitle title={name ? c.welcomeBack(name) : c.home} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
       {snapshot ? <>
-        <ShiftCard snapshot={snapshot}/>
-        {snapshot.publicationState === 'partial' ? <CorpNote>{unpublishedNote(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations))}</CorpNote> : null}
-      </> : <CorpCard id="home-shift" label="Today’s shift">
+        <ShiftCard snapshot={snapshot} lang={lang}/>
+        {snapshot.publicationState === 'partial' ? <CorpNote>{(lang === 'en' ? unpublishedNote : c.unpublishedNote)(snapshot.unpublishedLocations ?? [], homePublishedNames([snapshot.currentShift, snapshot.nextShift], snapshot.unpublishedLocations))}</CorpNote> : null}
+      </> : <CorpCard id="home-shift" label={c.todaysShift}>
         <CorpBody>
           <p className="c-ehome__state" role="status">{waiting}</p>
-          {!loading && !paused ? denied ? <CorpButtonLink href="/login" full>Sign in</CorpButtonLink>
-            : <CorpButton kind="secondary" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? 'Checking…' : 'Try again'}<span className="nv-sr"> to load Home</span></CorpButton> : null}
+          {!loading && !paused ? denied ? <CorpButtonLink href="/login" full>{c.signIn}</CorpButtonLink>
+            : <CorpButton kind="secondary" full data-home-refresh onClick={onRetry} disabled={refreshing} aria-busy={refreshing || undefined}>{refreshing ? c.checking : c.tryAgain}<span className="nv-sr">{c.toLoadHome}</span></CorpButton> : null}
         </CorpBody>
       </CorpCard>}
       {/* The first-week Quick guide sits below the shift card, as anchored on the v5 Home (a048a86b). It keeps one place in
         * the tree whether or not Home is read, so a refresh never remounts it (or closes it). */}
       {!bScreen && firstVisit ? intro : null}
       {snapshot ? <>
-        {weekShown ? <ComingUp week={weekShown} snapshot={snapshot}/> : null}
+        {weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lang={lang}/> : null}
         {/* Board C-Employee: one thing to do is its own card ("Confirm next week's schedule … Review"); several share a
           * "Things to do" header. The action reads as a teal text link, not a pill. */}
-        {todos.length || partial ? <CorpCard id="employee-home-todo" label={todos.length === 1 && !partial ? undefined : 'Things to do'} ariaLabel={todos.length === 1 && !partial ? 'Things to do' : undefined}>
+        {todos.length || partial ? <CorpCard id="employee-home-todo" label={todos.length === 1 && !partial ? undefined : c.thingsToDo} ariaLabel={todos.length === 1 && !partial ? c.thingsToDo : undefined}>
           <CorpRows>
-            {todos.slice(0, 3).map(({key, item, week: confirm}) => <li key={key}><CorpRow href={item.href} title={keepWhole(confirm ? weekTodo(item, week).title : todoTitle(item))} bold={todos.length === 1 && !partial}
-              detail={confirm ? weekTodo(item, week).detail : item.deadlineAt ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined}
-              trail={item.required ? <span className="c-ehome__act">Review</span> : undefined}/></li>)}
-            {todos.length > 3 ? <li><CorpRow href="/app/notifications" title={`See all ${todos.length}`} one/></li> : null}
+            {todos.slice(0, 3).map(({key, item, week: confirm}) => <li key={key}><CorpRow href={item.href} title={keepWhole(confirm ? weekTodo(item, week, lang).title : todoTitle(item, lang))} bold={todos.length === 1 && !partial}
+              detail={confirm ? weekTodo(item, week, lang).detail : item.deadlineAt ? c.respondBy(keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}, lang).format(new Date(item.deadlineAt)))) : undefined}
+              trail={item.required ? <span className="c-ehome__act">{c.review}</span> : undefined}/></li>)}
+            {todos.length > 3 ? <li><CorpRow href="/app/notifications" title={c.seeAllCount(todos.length)} one/></li> : null}
             {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
               const source = snapshot.sources[key];
-              const state = source.state === 'unavailable' ? (source.reason === 'review_unavailable' ? 'A changed schedule needs review' : 'Couldn’t be checked')
-                : source.reason === 'source_cap' ? 'Partly shown — more records are available' : 'Partly checked';
-              return <li key={key}><CorpRow href={sourceDestinations[key]} title={sourceNames[key]} detail={state} label={`Open ${sourceNames[key].toLowerCase()}, ${state.toLowerCase()}`}/></li>;
+              const state = source.state === 'unavailable' ? (source.reason === 'review_unavailable' ? c.needsReview : c.couldntCheck)
+                : source.reason === 'source_cap' ? c.partlyShown : c.partlyChecked;
+              return <li key={key}><CorpRow href={sourceDestinations[key]} title={c.sources[key]} detail={state} label={c.openWithState(c.sources[key], state)}/></li>;
             }) : null}
           </CorpRows>
-        </CorpCard> : <CorpNote center>{tasks.allSet ? 'You’re all set. Nothing needs you right now.' : reviewCopy().nothingToDo}</CorpNote>}
-        <p className="nv-sr" data-home-updated="true">Updated <time dateTime={snapshot.observedAt}>{clock(snapshot.observedAt, snapshot.timeZone)}</time>, times in {snapshot.timeZone.split('/').pop()!.replace(/_/g, ' ')} time</p>
+        </CorpCard> : <CorpNote center>{tasks.allSet ? c.allSetNothing : reviewCopy(lang).nothingToDo}</CorpNote>}
+        <p className="nv-sr" data-home-updated="true">{c.updated} <time dateTime={snapshot.observedAt}>{clock(snapshot.observedAt, snapshot.timeZone, lang)}</time>{c.updatedIn(snapshot.timeZone.split('/').pop()!.replace(/_/g, ' '))}</p>
       </> : null}
     </div>
   </CorpPage>;

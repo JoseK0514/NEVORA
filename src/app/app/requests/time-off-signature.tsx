@@ -9,6 +9,8 @@ import { requestTimeOffAction } from "@/app/app/requests/actions";
 import { PickField } from "@/components/employee-mobile/timeoff";
 import "@/components/employee-mobile/timeoff-corp.css";
 import { revealFeedback } from "@/lib/reveal-feedback";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { REQUESTS_COPY } from "./requests-copy";
 
 /* New time-off request on the corporate kit (Release 1, board E-TimeOffSheet): a sheet over Time off with Cancel and
  * the title, All day / Part of day, From and To fields (the native pickers laid over the board's field), an optional
@@ -20,6 +22,7 @@ let unsent: Draft | null = null;
 
 
 function TimeOffForm({ requestId, draftOwner = "", notice }: { requestId: string; draftOwner?: string; notice?: ReactNode }) {
+  const t = REQUESTS_COPY[usePortalLang()];
   const kept = draftOwner && unsent?.owner === draftOwner ? unsent : null;
   const [partialDay, setPartialDay] = useState(kept?.partialDay ?? false);
   const [startDate, setStartDate] = useState(kept?.startDate ?? "");
@@ -43,42 +46,43 @@ function TimeOffForm({ requestId, draftOwner = "", notice }: { requestId: string
     catch (error) { unstable_rethrow(error); setFailed(++failures.current); }
   }
   return <div className="tof-sheet">
-    <div className="c-sheet-head"><SheetCancel href="/app/requests" className="c-sheet-head__l" /><h2 id="timeoff-sheet-title">Request time off</h2><span /></div>
+    <div className="c-sheet-head"><SheetCancel href="/app/requests" className="c-sheet-head__l">{t.cancel}</SheetCancel><h2 id="timeoff-sheet-title">{t.requestTimeOff}</h2><span /></div>
     <form action={send} className="nto-form tof-form" onSubmit={() => { unsent = null; }}>
     <input type="hidden" name="requestId" value={requestId} />
     <input type="hidden" name="partialDay" value={partialDay ? "on" : ""} />
     {notice}
     <fieldset className="tof-fields">
-      <legend className="nv-sr">{partialDay ? "Date and time" : "Choose your dates"}</legend>
-      <div className="c-seg tof-seg" role="group" aria-label="How long">
-        <button type="button" aria-pressed={!partialDay} onClick={() => setPartialDay(false)}>All day</button>
-        <button type="button" aria-pressed={partialDay} onClick={() => setPartialDay(true)}>Part of day</button>
+      <legend className="nv-sr">{partialDay ? t.dateAndTime : t.chooseDates}</legend>
+      <div className="c-seg tof-seg" role="group" aria-label={t.howLong}>
+        <button type="button" aria-pressed={!partialDay} onClick={() => setPartialDay(false)}>{t.allDay}</button>
+        <button type="button" aria-pressed={partialDay} onClick={() => setPartialDay(true)}>{t.partOfDay}</button>
       </div>
       {partialDay ? <>
-        <PickField id="timeoff-start-date" name="startDate" type="date" label="Date" value={startDate} onChange={setStartDate} />
+        <PickField id="timeoff-start-date" name="startDate" type="date" label={t.date} value={startDate} onChange={setStartDate} />
         <div className="tof-row">
-          <PickField id="timeoff-start-time" name="startTime" type="time" label="Start" value={startTime} onChange={setStartTime} />
-          <PickField id="timeoff-end-time" name="endTime" type="time" label="End" value={endTime} min={startTime || undefined} onChange={setEndTime} invalid={timesInvalid} describedBy={timesInvalid ? "timeoff-time-error" : undefined} />
+          <PickField id="timeoff-start-time" name="startTime" type="time" label={t.start} value={startTime} onChange={setStartTime} />
+          <PickField id="timeoff-end-time" name="endTime" type="time" label={t.end} value={endTime} min={startTime || undefined} onChange={setEndTime} invalid={timesInvalid} describedBy={timesInvalid ? "timeoff-time-error" : undefined} />
         </div>
         <input type="hidden" name="endDate" value={startDate} />
       </> : <div className="tof-row">
-        <PickField id="timeoff-start-date" name="startDate" type="date" label="From" value={startDate} onChange={setStartDate} />
-        <PickField id="timeoff-end-date" name="endDate" type="date" label="To" value={endDate} min={startDate || undefined} onChange={setEndDate} />
+        <PickField id="timeoff-start-date" name="startDate" type="date" label={t.from} value={startDate} onChange={setStartDate} />
+        <PickField id="timeoff-end-date" name="endDate" type="date" label={t.to} value={endDate} min={startDate || undefined} onChange={setEndDate} />
       </div>}
-      <div className="c-field"><label className="c-field__label" htmlFor="timeoff-note">Reason (optional)</label>
+      <div className="c-field"><label className="c-field__label" htmlFor="timeoff-note">{t.reasonOptional}</label>
         <input id="timeoff-note" className="c-in" type="text" name="reason" maxLength={250} autoComplete="off" value={reason} onChange={event => setReason(event.target.value)} /></div>
     </fieldset>
-    {partialDay && timesInvalid ? <p className="c-error" id="timeoff-time-error" role="alert">End time must be after start time.</p> : null}
-    {failed ? <p ref={feedback} tabIndex={-1} className="c-error" role="alert">Your request wasn’t sent. Check your connection and send it again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
-    <p className="c-note">Your manager reviews it. The time is yours once it’s approved.</p>
-    <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Sending…" disabled={partialDay && timesInvalid}>Send request</EmployeeSubmitButton>
+    {partialDay && timesInvalid ? <p className="c-error" id="timeoff-time-error" role="alert">{t.endAfterStart}</p> : null}
+    {failed ? <p ref={feedback} tabIndex={-1} className="c-error" role="alert">{t.notSentBefore}<Link href="/login">{t.signInAgain}</Link>.</p> : null}
+    <p className="c-note">{t.managerReviews}</p>
+    <EmployeeSubmitButton className="c-btn c-btn--full" pendingText={t.sending} disabled={partialDay && timesInvalid}>{t.sendRequest}</EmployeeSubmitButton>
   </form></div>;
 }
 
 /** The request form as a sheet over Time off; open while the URL says ?tab=new (Plus on Requests, Request time off). */
 export function TimeOffSheet({ open, closeHref, requestId, draftOwner, notice }: { open: boolean; closeHref: string; requestId: string; draftOwner?: string; notice?: ReactNode }) {
   const router = useRouter();
-  return <QuietSheet open={open} label="Request time off" onClose={() => router.replace(closeHref, { scroll: false })}>
+  const t = REQUESTS_COPY[usePortalLang()];
+  return <QuietSheet open={open} label={t.requestTimeOff} onClose={() => router.replace(closeHref, { scroll: false })}>
     <TimeOffForm key={requestId} requestId={requestId} draftOwner={draftOwner} notice={notice} />
   </QuietSheet>;
 }

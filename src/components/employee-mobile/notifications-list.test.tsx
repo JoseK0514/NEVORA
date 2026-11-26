@@ -66,7 +66,7 @@ it('Phase 4 (EM-005): a headline is the outcome and its object, in English and S
  // Final polish (Nov 20, 2026): the week is in the title, so two weeks waiting are two different rows; without a week the title stays general.
  expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:{...week,startDate:'2026-11-16',endDate:'2026-11-22'}}).title).toBe('Confirm the week of Nov 16');
  expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4}).title).toBe('Confirm your schedule');
- expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week},'es').title).toMatch(/^Confirme la semana del 9 (de )?nov\.?$/);
+ expect(head('Schedule update',{eventType:'SCHEDULE_ACKNOWLEDGEMENT_REMINDER',actionState:'required',count:4,subject:week},'es').title).toMatch(/^Confirma la semana del 9 (de )?nov\.?$/);
  expect(head('Schedule update')).toEqual({title:'Schedule updated',object:null,decided:null,forYou:false});expect(head('Time-off update',{subject:span}).title).toBe('Time-off request answered');
  expect(head('Shift swap',{eventType:'SWAP_RESPONSE_REQUIRED',actionState:'available',names:['Ana Colon'],subject:day})).toEqual({title:'Swap request waiting for you',object:'Thu, Nov 26 · From Ana Colon',decided:null,forYou:true});
  expect(head('Cover',{eventType:'COVERAGE_INVITATION',actionState:'available',subject:day})).toEqual({title:'Cover request waiting for you',object:'Thu, Nov 26',decided:null,forYou:true});

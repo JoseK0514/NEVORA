@@ -9,21 +9,24 @@ import {useEmployeeBScreen,useEmployeeWideScreen} from './use-mobile';
 import {EmployeeExchangeView,ExchangePaneView,type ExchangeMode} from './exchange-view';
 import {RequestsWaitB} from '../employee-b/requests-b';
 import {focusShown} from '../employee-b/focus';
+import {useMobileCopy} from './mobile-lang';
+import {exchangeCopy} from './copy/exchange';
 /** An earlier response that still needs checking. `look="b"` draws it as a Direction B card; that copy passes
  * `effects={false}` so the refresh after it settles runs once. */
 function Recovery({operation,onRetry,onRefresh,look='corp',effects=true}:{operation:EmployeeRequestOperation;onRetry:(operation:EmployeeRequestOperation)=>void;onRefresh:()=>void;look?:'corp'|'b';effects?:boolean}){
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
+ const t=useMobileCopy(exchangeCopy);
  const settled=!!operation.state.result&&['completed','pending','closed'].includes(operation.state.result.status);
  useEffect(()=>{if(effects&&settled)onRefresh();},[effects,settled,onRefresh]);
- const text=operation.state.pending?'Your previous response is being checked.':'A previous response may have been saved. Check its status before sending it again.';
- if(look==='b')return <section className="b-card" aria-label="Unconfirmed response"><div className="eb-status"><p className="b-state" role="status">{text}</p>{operation.state.uncertain?<button type="button" className="b-btn b-btn--quiet b-btn--full" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>Check previous response</button>:null}</div></section>;
- return <section className="em-request-notice" aria-label="Unconfirmed response"><p role="status">{text}</p>{operation.state.uncertain?<button type="button" className="em-request-secondary" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>Check previous response</button>:null}</section>;
+ const text=operation.state.pending?t.previousChecking:t.previousMaybeSaved;
+ if(look==='b')return <section className="b-card" aria-label={t.unconfirmed}><div className="eb-status"><p className="b-state" role="status">{text}</p>{operation.state.uncertain?<button type="button" className="b-btn b-btn--quiet b-btn--full" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>{t.checkPrevious}</button>:null}</div></section>;
+ return <section className="em-request-notice" aria-label={t.unconfirmed}><p role="status">{text}</p>{operation.state.uncertain?<button type="button" className="em-request-secondary" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>{t.checkPrevious}</button>:null}</section>;
 }
 export function ResponsiveEmployeeExchange({authority,mode,selection=null,children}:{authority:string;mode:ExchangeMode;selection?:string|null;children:ReactNode}){
- const mobile=useEmployeeBScreen();
- return mobile?<div className="em-requests-mobile"><EmployeeMobileExchange key={authority} authority={authority} mode={mode} selection={selection}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p>
+ const mobile=useEmployeeBScreen(),t=useMobileCopy(exchangeCopy);
+ return mobile?<div className="em-requests-mobile"><EmployeeMobileExchange key={authority} authority={authority} mode={mode} selection={selection}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">{t.loading}</p>
   {/* Direction B: the phone's first frame is this page's hero, checking (phones only). */}
-  <RequestsWaitB page={selection?mode==='incoming'?'detail-foryou':'detail-mine':mode==='incoming'?'foryou':'mine'} text="Checking your current requests…"/></div></>;
+  <RequestsWaitB page={selection?mode==='incoming'?'detail-foryou':'detail-mine':mode==='incoming'?'foryou':'mine'} text={t.checking}/></div></>;
 }
 /** The private read of Pick up and swap (the list, or one request with `selection`), its response operations and their
  * recoveries. `stillShown` says whether the request a response is for is still the one on screen. */

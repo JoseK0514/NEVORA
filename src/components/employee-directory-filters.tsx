@@ -2,13 +2,18 @@
 import { useEffect, useRef, useTransition, type FormEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./employee-directory.module.css";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { employeeTeamCopy } from "./employee-team-copy";
 
 const TYPE_DELAY = 300;
 
 /** Filters apply as you type (after a short pause) and as soon as a select
  * changes. The Apply button stays for keyboard users and no-JS forms. Typed
  * queries replace the history entry, so Back doesn't replay every keystroke. */
-export function EmployeeDirectoryFilters({ children, className }: { children: ReactNode; className?: string }) {
+export function EmployeeDirectoryFilters({ children, className, pendingLabel }: { children: ReactNode; className?: string;
+  /** The status line while results update; a server parent passes it in the person's language. */
+  pendingLabel?: string }) {
+  const lang = usePortalLang();
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
   const timer = useRef<number | null>(null);
@@ -47,7 +52,7 @@ export function EmployeeDirectoryFilters({ children, className }: { children: Re
 
   return <form ref={form} action="/app/employees" method="get" className={className ?? styles.toolbar} onSubmit={submit} onChange={typed} aria-busy={pending}>
     {children}
-    {pending ? <p className={className ? "premium-note" : styles.pending} role="status">Updating employees…</p> : null}
+    {pending ? <p className={className ? "premium-note" : styles.pending} role="status">{pendingLabel ?? employeeTeamCopy(lang).updatingEmployees}</p> : null}
   </form>;
 }
 

@@ -230,3 +230,29 @@
 @media (min-width: 768px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardfoot { padding-left: var(--b-inset-wide); padding-right: var(--b-inset-wide); }
 }
+
+/* The status can share a row only when the request title also has room. */
+@layer nv-b {
+  html:lang(es)[data-text-step="200"] .b-screen:has(#b-requests-title) .b-list > .b-li {
+    container: request-item / inline-size;
+  }
+  @container request-item (max-width: 16rem) {
+    .b-row:has(> .b-row__end .b-chip) {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto !important;
+      grid-template-areas: "icon title chevron" "icon status chevron";
+      row-gap: var(--b-space-4) !important;
+      & > :first-child { grid-area: icon; }
+      & > .b-row__tx { grid-area: title; }
+      & > .b-row__end { grid-area: status; justify-self: start; margin: 0 !important; }
+      & > .b-chev { grid-area: chevron; }
+    }
+  }
+}
+
+@layer nv-b {
+  /* Long explanations belong to the count above them even at enlarged text sizes. */
+  html:lang(es) .b-screen:has(#b-requests-title) .b-live__m {
+    white-space: normal !important;
+  }
+}

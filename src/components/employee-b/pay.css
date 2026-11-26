@@ -44,3 +44,16 @@
  * Employees and Leads, and Owners' and Managers' My pay. At the default size both still share one line. */
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-pay > .b-screen:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) #b-pay-last > .b-card__h { flex-wrap: wrap !important; row-gap: 6px !important; }
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b] .c-pay > .b-screen:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) #b-pay-last > .b-card__h > .b-chip { max-width: 100% !important; white-space: normal !important; }
+
+/* Preserve the correction date when the statement row needs a third line. */
+:is(#c-root, html):lang(es) .app-shell[data-nv-b] .b-row:has([data-replaced-statement]) .b-row__s {
+  -webkit-line-clamp: unset;
+  max-height: none;
+  white-space: normal;
+  overflow: visible;
+}
+
+@media (width < 360px) {
+  html:lang(es)[data-text-step="200"] #b-pay-recent > .b-card__h { flex-wrap: wrap; }
+  html:lang(es)[data-text-step="200"] #b-pay-recent .b-card__a { flex-shrink: 0; }
+}

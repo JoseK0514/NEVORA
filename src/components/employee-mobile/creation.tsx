@@ -8,10 +8,12 @@ import {EmployeeCreationOperation} from './creation-operation';
 import {useEmployeeBScreen} from './use-mobile';
 import {CreationView} from './creation-view';
 import {RequestsWaitB} from '../employee-b/requests-b';
+import {useMobileCopy} from './mobile-lang';
+import {creationCopy} from './copy/creation';
 export function ResponsiveEmployeeCreation({authority,mode,sourceId,children}:{authority:string;mode:CreationMode;sourceId:string;children:ReactNode}){
- const mobile=useEmployeeBScreen();return mobile?<div className="em-requests-mobile"><EmployeeMobileCreation key={authority+'|'+mode+'|'+sourceId} authority={authority} mode={mode} sourceId={sourceId}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading your shift…</p>
+ const mobile=useEmployeeBScreen(),t=useMobileCopy(creationCopy);return mobile?<div className="em-requests-mobile"><EmployeeMobileCreation key={authority+'|'+mode+'|'+sourceId} authority={authority} mode={mode} sourceId={sourceId}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">{t.loading}</p>
   {/* Direction B: the phone's first frame is this form's hero, checking (phones only). */}
-  <RequestsWaitB page={mode} text="Checking your current shift and options…"/></div></>;
+  <RequestsWaitB page={mode} text={t.checking}/></div></>;
 }
 function EmployeeMobileCreation({authority,mode,sourceId}:{authority:string;mode:CreationMode;sourceId:string}){
  const [state,setState]=useState<PrivatePanelState<EmployeeCreationSnapshot>>({snapshot:null,refreshing:true,paused:false}),[draft,setDraft]=useState<CreationDraft>({sourceKey:null,targetKey:null,reason:'',note:''}),[operation]=useState(()=>new EmployeeCreationOperation());

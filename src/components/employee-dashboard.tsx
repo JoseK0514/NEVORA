@@ -30,10 +30,11 @@ export function employeeScheduleHref(weekStart: string, date: string) {
 export function formatEmployeeMetric(
   value: number,
   kind: "hours" | "earnings",
+  lang: "en" | "es" = "en",
 ) {
-  if (kind === "hours") return `${value.toFixed(1)} hrs`;
+  if (kind === "hours") return lang === "es" ? `${value.toFixed(1)} h` : `${value.toFixed(1)} hrs`;
 
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(lang === "es" ? "es-PR" : "en-US", {
     style: "currency",
     currency: "USD",
   }).format(value);

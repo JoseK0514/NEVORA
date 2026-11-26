@@ -36,15 +36,15 @@ describe('reminder copy', () => {
   it('formats times in the workplace zone, in both languages', () => {
     const now = new Date('2026-11-17T15:00:00.000Z');
     expect(reminderTime('2026-11-17T19:02:00.000Z', 'America/Puerto_Rico')).toBe('3:02 PM');
-    expect(reminderTime('2026-11-17T19:02:00.000Z', 'America/Puerto_Rico', 'es')).toBe('3:02 PM');
+    expect(reminderTime('2026-11-17T19:02:00.000Z', 'America/Puerto_Rico', 'es')).toBe('3:02 p. m.');
     expect(reminderWhen('2026-11-18T01:00:00.000Z', 'America/Puerto_Rico', 'en', now)).toBe('today, 9:00 PM');
     expect(reminderWhen('2026-11-18T11:00:00.000Z', 'America/Puerto_Rico', 'en', now)).toBe('tomorrow, 7:00 AM');
     expect(reminderWhen('2026-11-20T21:00:00.000Z', 'America/Puerto_Rico', 'en', now)).toBe('Fri, Nov 20, 5:00 PM');
-    expect(reminderWhen('2026-11-18T11:00:00.000Z', 'America/Puerto_Rico', 'es', now)).toBe('mañana, 7:00 AM');
+    expect(reminderWhen('2026-11-18T11:00:00.000Z', 'America/Puerto_Rico', 'es', now)).toBe('mañana, 7:00 a. m.');
     expect(reminderAfter('2026-11-18T01:00:00.000Z', 'America/Puerto_Rico', 'en', now)).toBe('today after 9:00 PM');
     expect(reminderAfter('2026-11-19T01:00:00.000Z', 'America/Puerto_Rico', 'en', now)).toBe('tomorrow after 9:00 PM');
     expect(reminderAfter('2026-11-21T01:00:00.000Z', 'America/Puerto_Rico', 'en', now)).toBe('Fri, Nov 20 after 9:00 PM');
-    expect(reminderAfter('2026-11-18T01:00:00.000Z', 'America/Puerto_Rico', 'es', now)).toBe('hoy después de las 9:00 PM');
-    expect(reminderAfter('2026-11-21T01:00:00.000Z', 'America/Puerto_Rico', 'es', now)).toMatch(/^el vie, 20 (de )?nov\.? después de las 9:00 PM$/);
+    expect(reminderAfter('2026-11-18T01:00:00.000Z', 'America/Puerto_Rico', 'es', now)).toBe('hoy después de las 9:00 p. m.');
+    expect(reminderAfter('2026-11-21T01:00:00.000Z', 'America/Puerto_Rico', 'es', now)).toMatch(/^el vie, 20 (de )?nov\.? después de las 9:00 p\. m\.$/);
   });
 });

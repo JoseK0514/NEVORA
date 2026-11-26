@@ -129,10 +129,10 @@ describe('reminder row control, Spanish', () => {
       noEnglish(html);
     }
     noEnglish(row(states.ready, 'es', {offline: true}));
-    expect(text(row(states.queued, 'es'))).toBe('Recordatorio en cola · 3:02 PM');
+    expect(text(row(states.queued, 'es'))).toBe('Recordatorio en cola · 3:02 p. m.');
     expect(text(row(states.unknown, 'es'))).toBe('No pudimos confirmar este recordatorio. Verificar de nuevo');
     expect(text(row(states.notSent, 'es'))).toBe('Aún sin confirmar. No se encontró un recibo de cola. Todavía puede quedar en cola. Enviar de nuevo');
-    expect(text(row(states.cooldown, 'es'))).toBe('Un recordatorio al día · se puede recordar de nuevo hoy después de las 9:00 PM');
+    expect(text(row(states.cooldown, 'es'))).toBe('Un recordatorio al día · se puede recordar de nuevo hoy después de las 9:00 p. m.');
     expect(row(states.ready, 'es')).toContain('aria-label="Recordar a Ana Colon"');
   });
 });
@@ -150,7 +150,8 @@ describe('the check before sending', () => {
       const t = reminderCopy[lang];
       const html = renderToStaticMarkup(<OneBody titleId="t" target={people[0]} state={states.ready} ui={fakeUi(lang, mixed)} about={t.aboutAvailability('Nov 23')} onSend={() => {}} />);
       const shown = text(html);
-      for (const part of [t.oneTitle('Ana Colon'), t.factWho, 'Ana Colon', t.aboutAvailability('Nov 23'), t.how, t.factWhen, t.factDue, t.limit, t.send, t.cancel]) expect(shown).toContain(part);
+      for (const part of [t.oneTitle('Ana Colon'), t.factWho, 'Ana Colon', t.aboutAvailability('Nov 23'), t.how, t.factWhen, t.factDue, t.limit, t.send, t.cancel]) expect(shown).toContain(text(part));
+      expect(html).toContain(t.limit);
       expect(html.match(/b-btn--teal/g)).toHaveLength(1);
       expect(html).toMatch(/<h2[^>]*tabindex="-1"/);
       expect(shown).not.toMatch(/deliver(ed|y)|entregad[oa] /i);
@@ -188,7 +189,7 @@ describe('the check before sending', () => {
       const html = renderToStaticMarkup(<ManyBody titleId="t" open={{mode: 'many', people, stage: 'results', sent: ['fictional-0', 'fictional-2']}} ui={fakeUi(lang, after)} about="x" onSend={() => {}} />);
       const shown = text(html);
       expect(html.match(/<li /g)).toHaveLength(2);
-      for (const part of [t.resultsTitle, t.resultsSummary(1, 2), t.queuedAt('3:02 PM'), t.unknown, t.checkAgain, t.done]) expect(shown).toContain(part);
+      for (const part of [t.resultsTitle, t.resultsSummary(1, 2), t.queuedAt(lang === 'es' ? '3:02 p. m.' : '3:02 PM'), t.unknown, t.checkAgain, t.done]) expect(shown).toContain(part);
       expect(shown).not.toContain('Daniel Cruz');
       expect(html).toContain('role="status"');
       if (lang === 'es') noEnglish(html);

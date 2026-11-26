@@ -1,4 +1,8 @@
+"use client";
+
 import { SelectField } from "./select-field";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { shiftCopy } from "./shift-copy";
 import type { ShiftChangePolicy } from "../lib/shift-changes/types";
 import { PolicyForm, PolicyOrderError } from "./wave-b-forms";
 import { saveShiftChangePolicyAction } from "../app/app/schedule/settings/actions";
@@ -10,11 +14,12 @@ export function ShiftChangePolicyFields({
   policy: ShiftChangePolicy | null;
   canEdit: boolean;
 }) {
+  const t = shiftCopy(usePortalLang()).policy;
   return (
     // Phase 2 (C9, Nov 23, 2026): Trades and Coverage straight under the rule's row (the rule's row already names it), with
     // one line that matters: who sets them for a Manager, what happens before they are set for the Owner.
     <div className="c-rf-policy">
-      <p className="c-rf-help">{canEdit ? "Until a rule is set, trades and cover wait for a manager." : "An Owner sets these."}</p>
+      <p className="c-rf-help">{canEdit ? t.ownerHelp : t.managerHelp}</p>
       {(["swap", "coverage"] as const).map((scope) => {
         const current = policy?.[scope];
         const content = (
@@ -22,17 +27,17 @@ export function ShiftChangePolicyFields({
             <input type="hidden" name="scope" value={scope} />
             <SelectField
               name="mode"
-              label="How requests are approved"
+              label={t.approved}
               className="c-field c-rf-selectfield"
               defaultValue={current?.mode ?? ""}
               options={[
-                { value: "", label: "Not set yet" },
-                { value: "AUTOMATIC_WHEN_VALID", label: "Automatically" },
-                { value: "MANAGER_REVIEW", label: "Manager reviews" },
+                { value: "", label: t.notSet },
+                { value: "AUTOMATIC_WHEN_VALID", label: t.automatic },
+                { value: "MANAGER_REVIEW", label: t.managerReviews },
               ]}
             />
             <label className="c-field">
-              <span className="c-field__label">Ask at least this many minutes before the shift</span>
+              <span className="c-field__label">{t.askLabel}</span>
               <input
                 className="c-in"
                 name="submissionAdvanceMinutes"
@@ -42,10 +47,10 @@ export function ShiftChangePolicyFields({
                 step="1"
                 defaultValue={current?.submissionAdvanceMinutes ?? ""}
               />
-              <span className="c-field__help">Leave blank if you haven’t decided. 0 means right up to the start.</span>
+              <span className="c-field__help">{t.askHelp}</span>
             </label>
             <label className="c-field">
-              <span className="c-field__label">Finish at least this many minutes before the shift</span>
+              <span className="c-field__label">{t.finishLabel}</span>
               <input
                 className="c-in"
                 name="completionAdvanceMinutes"
@@ -56,45 +61,42 @@ export function ShiftChangePolicyFields({
                 defaultValue={current?.completionAdvanceMinutes ?? ""}
               />
               {canEdit ? <PolicyOrderError /> : null}
-              <span className="c-field__help">
-                Use the same number or less than the time to ask. Requests
-                already sent keep their earlier deadline.
-              </span>
+              <span className="c-field__help">{t.finishHelp}</span>
             </label>
           </>
         );
         return (
           <section key={scope} className="c-rf-scope">
-            <h2 className="c-rf-scope__t">{scope === "swap" ? "Trades" : "Coverage"}</h2>
+            <h2 className="c-rf-scope__t">{scope === "swap" ? t.trades : t.coverage}</h2>
             {canEdit ? (
               <PolicyForm
                 revision={current?.revision ?? 0}
                 action={saveShiftChangePolicyAction}
-                saveLabel={`Save ${scope === "swap" ? "trade" : "coverage"} policy`}
+                saveLabel={t.save(scope)}
               >
                 {content}
               </PolicyForm>
             ) : (
               <dl className="c-rf-facts">
-                <div><dt>How requests are approved</dt>
+                <div><dt>{t.approved}</dt>
                 <dd>
                   {current?.mode === "AUTOMATIC_WHEN_VALID"
-                    ? "Automatically"
+                    ? t.automatic
                     : current?.mode === "MANAGER_REVIEW"
-                      ? "Manager reviews"
-                      : "Unknown"}
+                      ? t.managerReviews
+                      : t.unknown}
                 </dd></div>
-                <div><dt>Ask at least</dt>
+                <div><dt>{t.askAtLeast}</dt>
                 <dd>
                   {current?.submissionAdvanceMinutes == null
-                    ? "Unknown"
-                    : `${current.submissionAdvanceMinutes} minutes before`}
+                    ? t.unknown
+                    : t.minutesBefore(current.submissionAdvanceMinutes)}
                 </dd></div>
-                <div><dt>Finish at least</dt>
+                <div><dt>{t.finishAtLeast}</dt>
                 <dd>
                   {current?.completionAdvanceMinutes == null
-                    ? "Unknown"
-                    : `${current.completionAdvanceMinutes} minutes before`}
+                    ? t.unknown
+                    : t.minutesBefore(current.completionAdvanceMinutes)}
                 </dd></div>
               </dl>
             )}

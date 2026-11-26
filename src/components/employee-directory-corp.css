@@ -44,3 +44,21 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team.c-team--scoped .b-filters > button:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#f1ml) { flex: 1 1 auto !important; height: auto !important; min-height: var(--b-seg-item-h) !important; line-height: 1.25 !important; padding-left: var(--b-space-12) !important; padding-right: var(--b-space-12) !important; }
   }
 }
+
+@layer nv-b {
+  html:lang(es) .c-team .b-row__state > .b-status:not([data-dot]) {
+    display: block !important;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    white-space: normal !important;
+    flex: 0 1 auto !important;
+  }
+}
+
+@layer nv-b {
+  /* The next row's enlarged hit area reaches the last pixel of the directory link. */
+  #team-people:lang(es) > .c-section__head .c-link {
+    position: relative;
+    z-index: 2;
+  }
+}

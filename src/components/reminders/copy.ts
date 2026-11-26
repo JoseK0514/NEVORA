@@ -1,7 +1,8 @@
-/* Reminders (U10): every word the feature shows, in English and Puerto Rico Spanish (neutral "usted" forms, as the
- * other Spanish pages). The signed-in app renders `en` today; `es` is proven by copy.test.ts and the render tests.
+/* Reminders (U10): every word the feature shows in English and Puerto Rico Spanish.
  * Words to keep: a queue receipt is "queued", never "sent" or "delivered"; an unknown result is "not confirmed",
  * never "failed"; nothing here promises that a person saw anything. */
+import { esTimes } from '../copy-receipt-copy';
+
 export type ReminderLang = 'en' | 'es';
 
 const en = {
@@ -85,19 +86,19 @@ const es: ReminderCopy = {
   queued: 'Recordatorio en cola',
   alreadyQueued: 'El recordatorio ya estaba en cola',
   heldActivation: 'En pausa: los recordatorios están detenidos para este lugar de trabajo',
-  heldModule: 'En pausa: Novedades está apagado para este lugar de trabajo',
+  heldModule: 'En pausa: Avisos está desactivado para este lugar de trabajo',
   signedOut: 'No se puede recordar: la sesión terminó. No se envió nada.',
   signIn: 'Iniciar sesión de nuevo',
-  noAccessManager: 'No se puede recordar: su acceso no cubre esto. No se envió nada. Pida al Owner de su lugar de trabajo que revise su acceso.',
-  noAccessOwner: 'No se puede recordar: su acceso actual no cubre esto. No se envió nada.',
+  noAccessManager: 'No se puede recordar: tu acceso no cubre esto. No se envió nada. Pídele al dueño que revise tu acceso.',
+  noAccessOwner: 'No se puede recordar: tu acceso actual no cubre esto. No se envió nada.',
   support: 'Contactar a soporte',
   stale: 'No se puede recordar: esta página no está al día. No se envió nada.',
-  changed: 'Esto cambió mientras lo veía.',
+  changed: 'Esto cambió mientras lo veías.',
   expiresFirst: 'Ya es tarde para recordar: esto cierra antes de que pueda salir un recordatorio.',
   refresh: 'Actualizar',
   unknown: 'No pudimos confirmar este recordatorio.',
   unknownStill: 'Sigue sin confirmarse. No se envió nada nuevo.',
-  unknownAccess: 'No pudimos confirmar este recordatorio. Inicie sesión de nuevo y vuelva a verificar.',
+  unknownAccess: 'No pudimos confirmar este recordatorio. Inicia sesión de nuevo y vuelve a verificar.',
   checkAgain: 'Verificar de nuevo',
   looking: 'Verificando…',
   notSent: 'Aún sin confirmar. No se encontró un recibo de cola. Todavía puede quedar en cola.',
@@ -105,8 +106,8 @@ const es: ReminderCopy = {
   error: 'No se pudo verificar si se puede enviar un recordatorio.',
   tryAgain: 'Intentar de nuevo',
   reference: id => `Referencia de soporte ${id}`,
-  offline: 'No hay conexión. Conéctese para recordar.',
-  needsDeadline: 'Los recordatorios necesitan una fecha límite. Fíjela en Reglas de horarios.',
+  offline: 'No hay conexión. Conéctate para enviar el recordatorio.',
+  needsDeadline: 'Los recordatorios necesitan una fecha límite. Fíjala en Reglas de horarios.',
   needsDeadlineLink: 'Reglas de horarios',
   oneTitle: name => `¿Recordar a ${name}?`,
   manyTitle: count => `¿Recordar a ${count} personas?`,
@@ -114,14 +115,14 @@ const es: ReminderCopy = {
   factWho: 'Quién lo recibe',
   factAbout: 'Sobre',
   aboutAvailability: week => `Disponibilidad para la semana del ${week}`,
-  aboutUpdate: title => `La novedad «${title}»`,
+  aboutUpdate: title => `El aviso «${title}»`,
   factHow: 'Cómo sale',
   how: 'NEVORA pone una notificación en cola para la persona. No podemos confirmar cuándo la ve.',
   factWhen: 'Lo más temprano que puede salir',
   factDue: 'Fecha límite',
   factEnds: 'El recordatorio termina',
   factLimit: 'Límite',
-  limit: 'Un recordatorio por persona al día. Las horas de silencio son de 9:00 PM a 7:00 AM.',
+  limit: 'Un recordatorio por persona al día. Las horas de silencio son de 9:00 p. m. a 7:00 a. m.',
   send: 'Enviar recordatorio',
   sendMany: count => (count === 1 ? 'Enviar 1 recordatorio' : `Enviar ${count} recordatorios`),
   cancel: 'Cancelar',
@@ -146,7 +147,8 @@ const dayKey = (at: Date, timeZone: string) => new Intl.DateTimeFormat('en-CA', 
 
 /** "3:02 PM" in the workplace's zone. */
 export function reminderTime(at: string, timeZone: string, lang: ReminderLang = 'en') {
-  return new Intl.DateTimeFormat(locale(lang), {timeZone, hour: 'numeric', minute: '2-digit', hour12: true}).format(new Date(at)).replace(/ /g, ' ').replace(/\s?([ap])\.\s?m\./i, (_, p: string) => ` ${p.toUpperCase()}M`);
+  const clock = new Intl.DateTimeFormat(locale(lang), {timeZone, hour: 'numeric', minute: '2-digit', hour12: true}).format(new Date(at)).replace(/ /g, ' ').replace(/\s?([ap])\.\s?m\./i, (_, p: string) => ` ${p.toUpperCase()}M`);
+  return lang === 'es' ? esTimes(clock) : clock;
 }
 
 const daysAway = (at: string, timeZone: string, now: Date) => {

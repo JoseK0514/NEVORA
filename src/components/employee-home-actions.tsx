@@ -11,6 +11,8 @@ import {EmployeeTimePanel,EmployeeTimeView} from './employee-time-panel';
 import {EmployeeHomeQuietView,type HomeWeek} from './employee-home-quiet';
 import {EmployeeHomeCorpView} from './employee-home-corp';
 import {offlineListener} from '@/lib/offline-hold';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {employeeHomeCopy, HOME_LOCALE, type HomeLang} from './employee-home-copy';
 export type HomeLifetime={state:'ready';observedAt:string;validForMs:number;home:Extract<EmployeeHomeRead,{snapshot:HomeSnapshot}>}|{state:'unavailable';reason:string};
 export function createEmployeeHomeController(changed:(state:PrivatePanelState<HomeLifetime>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,authority:string){
  return createPrivateSnapshotController<HomeLifetime>(changed,request,value=>{
@@ -23,19 +25,20 @@ export function createEmployeeHomeController(changed:(state:PrivatePanelState<Ho
   return {state:'ready',observedAt:projected.snapshot.observedAt,validForMs:projected.snapshot.validForMs,home:projected};
  },reason=>({state:'unavailable',reason}),()=> 'read_failed');
 }
-function stamp(at:string,zone:string){return new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));}
-function Assignment({shift,zone}:{shift:PublishedAssignment;zone:string}){
+function stamp(at:string,zone:string,lang:HomeLang='en'){return new Intl.DateTimeFormat(HOME_LOCALE[lang],{timeZone:zone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));}
+function Assignment({shift,zone,lang='en'}:{shift:PublishedAssignment;zone:string;lang?:HomeLang}){
+ const c=employeeHomeCopy(lang);
  return <div className="employee-home-assignment">
-  <p className="employee-home-shift-time"><time dateTime={shift.startAt}>{stamp(shift.startAt,zone)}</time><span aria-hidden="true"> – </span><time dateTime={shift.endAt}>{stamp(shift.endAt,zone)}</time></p>
+  <p className="employee-home-shift-time"><time dateTime={shift.startAt}>{stamp(shift.startAt,zone,lang)}</time><span aria-hidden="true"> – </span><time dateTime={shift.endAt}>{stamp(shift.endAt,zone,lang)}</time></p>
   <p className="employee-home-location">{shift.locationLabel}{shift.positionLabel?` · ${shift.positionLabel}`:''}</p>
-  {shift.designatedLead?<p>Designated lead</p>:null}
-  <Link className="employee-home-review" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>View schedule <span aria-hidden="true">→</span></Link>
+  {shift.designatedLead?<p>{c.designatedLead}</p>:null}
+  <Link className="employee-home-review" href={`/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}`}>{c.viewSchedule} <span aria-hidden="true">→</span></Link>
  </div>;
 }
-const names:Record<HomeSource,string>={schedule:'Schedule',acknowledgements:'Schedule reviews',exchanges:'Shift requests',timeOff:'Time off',ownTime:'Recorded time and corrections',communications:'Communications'};
 const destinations:Record<HomeSource,string>={schedule:'/app/schedule',acknowledgements:'/app/schedule',exchanges:'/app/exchange',timeOff:'/app/requests?tab=my',ownTime:'/app/my-time',communications:'/app/updates'};
 export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:PrivatePanelState<HomeLifetime>;timeAuthority:string;onRetry:()=>void;authority?:string}){
  const [showAll,setShowAll]=useState(false);
+ const lang=usePortalLang(),c=employeeHomeCopy(lang),names=c.sources;
  const replaced=state.snapshot?.state==='ready'&&authority!==undefined&&state.snapshot.home.snapshot.authority!==authority;
  const home=!replaced&&!state.paused&&state.snapshot?.state==='ready'?state.snapshot.home:null,snapshot=home?.snapshot;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
@@ -44,27 +47,27 @@ export function EmployeeHomeView({state,timeAuthority,onRetry,authority}:{state:
  return <div className="employee-home-layout" data-home-state={state.paused?'paused':snapshot?home!.state:denied?'unauthorized':loading?'loading':'unavailable'}>
   <div className="employee-home-surface employee-home-primary">
    <section aria-labelledby="employee-next-heading" className="employee-home-next">
-    <p className="employee-home-eyebrow">Your schedule</p><h2 id="employee-next-heading">Next Shift</h2>
+    <p className="employee-home-eyebrow">{c.yourSchedule}</p><h2 id="employee-next-heading">{c.nextShiftTitle}</h2>
     {snapshot?<>
-     {snapshot.publicationState==='unavailable'?<p>Schedule unavailable</p>:snapshot.nextShift?<Assignment shift={snapshot.nextShift} zone={snapshot.timeZone}/>:<><p>No upcoming published shift</p><Link className="employee-home-review" href="/app/schedule">View schedule</Link></>}
-     {snapshot.currentShift?<section className="employee-home-scheduled-now" aria-label="Scheduled now"><h3>Scheduled now</h3><p>Clock status below shows whether you&apos;re clocked in.</p><Assignment shift={snapshot.currentShift} zone={snapshot.timeZone}/></section>:null}
-     {snapshot.publicationState==='partial'?<p className="employee-home-publication" role="status">{unpublishedNote(snapshot.unpublishedLocations ?? [])}</p>:null}
-    </>:<div className="employee-home-recovery" role="status"><p>{state.paused?'Home paused — return online to refresh.':denied?'Sign in again to view Home.':loading?'Loading Home…':'Home unavailable — try again.'}</p></div>}
+     {snapshot.publicationState==='unavailable'?<p>{c.scheduleUnavailable}</p>:snapshot.nextShift?<Assignment shift={snapshot.nextShift} zone={snapshot.timeZone} lang={lang}/>:<><p>{c.noPublishedShift}</p><Link className="employee-home-review" href="/app/schedule">{c.viewSchedule}</Link></>}
+     {snapshot.currentShift?<section className="employee-home-scheduled-now" aria-label={c.scheduledNow}><h3>{c.scheduledNow}</h3><p>{c.clockStatusBelowPlain}</p><Assignment shift={snapshot.currentShift} zone={snapshot.timeZone} lang={lang}/></section>:null}
+     {snapshot.publicationState==='partial'?<p className="employee-home-publication" role="status">{(lang==='en'?unpublishedNote:c.unpublishedNote)(snapshot.unpublishedLocations ?? [])}</p>:null}
+    </>:<div className="employee-home-recovery" role="status"><p>{state.paused?c.homePaused:denied?c.signInToView:loading?c.loadingHome:c.homeUnavailable}</p></div>}
    </section>
-   {snapshot?<section className="employee-home-actions" aria-labelledby="employee-actions-heading"><h2 id="employee-actions-heading">Needs your attention</h2>
-    {home!.state==='partial'?<p className="employee-home-partial" role="status">Some Home sections could not be fully checked.</p>:null}
-    {items.length?<><ul>{visible.map(item=><li key={`${item.ref.kind}:${item.ref.id}`}><Link href={item.href}><span><strong>{item.label}</strong>{item.ref.kind==='SCHEDULE'?<small>Week of <time dateTime={item.ref.id}>{new Intl.DateTimeFormat('en-US',{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'}).format(new Date(`${item.ref.id}T12:00:00Z`))}</time></small>:<small>Recorded <time dateTime={item.changedAt}>{stamp(item.changedAt,snapshot.timeZone)}</time></small>}{item.required?<small>Required review</small>:null}{item.deadlineAt?<small>Respond by <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt,snapshot.timeZone)}</time></small>:null}</span><span aria-hidden="true">→</span></Link></li>)}</ul>
-     {items.length>5?<button className="button secondary" type="button" aria-expanded={showAll} onClick={()=>setShowAll(v=>!v)}>{showAll?'Show fewer':`Show all ${items.length} items (${items.length-5} more)`}</button>:null}
-    </>:<p role="status">{home!.allSet?"You’re all set.":'No items in the available sections.'}</p>}
+   {snapshot?<section className="employee-home-actions" aria-labelledby="employee-actions-heading"><h2 id="employee-actions-heading">{c.needsAttention}</h2>
+    {home!.state==='partial'?<p className="employee-home-partial" role="status">{c.someNotChecked}</p>:null}
+    {items.length?<><ul>{visible.map(item=><li key={`${item.ref.kind}:${item.ref.id}`}><Link href={item.href}><span><strong>{c.label(item.label)}</strong>{item.ref.kind==='SCHEDULE'?<small>{c.weekOf} <time dateTime={item.ref.id}>{new Intl.DateTimeFormat(HOME_LOCALE[lang],{timeZone:'UTC',month:'short',day:'numeric',year:'numeric'}).format(new Date(`${item.ref.id}T12:00:00Z`))}</time></small>:<small>{c.recorded} <time dateTime={item.changedAt}>{stamp(item.changedAt,snapshot.timeZone,lang)}</time></small>}{item.required?<small>{c.requiredReview}</small>:null}{item.deadlineAt?<small>{c.respondByLead} <time dateTime={item.deadlineAt}>{stamp(item.deadlineAt,snapshot.timeZone,lang)}</time></small>:null}</span><span aria-hidden="true">→</span></Link></li>)}</ul>
+     {items.length>5?<button className="button secondary" type="button" aria-expanded={showAll} onClick={()=>setShowAll(v=>!v)}>{showAll?c.showFewer:c.showAllItems(items.length,items.length-5)}</button>:null}
+    </>:<p role="status">{home!.allSet?c.allSet:c.noItemsAvailable}</p>}
     <ul className="employee-home-source-notices">{HOME_SOURCES.filter(key=>snapshot.sources[key].state!=='complete').map(key=><li key={key}>
-     <span>{names[key]} {snapshot.sources[key].state==='unavailable'?(snapshot.sources[key].reason==='review_unavailable'?'unavailable — a changed schedule needs review':'unavailable'):snapshot.sources[key].reason==='source_cap'?'partially shown — more records are available':'partial'}</span>
-     <Link href={destinations[key]}>Open {names[key].toLowerCase()}</Link>
+     <span>{names[key]} {snapshot.sources[key].state==='unavailable'?(snapshot.sources[key].reason==='review_unavailable'?c.srcUnavailableReview:c.srcUnavailable):snapshot.sources[key].reason==='source_cap'?c.srcPartiallyShown:c.srcPartial}</span>
+     <Link href={destinations[key]}>{c.open(names[key])}</Link>
     </li>)}</ul>
    </section>:null}
    {/* Only a Home that isn't showing offers Retry or Sign in; a shown Home has no Checked/Refresh footer. */}
-   {!snapshot&&!loading&&!state.paused?<footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">Sign in</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.refreshing}>{state.refreshing?'Checking…':'Retry home'}</button>}</footer>:null}
+   {!snapshot&&!loading&&!state.paused?<footer className="employee-home-refresh">{denied?<Link className="button secondary" href="/login">{c.signIn}</Link>:<button className="button secondary" type="button" onClick={onRetry} disabled={state.refreshing}>{state.refreshing?c.checking:c.retryHome}</button>}</footer>:null}
   </div>
-  <aside className="employee-home-surface employee-home-recorded" aria-label="Own recorded time">
+  <aside className="employee-home-surface employee-home-recorded" aria-label={c.ownRecordedTime}>
    {snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:<EmployeeTimeView compact state={{time:state.snapshot?.state==='unavailable'?{state:'unavailable',reason:denied?'access_denied':'read_failed'}:null,refreshing:loading,paused:state.paused}} onRefresh={onRetry}/>}
   </aside>
  </div>;

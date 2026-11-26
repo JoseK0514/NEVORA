@@ -46,3 +46,15 @@
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-help #help-contact .c-card > .c-help__note:not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#h-none) { max-width: none !important; }
 }
+
+@layer nv-b {
+  html:lang(es) .c-help__q .c-help__a a[href^="mailto:"] {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  html:lang(es) #help-contact a[href^="mailto:"] .c-row__detail > span {
+    white-space: normal !important;
+    overflow: visible;
+    text-overflow: clip;
+  }
+}

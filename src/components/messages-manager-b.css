@@ -173,3 +173,12 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not(#mb-1):not(#mb-2) .c-page.mb-page > .b-screen .b-hero .b-seg > * { height: auto !important; min-height: 44px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.mb-page > .b-screen .b-title__right .b-btn { min-height: 44px !important; }
 }
+
+@layer nv-b {
+  /* The track is 31px tall. The extra seven pixels on each side belong to its switch. */
+  .mb-switch .mb-tog:lang(es)::before {
+    content: "";
+    position: absolute;
+    inset: -7px 0;
+  }
+}

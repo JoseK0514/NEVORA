@@ -8,6 +8,8 @@ import type {EmployeeNotificationItem} from '../lib/employee-view';
 const host=rs.hoisted(()=>({cursor:0,slots:[] as {value:unknown}[]}));
 rs.mock('react',()=>({...rstestOriginal0,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
+ // Signed-in Spanish: usePortalLang() reads a context; outside a provider it is the default (English).
+ useContext:(context:{_currentValue:unknown})=>context._currentValue,
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
 }));
 import {NotificationInbox} from './notification-inbox';

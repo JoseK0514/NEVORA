@@ -1,8 +1,11 @@
-/* Phase 4 (Nov 17, 2026): the new words on the Employee and Lead Home, Schedule, Time and Pay, in English and Puerto
- * Rico Spanish. The signed-in app renders English today (a stored language per person is an open decision), so the
- * screens read `workCopy()`; the Spanish entries are kept beside them so no new sentence waits for a translation.
- * Existing sentences on these screens are still written where they were. Pay wording that is locked ("Scheduled
- * payday", "Your employer pays you") is not here: it was restyled, not rewritten. */
+import { withSpanishHourArticle } from '@/lib/i18n/spanish-clock-time';
+import { copy as approvedTimeB } from './time-b-copy';
+import { copy as approvedPayB } from './pay-b-copy';
+
+/* Phase 4 (Nov 17, 2026): the words on the Employee and Lead Home, Schedule, Time and Pay, in English and Puerto Rico
+ * Spanish (tú, the docs/design/voice.md glossary). Signed-in Spanish (Nov 23, 2026): the screens read
+ * `workCopy(lang)` with the person's language (usePortalLang, or a `lang` prop where a screen renders on the server). Locked pay wording keeps its English word for
+ * word ("Scheduled payday"); its Spanish waits for Jose's review. */
 export type WorkLang = 'en' | 'es';
 const words = {
   en: {
@@ -53,22 +56,77 @@ const words = {
     whatChanged: 'What changed',
     // Round 2 (S2): Schedule's Confirm row carries Home's chip.
     actionNeeded: 'Action needed',
+    // Signed-in Spanish (Nov 23, 2026): the rest of Home, Your week, Schedule and the shared parts, moved here as written.
+    shortcuts: 'Shortcuts',
+    scTimeOff: 'Time off', scTimeOffAria: 'Request time off', scCallout: 'Can’t work', scCalloutAria: 'Can’t work a shift', scSwap: 'Swap shift', scFixTime: 'Fix my time',
+    // src/components/employee-b/home-b.tsx:54
+    scCalloutCompact: 'Can’t work',
+    // src/components/employee-b/home-b.tsx:55
+    scSwapCompact: 'Swap shift',
+    // src/components/employee-b/home-b.tsx:56
+    scFixTimeCompact: 'Fix my time',
+    payToday: 'today', payTomorrow: 'tomorrow', payInDays: (days: number) => `in ${days} days`,
+    scheduledPayday: 'Scheduled payday',
+    // src/components/employee-b/home-b.tsx:165
+    scheduledPaydayCompact: 'Scheduled payday',
+    atAGlance: 'This week at a glance',
+    startsInMin: (minutes: number) => `Starts in ${minutes} min`, startsInHours: (hours: number) => `Starts in ${hours} h`,
+    todaysTeam: 'Today’s team', messageTeam: 'Message today’s team', everyoneOnShift: 'Everyone on shift today',
+    scheduleUnchecked: 'Your schedule couldn’t be checked.',
+    noUpcoming: 'No upcoming shift. New shifts show here once they’re published.',
+    shiftLead: 'Shift lead', onShiftNow: 'On shift now', todaysShift: 'Today’s shift',
+    endsOn: (day: string) => `ends ${day}`, rangeTo: 'to ',
+    onBreak: 'On break', clockedInAt: (time: string) => `Clocked in at ${time}`,
+    breaksOnTablet: (place: string) => `Breaks and clock out on the ${place} tablet`,
+    clockInOnTablet: (place: string) => `Clock in on the ${place} tablet`,
+    takeBreaksThere: 'Take breaks and clock out there too',
+    shiftDetails: 'Shift details', shiftDetailsFor: (day: string) => `Shift details, ${day}`,
+    rightNow: 'Right now', timeTab: 'Time', openTime: 'Open Time',
+    comingUp: 'Coming up', seeAll: 'See all', seeAllShifts: 'See all shifts',
+    respondBy: (when: string) => `Respond by ${when}`, respondByShort: (when: string) => `By ${when}`,
+    review: 'Review', reviewItem: (title: string) => `Review: ${title}`,
+    sourceNeedsReview: 'A changed schedule needs review', sourceUnchecked: 'Couldn’t be checked',
+    sourcePartlyShown: 'Partly shown — more records are available', sourcePartly: 'Partly checked',
+    openSource: (name: string, state: string) => `Open ${name}, ${state}`,
+    welcomeBack: (name: string) => `Welcome back, ${name}`, homeTitle: 'Home',
+    thingsToDo: 'Things to do', allNotifications: 'All notifications', seeAllNotifications: 'See all notifications',
+    // src/components/employee-b/home-b.tsx:412
+    allNotificationsCompact: 'All notifications',
+    allSet: 'You’re all set. Nothing needs you right now.',
+    signIn: 'Sign in', tryAgain: 'Try again', toLoadHome: ' to load Home',
+    // Your week (Home)
+    yourWeek: 'Your week', timecard: 'Timecard', openTimecard: 'Open your timecard', hoursByDay: 'Hours by day',
+    hoursWorked: 'Hours worked', scheduledKey: 'Scheduled',
+    hoursWords: (n: string) => `${n} ${n === '1' ? 'hour' : 'hours'}`,
+    todayDay: (name: string) => `Today, ${name}`,
+    dayWorked: (lead: string, worked: string, scheduled: string | null) => `${lead}: ${worked} worked${scheduled ? ` of ${scheduled} scheduled` : ''}`,
+    dayScheduled: (lead: string, hours: string) => `${lead}: ${hours} scheduled`,
+    dayOff: (lead: string) => `${lead}: no shift`,
+    // Schedule
+    scheduleTitle: 'Schedule', availability: 'Availability', confirmed: 'Confirmed', previousWeek: 'Previous week', nextWeek: 'Next week',
+    daysInWeek: 'Days in this week',
+    openToPickUp: (count: number) => `${count} open ${count === 1 ? 'shift' : 'shifts'} to pick up`,
+    done: 'Done', scheduleUnavailable: 'Schedule unavailable', scheduleUnavailableSr: 'Schedule unavailable. ',
+    couldntLoadSchedule: 'We couldn’t load your schedule.', toLoadSchedule: ' to load your schedule', wholeWeek: 'Whole week',
+    couldntCheckOpen: 'We couldn’t check open shifts right now.', openShiftRequests: 'Open shift requests',
+    youCanPickUp: 'You can pick up', waiting: 'Waiting', nextWeekTag: 'Next week', view: 'View', pickUp: 'Pick up',
+    whyNotAvailable: 'Why other shifts aren’t available',
   },
   es: {
-    hours: 'Horas',
+    hours: approvedTimeB.es.hours,
     workedThisWeek: 'trabajadas esta semana',
     scheduledThisWeek: 'programadas esta semana',
     ofHours: (hours: string) => `de ${hours} h`,
     nextShift: 'Próximo turno',
     onShiftUntil: 'En turno hasta las',
     leadAll: (count: number) => `Lideras los ${count}`,
-    stillClockedIn: (time: string) => `Tu entrada sigue abierta desde las ${time}`,
-    shiftEnded: (range: string, place: string) => `Tu turno de ${range} terminó. Registra tu salida en la tableta de ${place}.`,
-    thisWeek: 'Esta semana',
+    stillClockedIn: (time: string) => `Sigues en turno desde ${withSpanishHourArticle(time)}`,
+    shiftEnded: (range: string, place: string) => `Tu turno de ${range} terminó. Marca tu salida en la tableta de ${place}.`,
+    thisWeek: approvedTimeB.es.thisWeek2,
     ofHoursThisWeek: (hours: string) => `de ${hours} h esta semana`,
-    openAndChanges: 'Turnos abiertos y cambios',
-    openShifts: 'Turnos abiertos',
-    noOpenShifts: 'No hay turnos abiertos',
+    openAndChanges: 'Turnos disponibles y cambios',
+    openShifts: 'Turnos disponibles',
+    noOpenShifts: 'No hay turnos disponibles',
     scheduleChanges: 'Cambios en tu horario',
     managerAsked: 'Lo pidió tu gerente',
     teamNote: 'Tu mensaje llega a todos en el horario publicado de hoy. No tienen que confirmarlo.',
@@ -81,15 +139,67 @@ const words = {
     noMorePublishedThisWeek: 'No quedan turnos publicados esta semana.',
     noMoreToday: 'No quedan turnos hoy.',
     noMorePublishedToday: 'No quedan turnos publicados hoy.',
-    today: 'Hoy',
+    today: approvedPayB.es.today,
     startsShort: (rest: string) => `En ${rest}`,
-    cantWorkShort: 'No puedo ir',
+    cantWorkShort: 'No puedo trabajar',
     leadShort: 'Líder',
     moreEarlierStatements: 'Más comprobantes anteriores',
-    notClockedInFor: (span: string) => `Sin registrar entrada · ${span}`,
-    needsYourAnswer: 'Necesita tu respuesta',
+    notClockedInFor: (span: string) => `Sin marcar entrada · ${span}`,
+    needsYourAnswer: 'Por responder',
     whatChanged: 'Qué cambió',
-    actionNeeded: 'Requiere acción',
+    actionNeeded: 'Pendiente',
+    shortcuts: 'Atajos',
+    scTimeOff: 'Días libres', scTimeOffAria: 'Pedir días libres', scCallout: 'No puedo trabajar', scCalloutAria: 'No puedo trabajar un turno', scSwap: 'Cambiar turno', scFixTime: 'Corregir mi tiempo',
+    // src/components/employee-b/home-b.tsx:54
+    scCalloutCompact: 'Ausentarme',
+    // src/components/employee-b/home-b.tsx:55
+    scSwapCompact: 'Cambiar',
+    // src/components/employee-b/home-b.tsx:56
+    scFixTimeCompact: 'Corregir',
+    payToday: 'hoy', payTomorrow: 'mañana', payInDays: (days: number) => `en ${days} días`,
+    scheduledPayday: 'Día de pago programado',
+    // src/components/employee-b/home-b.tsx:165
+    scheduledPaydayCompact: 'Pago programado',
+    atAGlance: 'Tu semana de un vistazo',
+    startsInMin: (minutes: number) => `Empieza en ${minutes} min`, startsInHours: (hours: number) => `Empieza en ${hours} h`,
+    todaysTeam: 'Equipo de hoy', messageTeam: 'Enviar mensaje al equipo de hoy', everyoneOnShift: 'Todos los que trabajan hoy',
+    scheduleUnchecked: 'No pudimos verificar tu horario.',
+    noUpcoming: 'No tienes turnos próximos. Los turnos nuevos aparecen aquí cuando se publican.',
+    shiftLead: 'Líder de turno', onShiftNow: 'En turno ahora', todaysShift: 'Turno de hoy',
+    endsOn: (day: string) => `termina ${day}`, rangeTo: 'a ',
+    onBreak: 'En descanso', clockedInAt: (time: string) => `Marcaste entrada a ${withSpanishHourArticle(time)}`,
+    breaksOnTablet: (place: string) => `Descansos y salida en la tableta de ${place}`,
+    clockInOnTablet: (place: string) => `Marca entrada en la tableta de ${place}`,
+    takeBreaksThere: 'Ahí también marcas descansos y salida',
+    shiftDetails: 'Detalles del turno', shiftDetailsFor: (day: string) => `Detalles del turno, ${day}`,
+    rightNow: 'Ahora mismo', timeTab: 'Tiempo', openTime: 'Abrir Tiempo',
+    comingUp: 'Próximos turnos', seeAll: 'Ver todos', seeAllShifts: 'Ver todos los turnos',
+    respondBy: (when: string) => `Responde antes del ${when}`, respondByShort: (when: string) => `Antes del ${when}`,
+    review: 'Revisar', reviewItem: (title: string) => `Revisar: ${title}`,
+    sourceNeedsReview: 'Un horario cambiado necesita revisión', sourceUnchecked: 'No pudimos verificar',
+    sourcePartlyShown: 'Se muestra en parte: hay más registros', sourcePartly: 'Verificado en parte',
+    openSource: (name: string, state: string) => `Abrir ${name}, ${state}`,
+    welcomeBack: (name: string) => `Hola de nuevo, ${name}`, homeTitle: 'Inicio',
+    thingsToDo: 'Pendientes', allNotifications: 'Todas las notificaciones', seeAllNotifications: 'Ver todas las notificaciones',
+    // src/components/employee-b/home-b.tsx:412
+    allNotificationsCompact: 'Notificaciones',
+    allSet: 'Todo listo. No tienes nada pendiente ahora.',
+    signIn: 'Iniciar sesión', tryAgain: 'Intentar de nuevo', toLoadHome: ' para cargar Inicio',
+    yourWeek: 'Tu semana', timecard: 'Tarjeta de tiempo', openTimecard: 'Abrir tu tarjeta de tiempo', hoursByDay: 'Horas por día',
+    hoursWorked: 'Horas trabajadas', scheduledKey: 'Programadas',
+    hoursWords: (n: string) => `${n} ${n === '1' ? 'hora' : 'horas'}`,
+    todayDay: (name: string) => `Hoy, ${name}`,
+    dayWorked: (lead: string, worked: string, scheduled: string | null) => `${lead}: ${worked} trabajadas${scheduled ? ` de ${scheduled} programadas` : ''}`,
+    dayScheduled: (lead: string, hours: string) => `${lead}: ${hours} programadas`,
+    dayOff: (lead: string) => `${lead}: sin turno`,
+    scheduleTitle: 'Horario', availability: 'Disponibilidad', confirmed: 'Confirmado', previousWeek: 'Semana anterior', nextWeek: 'Semana siguiente',
+    daysInWeek: 'Días de esta semana',
+    openToPickUp: (count: number) => `${count} ${count === 1 ? 'turno disponible' : 'turnos disponibles'} para tomar`,
+    done: 'Listo', scheduleUnavailable: 'Horario no disponible', scheduleUnavailableSr: 'Horario no disponible. ',
+    couldntLoadSchedule: 'No pudimos cargar tu horario.', toLoadSchedule: ' para cargar tu horario', wholeWeek: 'Toda la semana',
+    couldntCheckOpen: 'No pudimos verificar los turnos disponibles ahora.', openShiftRequests: 'Abrir cambios de turno',
+    youCanPickUp: 'Puedes tomar', waiting: 'En espera', nextWeekTag: 'Próxima semana', view: 'Ver', pickUp: 'Tomar',
+    whyNotAvailable: 'Por qué no hay otros turnos disponibles',
   },
 } as const;
 export type WorkCopy = {[K in keyof typeof words.en]: (typeof words.en)[K] extends (...args: infer A) => string ? (...args: A) => string : string};

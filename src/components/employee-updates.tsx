@@ -12,6 +12,9 @@ import {useCommunicationResource, type CommunicationMode} from '../lib/communica
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
 import {ManagerUpdatesView, type ManagerListStatus} from './messages-manager-b';
 import './updates-review.css';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {updateAuthorContext} from './communication-copy';
+import {employeeUpdatesCopy, UPDATES_LOCALE} from './employee-updates-copy';
 
 type ReadyUpdate = Extract<CommunicationRead, {state: 'ready'}>;
 type Filter = 'all' | 'to-review' | 'reviewed';
@@ -29,6 +32,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
 }) {
   // H4 QA: a 401 (session_ended) and a 403 (access_denied) both mean signing in again; a 401 showed "Couldn’t load" with a Try again that kept failing.
   const signedOut = unavailableReason === 'access_denied' || unavailableReason === 'session_ended';
+ const lang = usePortalLang(), t = employeeUpdatesCopy(lang), locale = UPDATES_LOCALE[lang];
  const [filter, setFilter] = useState<Filter>('all');
  const [refreshFrom, setRefreshFrom] = useState<string | null>(null);
  const current = paused ? null : list;
@@ -38,12 +42,12 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
  const visible = items.filter(item => filter === 'all' || (filter === 'to-review' ? inReviewGroup(item) : !inReviewGroup(item)));
  const groups = new Map<string, ReadyUpdate[]>();
  for (const item of visible) {
-  const date = new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'long'}).format(new Date(item.publishedAt));
+  const date = new Intl.DateTimeFormat(locale, {timeZone: item.timeZone, dateStyle: 'long'}).format(new Date(item.publishedAt));
   groups.set(date, [...(groups.get(date) ?? []), item]);
  }
- const filters = [{id: 'all', label: 'All', count: items.length}, {id: 'to-review', label: mode === 'manager' ? 'Required' : 'To review', count: toReview}, {id: 'reviewed', label: mode === 'manager' ? 'Optional' : 'Reviewed', count: items.length - toReview}] as const;
- const emptyTitle = current?.state === 'partial' ? 'No updates available in this view' : filter === 'all' ? 'No current updates' : mode === 'manager' ? filter === 'to-review' ? 'No updates requiring acknowledgement' : 'No optional updates' : filter === 'to-review' ? 'No updates waiting for review' : 'No reviewed updates yet';
- const emptyDescription = current?.state === 'partial' ? 'Some updates could not be checked. Refresh to try again.' : filter === 'all' ? 'New workplace updates will appear here.' : mode === 'manager' ? 'View all updates to check other review requirements.' : filter === 'reviewed' ? 'Updates you mark read or acknowledge will appear here.' : 'You can still find your reviewed updates in All.';
+ const filters = [{id: 'all', label: t.all, count: items.length}, {id: 'to-review', label: mode === 'manager' ? t.required : t.toReview, count: toReview}, {id: 'reviewed', label: mode === 'manager' ? t.optional : t.reviewed, count: items.length - toReview}] as const;
+ const emptyTitle = current?.state === 'partial' ? t.emptyPartial : filter === 'all' ? t.emptyAll : mode === 'manager' ? filter === 'to-review' ? t.emptyRequired : t.emptyOptional : filter === 'to-review' ? t.emptyToReview : t.emptyReviewed;
+ const emptyDescription = current?.state === 'partial' ? t.descPartial : filter === 'all' ? t.descAll : mode === 'manager' ? t.descManager : filter === 'reviewed' ? t.descReviewed : t.descToReview;
 
  // Phase 3: the kit band; the compose action leads the content column. Clean Manager (v3): for managers at 1300px and wider
  // it sits in the top bar, as the mockups place page actions.
@@ -56,43 +60,43 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   // The read, its states and the links are the same; the list, its band and its cards are the kit's.
   const offline = paused && typeof navigator !== 'undefined' && navigator.onLine === false;
   const status: ManagerListStatus | null = current ? null
-   : paused ? {kind: offline ? 'offline' : 'paused', title: 'Updates paused', line: 'Return online and to this page to refresh.'}
-   : signedOut ? {kind: 'locked', title: 'Your session ended', line: 'Sign in again to see updates.', action: {label: 'Sign in', href: '/login'}}
-   : unavailableReason ? {kind: 'failed', title: 'Couldn’t load updates', line: 'Check your connection, then try again.', action: {label: 'Try again', onClick: () => { setRefreshFrom(null); onRefresh(); }, busy: refreshing}}
-   : {kind: 'loading', title: 'Loading updates…'};
+   : paused ? {kind: offline ? 'offline' : 'paused', title: t.pausedTitle, line: t.pausedLine}
+   : signedOut ? {kind: 'locked', title: t.endedTitle, line: t.endedLine, action: {label: t.signIn, href: '/login'}}
+   : unavailableReason ? {kind: 'failed', title: t.failedTitle, line: t.failedLine, action: {label: t.tryAgain, onClick: () => { setRefreshFrom(null); onRefresh(); }, busy: refreshing}}
+   : {kind: 'loading', title: t.loading};
   return <>
    <ManagerUpdatesView list={current} status={status} partial={current?.state === 'partial'} places={places ?? null} />
-   <span className="c-sr" role="status">{userRefreshing ? 'Refreshing updates…' : ''}</span>
+   <span className="c-sr" role="status">{userRefreshing ? t.refreshing : ''}</span>
   </>;
  }
  // v5 "One look" (Jose approved round 2 "exactly like this" on Oct 24, 2026; mockup E13): Back to More, Plus messages
  // today's team, the segments, one row per update, and the note that opening doesn't confirm. Same reads and states.
  const required = items.filter(item => !isReviewed(item) && item.acknowledgement === 'REQUIRED').length;
- const longDate = (item: ReadyUpdate) => new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, dateStyle: 'long'}).format(new Date(item.publishedAt));
- const shortDate = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat('en-US', {timeZone: item.timeZone, month: 'short', day: 'numeric'}).format(new Date(item.publishedAt)));
- const status = (item: ReadyUpdate) => item.ownAcknowledgedAt ? 'Acknowledged' : item.acknowledgement === 'REQUIRED' ? 'Review needed' : item.ownReadAt ? 'Reviewed' : 'Not read';
- const stateText = paused ? 'Updates paused. Return online and to this page to refresh.' : signedOut ? 'Your session ended. Sign in again to see updates.' : unavailableReason ? 'Couldn’t load updates. Check your connection, then try again.' : 'Loading updates…';
- const sub = !current ? '\u00a0' : required ? `${required} to confirm` : toReview ? `${toReview} to review` : 'All caught up';
+ const longDate = (item: ReadyUpdate) => new Intl.DateTimeFormat(locale, {timeZone: item.timeZone, dateStyle: 'long'}).format(new Date(item.publishedAt));
+ const shortDate = (item: ReadyUpdate) => keepWhole(new Intl.DateTimeFormat(locale, {timeZone: item.timeZone, month: 'short', day: 'numeric'}).format(new Date(item.publishedAt)));
+ const status = (item: ReadyUpdate) => item.ownAcknowledgedAt ? t.acknowledged : item.acknowledgement === 'REQUIRED' ? t.reviewNeeded : item.ownReadAt ? t.reviewed : t.notRead;
+ const stateText = paused ? t.statePaused : signedOut ? t.stateEnded : unavailableReason ? t.stateFailed : t.loading;
+ const sub = !current ? '\u00a0' : required ? t.toConfirm(required) : toReview ? t.toReviewCount(toReview) : t.caughtUp;
  const kind = (item: ReadyUpdate) => updateKinds[item.type];
  return <div className="q-page q-updates-e" data-nv-page="">
-  <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon weight="bold" className="q-ic" aria-hidden="true" /></Link>} />
-  <QuietHeader title="Updates" sub={sub} />
-  <section aria-label="Workplace updates" aria-busy={refreshing}>
-   <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} ${option.count}` : option.label}</button>)}</div>
-   {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
+  <QuietNav back={{href: '/app/more', label: t.more}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label={t.messageTeam}><PlusIcon weight="bold" className="q-ic" aria-hidden="true" /></Link>} />
+  <QuietHeader title={t.title} sub={sub} />
+  <section aria-label={t.workplaceUpdates} aria-busy={refreshing}>
+   <div className="q-seg" role="group" aria-label={t.filter}>{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} ${option.count}` : option.label}</button>)}</div>
+   {current?.state === 'partial' ? <p className="q-help" role="status">{t.partialHelp}</p> : null}
    {!current ? <div role="status" style={{marginTop: 24}}><p className="q-empty">{stateText}</p>
-     {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused || refreshing} onClick={onRefresh}>{refreshing ? 'Checking…' : 'Try again'}</button> : null}</div>
+     {signedOut ? <Link className="q-btn q-btn--sec" href="/login">{t.signIn}</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused || refreshing} onClick={onRefresh}>{refreshing ? t.checking : t.tryAgain}</button> : null}</div>
     : visible.length ? <ul className="q-list updates-list" style={{marginTop: 16}}>{visible.map(item => {
      const {Icon, label} = kind(item);
      return <li key={item.id}><Link className="q-row q-row--av" href={'/app/updates/' + item.id} prefetch={false} aria-label={`${item.title}, ${label}, ${status(item)}, ${longDate(item)}`}>
       <span className={`q-av${!isReviewed(item) ? ' q-av--tint' : ''}`} aria-hidden="true"><Icon weight="bold" className="q-ic" /></span>
-      <span className="q-rt"><b>{item.title}</b><i>{[item.authorContext, `${status(item)} ${shortDate(item)}`].filter(Boolean).join(' · ')}</i></span>
+      <span className="q-rt"><b>{item.title}</b><i>{[updateAuthorContext(item.authorContext,lang), `${status(item)} ${shortDate(item)}`].filter(Boolean).join(' · ')}</i></span>
       <CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" />
      </Link></li>;
     })}</ul>
-    : <div role="status" style={{marginTop: 24}}><p className="q-empty">{emptyTitle}. {emptyDescription}</p>{filter !== 'all' ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
+    : <div role="status" style={{marginTop: 24}}><p className="q-empty">{emptyTitle}. {emptyDescription}</p>{filter !== 'all' ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>{t.viewAll}</button> : null}</div>}
   </section>
-  <p className="q-help">Opening an update doesn’t confirm it.</p>
+  <p className="q-help">{t.openingNote}</p>
  </div>;
 }
 

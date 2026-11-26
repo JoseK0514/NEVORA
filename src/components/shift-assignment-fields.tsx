@@ -1,5 +1,7 @@
 "use client";
 
+import { copy } from "./shift-assignment-fields-copy";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { useState } from "react";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { SelectField } from "./select-field";
@@ -64,6 +66,7 @@ export function ShiftAssignmentFields({
   /** Quiet: rows that sit between Person and Position (Location). */
   children?: import("react").ReactNode;
 }) {
+  const t = copy[usePortalLang()];
   const [selectedEmployee, setEmployee] = useState(employeeId);
   const [selectedPosition, setPosition] = useState(positionId);
   const employee = employees.find((item) => item.id === selectedEmployee);
@@ -83,19 +86,19 @@ export function ShiftAssignmentFields({
     if (leadField instanceof HTMLInputElement) leadField.checked = designatedLeadAfterEmployeeChange({ checked: leadField.checked, nextEmployeeId, employees });
   };
   if (quiet) return <>
-    <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Person</b></span>
-      <select className={selectedEmployee ? "q-select-row__control q-select-row__control--ink" : "q-select-row__control q-select-row__control--ph"} name="employeeId" value={selectedEmployee} required aria-label="Person"
+    <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>{t.person}</b></span>
+      <select className={selectedEmployee ? "q-select-row__control q-select-row__control--ink" : "q-select-row__control q-select-row__control--ph"} name="employeeId" value={selectedEmployee} required aria-label={t.person}
         onChange={event => changeEmployee(event.target.value, event.currentTarget.form)}>
-        <option value="" disabled>Choose</option>
+        <option value="" disabled>{t.choose}</option>
         {employees.filter(item => item.active).map(item => <option key={item.id} value={item.id}>{`${item.firstName} ${item.lastName}`}</option>)}
       </select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></label></li>
     {children}
-    <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>Position</b></span>
-      <select className="q-select-row__control" name="positionId" value={selectedPosition} aria-label="Position"
+    <li><label className="q-row q-row--one q-select-row"><span className="q-rt"><b>{t.position}</b></span>
+      <select className="q-select-row__control" name="positionId" value={selectedPosition} aria-label={t.position}
         onChange={event => { setPosition(event.target.value); onSelectionChange?.({ employeeId: selectedEmployee, positionId: event.target.value }); }}>
-        <option value="">None</option>
+        <option value="">{t.none}</option>
         {choices.map(position => <option key={position.id} value={position.id}>{position.name}</option>)}
-        {retained ? <option value={selectedPosition} disabled>{`${positions.find(position => position.id === selectedPosition)?.name ?? "Existing position"} (unavailable)`}</option> : null}
+        {retained ? <option value={selectedPosition} disabled>{`${positions.find(position => position.id === selectedPosition)?.name ?? t.existingPosition}${t.unavailableSuffix}`}</option> : null}
       </select><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></label></li>
   </>;
   return (
@@ -103,7 +106,7 @@ export function ShiftAssignmentFields({
       <SelectField
         className="wa-select"
         name="employeeId"
-        label="Person"
+        label={t.person}
         value={selectedEmployee}
         required
         onChange={(event) => {
@@ -125,7 +128,7 @@ export function ShiftAssignmentFields({
           }
         }}
         options={[
-          { value: "", label: "Choose someone", disabled: true },
+          { value: "", label: t.chooseSomeone, disabled: true },
           ...employees
             .filter((item) => item.active)
             .map((item) => ({
@@ -139,7 +142,7 @@ export function ShiftAssignmentFields({
         name="positionId"
         label={
           <>
-            Position<span className="wa-field__optional">Optional</span>
+            {t.position}<span className="wa-field__optional">{t.optional}</span>
           </>
         }
         value={selectedPosition}
@@ -148,7 +151,7 @@ export function ShiftAssignmentFields({
           onSelectionChange?.({ employeeId: selectedEmployee, positionId: event.target.value });
         }}
         options={[
-          { value: "", label: "None" },
+          { value: "", label: t.none },
           ...choices.map((position) => ({
             value: position.id,
             label: position.name,
@@ -156,7 +159,7 @@ export function ShiftAssignmentFields({
           ...(retained
             ? [{
                 value: selectedPosition,
-                label: `${positions.find((position) => position.id === selectedPosition)?.name ?? "Existing position"} (unavailable)`,
+                label: `${positions.find((position) => position.id === selectedPosition)?.name ?? t.existingPosition}${t.unavailableSuffix}`,
                 disabled: true,
               }]
             : []),

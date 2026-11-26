@@ -10,6 +10,8 @@ import type {CommandResult,CommunicationDraft} from '@/lib/communications/types'
 import type {CommunicationRecoveryState} from '@/lib/communications/recovery';
 import type {MessageFilter} from './messages-view';
 import {useEmployeeMobile} from './use-mobile';
+import {useMobileCopy} from './mobile-lang';
+import {messageSessionCopy} from './copy/message-session';
 export type MessageMemory={search:string;filter:MessageFilter;cursors:string[]};
 export type MessageDraft={title:string;body:string;locationId:string;businessDate:string;expiresAt:string};
 export type MessageOrigin={source:'/app/notifications'|'/app/updates';id:string;target:string};
@@ -34,9 +36,9 @@ export function EmployeeMessageProvider({authority,core,children}:{authority:str
 }
 /** Presentation-only return context. Source pages still enforce their own access. */
 export function EmployeeMessageReturn(){
- const session=useMessageSession(),pathname=usePathname(),mobile=useEmployeeMobile(),origin=session?.origin;
+ const session=useMessageSession(),pathname=usePathname(),mobile=useEmployeeMobile(),origin=session?.origin,t=useMobileCopy(messageSessionCopy);
  if(!mobile||!origin||pathname!==origin.target.split(/[?#]/)[0]||pathname.startsWith('/app/updates/'))return null;
- return <div className="em-message-return"><Link href={origin.source+'#message-'+encodeURIComponent(origin.id)}>Back to {origin.source==='/app/notifications'?'notifications':'updates'}</Link></div>;
+ return <div className="em-message-return"><Link href={origin.source+'#message-'+encodeURIComponent(origin.id)}>{t.back[origin.source==='/app/notifications'?'notifications':'updates']}</Link></div>;
 }
 // A draft is never reconstructed from an outcome-unknown command or a new day.
 export function todayMessageDraft(draft:MessageDraft,source:{businessDate:string;timeZone:string}):CommunicationDraft|null{

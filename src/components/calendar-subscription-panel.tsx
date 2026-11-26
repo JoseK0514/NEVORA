@@ -11,6 +11,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {LockKeyIcon} from '@phosphor-icons/react/dist/ssr/LockKey';
 import {NavIcon} from './nav-icon';
 import './calendar-subscription-panel.css';
+import type {PortalLang} from '@/lib/i18n/portal-lang';
 import {createCalendarClient,type CalendarClientState} from '@/lib/calendar/client';
 import {EmployeeMobileCalendarView} from './employee-mobile/calendar';
 import {PendingLabel} from './employee-submit-button';
@@ -65,11 +66,11 @@ export function CalendarSubscriptionView({status,url,paused,busy,notice,onComman
  </section>;
 }
 /** Board E-Calendar on every width: the panel always draws the corporate view (the older desktop view stays exported). */
-export function CalendarSubscriptionPanel({authority}:{authority:string}){
+export function CalendarSubscriptionPanel({authority,lang="en"}:{authority:string;lang?:PortalLang}){
  const [state,setState]=useState<CalendarClientState>({status:null,url:null,paused:true,busy:false,notice:'',pendingKind:null});
  const owner=useRef<ReturnType<typeof createCalendarClient>|null>(null);
  useEffect(()=>{
-  const client=createCalendarClient(authority,setState);owner.current=client;
+  const client=createCalendarClient(authority,setState,lang);owner.current=client;
   const pause=()=>client.pause();
   const resume=()=>{if(document.visibilityState!=='visible'||!navigator.onLine)client.pause();else client.start();};
   const visibility=()=>document.visibilityState==='hidden'?pause():resume();
@@ -80,6 +81,6 @@ export function CalendarSubscriptionPanel({authority}:{authority:string}){
   window.addEventListener('nevora:signout',end);window.addEventListener('storage',storage);document.addEventListener('visibilitychange',visibility);
   resume();
   return()=>{client.stop();owner.current=null;for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online'])window.removeEventListener(event,resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
- },[authority]);
+ },[authority,lang]);
  return <CalendarSubscriptionView {...state} mobile onCommand={kind=>owner.current?.command(kind)} onCopy={()=>void owner.current?.copy()} onRetry={()=>owner.current?.retry()}/>;
 }

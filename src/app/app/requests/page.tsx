@@ -16,11 +16,13 @@ import { TimeOffListRow, TimeOffRequestCard, canWithdrawTimeOff, timeOffDates, t
 import "@/components/employee-mobile/timeoff-corp.css";
 import { TimeOffWaitB } from "@/components/employee-b/timeoff-b";
 import "./owner-lists.css";
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { REQUESTS_COPY } from "./requests-copy";
 
 /* Employee Time off on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet), in the desktop column.
  * The phone draws the same pages from its planning read (employee-mobile/timeoff). Same reads, actions and fields. */
 
-export const metadata = { title: "Time off" };
+export async function generateMetadata() { return { title: REQUESTS_COPY[await readPageLang()].title }; }
 
 export default async function RequestsPage({
   searchParams,
@@ -50,10 +52,12 @@ export default async function RequestsPage({
   // ?tab=new (or a failed send) opens the request sheet over the list.
   const sheetOpen = params.tab === "new" || !!params.error;
   const view = params.filter === "decided" ? "decided" : "waiting";
+  const lang = await readPageLang();
+  const t = REQUESTS_COPY[lang];
   const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
 
-  const notice = params.error ? <p className="c-error" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p> : null;
-  const status = params.submitted ? "Your request was sent for manager review." : params.reviewed ? "Decision saved." : null;
+  const notice = params.error ? <p className="c-error" role="alert">{t.sendFailed}</p> : null;
+  const status = params.submitted ? t.submitted : params.reviewed ? t.reviewed : null;
 
   type Request = (typeof mine)[number];
   const shape = (request: Request): TimeOffView => ({ id: request.id, status: request.status, startDate: request.startDate, endDate: request.endDate, startTime: request.startTime ?? null, endTime: request.endTime ?? null,
@@ -65,29 +69,29 @@ export default async function RequestsPage({
   const listHref = view === "decided" ? "/app/requests?filter=decided" : "/app/requests";
 
   const proof = await requireSessionMutationProof();
-  return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><CorpPage className="tof-desk c-page--narrow">
+  return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><CorpPage className="tof-desk c-page--narrow" lang={lang === "es" ? "es" : undefined}>
     {/* Direction B: before the phone's private read starts, its first frame is this page's hero, checking (phones only). */}
     <TimeOffWaitB selection={sheetOpen ? "new" : params.requestId ?? "list"} filter={view} />
-    <CorpNav back={{ href: "/app/requests/hub", label: "Requests" }} title="Time off" phoneOnly />
-    <CorpTitle title="Time off" wide />
+    <CorpNav back={{ href: "/app/requests/hub", label: t.requests }} title={t.title} phoneOnly />
+    <CorpTitle title={t.title} wide />
     {status ? <CorpNote><span role="status">{status}</span></CorpNote> : null}
     {detail !== undefined ? detail ? <>
-      <TimeOffRequestCard request={shape(detail)} zone={zone} headingId={`request-${detail.id}-dates`} />
+      <TimeOffRequestCard lang={lang} request={shape(detail)} zone={zone} headingId={`request-${detail.id}-dates`} />
       {detail.status === "PENDING" && detail.employeeId === session.id ? canWithdrawTimeOff(detail.id)
-        ? <section className="c-card tof-withdraw" aria-label="Withdraw request"><TimeOffWithdrawal requestId={detail.id} dateLabel={keepWhole(timeOffDates(shape(detail)))} /></section>
-        : <CorpNote>To change this request, contact your manager.</CorpNote> : null}
-    </> : <CorpNote><span role="status">This request isn’t available to your current account. Return to Time off to review your requests.</span></CorpNote> : <>
+        ? <section className="c-card tof-withdraw" aria-label={t.withdrawRequest}><TimeOffWithdrawal requestId={detail.id} dateLabel={keepWhole(timeOffDates(shape(detail), lang))} /></section>
+        : <CorpNote>{t.contactManager}</CorpNote> : null}
+    </> : <CorpNote><span role="status">{t.unavailable}</span></CorpNote> : <>
       <TimeOffHashLink />
-      <CorpSegments label="Time-off requests" items={[
-        { href: "/app/requests", label: "Waiting", current: view === "waiting" },
-        { href: "/app/requests?filter=decided", label: "Decided", current: view === "decided" },
+      <CorpSegments label={t.segmentsLabel} items={[
+        { href: "/app/requests", label: t.waiting, current: view === "waiting" },
+        { href: "/app/requests?filter=decided", label: t.decided, current: view === "decided" },
       ]} />
-      <section className="c-card" aria-label={view === "decided" ? "Decided requests" : "Waiting requests"}>
-        {shown.length ? <CorpRows>{shown.map(request => <TimeOffListRow key={request.id} id={`request-${request.id}`} request={shape(request)}
+      <section className="c-card" aria-label={view === "decided" ? t.decidedRequests : t.waitingRequests}>
+        {shown.length ? <CorpRows>{shown.map(request => <TimeOffListRow key={request.id} id={`request-${request.id}`} request={shape(request)} lang={lang}
           href={`/app/requests?requestId=${encodeURIComponent(request.id)}${view === "decided" ? "&filter=decided" : ""}`} />)}</CorpRows>
-          : <p className="c-empty"><b>{view === "decided" ? "No decisions yet" : "Nothing waiting"}</b>{view === "decided" ? "Approved, declined and withdrawn requests will appear here." : mine.length ? "When you send a request, you can follow its status here." : "No time-off requests yet."}</p>}
+          : <p className="c-empty"><b>{view === "decided" ? t.noDecisions : t.nothingWaiting}</b>{view === "decided" ? t.decidedEmpty : mine.length ? t.waitingEmpty : t.noRequests}</p>}
       </section>
-      <CorpButtonLink href="/app/requests?tab=new" full className="tof-new">Request time off</CorpButtonLink>
+      <CorpButtonLink href="/app/requests?tab=new" full className="tof-new">{t.requestTimeOff}</CorpButtonLink>
     </>}
     <TimeOffSheet open={sheetOpen} closeHref={listHref} requestId={randomUUID()} draftOwner={session.id} notice={notice} />
   </CorpPage></ResponsiveEmployeePlanning>;

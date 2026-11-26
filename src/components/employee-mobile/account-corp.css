@@ -117,3 +117,13 @@
  * only lead to sign-in, so it hides and the page keeps its own way forward (as on the v5 page, DEL-UI review). It outranks corp-shell.css's !important grid. */
 html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete :is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .mobile-nav { display: none !important; }
 html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"]:has(.em-delete :is([data-deletion-state="received"],[data-deletion-state="duplicate"],[data-deletion-state="signed_out"],[data-deletion-state="uncertain"])) .app-main { padding-bottom: env(safe-area-inset-bottom, 0px) !important; }
+
+@layer nv-b {
+  @media (max-width: 359px) {
+    @container not style(--nv-rem: 16px) {
+      html:lang(es) .eb-delete-go > button.em-delete-confirm:has(.nv-compact-action) {
+        padding-inline: var(--b-space-8) !important;
+      }
+    }
+  }
+}

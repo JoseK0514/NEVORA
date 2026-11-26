@@ -1,4 +1,6 @@
 import type {ShiftChangeResult} from '../lib/shift-changes/types';
+import type {PortalLang} from '@/lib/i18n/portal-lang';
+import {shiftChangeFormStateCopy} from './shift-change-form-state-copy';
 type Send=(data:FormData)=>Promise<ShiftChangeResult>;
 /** Owns one immutable operation until its outcome is known. No private local cache. */
 export class ShiftChangeFormState {
@@ -21,14 +23,16 @@ export class ShiftChangeFormState {
   try{this.result=await reconcile(operationId)??await send(this.data());}catch{this.result={status:'outcome-unknown',operationId};}finally{this.pending=false;}
  }
 }
-export function shiftChangeFeedback(result:ShiftChangeResult):string {
+/** The result's line in the person's language (English when a caller passes none). */
+export function shiftChangeFeedback(result:ShiftChangeResult,lang:PortalLang='en'):string {
+ const t=shiftChangeFormStateCopy[lang].feedback;
  switch(result.status){
-  case 'completed':return 'Completed. The current schedule and request history have been refreshed.';
-  case 'pending':return 'Request recorded. Review its current status below; an assignment may still be awaiting consent or management review.';
-  case 'closed':return 'Request closed. Review its current status below.';
-  case 'conflict':return 'Stale request. The assignment or request changed; reload and review before submitting again.';
-  case 'unavailable':return 'This action is unavailable for your current account or request.';
-  case 'blocked':return result.issues.map(i=>i.message).join(' ')||'This change cannot proceed with the current rules.';
-  case 'outcome-unknown':return 'Outcome uncertain. The request may have been saved. Check and retry the same operation; your original entries are preserved.';
+  case 'completed':return t.completed;
+  case 'pending':return t.pending;
+  case 'closed':return t.closed;
+  case 'conflict':return t.conflict;
+  case 'unavailable':return t.unavailable;
+  case 'blocked':return result.issues.map(i=>i.message).join(' ')||t.blocked;
+  case 'outcome-unknown':return t.outcomeUnknown;
  }
 }
