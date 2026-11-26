@@ -22,6 +22,7 @@ import { AccountPrivacyLinks } from '@/components/legal/account-privacy-links';
 import './manager-profile-upscale.css';
 import { listWorkforcePermissions } from '@/lib/workforce/authority.server';
 import { listLocations } from '@/lib/data/locations';
+import { ManagerLanguageRow } from './manager-language-row';
 import { ManagerAuthoritySection, type ManagerAuthority } from '@/components/workforce/manager-authority';
 
 /** Phase 3.5: the Owner and Manager Profile, laid out like the employee Profile (band, details, settings, Sign out).
@@ -78,6 +79,8 @@ export async function ManagerProfilePage({ proof, lang = 'en' }: { proof: Sessio
       }} authority={authority ? <ManagerAuthoritySection authority={authority} locationNames={locationNames} owners={changedBy} lang={lang} /> : null} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
         {/* Codex B-01: the passkeys row is a list item like its neighbours; the item hides while passkeys are off. */}
+        {/* Jose, Nov 26, 2026: the account language, as on the Employee Profile. */}
+        <ManagerLanguageRow lang={lang} />
         <li className="pmp-passkeys"><PasskeySection asRow lang={lang} /></li>
         <AccountPrivacyLinks variant="quiet" quietCopy={profilePrivacyCopy[lang]} />
       </>} />

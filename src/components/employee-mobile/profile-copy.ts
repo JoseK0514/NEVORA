@@ -8,7 +8,7 @@ const en = {
   // src/components/employee-mobile/profile.tsx:27
   language: 'Language',
   // src/components/employee-mobile/profile.tsx:27
-  languageHint: 'Sign-in pages only. The rest of NEVORA is in English for now.',
+  languageHint: 'Choose your account’s language.',
   // src/components/employee-mobile/profile.tsx:30
   languageFailed: 'We couldn’t save your language. Try again.',
   // src/components/employee-mobile/profile.tsx:41
@@ -60,61 +60,3 @@ const es: typeof en = {
 };
 export const profileCopy = {en, es} as const;
 
-export const copy = {
-  en: {
-    // src/components/employee-mobile/profile.tsx:24
-    display: 'Display',
-    // src/components/employee-mobile/profile.tsx:27
-    language: 'Language',
-    // src/components/employee-mobile/profile.tsx:27
-    languageHint: 'Sign-in pages only. The rest of NEVORA is in English for now.',
-    // src/components/employee-mobile/profile.tsx:29
-    english: 'English',
-    // src/components/employee-mobile/profile.tsx:29
-    spanish: 'Español',
-    // src/components/employee-mobile/profile.tsx:57, src/components/employee-mobile/profile.tsx:58
-    profileSettings: 'Profile and settings',
-    // src/components/employee-mobile/profile.tsx:59
-    noscript: 'Enable JavaScript to view your profile and account settings.',
-    // src/components/employee-mobile/profile.tsx:70
-    signingOut: 'Signing out…',
-    // src/components/employee-mobile/profile.tsx:74
-    security: 'Security',
-    // src/components/employee-mobile/profile.tsx:74
-    account: 'Account',
-    // src/components/employee-mobile/profile.tsx:76
-    passkeys: 'Passkeys',
-    // src/components/employee-mobile/profile.tsx:77
-    deleteAccount: 'Delete my account',
-    // src/components/employee-mobile/profile.tsx:96
-    profile: 'Profile',
-  },
-  es: {
-    // src/components/employee-mobile/profile.tsx:24
-    display: 'Pantalla',
-    // src/components/employee-mobile/profile.tsx:27
-    language: 'Idioma',
-    // src/components/employee-mobile/profile.tsx:27
-    languageHint: 'Solo las páginas de inicio de sesión. El resto de NEVORA está en inglés por ahora.',
-    // src/components/employee-mobile/profile.tsx:29
-    english: 'Español',
-    // src/components/employee-mobile/profile.tsx:29
-    spanish: 'Español',
-    // src/components/employee-mobile/profile.tsx:57, src/components/employee-mobile/profile.tsx:58
-    profileSettings: 'Perfil y configuración',
-    // src/components/employee-mobile/profile.tsx:59
-    noscript: 'Activa JavaScript para ver tu perfil y los configuración de tu cuenta.',
-    // src/components/employee-mobile/profile.tsx:70
-    signingOut: 'Cerrando sesión…',
-    // src/components/employee-mobile/profile.tsx:74
-    security: 'Seguridad',
-    // src/components/employee-mobile/profile.tsx:74
-    account: 'Cuenta',
-    // src/components/employee-mobile/profile.tsx:76
-    passkeys: 'Llaves de acceso',
-    // src/components/employee-mobile/profile.tsx:77
-    deleteAccount: 'Eliminar mi cuenta',
-    // src/components/employee-mobile/profile.tsx:96
-    profile: 'Perfil',
-  },
-} as const;

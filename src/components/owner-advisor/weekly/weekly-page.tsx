@@ -23,6 +23,7 @@ import { copy as weeklyWording } from "./weekly-page-copy";
 import { useAdvisorLang } from "../lang";
 import { WEEKLY_COPY, type WeeklyCopy } from "./weekly-copy";
 import "./weekly.css";
+import { formatWithZone } from "@/lib/time-zone-label";
 
 /* Rondo's weekly plan (Nov 16, 2026). Compare up to two staffing options for one week, read one option in full, acknowledge
  * it and approve or decline the whole set. Saving writes a DRAFT schedule only: publishing stays in Schedule and nobody
@@ -584,7 +585,7 @@ function FullPlan({ plan, readReceiptId, baseline, locations, timeZone, now, ack
 }) {
   void locations;
   const lang = useAdvisorLang(), t = WEEKLY_COPY[lang];
-  const until = new Intl.DateTimeFormat(lang === "es" ? "es-PR" : "en-US", { timeZone, hour: "numeric", minute: "2-digit", timeZoneName: "short" }).format(new Date(plan.expiresAt));
+  const until = formatWithZone(lang === "es" ? "es-PR" : "en-US", { hour: "numeric", minute: "2-digit" }, new Date(plan.expiresAt), timeZone);
   const expired = Date.parse(plan.expiresAt) <= now;
   const additions = [...plan.changes.additions].sort((a, b) => (a.date + a.startTime + a.employeeName).localeCompare(b.date + b.startTime + b.employeeName));
   const removals = [...plan.changes.removals].sort((a, b) => (a.date + a.startTime + a.employeeName).localeCompare(b.date + b.startTime + b.employeeName));

@@ -1,12 +1,12 @@
 import { expect, it } from '@rstest/core';
-import { copy } from './profile-copy';
+import { profileCopy } from './profile-copy';
 
-const placeholders = (text: string) => [...new Set(text.match(/\{[A-Za-z]\w*\}/g) ?? [])].sort();
+it('has the same keys in both languages', () => {
+  expect(Object.keys(profileCopy.es).sort()).toEqual(Object.keys(profileCopy.en).sort());
+});
 
-it('has matching keys and placeholders in both languages', () => {
-  expect(Object.keys(copy.es).sort()).toEqual(Object.keys(copy.en).sort());
-  const english: Record<string, string> = copy.en;
-  for (const [key, spanish] of Object.entries(copy.es)) {
-    expect(placeholders(spanish), key).toEqual(placeholders(english[key]));
-  }
+// Jose, Nov 26, 2026: the whole portal follows the account language now, so the hint says the same thing in both.
+it('describes the language setting the same way in both languages', () => {
+  expect(profileCopy.en.languageHint).toBe('Choose your account’s language.');
+  expect(profileCopy.es.languageHint).toBe('Elige el idioma de tu cuenta.');
 });

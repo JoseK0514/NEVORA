@@ -14,6 +14,7 @@ import type { AuthLang } from "@/lib/auth-copy";
 import { ACCESS_COPY, fill } from "./copy";
 import { encodeQr, qrPath } from "./qr";
 import "./access-recovery.css";
+import { formatWithZone } from "@/lib/time-zone-label";
 
 /** The largest QR version drawn in the 220px card: above it the modules are too small to scan from a screen. */
 const QR_MAX_VERSION = 15;
@@ -51,7 +52,7 @@ export function AssistedReceipt({ issued, timeZone, lang = "en", feedback, onSta
     const first = setTimeout(tick, 0), timer = setInterval(tick, 5000);
     return () => { clearTimeout(first); clearInterval(timer); };
   }, []);
-  const until = keepWhole(new Date(issued.expiresAt).toLocaleTimeString(lang === "es" ? "es-PR" : "en-US", { hour: "numeric", minute: "2-digit", timeZone, timeZoneName: "short" }));
+  const until = keepWhole(formatWithZone(lang === "es" ? "es-PR" : "en-US", { hour: "numeric", minute: "2-digit" }, new Date(issued.expiresAt), timeZone));
   // Drawn after hydration only: the link needs this browser's own address.
   const mounted = now !== null;
   const qr = useMemo(() => (mounted ? encodeQr(resetLink(issued.proof), QR_MAX_VERSION) : undefined), [issued.proof, mounted]);

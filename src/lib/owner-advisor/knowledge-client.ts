@@ -2,6 +2,7 @@
  * (docs/handoffs/2026-11-15-rondo-company-knowledge-ui-contract.md in the backend candidate). Browser-safe: no server or
  * Node modules. The server stays the authority for every check; these mirror its limits so an Owner sees every size or
  * character problem before saving, never after a silent cut. */
+import { formatWithZone } from "../time-zone-label";
 
 export const KNOWLEDGE_ENDPOINT = "/api/owner/advisor/knowledge";
 export const KNOWLEDGE_HEADER = "x-nevora-company-knowledge";
@@ -188,7 +189,7 @@ export function zonedInput(iso: string | null, timeZone: string) {
 }
 export function companyTime(iso: string | null, timeZone: string, withZone = false) {
   if (!iso) return null;
-  return new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", ...(withZone ? { timeZoneName: "short" } : {}) }).format(new Date(iso));
+  return withZone ? formatWithZone("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }, new Date(iso), timeZone) : new Intl.DateTimeFormat("en-US", { timeZone, ...{ weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" } }).format(new Date(iso));
 }
 
 /* ---------- What an entry is now ---------- */

@@ -32,6 +32,7 @@ import { useAdvisorLang } from "../lang";
 import { KNOWLEDGE_COPY, type KnowledgeCopy, type KnowledgeVerb } from "./knowledge-copy";
 import { viewHref, type KnowledgeView } from "./views";
 import "./knowledge.css";
+import { formatWithZone } from "@/lib/time-zone-label";
 
 /* Company knowledge (Rondo, Nov 16, 2026). The Owner's business profile and a small library of pasted or .txt/.md text,
  * on the corporate kit the Direction B layers already dress (pushed page, section labels, rows with tinted icons, the sheet
@@ -51,7 +52,7 @@ const shortDay = (iso: string, timeZone: string, lang: Lang = "en") => new Intl.
 /** The lib's company time ("Fri, Nov 20, 2026, 2:30 PM"), read in Spanish as "vie, 20 nov 2026, 2:30 p. m.". */
 function zonedTime(iso: string | null, timeZone: string, lang: Lang, withZone = false) {
   if (lang === "en" || !iso) return companyTime(iso, timeZone, withZone);
-  return new Intl.DateTimeFormat(LOCALE.es, { timeZone, weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", ...(withZone ? { timeZoneName: "short" } : {}) }).format(new Date(iso));
+  return withZone ? formatWithZone(LOCALE.es, { weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }, new Date(iso), timeZone) : new Intl.DateTimeFormat(LOCALE.es, { timeZone, ...{ weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" } }).format(new Date(iso));
 }
 const topicOf = (t: KnowledgeCopy, value: string) => t.categories[value] ?? t.categories.other;
 

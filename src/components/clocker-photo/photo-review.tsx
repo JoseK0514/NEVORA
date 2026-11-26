@@ -14,13 +14,14 @@ import {Notice} from '@/app/app/settings/wave-c-kit';
 import './photo-review.css';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 import {PHOTO_OWNER_COPY} from './photo-owner-copy';
+import {formatWithZone} from '@/lib/time-zone-label';
 
 export type ClockerPhotoReviewProps={initialPage:PhotoReviewPage;
  listAction:(query:PhotoReviewQuery)=>Promise<PhotoReviewListActionResult>;
  detailAction:(reference:PhotoReference)=>Promise<PhotoReviewDetailActionResult>;
  removeAction:(reference:PhotoReference)=>Promise<PhotoReviewRemoveActionResult>;
  readImage?:(locationKey:string,reference:PhotoReference,signal:AbortSignal)=>Promise<Blob>};
-function recordedTime(record:PhotoReviewRecord,locale='en-US'){return new Intl.DateTimeFormat(locale,{timeZone:record.timeZone,month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(new Date(record.performedAt));}
+function recordedTime(record:PhotoReviewRecord,locale='en-US'){return formatWithZone(locale,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'},new Date(record.performedAt),record.timeZone);}
 export function ClockerPhotoReview({initialPage,listAction,detailAction,removeAction,readImage=fetchPrivatePunchPhoto}:ClockerPhotoReviewProps){
  const t=PHOTO_OWNER_COPY[usePortalLang()],labels=t.actions,when=(record:PhotoReviewRecord)=>recordedTime(record,t.locale);
  const [page,setPage]=useState(()=>readPhotoReviewPage(initialPage)),[selected,setSelected]=useState<PhotoReviewRecord|null>(null);

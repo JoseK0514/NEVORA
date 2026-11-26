@@ -133,3 +133,11 @@
 @layer nv-b {
   html:lang(es) #profile-details-list [data-row=email] .q-rt b { hyphens: none !important; }
 }
+/* Jose, Nov 26, 2026: the Language row. The title and hint sit beside English/Español; when they don't fit (a phone at
+ * large text, or the longer Spanish hint at 320) the choice wraps under them at full width. */
+:is(#q-root, html) .premium-manager-profile .pmp-language { flex-wrap: wrap; row-gap: 8px; padding-block: 12px; }
+:is(#q-root, html) .premium-manager-profile .pmp-language .q-rt { flex: 1 1 160px; }
+:is(#q-root, html) .premium-manager-profile .pmp-language__seg { flex: 1 1 200px; max-width: 260px; }
+@media (max-width: 767px) {
+  :is(#q-root, html) .premium-manager-profile .pmp-language__seg { max-width: none; }
+}
