@@ -1,0 +1,354 @@
+[
+ {
+  "engine": "chromium",
+  "width": 390,
+  "lang": "en",
+  "unavailable": {
+   "lang": "en",
+   "text": "Español Workplace billing Review your workplace access and manage your subscription through Velani. We can’t check billing right now. Try again in a few minutes. Refresh status Open billing in Velani My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Refresh status",
+    "Open billing in Velani",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "en",
+   "text": "Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan to keep using NEVORA. Access Access paused Plan Small Active employees 2 / 15 Trial ends Nov 12, 2026 Open billing in Velani Refresh status My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Open billing in Velani",
+    "Refresh status",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "en",
+   "text": "Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan to keep using NEVORA. Access Access paused Plan Small Active em"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "engine": "chromium",
+  "width": 390,
+  "lang": "es",
+  "unavailable": {
+   "lang": "es",
+   "text": "English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. No podemos consultar la facturación en este momento. Inténtalo de nuevo en unos minutos. Actualizar estado Abrir facturación en Velani Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Actualizar estado",
+    "Abrir facturación en Velani",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "es",
+   "text": "English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elige un plan para seguir usando NEVORA. Acceso Acceso pausado Plan Small Empleados activos 2 / 15 La prueba termina 12 nov 2026 Abrir facturación en Velani Actualizar estado Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Abrir facturación en Velani",
+    "Actualizar estado",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "es",
+   "text": "English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elige un plan para seguir usando NEVORA. Acceso Acceso pausado Plan Smal"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "engine": "chromium",
+  "width": 1440,
+  "lang": "en",
+  "unavailable": {
+   "lang": "en",
+   "text": "NEVORA Workforce Your week, in one place. Powered by VELANI LLC Español Workplace billing Review your workplace access and manage your subscription through Velani. We can’t check billing right now. Try again in a few minutes. Refresh status Open billing in Velani My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC · Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Refresh status",
+    "Open billing in Velani",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "en",
+   "text": "NEVORA Workforce Your week, in one place. Powered by VELANI LLC Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan to keep using NEVORA. Access Access paused Plan Small Active employees 2 / 15 Trial ends Nov 12, 2026 Open billing in Velani Refresh status My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC · Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Open billing in Velani",
+    "Refresh status",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "en",
+   "text": "NEVORA Workforce Your week, in one place. Powered by VELANI LLC Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "engine": "chromium",
+  "width": 1440,
+  "lang": "es",
+  "unavailable": {
+   "lang": "es",
+   "text": "NEVORA Workforce Tu semana, en un solo lugar. Powered by VELANI LLC English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. No podemos consultar la facturación en este momento. Inténtalo de nuevo en unos minutos. Actualizar estado Abrir facturación en Velani Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC · Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Actualizar estado",
+    "Abrir facturación en Velani",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "es",
+   "text": "NEVORA Workforce Tu semana, en un solo lugar. Powered by VELANI LLC English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elige un plan para seguir usando NEVORA. Acceso Acceso pausado Plan Small Empleados activos 2 / 15 La prueba termina 12 nov 2026 Abrir facturación en Velani Actualizar estado Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC · Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Abrir facturación en Velani",
+    "Actualizar estado",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "es",
+   "text": "NEVORA Workforce Tu semana, en un solo lugar. Powered by VELANI LLC English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elig"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "engine": "webkit",
+  "width": 390,
+  "lang": "en",
+  "unavailable": {
+   "lang": "en",
+   "text": "Español Workplace billing Review your workplace access and manage your subscription through Velani. We can’t check billing right now. Try again in a few minutes. Refresh status Open billing in Velani My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Refresh status",
+    "Open billing in Velani",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "en",
+   "text": "Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan to keep using NEVORA. Access Access paused Plan Small Active employees 2 / 15 Trial ends Nov 12, 2026 Open billing in Velani Refresh status My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Open billing in Velani",
+    "Refresh status",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "en",
+   "text": "Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan to keep using NEVORA. Access Access paused Plan Small Active em"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "engine": "webkit",
+  "width": 390,
+  "lang": "es",
+  "unavailable": {
+   "lang": "es",
+   "text": "English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. No podemos consultar la facturación en este momento. Inténtalo de nuevo en unos minutos. Actualizar estado Abrir facturación en Velani Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Actualizar estado",
+    "Abrir facturación en Velani",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "es",
+   "text": "English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elige un plan para seguir usando NEVORA. Acceso Acceso pausado Plan Small Empleados activos 2 / 15 La prueba termina 12 nov 2026 Abrir facturación en Velani Actualizar estado Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Abrir facturación en Velani",
+    "Actualizar estado",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "es",
+   "text": "English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elige un plan para seguir usando NEVORA. Acceso Acceso pausado Plan Smal"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "engine": "webkit",
+  "width": 1440,
+  "lang": "en",
+  "unavailable": {
+   "lang": "en",
+   "text": "NEVORA Workforce Your week, in one place. Powered by VELANI LLC Español Workplace billing Review your workplace access and manage your subscription through Velani. We can’t check billing right now. Try again in a few minutes. Refresh status Open billing in Velani My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC · Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Refresh status",
+    "Open billing in Velani",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "en",
+   "text": "NEVORA Workforce Your week, in one place. Powered by VELANI LLC Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan to keep using NEVORA. Access Access paused Plan Small Active employees 2 / 15 Trial ends Nov 12, 2026 Open billing in Velani Refresh status My pay statements Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment. Sign out © 2026 VELANI LLC · Privacy · Terms · Support NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "Español",
+    "Open billing in Velani",
+    "Refresh status",
+    "My pay statements",
+    "Sign out",
+    "Privacy",
+    "Terms",
+    "Support"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "en",
+   "text": "NEVORA Workforce Your week, in one place. Powered by VELANI LLC Español Workplace billing Review your workplace access and manage your subscription through Velani. Your free trial ended. Choose a plan"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "engine": "webkit",
+  "width": 1440,
+  "lang": "es",
+  "unavailable": {
+   "lang": "es",
+   "text": "NEVORA Workforce Tu semana, en un solo lugar. Powered by VELANI LLC English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. No podemos consultar la facturación en este momento. Inténtalo de nuevo en unos minutos. Actualizar estado Abrir facturación en Velani Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC · Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Actualizar estado",
+    "Abrir facturación en Velani",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "restricted": {
+   "lang": "es",
+   "text": "NEVORA Workforce Tu semana, en un solo lugar. Powered by VELANI LLC English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elige un plan para seguir usando NEVORA. Acceso Acceso pausado Plan Small Empleados activos 2 / 15 La prueba termina 12 nov 2026 Abrir facturación en Velani Actualizar estado Mis comprobantes de pago Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago. Cerrar sesión © 2026 VELANI LLC · Privacidad · Términos · Ayuda NEVORA is a product of VELANI LLC.",
+   "buttons": [
+    "English",
+    "Abrir facturación en Velani",
+    "Actualizar estado",
+    "Mis comprobantes de pago",
+    "Cerrar sesión",
+    "Privacidad",
+    "Términos",
+    "Ayuda"
+   ],
+   "over": 0
+  },
+  "axe": [],
+  "switchFound": 0,
+  "afterReload": {
+   "lang": "es",
+   "text": "NEVORA Workforce Tu semana, en un solo lugar. Powered by VELANI LLC English Facturación del negocio Revisa el acceso de tu negocio y administra tu suscripción en Velani. Tu prueba gratis terminó. Elig"
+  },
+  "errors": [
+   "console Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ }
+]

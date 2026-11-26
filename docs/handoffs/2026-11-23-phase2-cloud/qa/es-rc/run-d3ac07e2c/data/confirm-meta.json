@@ -1,0 +1,68 @@
+{
+ "setupLog": [
+  "people ok",
+  "login SWEEP-A ok",
+  "login SWEEP-B ok",
+  "login SWEEP-C ok",
+  "login SWEEP-M ok",
+  "login QA-DANI ok",
+  "eligibility ok",
+  "manager company access ok",
+  "scoped manager ok",
+  "this week ok",
+  "next week draft ok",
+  "time off ok",
+  "clocker keys ok",
+  "clocker pin ok"
+ ],
+ "extra": {
+  "spot": [
+   {
+    "engine": "chromium",
+    "lang": "es",
+    "rowFound": 1,
+    "teamError": "page.waitForURL: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"https://collab.nevora.example.invalid/app/em",
+    "timeInputs": 0,
+    "saveLabelBefore": "Guardar cambios",
+    "savingLabel": "GuardarGuardando…Guardando…",
+    "after": "Editar turno Publicado Persona JF Elige a alguien Ana Fictional-Rivera Daniel Fictional-Reyes Elena Fictional-Cruz Fictional Owner James Fictional-Ortiz Maria Fictional-Lopez Localidad Un turno mantie",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "chromium",
+    "lang": "en",
+    "rowFound": 1,
+    "teamError": "page.waitForURL: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"https://collab.nevora.example.invalid/app/em",
+    "timeInputs": 0,
+    "saveLabelBefore": "Save changes",
+    "savingLabel": null,
+    "after": "Edit shift Published Person JF Choose someone Ana Fictional-Rivera Daniel Fictional-Reyes Elena Fictional-Cruz Fictional Owner James Fictional-Ortiz Maria Fictional-Lopez Location A shift keeps its lo",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "webkit",
+    "lang": "es",
+    "rowFound": 1,
+    "teamError": "page.waitForURL: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"https://collab.nevora.example.invalid/app/em",
+    "timeInputs": 0,
+    "saveLabelBefore": "Guardar cambios",
+    "savingLabel": "GuardarGuardando…Guardando…",
+    "after": "Editar turno Publicado Persona JF Localidad Un turno mantiene su localidad. Para moverlo, bórralo y añade uno nuevo. Puesto Fecha Inicio Fin Líder del turno Debe ser Dueño, Gerente o Líder. Nota Cance",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "webkit",
+    "lang": "en",
+    "rowFound": 1,
+    "teamError": "page.waitForURL: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n  navigated to \"https://collab.nevora.example.invalid/app/em",
+    "timeInputs": 0,
+    "saveLabelBefore": "Save changes",
+    "savingLabel": null,
+    "after": "Edit shift Published Person JF Location A shift keeps its location. To move it, delete it and add a new one. Position Date Start End Shift lead Must be an Owner, Manager or Lead. Note Cancel Save chan",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   }
+  ]
+ },
+ "week": "2026-11-23",
+ "next": "2026-11-30"
+}

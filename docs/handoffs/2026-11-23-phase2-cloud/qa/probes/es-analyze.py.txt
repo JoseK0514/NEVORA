@@ -1,5 +1,5 @@
 import json,sys,collections
-ROLE_ROUTES={'owner':69,'manager':29,'scoped':29,'lead':17,'employee':17,'public':16,'clocker':3}
+ROLE_ROUTES={'owner':72,'manager':29,'scoped':29,'lead':17,'employee':17,'public':19,'clocker':3}
 VIEWS=3
 path=sys.argv[1]
 recs=[json.loads(l) for l in open(path)]
@@ -7,8 +7,11 @@ seq=collections.defaultdict(int)
 for r in recs:
     k=(r['engine'],r['role']); n=seq[k]; seq[k]+=1
     per=ROLE_ROUTES[r['role']]*VIEWS
-    r['L']='en' if n<per else 'es'
-    r['chk']=r.get('lang') if isinstance(r.get('lang'),dict) else {}
+    if 'langCheck' in r:
+        r['L']=r['lang']; r['chk']=r['langCheck'] or {}
+    else:
+        r['L']='en' if n<per else 'es'
+        r['chk']=r.get('lang') if isinstance(r.get('lang'),dict) else {}
 print('views',len(recs),collections.Counter((r['engine'],r['L']) for r in recs))
 def f(cond,label,fmt,limit=40):
     hits=[r for r in recs if cond(r)]

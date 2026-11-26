@@ -36,7 +36,7 @@ const MANAGER = ['/app', '/app/inbox', '/app/notifications', '/app/more', '/app/
 const EMPLOYEE = ['/app', '/app/schedule', '/app/my-time', '/app/my-pay', '/app/requests', '/app/exchange', '/app/exchange/open-shifts', '/app/availability', '/app/availability/agreement',
   '/app/notifications', '/app/inbox', '/app/more', '/app/help', '/app/updates', '/app/profile', '/app/profile/calendar', '/app/account/delete'];
 const PUBLIC = ['/login', '/forgot-access', '/reset-access', '/reset-access?token=expired-or-invalid', '/activate', '/activate?token=not-a-real-token',
-  '/privacy', '/terms', '/support', '/account-deletion', '/welcome', '/access-help', '/access-help/id?from=login', '/pages/plans',
+  '/privacy', '/terms', '/support', '/account-deletion', '/onboarding', '/onboarding/verify', '/onboarding/activate', '/welcome', '/access-help', '/access-help/id?from=login', '/pages/plans',
   '/clocker/access/paused?from=%2Fclocker%2Fes-kiosk-main&reason=billing_status_unavailable', '/no-such-page-here'];
 const CLOCKER = ['/clocker/es-kiosk-main', '/clocker/es-kiosk-west', '/clocker/not-a-real-key'];
 const ROLES: [string, string | null, string[]][] = (process.env.NEVORA_ES_ROLES ?? 'owner,manager,scoped,lead,employee,public,clocker').split(',').map(r => (({
@@ -157,7 +157,7 @@ it('spanish integration sweep', async () => {
             for (const el of controls) { const r = el.getBoundingClientRect(); if (r.width >= 44 && r.height >= 44) continue; if (!(r.top >= 60 && r.bottom <= innerHeight - 90)) { el.scrollIntoView({ block: 'center', inline: 'nearest' }); } if (reaches(el)) continue; if ((el as HTMLInputElement).type === 'checkbox' || (el as HTMLInputElement).type === 'radio') { const label = el.closest('label'); if (label) { const lr = label.getBoundingClientRect(); if (lr.width >= 44 && lr.height >= 44) continue; } } const inline = el.tagName === 'A' && getComputedStyle(el).display === 'inline' && el.parentElement && /\S/.test(Array.from(el.parentElement.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent).join('')); (inline ? inlineSmall : small).push(`${el.tagName.toLowerCase()} "${name(el)}" ${Math.round(r.width)}x${Math.round(r.height)} ${(el as unknown as { __miss?: string }).__miss ?? ''}`); }
             return { overflowX, wide, clipped: clipped.slice(0, 8), clippedCount: clipped.length, overlaps, small: small.slice(0, 10), smallCount: small.length, inlineSmallCount: inlineSmall.length, controls: controls.length, title: document.title, h1: document.querySelector('h1')?.textContent?.trim().slice(0, 60) ?? null };
           });
-            rec.lang = await page.evaluate(langCheck, { lang, people: PEOPLE });
+            rec.langCheck = await page.evaluate(langCheck, { lang, people: PEOPLE });
             rec.text = (await page.locator('main').first().innerText().catch(() => page.locator('body').innerText())).replace(/\s+/g, ' ').slice(0, 1500);
             await page.addScriptTag({ path: axePath });
             rec.axe = await page.evaluate(async () => { const r = await (window as any).axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] }, resultTypes: ['violations'] }); return r.violations.map((v: any) => ({ id: v.id, impact: v.impact, count: v.nodes.length, targets: v.nodes.slice(0, 3).map((n: any) => n.target.join(' ')) })); });
@@ -181,14 +181,14 @@ it('spanish integration sweep', async () => {
           await page.goto(base + '/app/employees'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
           const row = page.locator('a.b-row[href="/app/employees/SWEEP-B"]').first();
           r.rowFound = await row.count();
-          await row.focus(); await page.keyboard.press('Enter'); await page.waitForURL(/\/app\/employees\/SWEEP-B/); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
+          await row.focus(); await page.keyboard.press('Enter'); await page.waitForURL(/\/app\/employees\/SWEEP-B/, { waitUntil: 'commit' }); r.urlPerson = page.url().replace(base, ''); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
           r.backLink = await page.locator('main .q-nav > .q-nav__l, main a.c-formhead__link, main a[href="/app/employees"]').first().innerText().catch(() => null);
           await page.locator('main .q-nav > .q-nav__l, main a[href="/app/employees"]').first().focus(); await page.keyboard.press('Enter');
-          await page.waitForURL(/\/app\/employees(\?|$)/); await page.waitForTimeout(1200);
+          r.backHref = await page.locator('main .q-nav > .q-nav__l, main a[href="/app/employees"]').first().getAttribute('href').catch(() => null); await page.waitForURL(/\/app\/employees(\?|#|$)/, { waitUntil: 'commit' }); await page.waitForTimeout(1200); r.urlBack = page.url().replace(base, '');
           r.focusAfterBack = await page.evaluate(() => { const e = document.activeElement as HTMLAnchorElement | null; return e ? e.tagName + ' ' + (e.getAttribute('href') || '') + ' ' + (e.textContent || '').trim().slice(0, 40) : null; });
           r.ring = await page.evaluate(() => { const e = document.activeElement as HTMLElement | null; if (!e) return null; const cs = getComputedStyle(e); return cs.outlineStyle + ' ' + cs.outlineWidth + ' | ' + cs.boxShadow.slice(0, 50); });
           await page.screenshot({ path: join(shots, `spot-team-return-${engine}-${lang}.png`) });
-        } catch (e) { r.teamError = String((e as Error).message).slice(0, 200); }
+        } catch (e) { r.teamError = String((e as Error).message).slice(0, 400); r.urlAtError = page.url().replace(base, ''); r.focusAtError = await page.evaluate(() => { const e = document.activeElement; return e ? e.outerHTML.slice(0, 200) : null; }).catch(() => null); await page.screenshot({ path: join(shots, `spot-team-error-${engine}-${lang}.png`) }).catch(() => {}); }
         try {
           await page.goto(base + '/app/schedule/edit?shiftId=es-shift-2'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
           await page.route('**/app/schedule/edit**', async (rt: any) => { if (rt.request().method() === 'POST') { await new Promise(res => setTimeout(res, 4000)); await rt.continue().catch(() => {}); } else await rt.continue(); });

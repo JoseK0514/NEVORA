@@ -1,0 +1,618 @@
+// SCRATCH (not committed): the Clocker kiosk, every reachable state, for the Direction B build (NEVORA_SCAN_CLOCKER_FLOW).
+// Fictional employees, fictional tablets and owned loopback PostgreSQL only. Outages are simulated in the browser
+// (Playwright routes and init scripts), never by changing app code.
+//   NEVORA_SCAN_CLOCKER_SIZES  e.g. 1024x768,768x1024 (default those two)
+//   NEVORA_SCAN_CLOCKER_LOCALE en | es (es: the tablet remembers Spanish before the first visit)
+//   NEVORA_SCAN_CLOCKER_EXTRA  1: also the simulated states (photo, review current, reconnect, clear failed, storage) and
+//                              the keyboard, motion-sequence and reduced-motion captures
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {createRequire} from 'node:module';
+import {readFileSync} from 'node:fs';
+import {registerClockerDevice,revokeClockerDevice,setClockerDeviceSignInMode} from '../src/lib/clocker/devices.server';
+import {setEmployeeClockerPin} from '../src/lib/clocker/pins.server';
+import {saveBreakType} from '../src/lib/clocker/break-types.server';
+import {fixtureProof} from '../src/test/integration/shift-change-api';
+import {clockerText} from '../src/components/clocker-copy';
+import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture';
+
+export async function runClockerFlow(browser:any,appUrl:string,ex:any,actors:string[],evidence:string,log:unknown[],mode='full',net:Record<string,unknown>={}){
+ const q=(text:string,values:unknown[]=[])=>ex.query({text,values});
+ const ownerSession=await fixtureProof(ex,'QAOWNER');const owner={employeeId:'QAOWNER',sessionTokenHash:ownerSession.sessionTokenHash};
+ const key=Buffer.from('ab'.repeat(32),'hex');
+ const locale=process.env.NEVORA_SCAN_CLOCKER_LOCALE==='es'?'es':'en',extra=process.env.NEVORA_SCAN_CLOCKER_EXTRA==='1';
+ const N=(en:string,params?:Record<string,string|number>)=>locale==='es'?clockerText('es',en,params):clockerText('en',en,params);
+ await q("UPDATE locations SET clocker_key='scan-kiosk-main' WHERE id='loc-1'");
+ await q("UPDATE locations SET clocker_key='scan-kiosk-west' WHERE id='loc-2'");
+ const [james,ana]=[actors[1],actors[2]];
+ for(const [id,pin] of [[james,'2468'],[ana,'1357']])await setEmployeeClockerPin(owner,{employeeId:id,pin,expectedVersion:0},key,ex).catch((e:unknown)=>log.push('pin '+id+' '+String(e)));
+ await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,'loc-2') ON CONFLICT DO NOTHING",[ana]).catch((e:unknown)=>log.push('elig '+String(e)));
+ const sizes:[number,number][]=(process.env.NEVORA_SCAN_CLOCKER_SIZES??'1024x768,768x1024').split(',').map(v=>v.split('x').map(Number) as [number,number]);
+ let n=0;
+ const shot=async(page:any,name:string,all=true)=>{n++;const tag=String(n).padStart(2,'0')+'-'+name;
+  for(const [w,h] of all?sizes:sizes.slice(0,1)){await page.setViewportSize({width:w,height:h});await page.waitForTimeout(300);await page.screenshot({path:`${evidence}/ck-${tag}-${w}x${h}.png`});}
+  await page.setViewportSize({width:sizes[0][0],height:sizes[0][1]});
+  const info=await page.evaluate(()=>{const over=document.documentElement.scrollWidth-innerWidth;
+   // Small targets and clipped text on screen (premium pass).
+   const small=[...document.querySelectorAll('main button, main a, main summary')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&(r.height<44||r.width<44);}).map(e=>(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,30));
+   const clipped=[...document.querySelectorAll('main *')].filter(e=>e.children.length===0&&(e.textContent||'').trim()&&e.scrollWidth>e.clientWidth+1&&getComputedStyle(e).overflow!=='visible').map(e=>(e.textContent||'').trim().slice(0,30));
+   return {over,small:small.slice(0,8),clipped:clipped.slice(0,8)};});
+  log.push({ck:tag,h1:await page.locator('h1').allInnerTexts().catch(()=>[]),alerts:await page.locator('[role=alert],[role=status]').allInnerTexts().catch(()=>[]),...info});};
+ const seq=async(page:any,name:string,times:number[])=>{const t0=Date.now();for(const t of times){const wait=t-(Date.now()-t0);if(wait>0)await page.waitForTimeout(wait);await page.screenshot({path:`${evidence}/seq-${name}-${String(t).padStart(4,'0')}ms.png`});}};
+ const step=async(name:string,fn:()=>Promise<void>)=>{try{await fn();}catch(e){log.push({ckError:name,e:String((e as Error).message).slice(0,300)});}};
+ const fresh=async(opts:any={})=>{const ctx=await browser.newContext({viewport:{width:sizes[0][0],height:sizes[0][1]},deviceScaleFactor:1,reducedMotion:'no-preference',serviceWorkers:'block',...net,...opts});
+  if(locale==='es')await ctx.addInitScript(()=>{try{localStorage.setItem('nevora.clocker.locale','es');}catch{/* blocked */}});
+  const page=await ctx.newPage();page.setDefaultTimeout(15000);page.on('pageerror',(e:Error)=>log.push('ck pageerror '+e.message.slice(0,200)));
+  page.on('console',(m:any)=>{if(m.type()==='error')log.push('ck console '+m.text().slice(0,200));});return {ctx,page};};
+ const settle=(page:any)=>page.waitForLoadState('networkidle',{timeout:8000}).catch(()=>{});
+ const enroll=async(page:any,locationId:string,locationKey:string,name:string)=>{
+  const pending=await registerClockerDevice(owner,{name,locationId},ex);
+  await page.goto(`${appUrl}/clocker/${locationKey}`);await settle(page);await page.waitForTimeout(800);
+  await page.locator('textarea[name="enrollmentToken"]').fill(pending.enrollmentToken);
+  await page.locator('form button[type="submit"]').click();
+  await page.locator('[data-clocker-pin="entry"]').waitFor({timeout:20000});
+ };
+ const idle=(page:any)=>page.waitForFunction(()=>!document.querySelector('[aria-busy="true"]'),{timeout:15000}).catch(()=>{});
+ const pinKey=async(page:any,digits:string)=>{if(await page.locator('[data-clocker-step="id"]').count()){await page.locator('#clocker-employee-id').fill(james);await page.locator('#clocker-employee-id').press('Enter');await page.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});await page.waitForTimeout(300);}for(const d of digits)await page.locator('[data-clocker-keypad] button[data-key="digit"]').filter({hasText:new RegExp('^'+d+'$')}).click();};
+ const enterPin=async(page:any,pin:string)=>{await page.locator('[data-clocker-pin="entry"]').waitFor({timeout:20000});await idle(page);await page.waitForTimeout(200);if(await page.locator('[data-clocker-step="id"]').count()){await page.locator('#clocker-employee-id').fill(pin==='1357'?ana:james);await page.locator('#clocker-employee-id').press('Enter');await page.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});await page.waitForTimeout(300);}await pinKey(page,pin);await page.locator('[data-clocker-pin="entry"] button[type="submit"]').click();};
+ const ready=(page:any)=>page.locator('[data-clocker-state="ready"]').waitFor({timeout:20000});
+ const success=(page:any)=>page.locator('[data-clocker-state="success"]').waitFor({timeout:20000});
+ const btn=(page:any,en:string)=>page.getByRole('button',{name:N(en),exact:true});
+ const doneToPin=async(page:any)=>{const done=btn(page,'Done').first();if(await done.count())await done.click();await page.locator('[data-clocker-pin="entry"]').waitFor({timeout:20000});};
+
+ // Clocker UI step 3, built (NEVORA_SCAN_CLOCKER_FLOW=names): Option C on an enrolled fictional tablet in picker mode,
+ // switched with Codex's setClockerDeviceSignInMode. Twelve fictional names show; Luis Santos and Luis Serrano are both
+ // "Luis S.", so the server leaves both out. Checks: the four looks in EN and ES, axe, 44px reach, the focus walk,
+ // reduced motion, the sticky way out at 390, an end-to-end clock in and out by name, Use Employee ID, a duplicate
+ // name, a roster failure, a stale name, the request bodies, and the roster's memory lifecycle.
+ if(mode==='names'||mode==='motion'||mode==='cls'){
+  const axePath=createRequire(import.meta.url).resolve('axe-core/axe.min.js');
+  const motionProbe=readFileSync(new URL('./probe-motion.js',import.meta.url),'utf8');
+  const staff:[string,string,string][]=[['PK-BEA','Beatriz','Muñoz'],['PK-CAR','Carlos','Vega'],['PK-DAN','Daniela','Cruz'],['PK-EDU','Eduardo','Ramos'],['PK-GAB','Gabriela','Torres'],
+   ['PK-HEC','Héctor','Díaz'],['PK-ISA','Isabel','Morales'],['PK-JAV','Javier','Pérez'],['PK-LUC','Lucía','Ortega'],['PK-MIG','Miguel','Soto'],['PK-LS1','Luis','Santos'],['PK-LS2','Luis','Serrano']];
+  const pins=['7194','8023','5361','6402','9175','3846','2759','8610','4937','5082','6713','7248'];
+  const addStaff=async(id:string,first:string,last:string,pin:string)=>{
+   await q("INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id) VALUES($1,$2,$3,'555-0100',NULL,'EMPLOYEE','loc-1') ON CONFLICT (id) DO NOTHING",[id,first,last]).catch((e:unknown)=>log.push('nm emp '+String(e)));
+   await q("INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES($1,'loc-1') ON CONFLICT DO NOTHING",[id]).catch(()=>{});
+   await setEmployeeClockerPin(owner,{employeeId:id,pin,expectedVersion:0},key,ex).catch((e:unknown)=>log.push('nm pin '+id+' '+String(e).slice(0,160)));};
+  for(const [n,[id,first,last]] of staff.entries())await addStaff(id,first,last,pins[n]);
+  const picker=async()=>{const rows=await q("SELECT id,version FROM clocker_devices WHERE location_id='loc-1' AND active AND revoked_at IS NULL");const list=Array.isArray(rows)?rows:rows.rows;
+   for(const d of list){const r=await setClockerDeviceSignInMode(owner,{deviceId:d.id,expectedVersion:Number(d.version),signInMode:'NAME_PICKER'},ex).catch((e:unknown)=>({error:String(e).slice(0,160)}));log.push({nmMode:d.id,r:JSON.stringify(r).slice(0,120)});}};
+  const looks:[string,number,number,boolean][]=[['768x1024',768,1024,false],['1024x768',1024,768,false],['390x844',390,844,false],['390x844-text200',390,844,true]];
+  // Overflow, small and clipped targets, and reach (elementFromPoint at ±21.5px from each control's centre, scrolled into
+  // view as a person would). The way out at 390: in view at the top of the list, and still in view and uncovered mid-list.
+  const measure=(page:any)=>page.evaluate(()=>{
+   const over=document.documentElement.scrollWidth-innerWidth;const main=document.querySelector('main')||document.body;
+   const controls=[...main.querySelectorAll('button,a[href],input:not([type=hidden])')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&!(e as HTMLInputElement).disabled&&getComputedStyle(e).visibility!=='hidden';}) as HTMLElement[];
+   const label=(e:Element)=>(e.getAttribute('aria-label')||(e.textContent||'').trim()||(e as HTMLInputElement).placeholder||e.tagName).slice(0,28);
+   const reach=controls.map(e=>{e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    const hit=(x:number,y:number)=>{const t=document.elementFromPoint(x,y);return !!t&&(t===e||e.contains(t)||(!!e.closest('label')&&e.closest('label')!.contains(t)));};
+    return {c:label(e),ok:[[cx-21.5,cy],[cx+21.5,cy],[cx,cy-21.5],[cx,cy+21.5]].every(([x,y])=>hit(x,y)),h:Math.round(r.height)};});
+   scrollTo(0,0);document.querySelectorAll('.np-tiles').forEach(e=>{(e as HTMLElement).scrollTop=0;});
+   const clipped=[...main.querySelectorAll('*')].filter(e=>e.children.length===0&&(e.textContent||'').trim()&&e.scrollWidth>e.clientWidth+1&&getComputedStyle(e).overflow!=='visible').map(e=>(e.textContent||'').trim().slice(0,28));
+   const way=document.querySelector('.np-useid') as HTMLElement|null;
+   const seen=()=>{if(!way)return null;const r=way.getBoundingClientRect();const t=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);return {inView:r.top>=0&&r.bottom<=innerHeight,hit:!!t&&way.contains(t),h:Math.round(r.height)};};
+   const atTop=seen();const tiles=[...document.querySelectorAll('.np-tile')];let mid=null;
+   if(way&&tiles.length){tiles[Math.floor(tiles.length/2)].scrollIntoView({block:'center'});mid=seen();scrollTo(0,0);document.querySelectorAll('.np-tiles').forEach(e=>{(e as HTMLElement).scrollTop=0;});}
+   return {over,clipped:clipped.slice(0,6),reachFail:reach.filter(r=>!r.ok).slice(0,8),under44:reach.filter(r=>r.h<44).slice(0,6),controls:reach.length,
+    h1:[...document.querySelectorAll('h1')].map(e=>(e.textContent||'').trim()),names:[...document.querySelectorAll('.np-name')].map(e=>(e.textContent||'').trim()),
+    lines:[...main.querySelectorAll('[role=status],[role=alert],.np-who,.np-hint')].map(e=>(e.textContent||'').trim()).filter(Boolean).slice(0,6),wayAtTop:atTop,wayMidList:mid,fs:getComputedStyle(document.documentElement).fontSize};});
+  const axe=async(page:any)=>{await page.addScriptTag({path:axePath});return page.evaluate(async()=>{const r=await (window as any).axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']}});return r.violations.map((v:any)=>({id:v.id,n:v.nodes.length,t:v.nodes.slice(0,3).map((x:any)=>String(x.target)).join(' | ')}));});};
+  const look=async(page:any,name:string,which:string[]=looks.map(l=>l[0]),withAxe=false)=>{for(const [tag,w,h,big] of looks){if(!which.includes(tag))continue;
+    await page.setViewportSize({width:w,height:h});await page.evaluate((b:boolean)=>{document.documentElement.style.fontSize=b?'200%':'';},big);await page.waitForTimeout(350);
+    const m=await measure(page);await page.screenshot({path:`${evidence}/nm-${name}-${tag}.png`});
+    // The 390 picker in full, to show every name and where the way out sits.
+    if(tag.startsWith('390')&&await page.locator('.np-tile').count())await page.screenshot({path:`${evidence}/nm-${name}-${tag}-full.png`,fullPage:true});
+    log.push({nm:name,size:tag,...m,...(withAxe&&(tag==='768x1024'||tag==='390x844')?{axe:await axe(page)}:{})});}
+   await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:768,height:1024});};
+  // Every PIN request body this tablet sends, keys only (never the PIN or the selection value).
+  const watch=(page:any,bodies:string[])=>page.on('request',(r:any)=>{if(r.url().includes('/api/clocker/')&&r.url().endsWith('/pin')&&r.method()==='POST'){try{const b=JSON.parse(r.postData()??'{}');bodies.push(b.action+':'+Object.keys(b).sort().join(','));}catch{bodies.push('unreadable');}}});
+  const rosterReads=(bodies:string[])=>bodies.filter(b=>b.startsWith('roster:')).length;
+  const pad=async(page:any,pin:string)=>{for(const d of pin)await page.locator('[data-clocker-keypad] button[data-key="digit"]').filter({hasText:new RegExp('^'+d+'$')}).click();};
+  const names=(page:any)=>page.locator('[data-clocker-names]').waitFor({timeout:20000});
+  const open=async(page:any)=>{await page.goto(`${appUrl}/clocker/scan-kiosk-main`);await settle(page);await idle(page);await names(page);await page.waitForTimeout(500);};
+  const pickName=async(page:any,name:string)=>{await page.locator('.np-tile',{hasText:name}).click();await page.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});await page.waitForTimeout(300);};
+  const submitPin=(page:any)=>page.locator('[data-clocker-pin="entry"] button[type="submit"]').click();
+  // Load shift (NEVORA_SCAN_CLOCKER_FLOW=cls): a picker tablet and an Employee ID tablet, each loaded 3 times at 768x1024,
+  // 1024x768 and 390x844. CLS counts shifts without recent input over the first 4s; also the time until the names or an
+  // enabled Employee ID field are on screen.
+  if(mode==='cls'){
+   // A reserved height to try comes from sessionStorage (set before a load), so one tablet can test several.
+   const init=()=>{(window as any).__ls=[];try{new PerformanceObserver(l=>{for(const e of l.getEntries() as any[])if(!e.hadRecentInput)(window as any).__ls.push({v:e.value,t:Math.round(e.startTime),src:(e.sources||[]).slice(0,2).map((x:any)=>(x.node&&x.node.className&&typeof x.node.className==='string'?x.node.className.split(' ')[0]:x.node?.tagName)+' '+Math.round(x.previousRect.y)+'>'+Math.round(x.currentRect.y))});}).observe({type:'layout-shift',buffered:true});}catch{/* none */}
+    try{const v=sessionStorage.getItem('ckwait');if(v)document.addEventListener('DOMContentLoaded',()=>{const st=document.createElement('style');st.textContent=`[data-clocker-kiosk] .np-wait{min-height:${v}px !important}`;document.head.appendChild(st);});}catch{/* none */}};
+   const setMode=async(m:string)=>{const rows=await q("SELECT id,version FROM clocker_devices WHERE location_id='loc-1' AND active AND revoked_at IS NULL");const list=Array.isArray(rows)?rows:rows.rows;
+    for(const d of list)await setClockerDeviceSignInMode(owner,{deviceId:d.id,expectedVersion:Number(d.version),signInMode:m},ex).catch((e:unknown)=>log.push('mode '+String(e).slice(0,120)));};
+   const C=await fresh();const cp=C.page;await C.ctx.addInitScript(init);
+   // A tablet never set up: its first load is the setup screen (it must not get worse).
+   for(const [w,h] of [[768,1024],[1024,768],[390,844]] as [number,number][])await step(`cls new ${w}`,async()=>{const N=await fresh({viewport:{width:w,height:h}});await N.ctx.addInitScript(init);const np=N.page;
+    await np.goto(`${appUrl}/clocker/scan-kiosk-main`);await np.locator('textarea[name="enrollmentToken"]').waitFor({timeout:15000});await np.waitForTimeout(3000);
+    log.push({clsNew:`${w}x${h}`,...await np.evaluate(()=>{const l=(window as any).__ls||[];return {cls:Math.round(l.reduce((a:number,e:any)=>a+e.v,0)*1e4)/1e4,entries:l.slice(0,4)};})});
+    await np.screenshot({path:`${evidence}/cls-new-tablet-${w}x${h}.png`});await N.ctx.close();});
+   await step('cls enroll',async()=>{await enroll(cp,'loc-1','scan-kiosk-main','Front counter iPad');});
+   const card=()=>cp.evaluate(()=>{const e=document.querySelector('[data-clocker-pin]')?.parentElement;return e?Math.round(e.getBoundingClientRect().height):0;});
+   // The layout hint (localStorage, per location): none (a first-ever load), the tablet's real mode, or the other one.
+   // The layout hint is a cookie scoped to the location's path ('picker' | 'id').
+   const host=new URL(appUrl).hostname,HPATH='/clocker/scan-kiosk-main';
+   const setHint=async(ctx:any,v:string|null)=>{await ctx.clearCookies({name:'nv_clocker_layout'});if(v)await ctx.addCookies([{name:'nv_clocker_layout',value:v,domain:host,path:HPATH,secure:true,sameSite:'Lax'}]);};
+   const getHint=async(ctx:any)=>((await ctx.cookies(appUrl+HPATH)) as any[]).find(c=>c.name==='nv_clocker_layout')?.value??null;
+   const load=async(m:string,w:number,h:number,hint:'none'|'correct'|'wrong',r:number)=>{
+    await cp.setViewportSize({width:w,height:h});
+    const real=m==='NAME_PICKER'?'picker':'id',value=hint==='none'?null:hint==='correct'?real:real==='picker'?'id':'picker';
+    await setHint(C.ctx,value);
+    const t0=Date.now();await cp.goto(`${appUrl}/clocker/scan-kiosk-main`);
+    await cp.waitForFunction(()=>!!document.querySelector('[data-clocker-names] .np-tile')||!!document.querySelector('#clocker-employee-id:not(:disabled)'),{timeout:15000,polling:'raf'});
+    const ready=Date.now()-t0;await cp.waitForTimeout(3000);
+    const r2=await cp.evaluate(()=>{const l=(window as any).__ls||[];return {cls:Math.round(l.reduce((a:number,e:any)=>a+e.v,0)*1e4)/1e4,entries:l.slice(0,4)};});
+    const stored=await getHint(C.ctx);
+    log.push({tablet:m,size:`${w}x${h}`,hint,hintValue:value,storedAfter:stored,run:r,readyMs:ready,...r2,card:await card()});
+    if(r===0)await cp.screenshot({path:`${evidence}/cls-${hint}-${real}-${w}x${h}.png`});};
+   if(process.env.NEVORA_SCAN_CLS_LOST_ONLY!=='1')for(const [w,h] of [[768,1024],[1024,768],[390,844]] as [number,number][])for(const m of ['NAME_PICKER','EMPLOYEE_ID']){await setMode(m);
+    for(const hint of ['none','correct','wrong'] as const)for(let r=0;r<2;r++)await step(`cls ${hint} ${m} ${w}`,()=>load(m,w,h,hint,r));}
+   // Losing the setup clears the hint: the device is revoked, and the next sign-in attempt is refused as device_required.
+   await setMode('NAME_PICKER');
+   await step('cls slow',async()=>{await cp.setViewportSize({width:768,height:1024});await cp.evaluate(()=>{try{sessionStorage.removeItem('ckwait');}catch{/* none */}});await cp.route('**/api/clocker/*/pin',async(rt:any)=>{if((rt.request().postData()??'').includes('"roster"'))await new Promise(f=>setTimeout(f,1800));await rt.continue();});
+    await cp.goto(`${appUrl}/clocker/scan-kiosk-main`);await cp.waitForTimeout(500);await cp.screenshot({path:`${evidence}/cls-slow-0500ms-768x1024.png`});
+    log.push({clsSlow500:await cp.locator('[role=status]').allInnerTexts()});await cp.waitForTimeout(800);await cp.screenshot({path:`${evidence}/cls-slow-1300ms-768x1024.png`});
+    log.push({clsSlow1300:await cp.locator('[role=status]').allInnerTexts()});await cp.locator('[data-clocker-names] .np-tile').first().waitFor({timeout:10000});await cp.unroute('**/api/clocker/*/pin');});
+   // A failed read on an Employee ID-mode check: the form with its line.
+   await step('cls failed',async()=>{await cp.route('**/api/clocker/*/pin',async(rt:any)=>{if((rt.request().postData()??'').includes('"roster"'))await rt.abort();else await rt.continue();});
+    await cp.goto(`${appUrl}/clocker/scan-kiosk-main`);await cp.locator('[data-clocker-names-failed]').waitFor({timeout:10000});await cp.locator('#clocker-employee-id:not(:disabled)').waitFor({timeout:10000}).catch(()=>{});log.push({clsFailedForm:await cp.locator('#clocker-employee-id:not(:disabled)').count()});await cp.unroute('**/api/clocker/*/pin');});
+   await step('cls device lost',async()=>{await setMode('NAME_PICKER');await cp.setViewportSize({width:768,height:1024});await cp.goto(`${appUrl}/clocker/scan-kiosk-main`);await cp.locator('[data-clocker-names] .np-tile').first().waitFor({timeout:15000});
+    const before=await getHint(C.ctx);
+    {const rows=await q("SELECT id,version FROM clocker_devices WHERE location_id='loc-1' AND active AND revoked_at IS NULL");for(const d of (Array.isArray(rows)?rows:rows.rows))await revokeClockerDevice(owner,{deviceId:d.id,expectedVersion:Number(d.version)},ex);}
+    await cp.locator('.np-tile',{hasText:'Ana C.'}).click();await cp.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});for(const d of '1357')await cp.locator('[data-clocker-keypad] button[data-key="digit"]').filter({hasText:new RegExp('^'+d+'$')}).click();
+    await cp.locator('[data-clocker-pin="entry"] button[type="submit"]').click();await cp.locator('[data-clocker-blocked]').waitFor({timeout:10000});await cp.waitForTimeout(400);
+    log.push({clsDeviceLost:{before,after:await getHint(C.ctx),card:await cp.locator('[data-clocker-blocked]').getAttribute('data-clocker-blocked'),h1:await cp.locator('h1').allInnerTexts()}});});
+   log.push({clsStorage:await cp.evaluate(()=>{try{return Object.keys(localStorage).map(k=>k+'='+String(localStorage.getItem(k)).slice(0,40));}catch{return ['blocked'];}}),clsCookies:((await C.ctx.cookies()) as any[]).map(c=>c.name+'='+c.value+' '+c.path)});
+   await C.ctx.close();return;
+  }
+  // Motion (NEVORA_SCAN_CLOCKER_FLOW=motion): stills at start, mid and end of each motion at 768x1024, the reduced-motion
+  // end states, layout shift (CLS) over the whole run, a tap during the tile settle, and a .webm of tap, PIN, success.
+  if(mode==='motion'){
+   const clsInit=()=>{(window as any).__ls=[];const node=(n:any)=>n&&n.tagName?(n.tagName+(typeof n.className==='string'&&n.className?'.'+n.className.split(' ').slice(0,2).join('.'):'')).slice(0,60):'?';
+     try{new PerformanceObserver(l=>{for(const e of l.getEntries() as any[])(window as any).__ls.push({v:Math.round(e.value*1e4)/1e4,input:e.hadRecentInput,t:Math.round(e.startTime),path:location.pathname.slice(0,30),src:(e.sources||[]).slice(0,3).map((x:any)=>node(x.node)+' '+Math.round(x.previousRect.y)+'>'+Math.round(x.currentRect.y))});}).observe({type:'layout-shift',buffered:true});}catch{/* no API */}
+     (window as any).__frames=[];let t0=0;const loop=(t:number)=>{const m=document.querySelector('.b-donemark');if(m){if(!t0)t0=t;const h=document.querySelector('[data-clocker-state="ready"] h1');const path=m.querySelector('path');
+       if(t-t0<700)(window as any).__frames.push({t:Math.round(t-t0),mark:getComputedStyle(m).transform+' o'+getComputedStyle(m).opacity,dash:path?getComputedStyle(path).strokeDashoffset:null,h1:h?getComputedStyle(h).opacity:null});}else t0=0;requestAnimationFrame(loop);};requestAnimationFrame(loop);};
+   const cls=(page:any)=>page.evaluate(()=>{const l=(window as any).__ls||[];return {cls:l.filter((e:any)=>!e.input).reduce((a:number,e:any)=>a+e.v,0),withInput:l.reduce((a:number,e:any)=>a+e.v,0),n:l.length,entries:l.slice(0,14)};});
+   const doneFrames=(page:any)=>page.evaluate(()=>((window as any).__frames||[]).filter((_:any,i:number)=>i%3===0).slice(0,16));
+   const stills=async(page:any,name:string,at:number[])=>{const t0=Date.now();for(const [i,t] of at.entries()){const w=t-(Date.now()-t0);if(w>0)await page.waitForTimeout(w);
+     const tf=await page.evaluate(()=>{const q=(s:string)=>{const e=document.querySelector(s);return e?getComputedStyle(e).transform+' o'+getComputedStyle(e).opacity:null;};return {chosen:q('[data-clocker-chosen]'),slots:q('[data-clocker-pin-entry] > div[aria-hidden]'),mark:q('.b-donemark'),tile7:q('.np-tiles li:nth-child(8) .np-tile'),dot1:q('[data-clocker-pin-entry] > div[aria-hidden] > span:nth-child(1)')};});
+     await page.screenshot({path:`${evidence}/mo-${name}-${['start','mid','end'][i]??i}-768x1024.png`});log.push({mo:name,at:t,i,real:Date.now()-t0,tf});}};
+   const tall={viewport:{width:768,height:1024}};
+   const M=await fresh(tall);const mp=M.page;await M.ctx.addInitScript(clsInit);
+   await step('motion enroll',async()=>{await enroll(mp,'loc-1','scan-kiosk-main','Front counter iPad');await picker();});
+   // 2. Tiles settle on entering sign-in; a tap during the settle works at once.
+   await step('motion settle',async()=>{await mp.goto(`${appUrl}/clocker/scan-kiosk-main`);await mp.locator('[data-clocker-names]').waitFor({timeout:20000});await stills(mp,'settle',[0,90,450]);});
+   await step('motion tap during settle',async()=>{await mp.goto(`${appUrl}/clocker/scan-kiosk-main`);await mp.locator('[data-clocker-names] .np-tile').first().waitFor({timeout:20000});const t0=Date.now();
+     await mp.locator('.np-tile',{hasText:'Ana C.'}).click({timeout:2000});await mp.locator('[data-clocker-step="pin"]').waitFor({timeout:3000});log.push({moTapDuringSettle:'ok',ms:Date.now()-t0});
+     await mp.getByRole('button',{name:'Choose another name',exact:true}).click();await mp.locator('[data-clocker-names]').waitFor();await mp.waitForTimeout(600);});
+   // 1. Shared name: tile to PIN header, and back.
+   await step('motion flip',async()=>{await mp.waitForTimeout(400);await mp.locator('.np-tile',{hasText:'Lucía O.'}).click();await stills(mp,'flip',[0,110,500]);
+     await mp.getByRole('button',{name:'Choose another name',exact:true}).click();await stills(mp,'flip-back',[0,110,500]);});
+   // 3. Dots spring; a wrong PIN shakes the dots.
+   await step('motion dots',async()=>{await mp.waitForTimeout(300);await pickName(mp,'Beatriz M.');await mp.waitForTimeout(400);await pad(mp,'7');await stills(mp,'dot',[0,90,450]);
+     await pad(mp,'000');await submitPin(mp);await mp.locator('[data-clocker-pin-entry][data-error]').waitFor({timeout:10000});await stills(mp,'shake',[0,90,500]);});
+   // 4. Verified: the done mark draws, then "Hi, Ana."
+   await step('motion done',async()=>{await mp.getByRole('button',{name:'Choose another name',exact:true}).click();await names(mp);await mp.waitForTimeout(400);await pickName(mp,'Ana C.');await pad(mp,'1357');await submitPin(mp);
+     await mp.locator('[data-clocker-state="ready"] .b-donemark').waitFor({timeout:20000});await stills(mp,'done',[0,160,600]);
+     log.push({moFrames:await doneFrames(mp)});log.push({moCls:await cls(mp)});await btn(mp,'Done').click();await names(mp);});
+   await M.ctx.close();
+   // Reduced motion: every end state at once, no transform.
+   await step('motion reduced',async()=>{const R=await fresh({reducedMotion:'reduce',...tall});const rp=R.page;await R.ctx.addInitScript(clsInit);await enroll(rp,'loc-1','scan-kiosk-main','Reduced motion iPad');await picker();
+     await rp.goto(`${appUrl}/clocker/scan-kiosk-main`);await rp.locator('[data-clocker-names]').waitFor({timeout:20000});await stills(rp,'reduced-settle',[0]);
+     await rp.locator('.np-tile',{hasText:'Lucía O.'}).click();await stills(rp,'reduced-flip',[0]);
+     await pad(rp,'7');await stills(rp,'reduced-dot',[0]);await pad(rp,'000');await submitPin(rp);await rp.locator('[data-clocker-pin-entry][data-error]').waitFor({timeout:10000});await stills(rp,'reduced-shake',[0]);
+     await rp.getByRole('button',{name:'Elegir otro nombre',exact:true}).or(rp.getByRole('button',{name:'Choose another name',exact:true})).click();await names(rp);await pickName(rp,'Ana C.');await pad(rp,'1357');await submitPin(rp);
+     await rp.locator('[data-clocker-state="ready"] .b-donemark').waitFor({timeout:20000});await stills(rp,'reduced-done',[0]);
+     log.push({moReducedFrames:await doneFrames(rp)});log.push({moReducedProbe:await rp.evaluate(`(${motionProbe})()`),moReducedCls:await cls(rp),moReducedAnims:await rp.evaluate(()=>document.getAnimations().length)});await R.ctx.close();});
+   // A recording: tap a name, PIN, success, clock in.
+   await step('motion video',async()=>{const V=await browser.newContext({viewport:{width:768,height:1024},deviceScaleFactor:1,serviceWorkers:'block',recordVideo:{dir:evidence+'/video',size:{width:768,height:1024}},...net});
+     const vp=await V.newPage();vp.setDefaultTimeout(15000);await enroll(vp,'loc-1','scan-kiosk-main','Recording iPad');await picker();
+     await vp.goto(`${appUrl}/clocker/scan-kiosk-main`);await vp.locator('[data-clocker-names]').waitFor({timeout:20000});await vp.waitForTimeout(900);
+     await vp.locator('.np-tile',{hasText:'James O.'}).click();await vp.waitForTimeout(700);for(const d of '2468'){await vp.locator('[data-clocker-keypad] button[data-key="digit"]').filter({hasText:new RegExp('^'+d+'$')}).click();await vp.waitForTimeout(260);}
+     await vp.locator('[data-clocker-pin="entry"] button[type="submit"]').click();await vp.locator('[data-clocker-state="ready"]').waitFor({timeout:20000});await vp.waitForTimeout(1400);
+     await btn(vp,'Clock in').click();await vp.locator('[data-clocker-state="success"]').waitFor({timeout:20000});await vp.waitForTimeout(1500);
+     const video=vp.video();await V.close();if(video)await video.saveAs(`${evidence}/mo-tap-pin-success-768x1024.webm`);log.push({moVideo:!!video});});
+   return;
+  }
+  const bodies:string[]=[];
+  const P=await fresh();const p=P.page;watch(p,bodies);
+  await step('names enroll',async()=>{await enroll(p,'loc-1','scan-kiosk-main','Front counter iPad');await picker();await open(p);log.push({nmRosterReadsAfterOpen:rosterReads(bodies)});});
+  await step('names signin',async()=>{await open(p);await look(p,'signin',undefined,true);});
+  // The duplicate: neither "Luis S." is listed; the hint is the answer, and Use Employee ID works for them.
+  await step('names duplicate',async()=>{log.push({nmLuisShown:await p.locator('.np-tile',{hasText:'Luis'}).count()});});
+  await step('names pin',async()=>{await open(p);await pickName(p,'Ana C.');await pad(p,'13');await look(p,'pin',undefined,true);});
+  // The focus walk (768): from the page start, Tab through the names to Use Employee ID and the language; then Enter on a
+  // name opens the PIN step with focus in the PIN; Shift+Tab reaches "Choose another name"; Enter returns to the names
+  // with focus on the chosen name.
+  await step('names focus walk',async()=>{await open(p);await p.evaluate(()=>{(document.activeElement as HTMLElement|null)?.blur();});
+   await p.locator('h1').first().focus();const stops:any[]=[];
+   for(let i=0;i<18;i++){await p.keyboard.press('Tab');stops.push(await p.evaluate(()=>{const e=document.activeElement as HTMLElement;const cs=getComputedStyle(e);return {c:(e.getAttribute('aria-label')||(e.textContent||'').trim()).slice(0,26),ring:cs.outlineStyle!=='none'&&parseFloat(cs.outlineWidth)>=2?cs.outlineWidth+' '+cs.outlineColor:cs.boxShadow!=='none'?'shadow':'none'};}));}
+   log.push({nmFocusWalk:stops});
+   await p.locator('.np-tile',{hasText:'Carlos V.'}).focus();await p.keyboard.press('Enter');await p.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});await p.waitForTimeout(300);
+   const inPin=await p.evaluate(()=>document.activeElement?.id);
+   await p.keyboard.press('Shift+Tab');const back=await p.evaluate(()=>document.activeElement?.getAttribute('aria-label'));
+   for(let i=0;i<3&&back!=='Choose another name';i++){await p.keyboard.press('Shift+Tab');}
+   const backNow=await p.evaluate(()=>document.activeElement?.getAttribute('aria-label'));
+   await p.screenshot({path:`${evidence}/nm-focus-back-768x1024.png`});
+   await p.keyboard.press('Enter');await names(p);await p.waitForTimeout(300);
+   log.push({nmFocusPin:inPin,nmFocusBack:backNow,nmFocusReturn:await p.evaluate(()=>(document.activeElement?.textContent||'').trim())});
+   await p.screenshot({path:`${evidence}/nm-focus-return-768x1024.png`});});
+  // Focus not obscured at 390 (100% and 200%): Tab through every name; each focused tile's centre must be the tile, not the
+  // sticky button over it.
+  await step('names focus 390',async()=>{for(const big of [false,true]){await open(p);await p.setViewportSize({width:390,height:844});await p.evaluate((b:boolean)=>{document.documentElement.style.fontSize=b?'200%':'';},big);await p.waitForTimeout(300);
+    await p.locator('h1').first().focus();const hidden:string[]=[];let tiles=0;
+    for(let i=0;i<14;i++){await p.keyboard.press('Tab');const r=await p.evaluate(()=>{const e=document.activeElement as HTMLElement;if(!e.classList.contains('np-tile'))return null;const b=e.getBoundingClientRect();
+      const pts=[[b.left+b.width/2,b.top+b.height/2],[b.left+b.width/2,b.bottom-4]];return {c:(e.textContent||'').trim(),ok:pts.every(([x,y])=>{const t=document.elementFromPoint(x,y);return !!t&&e.contains(t);})};});
+     if(r){tiles++;if(!r.ok)hidden.push(r.c);}}
+    log.push({nmFocus390:big?'200%':'100%',tiles,hidden});
+    await p.evaluate(()=>{document.documentElement.style.fontSize='';});await p.setViewportSize({width:768,height:1024});}});
+  // End to end by name: Ana C. clocks in, then out; the screen leaves the names while she is verified and reads them again
+  // after Done.
+  await step('names clock in',async()=>{await open(p);await pickName(p,'Ana C.');await pad(p,'1357');await submitPin(p);await ready(p);await p.waitForTimeout(400);
+   log.push({nmVerified:await p.locator('h1').allInnerTexts(),nmNamesWhileVerified:await p.locator('[data-clocker-names], .np-tile').count()});
+   await p.screenshot({path:`${evidence}/nm-e2e-ready-in-768x1024.png`});
+   const before=rosterReads(bodies);await btn(p,'Clock in').click();await success(p);await p.waitForTimeout(300);await p.screenshot({path:`${evidence}/nm-e2e-clocked-in-768x1024.png`});
+   await btn(p,'Done').click();await names(p);await p.waitForTimeout(400);log.push({nmRereadAfterDone:rosterReads(bodies)-before});});
+  await step('names clock out',async()=>{await pickName(p,'Ana C.');await pad(p,'1357');await submitPin(p);await ready(p);await p.waitForTimeout(400);await btn(p,'Clock out').click();await p.waitForTimeout(400);
+   const confirm=btn(p,'Confirm clock out');if(await confirm.count())await confirm.click();await success(p);await p.waitForTimeout(300);await p.screenshot({path:`${evidence}/nm-e2e-clocked-out-768x1024.png`});
+   const rows=await q("SELECT * FROM time_entries WHERE employee_id=$1",[ana]).catch((e:unknown)=>({rows:[{error:String(e).slice(0,120)}]}));const list=Array.isArray(rows)?rows:rows.rows;
+   log.push({nmAnaEntries:list.map((r:any)=>Object.fromEntries(Object.entries(r).filter(([k])=>/clock|start|end|status|source|location/.test(k)).map(([k,v])=>[k,v instanceof Date?v.toISOString():v])))});
+   await btn(p,'Done').click();await names(p);});
+  // A wrong PIN for a chosen name names only the PIN, and the name stays.
+  await step('names wrong pin',async()=>{await open(p);await pickName(p,'Beatriz M.');await pad(p,'0000');await submitPin(p);await p.locator('[data-clocker-pin-entry][data-error]').waitFor({timeout:10000});await p.waitForTimeout(400);await look(p,'wrong-pin',['768x1024','390x844']);});
+  // Use Employee ID: James Ortiz by his ID (the unchanged path), then back to names from the form.
+  await step('names use id',async()=>{await open(p);await p.getByRole('button',{name:'Use Employee ID',exact:true}).click();await p.locator('#clocker-employee-id').waitFor({timeout:10000});await p.waitForTimeout(400);
+   await look(p,'useid',undefined,true);
+   await p.getByRole('button',{name:'Back to names',exact:true}).click();await names(p);
+   await p.getByRole('button',{name:'Use Employee ID',exact:true}).click();await p.locator('#clocker-employee-id').fill(james);await p.locator('#clocker-employee-id').press('Enter');await p.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});
+   await pad(p,'2468');await submitPin(p);await ready(p);await p.waitForTimeout(300);log.push({nmUseIdVerified:await p.locator('h1').allInnerTexts()});await p.screenshot({path:`${evidence}/nm-useid-ready-768x1024.png`});await btn(p,'Done').click();await names(p);});
+  // The duplicate name end to end: Luis Santos isn't listed, so he uses his Employee ID.
+  await step('names duplicate id',async()=>{await open(p);await look(p,'duplicate',['768x1024','390x844']);await p.getByRole('button',{name:'Use Employee ID',exact:true}).click();
+   await p.locator('#clocker-employee-id').fill('PK-LS1');await p.locator('#clocker-employee-id').press('Enter');await p.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});
+   await pad(p,'6713');await submitPin(p);await ready(p);await p.waitForTimeout(300);log.push({nmDuplicateVerified:await p.locator('h1').allInnerTexts()});await p.screenshot({path:`${evidence}/nm-duplicate-ready-768x1024.png`});await btn(p,'Done').click();await names(p);});
+  // A stale name: Miguel S. is chosen, then renamed on the server to a third "Luis S." (so the server leaves him out). The
+  // PIN is denied like a wrong PIN; the kiosk reads the roster again, returns to the names and says the list changed.
+  await step('names stale',async()=>{await open(p);await pickName(p,'Miguel S.');
+   await q("UPDATE employees SET first_name='Luis',last_name='Sosa' WHERE id='PK-MIG'");
+   const before=rosterReads(bodies);await pad(p,'5082');await submitPin(p);await p.locator('.np-notice').waitFor({timeout:10000});await p.waitForTimeout(400);
+   log.push({nmStaleReread:rosterReads(bodies)-before,nmStaleMiguelShown:await p.locator('.np-tile',{hasText:'Miguel'}).count()});
+   await look(p,'stale',undefined,true);
+   await q("UPDATE employees SET first_name='Miguel',last_name='Soto' WHERE id='PK-MIG'");});
+  // Memory: hidden drops the names and reads again on return; Escape (start over) reads again.
+  await step('names hidden',async()=>{await open(p);const before=rosterReads(bodies);
+   await p.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});await p.waitForTimeout(500);
+   const whileHidden=await p.locator('.np-tile').count();
+   await p.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>false});document.dispatchEvent(new Event('visibilitychange'));});await names(p);await p.waitForTimeout(300);
+   const escBefore=rosterReads(bodies);await p.keyboard.press('Escape');await p.waitForTimeout(1200);
+   log.push({nmTilesWhileHidden:whileHidden,nmReadsOnReturn:escBefore-before,nmReadsOnEscape:rosterReads(bodies)-escBefore});});
+  // Search above 12 names: a thirteenth fictional person is added.
+  await step('names search',async()=>{await addStaff('PK-ZOE','Zoe','Aponte','3190');await open(p);await look(p,'search13',['768x1024','390x844']);
+   await p.locator('.np-search input').fill('luc');await p.waitForTimeout(300);await look(p,'search-luc',['768x1024']);
+   await p.locator('.np-search input').fill('zz');await p.waitForTimeout(300);await look(p,'search-none',['768x1024']);
+   await q("DELETE FROM employee_clocker_pins WHERE employee_id='PK-ZOE'").catch(()=>{});await q("UPDATE employees SET active=false WHERE id='PK-ZOE'").catch((e:unknown)=>log.push('zoe off '+String(e).slice(0,100)));});
+  // Roster failure: the read is dropped, so the Employee ID form shows with one line, and James still signs in by ID.
+  await step('names roster failed',async()=>{await p.route('**/api/clocker/*/pin',async(r:any)=>{if((r.request().postData()??'').includes('"roster"'))await r.abort();else await r.continue();});
+   await p.goto(`${appUrl}/clocker/scan-kiosk-main`);await settle(p);await idle(p);await p.locator('[data-clocker-names-failed]').waitFor({timeout:20000});await p.waitForTimeout(400);
+   await look(p,'failed',undefined,true);
+   await p.locator('#clocker-employee-id').fill(james);await p.locator('#clocker-employee-id').press('Enter');await p.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});await pad(p,'2468');await submitPin(p);await ready(p);
+   log.push({nmFailedThenId:await p.locator('h1').allInnerTexts()});await btn(p,'Done').click();await p.unroute('**/api/clocker/*/pin');});
+  log.push({nmBodies:[...new Set(bodies)]});
+  await P.ctx.close();
+  // Reduced motion: picking a name and going back runs no movement.
+  await step('names reduced motion',async()=>{const R=await fresh({reducedMotion:'reduce'});const rp=R.page;await enroll(rp,'loc-1','scan-kiosk-main','Reduced motion iPad');await picker();await open(rp);
+   await rp.locator('.np-tile').first().hover();log.push({nmMotion:'signin',r:await rp.evaluate(`(${motionProbe})()`)});
+   await pickName(rp,'Ana C.');log.push({nmMotion:'pin',r:await rp.evaluate(`(${motionProbe})()`)});await R.ctx.close();});
+  // Spanish on its own tablet: sign-in, PIN, Use Employee ID, roster failure.
+  await step('names spanish',async()=>{const S=await browser.newContext({viewport:{width:768,height:1024},deviceScaleFactor:1,serviceWorkers:'block',...net});
+   await S.addInitScript(()=>{try{localStorage.setItem('nevora.clocker.locale','es');}catch{/* blocked */}});const sp=await S.newPage();sp.setDefaultTimeout(15000);
+   await enroll(sp,'loc-1','scan-kiosk-main','Tableta de prueba');await picker();await open(sp);await look(sp,'signin-es',undefined,true);
+   await pickName(sp,'Lucía O.');await pad(sp,'49');await look(sp,'pin-es',undefined,true);
+   // QA: the Spanish ready and success screens (the punch buttons, e.g. "Ponchar entrada"), at every look including 390 at 200%.
+   try{await sp.getByRole('button',{name:'Elegir otro nombre',exact:true}).click();await names(sp);await pickName(sp,'Ana C.');await pad(sp,'1357');await submitPin(sp);await ready(sp);await sp.waitForTimeout(500);
+    log.push({readyEsButtons:await sp.locator('[data-clocker-state="ready"] button').allInnerTexts(),wantIn:clockerText('es','Clock in'),wantOut:clockerText('es','Clock out')});
+    await look(sp,'ready-es',undefined,true);await sp.getByRole('button',{name:clockerText('es','Clock in'),exact:true}).click();await success(sp);await sp.waitForTimeout(400);await look(sp,'success-es',undefined,true);
+    await open(sp);await pickName(sp,'Ana C.');await pad(sp,'1357');await submitPin(sp);await ready(sp);await sp.waitForTimeout(500);await look(sp,'ready-out-es',undefined,true);
+    log.push({readyOutEsButtons:await sp.locator('[data-clocker-state="ready"] button').allInnerTexts()});
+    await open(sp);await pickName(sp,'Lucía O.');await pad(sp,'49');}catch(e){log.push('qa ready-es: '+String((e as Error)?.message??e).slice(0,300));await open(sp).catch(()=>{});await pickName(sp,'Lucía O.').catch(()=>{});}
+   await sp.getByRole('button',{name:'Elegir otro nombre',exact:true}).click();await names(sp);
+   await sp.getByRole('button',{name:'Usar ID de empleado',exact:true}).click();await sp.locator('#clocker-employee-id').waitFor({timeout:10000});await look(sp,'useid-es',undefined,true);
+   await sp.route('**/api/clocker/*/pin',async(r:any)=>{if((r.request().postData()??'').includes('"roster"'))await r.abort();else await r.continue();});
+   await sp.goto(`${appUrl}/clocker/scan-kiosk-main`);await settle(sp);await idle(sp);await sp.locator('[data-clocker-names-failed]').waitFor({timeout:20000});await look(sp,'failed-es',undefined,true);await S.close();});
+  return;
+ }
+ // The receipt only (NEVORA_SCAN_CLOCKER_FLOW=receipt): clock in and clock out with a fictional PIN; each receipt at 390x844,
+ // 768x1024, 1024x768 and 390x844 with 200% text, its times checked for the one time format ("7:00 AM": no leading zero).
+ if(mode==='receipt'){
+  const R=await fresh();const rp=R.page;
+  const looks:[number,number,boolean][]=[[390,844,false],[768,1024,false],[1024,768,false],[390,844,true]];
+  const receipt=async(name:string)=>{for(const [w,h,big] of looks){await rp.setViewportSize({width:w,height:h});await rp.evaluate((b:boolean)=>{document.documentElement.style.fontSize=b?'200%':'';},big);await rp.waitForTimeout(250);
+    const tag=`${w}x${h}${big?'-text200':''}`;
+    const info=await rp.evaluate(()=>{const root=document.querySelector('main')||document.body;const text=(root as HTMLElement).innerText;
+     const times=[...text.matchAll(/\d{1,2}:\d{2}[\s\u00a0\u202f]*[AP]M/g)].map(m=>m[0].replace(/[\s\u00a0\u202f]+/g,' '));
+     const clipped=[...root.querySelectorAll('*')].filter(e=>e.children.length===0&&(e.textContent||'').trim()&&e.scrollWidth>e.clientWidth+1&&getComputedStyle(e).overflow!=='visible').map(e=>(e.textContent||'').trim().slice(0,30));
+     const small=[...root.querySelectorAll('button, a')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&(r.height<44||r.width<44);}).map(e=>(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,30));
+     return {h1:[...document.querySelectorAll('h1')].map(e=>(e.textContent||'').trim()),text:text.replace(/\n+/g,' | ').slice(0,500),times,timesOk:times.length>0&&times.every(t=>/^(1[0-2]|[1-9]):[0-5]\d [AP]M$/.test(t)),
+      leadingZero:/\b0\d:\d{2}/.test(text),over:document.documentElement.scrollWidth-innerWidth,clipped:clipped.slice(0,8),small:small.slice(0,8),fs:getComputedStyle(document.documentElement).fontSize};});
+    log.push({ckReceipt:name,size:tag,...info});await rp.screenshot({path:`${evidence}/ck-receipt-${name}-${tag}.png`,fullPage:true});}
+   await rp.evaluate(()=>{document.documentElement.style.fontSize='';});await rp.setViewportSize({width:sizes[0][0],height:sizes[0][1]});};
+  await step('receipt enroll',async()=>{await enroll(rp,'loc-1','scan-kiosk-main','Front counter tablet');await idle(rp);await rp.waitForTimeout(600);await shot(rp,'pin-empty',false);});
+  await step('receipt clock in',async()=>{await enterPin(rp,'2468');await ready(rp);await rp.waitForTimeout(500);await btn(rp,'Clock in').click();await success(rp);await rp.waitForTimeout(300);await receipt('clock-in');await btn(rp,'Done').click();});
+  await step('receipt clock out',async()=>{await enterPin(rp,'2468');await ready(rp);await rp.waitForTimeout(500);await btn(rp,'Clock out').click();await rp.waitForTimeout(400);
+   const confirm=btn(rp,'Confirm clock out');if(await confirm.count())await confirm.click();await success(rp);await rp.waitForTimeout(300);await receipt('clock-out');await btn(rp,'Done').click();});
+  await R.ctx.close();return;
+ }
+ // Phase 2 states (NEVORA_SCAN_CLOCKER_FLOW=states | paused): K13 "Someone else's punch is waiting" and K15 "Clocker paused",
+ // each at 390x844, 768x1024 and 1024x768 in English and Spanish, with the text, times, small targets and clipping logged.
+ if(mode==='states'||mode==='paused'||mode==='k3'){
+  const looks:[number,number,boolean?][]=[[390,844],[768,1024],[1024,768],...(mode==='k3'||mode==='paused'||mode==='states'?[[390,844,true] as [number,number,boolean]]:[])];
+  const capture=async(page:any,name:string,lang:string)=>{for(const [w,h,big] of looks){await page.setViewportSize({width:w,height:h});await page.evaluate((b:boolean)=>{document.documentElement.style.fontSize=b?'200%':'';},Boolean(big));await page.waitForTimeout(350);
+    const info=await page.evaluate(()=>{const root=document.querySelector('main')||document.body;const text=(root as HTMLElement).innerText;
+     const times=[...document.body.innerText.matchAll(/\d{1,2}:\d{2}[\s\u00a0\u202f]*[AP]M/g)].map(m=>m[0].replace(/[\s\u00a0\u202f]+/g,' '));
+     const clipped=[...root.querySelectorAll('*')].filter(e=>e.children.length===0&&(e.textContent||'').trim()&&e.scrollWidth>e.clientWidth+1&&getComputedStyle(e).overflow!=='visible').map(e=>(e.textContent||'').trim().slice(0,30));
+     const small=[...document.querySelectorAll('button, a, summary')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&(r.height<44||r.width<44);}).map(e=>(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,30));
+     const buttons=[...document.querySelectorAll('main button, main a')].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0;}).map(e=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {name:(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,40),label:(e.textContent||'').trim().slice(0,40),h:Math.round(r.height),w:Math.round(r.width),x:Math.round(r.left),right:Math.round(innerWidth-r.right),bg:cs.backgroundColor,fs:cs.fontSize};});
+     const lines=text.split('\n').map(l=>l.trim()).filter(Boolean),dupes=[...new Set(lines.filter((l,i)=>lines.indexOf(l)!==i))];
+     const h1=[...document.querySelectorAll('h1')].map(e=>(e.textContent||'').trim());
+     return {lang:document.documentElement.lang,h1,text:text.replace(/\n+/g,' | ').slice(0,700),times,timesOk:times.every(t=>/^(1[0-2]|[1-9]):[0-5]\d [AP]M$/.test(t)),leadingZero:/\b0\d:\d{2}/.test(document.body.innerText),
+      over:document.documentElement.scrollWidth-innerWidth,vOver:document.documentElement.scrollHeight-innerHeight,clipped:clipped.slice(0,8),small:small.slice(0,8),buttons:buttons.slice(0,10),repeatedLines:dupes,
+      alerts:[...document.querySelectorAll('[role=alert],[role=status]')].map(e=>(e.textContent||'').trim()).filter(Boolean)};});
+    const grid=await page.evaluate(()=>{const r=(q:string)=>{const e=document.querySelector(q);if(!e)return null;const b=e.getBoundingClientRect();return {l:Math.round(b.left),r:Math.round(b.right),w:Math.round(b.width),h:Math.round(b.height),t:Math.round(b.top),b:Math.round(b.bottom)};};
+     return {idField:r('#clocker-employee-id'),pinField:r('[data-clocker-pin-entry]'),keys:r('[data-clocker-keypad]'),cont:r('form button[type=submit]'),title:r('h1'),help:r('#clocker-pin-help'),lang:r('[data-clocker-language]'),card:r('[data-clocker-step]'),focus:(()=>{const e=document.activeElement as HTMLElement|null;return e?e.tagName+(e.id?'#'+e.id:'')+' '+(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,30):null;})()};});
+    const tag=`${w}x${h}${big?'-text200':''}`;log.push({ckState:name,lang,size:tag,...info,grid});await page.screenshot({path:`${evidence}/${name}-${lang}-${tag}.png`});}
+   await page.evaluate(()=>{document.documentElement.style.fontSize='';});};
+  const ctxFor=async(lang:string)=>{const ctx=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,reducedMotion:'no-preference',serviceWorkers:'block',...net});
+   await ctx.addInitScript((l:string)=>{try{localStorage.setItem('nevora.clocker.locale',l);}catch{/* blocked */}},lang);
+   ctx.on('page',(pg:any)=>{pg.setDefaultTimeout(15000);pg.on('pageerror',(e:Error)=>log.push('ck pageerror '+e.message.slice(0,200)));pg.on('console',(m:any)=>{if(m.type()==='error')log.push('ck console '+m.text().slice(0,200));});});return ctx;};
+  // Gap closure: axe (WCAG 2 A/AA) on the current screen, and forced colours at 390 and 1024.
+  const axeRun=async(page:any,name:string,lang:string)=>{const {createRequire}=await import('node:module');const path=createRequire(import.meta.url).resolve('axe-core/axe.min.js');
+   await page.addScriptTag({path});const r=await page.evaluate(async()=>{const res=await (window as any).axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa']}});
+    return {violations:res.violations.map((v:any)=>({id:v.id,impact:v.impact,nodes:v.nodes.length,targets:v.nodes.slice(0,4).map((n:any)=>String(n.target)).join(' | '),summary:(v.nodes[0]?.failureSummary||'').slice(0,200)})),passes:res.passes.length};});
+   log.push({axe:name,lang,...r});};
+  const forced=async(page:any,name:string,lang:string)=>{await page.emulateMedia({forcedColors:'active'});for(const [w,h] of [[390,844],[1024,768]]){await page.setViewportSize({width:w,height:h});await page.waitForTimeout(300);await page.screenshot({path:`${evidence}/${name}-forced-${lang}-${w}x${h}.png`});}
+   log.push({forced:name,lang,state:await page.locator('[data-clocker-state]').first().getAttribute('data-clocker-state').catch(()=>null)});await page.emulateMedia({forcedColors:'none'});};
+  for(const lang of ['en','es']){
+   const T=(en:string)=>clockerText(lang==='es'?'es':'en',en);
+   if(mode==='paused'){
+    const ctx=await ctxFor(lang);const page=await ctx.newPage();
+    await step('k15 paused '+lang,async()=>{const r=await page.goto(`${appUrl}/clocker/access/paused?from=%2Fclocker%2Fscan-kiosk-main`);log.push({k15status:r?.status(),lang});await settle(page);await page.waitForTimeout(800);await capture(page,'k15-clocker-paused',lang);
+     // Keyboard: the first Tab stops (focus ring visible) on the paused screen.
+     const order:unknown[]=[];for(let i=0;i<4;i++){await page.keyboard.press('Tab');await page.waitForTimeout(120);order.push(await page.evaluate(()=>{const e=document.activeElement as HTMLElement|null;if(!e)return null;const cs=getComputedStyle(e);return {tag:e.tagName,name:(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,30),outline:cs.outlineStyle+' '+cs.outlineWidth,shadow:cs.boxShadow.slice(0,60)};}));}
+     log.push({k15keyboard:order,lang});await page.screenshot({path:`${evidence}/k15-clocker-paused-focus-${lang}-1024x768.png`});});
+    await step('k15 unavailable '+lang,async()=>{await page.goto(`${appUrl}/clocker/access/paused?from=%2Fclocker%2Fscan-kiosk-main&reason=billing_status_unavailable`);await settle(page);await page.waitForTimeout(800);await capture(page,'k15-clocker-access-unchecked',lang);});
+    await ctx.close();continue;
+   }
+   if(mode==='k3'){
+    // K3 Enter Employee ID: empty, typed, the PIN step for the grid, then unknown ID, offline and the lockout, with focus
+    // after each. Fictional IDs and PINs only.
+    const ctx=await ctxFor(lang);const page=await ctx.newPage();
+    const focusNow=()=>page.evaluate(()=>{const e=document.activeElement as HTMLElement|null;if(!e)return null;const cs=getComputedStyle(e);return {tag:e.tagName,id:e.id,name:(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,40),outline:cs.outlineStyle+' '+cs.outlineWidth,shadow:cs.boxShadow.slice(0,50)};});
+    const idStep=()=>page.locator('[data-clocker-step="id"]').waitFor({timeout:20000});
+    await step('k3 empty '+lang,async()=>{await enroll(page,'loc-1','scan-kiosk-main',lang==='es'?'Tableta del mostrador':'Front counter tablet');await idle(page);await idStep();await page.waitForTimeout(700);
+     log.push({k3focusOnLoad:await focusNow(),lang});await capture(page,'k3-id-empty',lang);});
+    await step('k3 typed '+lang,async()=>{await page.locator('#clocker-employee-id').fill(james);await page.waitForTimeout(300);log.push({k3focusTyped:await focusNow(),lang});await capture(page,'k3-id-typed',lang);
+     const tabs:unknown[]=[];for(let i=0;i<4;i++){await page.keyboard.press('Tab');await page.waitForTimeout(100);tabs.push(await focusNow());if(i===0)await page.screenshot({path:`${evidence}/k3-id-typed-focus-continue-${lang}-1024x768.png`});}log.push({k3tabs:tabs,lang});});
+    await step('k3 pin step '+lang,async()=>{await page.locator('#clocker-employee-id').focus();await page.keyboard.press('Enter');await page.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});await page.waitForTimeout(500);
+     log.push({k3focusPin:await focusNow(),lang});await capture(page,'k3-pin-step-for-grid',lang);
+     await page.getByRole('button',{name:T('Change Employee ID'),exact:true}).click();await idStep();await page.waitForTimeout(400);log.push({k3focusBack:await focusNow(),value:await page.locator('#clocker-employee-id').inputValue(),lang});});
+    await step('k3 unknown '+lang,async()=>{await page.locator('#clocker-employee-id').fill('ZZ-UNKNOWN-'+lang.toUpperCase());await page.keyboard.press('Enter');await page.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});
+     for(const d of '4826')await page.locator('[data-clocker-keypad] button[data-key="digit"]').filter({hasText:new RegExp('^'+d+'$')}).click();
+     await page.locator('[data-clocker-pin="entry"] button[type="submit"]').click();await page.locator('[role=alert]').filter({hasText:/\S/}).first().waitFor({timeout:15000});await idle(page);await page.waitForTimeout(700);
+     log.push({k3focusUnknown:await focusNow(),lang});await capture(page,'k3-unknown-id',lang);
+     await page.getByRole('button',{name:T('Change Employee ID'),exact:true}).click().catch(()=>{});await idStep().catch(()=>{});await page.waitForTimeout(400);});
+    await step('k3 offline '+lang,async()=>{await idStep();await ctx.setOffline(true);await page.waitForTimeout(1500);log.push({k3focusOffline:await focusNow(),lang});await capture(page,'k3-offline',lang);
+     await ctx.setOffline(false);await page.waitForTimeout(800);const check=page.getByRole('button',{name:T('Check connection'),exact:true});if(await check.count())await check.click();await idle(page);await page.waitForTimeout(1200);
+     log.push({k3focusAfterOffline:await focusNow(),step:await page.locator('[data-clocker-step]').first().getAttribute('data-clocker-step').catch(()=>null),lang});});
+    await step('k3 locked '+lang,async()=>{
+     for(let i=0;i<7;i++){await idle(page);if(await page.locator('[data-clocker-blocked="wait"]').count())break;
+      if(await page.locator('[data-clocker-step="id"]').count()){await page.locator('#clocker-employee-id').fill(ana);await page.keyboard.press('Enter');await page.locator('[data-clocker-step="pin"]').waitFor({timeout:10000});}
+      for(const d of '90'+String(10+i))await page.locator('[data-clocker-keypad] button[data-key="digit"]').filter({hasText:new RegExp('^'+d+'$')}).click();
+      await page.locator('[data-clocker-pin="entry"] button[type="submit"]').click();await page.waitForTimeout(1300);}
+     await page.locator('[data-clocker-blocked="wait"]').waitFor({timeout:15000});await page.waitForTimeout(600);log.push({k3focusLocked:await focusNow(),lang});await capture(page,'k3-locked',lang);
+     const done=page.locator('[data-clocker-blocked] button');await done.click();await page.waitForTimeout(1200);log.push({k3focusAfterLocked:await focusNow(),step:await page.locator('[data-clocker-step]').first().getAttribute('data-clocker-step').catch(()=>null),lang});
+     await page.screenshot({path:`${evidence}/k3-after-locked-${lang}-390x844.png`});});
+    await ctx.close();continue;
+   }
+   // K13: James's Clock in is sent but never confirmed on this tablet (the request is cut off in the browser, so nothing is
+   // recorded). While that screen is open, Ana enters her PIN on the same tablet in a second tab (same tablet cookie and
+   // saved punches). Back on the first screen, Check if it saved now reads Ana's verification: the pending punch belongs
+   // to someone else.
+   const ctx=await ctxFor(lang);const p1=await ctx.newPage();
+   await step('k13 '+lang,async()=>{
+    await enroll(p1,'loc-1','scan-kiosk-main',lang==='es'?'Tableta del mostrador':'Front counter tablet');await idle(p1);
+    await enterPin(p1,'2468');await ready(p1);await p1.waitForTimeout(400);
+    await p1.route('**/api/clocker/*/punch',async(r:any)=>{const body=r.request().postData()??'';if(body.includes('"execute"'))await r.abort().catch(()=>{});else await r.continue().catch(()=>{});});
+    const primary=p1.getByRole('button',{name:T('Clock in'),exact:true});
+    if(await primary.count())await primary.click();else{await p1.getByRole('button',{name:T('Clock out'),exact:true}).click();await p1.getByRole('button',{name:T('Confirm clock out'),exact:true}).click();}
+    await p1.locator('[data-clocker-state="recovery"]').waitFor({timeout:20000});await p1.unroute('**/api/clocker/*/punch');await p1.waitForTimeout(400);
+    const p2=await ctx.newPage();await p2.setViewportSize({width:390,height:844});await p2.goto(`${appUrl}/clocker/scan-kiosk-main`);await settle(p2);await p2.waitForTimeout(800);
+    log.push({k13secondTabStart:await p2.locator('[data-clocker-state]').first().getAttribute('data-clocker-state').catch(()=>null),pin:await p2.locator('[data-clocker-pin="entry"]').count()});
+    if(await p2.locator('[data-clocker-pin="entry"]').count()){await enterPin(p2,'1357');await p2.locator('[data-clocker-state]').first().waitFor({timeout:20000});await p2.waitForTimeout(1200);}
+    const s2=await p2.locator('[data-clocker-state]').first().getAttribute('data-clocker-state').catch(()=>null);log.push({k13secondTab:s2,lang});
+    if(s2==='other-person')await capture(p2,'k13-second-tab',lang);else await p2.screenshot({path:`${evidence}/k13-second-tab-${lang}-390x844.png`});
+    await p1.bringToFront();await p1.getByRole('button',{name:T('Check if it saved'),exact:true}).click();
+    await p1.locator('[data-clocker-state="other-person"]').waitFor({timeout:20000});await p1.waitForTimeout(600);
+    await capture(p1,'k13-someone-elses-punch',lang);
+    await axeRun(p1,'k13-someone-elses-punch',lang);await forced(p1,'k13-someone-elses-punch',lang);await p1.setViewportSize({width:1024,height:768});
+    // The focus shot is taken when Done has focus (the first Tab), not after the loop (which ends on the skip link).
+    const order:unknown[]=[];for(let i=0;i<6;i++){await p1.keyboard.press('Tab');await p1.waitForTimeout(100);const f=await p1.evaluate(()=>{const e=document.activeElement as HTMLElement|null;if(!e)return null;const cs=getComputedStyle(e);return {tag:e.tagName,name:(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,30),outline:cs.outlineStyle+' '+cs.outlineWidth};});order.push(f);
+     if(i===0){log.push({k13focusShot:f,lang});await p1.screenshot({path:`${evidence}/k13-someone-elses-punch-focus-${lang}-1024x768.png`});}}
+    log.push({k13keyboard:order,lang});
+    await p2.close();
+   });
+   await ctx.close();
+   // The offline fallback (clocker-fallback.tsx, the route's error.tsx): the kiosk page is served, then the browser's time
+   // zone formatter fails (the kiosk band formats in the location's zone; the fallback's own clock doesn't), so the page
+   // falls to its error screen; then the network drops (context.setOffline). Fictional tablet only.
+   if(mode==='states')await step('fallback '+lang,async()=>{const F=await ctxFor(lang);const fp=await F.newPage();
+    await enroll(fp,'loc-1','scan-kiosk-main',lang==='es'?'Tableta de prueba':'Fallback test tablet');await idle(fp);
+    await F.addInitScript(()=>{const Real=Intl.DateTimeFormat;const Broken=function(this:unknown,locale?:string|string[],options?:Intl.DateTimeFormatOptions){if(options&&options.timeZone)throw new RangeError('Simulated time zone failure (scan)');return new (Real as any)(locale,options);} as unknown as typeof Intl.DateTimeFormat;Broken.prototype=Real.prototype;(Broken as any).supportedLocalesOf=Real.supportedLocalesOf;Intl.DateTimeFormat=Broken;});
+    await fp.reload();await settle(fp);await fp.waitForTimeout(1200);
+    const online=await fp.locator('h1').allInnerTexts().catch(()=>[]);log.push({fallbackOnline:online,lang});await capture(fp,'fallback-error',lang);
+    await F.setOffline(true);await fp.waitForTimeout(1500);log.push({fallbackOffline:await fp.locator('h1').allInnerTexts().catch(()=>[]),focus:await fp.evaluate(()=>{const e=document.activeElement as HTMLElement|null;return e?e.tagName+' '+(e.textContent||'').trim().slice(0,40):null;}),lang});
+    await capture(fp,'fallback-offline',lang);await axeRun(fp,'fallback-offline',lang);await forced(fp,'fallback-offline',lang);
+    await F.setOffline(false);await fp.waitForTimeout(2500);log.push({fallbackBackOnline:await fp.locator('h1').allInnerTexts().catch(()=>[]),lang});
+    await F.close();});
+  }
+  // K15 follow-up: the shared recovery frame keeps its sign-in look elsewhere; sign-in and the billing recovery page at 1440.
+  if(mode==='paused')await step('k15 frame neighbours',async()=>{const ctx=await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1,serviceWorkers:'block',...net});const page=await ctx.newPage();page.setDefaultTimeout(20000);
+   await page.goto(`${appUrl}/login`);await settle(page);await page.waitForTimeout(800);await page.screenshot({path:`${evidence}/k15-neighbour-login-en-1440x900.png`});
+   await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();
+   await page.waitForTimeout(4000);await page.goto(`${appUrl}/app/billing`);await settle(page);await page.waitForTimeout(1200);log.push({k15billingUrl:page.url(),h1:await page.locator('h1').allInnerTexts().catch(()=>[])});
+   await page.screenshot({path:`${evidence}/k15-neighbour-billing-en-1440x900.png`});await ctx.close();});
+  return;
+ }
+ // Other configurations: PINs off (a registered tablet only) or punches off (a PIN check only).
+ if(mode==='connected'||mode==='preview'){
+  const X=await fresh();
+  await step(mode,async()=>{const pending=await registerClockerDevice(owner,{name:'Front counter tablet',locationId:'loc-1'},ex);
+   await X.page.goto(`${appUrl}/clocker/scan-kiosk-main`);await settle(X.page);await X.page.waitForTimeout(800);
+   await X.page.locator('textarea[name="enrollmentToken"]').fill(pending.enrollmentToken);await X.page.locator('form button[type="submit"]').click();
+   if(mode==='connected'){await X.page.getByRole('heading',{name:N('Tablet connected')}).waitFor({timeout:20000});await X.page.waitForTimeout(800);await shot(X.page,'tablet-connected-pins-off');}
+   else{await enterPin(X.page,'2468');await X.page.getByText(N('Time punches are not enabled yet.')).waitFor({timeout:20000});await X.page.waitForTimeout(800);await shot(X.page,'pin-verified-punches-off');}});
+  await X.ctx.close();return;
+ }
+ // ---- Invalid key and the unregistered tablet ----
+ const A=await fresh();
+ await step('invalid key',async()=>{await A.page.goto(`${appUrl}/clocker/not-a-real-key`);await settle(A.page);await A.page.waitForTimeout(600);await shot(A.page,'invalid-key');});
+ await step('checking setup',async()=>{
+  await A.page.route('**/api/clocker/*/setup',async(r:any)=>{await new Promise(res=>setTimeout(res,6000));await r.continue().catch(()=>{});});
+  await A.page.goto(`${appUrl}/clocker/scan-kiosk-main`);await A.page.waitForTimeout(1200);await shot(A.page,'setup-checking');
+  await A.page.unroute('**/api/clocker/*/setup');await A.page.waitForTimeout(5000);});
+ await step('setup',async()=>{await A.page.goto(`${appUrl}/clocker/scan-kiosk-main`);await settle(A.page);await A.page.waitForTimeout(900);await shot(A.page,'setup');});
+ await step('setup bad code',async()=>{await A.page.locator('textarea[name="enrollmentToken"]').fill('nev_enr_not-complete');await A.page.locator('form button[type="submit"]').click();await A.page.waitForTimeout(600);await shot(A.page,'setup-bad-code');});
+ await step('setup uncertain',async()=>{
+  await A.page.route('**/api/clocker/*/setup',(r:any)=>r.abort());
+  await A.page.goto(`${appUrl}/clocker/scan-kiosk-main`);await A.page.waitForTimeout(2500);await shot(A.page,'setup-uncertain');
+  await A.page.unroute('**/api/clocker/*/setup');});
+ await A.ctx.close();
+
+ // ---- The registered tablet at Main Office ----
+ const B=await fresh();const p=B.page;
+ await step('enroll',async()=>{await enroll(p,'loc-1','scan-kiosk-main','Front counter tablet');await idle(p);await p.waitForTimeout(800);await shot(p,'pin-empty');});
+ if(locale==='en')await step('spanish',async()=>{
+  await p.getByRole('button',{name:'Switch language to Spanish'}).click();await p.waitForTimeout(400);await shot(p,'pin-espanol');
+  await enterPin(p,'2468');await ready(p);await p.waitForTimeout(700);await shot(p,'ready-off-clock-espanol');
+  await p.getByRole('button',{name:'Listo',exact:true}).first().click();await p.locator('[data-clocker-pin="entry"]').waitFor();await idle(p);
+  await p.getByRole('button',{name:'Cambiar idioma a inglés'}).click();await p.waitForTimeout(400);});
+ await step('pin partial',async()=>{await pinKey(p,'2');
+  // Mid-press: the pointer is down on 4 (the key's pressed tint) after one digit is in.
+  const k=p.locator('[data-clocker-keypad] button[data-key="digit"]').filter({hasText:/^4$/});const box=await k.boundingBox();
+  await p.mouse.move(box.x+box.width/2,box.y+box.height/2);await p.mouse.down();await p.waitForTimeout(150);
+  await p.screenshot({path:`${evidence}/ck-pin-mid-press-${sizes[0][0]}x${sizes[0][1]}.png`});await p.mouse.up();await p.waitForTimeout(200);
+  await shot(p,'pin-two-digits');await p.getByRole('button',{name:N('Clear PIN')}).click();});
+ await step('pin wrong',async()=>{await enterPin(p,'9090');await p.locator('[role=alert]').first().waitFor({timeout:15000});
+  if(extra)await seq(p,'wrong-pin-shake',[0,40,80,120,160,220,400]);await p.waitForTimeout(500);await shot(p,'pin-not-recognized');});
+ await step('pin checking',async()=>{
+  await p.route('**/api/clocker/*/pin',async(r:any)=>{const body=r.request().postData()??'';if(body.includes('"verify"'))await new Promise(res=>setTimeout(res,4000));await r.continue().catch(()=>{});});
+  await pinKey(p,'2468');await p.locator('[data-clocker-pin="entry"] button[type="submit"]').click();await p.waitForTimeout(700);await shot(p,'pin-checking',false);
+  await p.unroute('**/api/clocker/*/pin');});
+ await step('ready off',async()=>{await ready(p);await p.waitForTimeout(700);await shot(p,'ready-off-clock');});
+ await step('clock in',async()=>{await btn(p,'Clock in').click();await success(p);if(extra)await seq(p,'check-draw',[0,60,140,220,320,480,700]);await p.waitForTimeout(500);await shot(p,'receipt-clock-in');
+  await btn(p,'Done').click();});
+ await step('ready on no breaks',async()=>{await enterPin(p,'2468');await ready(p);await p.waitForTimeout(700);await shot(p,'ready-clocked-in-no-break-types');});
+ await step('privacy warning',async()=>{await p.waitForTimeout(21500);await shot(p,'privacy-warning');await p.getByRole('button',{name:N('Continue securely')}).click().catch(()=>{});await p.waitForTimeout(1500);});
+ await step('break types',async()=>{
+  await saveBreakType(owner,{name:'Meal break',category:'MEAL',targetMinutes:30,active:true,expectedVersion:0},ex);
+  await saveBreakType(owner,{name:'Rest break',category:'REST',targetMinutes:10,active:true,expectedVersion:0},ex);});
+ await step('ready on',async()=>{await doneToPin(p);await enterPin(p,'2468');await ready(p);await p.waitForTimeout(700);await shot(p,'ready-clocked-in');});
+ await step('select break',async()=>{await btn(p,'Start break').click();await p.waitForTimeout(600);await shot(p,'choose-break');});
+ await step('start break',async()=>{await p.getByRole('button',{name:N('Start {name}',{name:'Rest break'})}).click();await success(p);await p.waitForTimeout(500);await shot(p,'receipt-break-start');await btn(p,'Done').click();});
+ await step('ready break',async()=>{await enterPin(p,'2468');await ready(p);await p.waitForTimeout(700);await shot(p,'ready-on-break');});
+ await step('confirm out on break',async()=>{await btn(p,'Clock out').click();await p.waitForTimeout(600);await shot(p,'confirm-clock-out-on-break');await btn(p,'Stay on break').click();await p.waitForTimeout(400);});
+ await step('end break',async()=>{await btn(p,'End break').click();await success(p);await p.waitForTimeout(500);await shot(p,'receipt-break-end');await btn(p,'Done').click();});
+ await step('state unavailable',async()=>{
+  await p.route('**/api/clocker/*/punch',(r:any)=>r.abort());
+  await enterPin(p,'2468');await p.locator('[data-clocker-state="unavailable"]').waitFor({timeout:20000});await p.waitForTimeout(500);await shot(p,'clock-state-unavailable');
+  await p.unroute('**/api/clocker/*/punch');await btn(p,'Done').click();});
+ await step('auth changed',async()=>{
+  await p.route('**/api/clocker/*/punch',(r:any)=>r.fulfill({status:401,contentType:'application/json',body:JSON.stringify({code:'AUTH_REQUIRED',error:'Verification required.'})}));
+  await enterPin(p,'2468');await p.locator('[data-clocker-state="auth"]').waitFor({timeout:20000});await p.waitForTimeout(500);await shot(p,'verify-pin-again');
+  await p.unroute('**/api/clocker/*/punch');await btn(p,'Start over').click();});
+ await step('sending + recovery',async()=>{
+  await enterPin(p,'2468');await ready(p);
+  await p.route('**/api/clocker/*/punch',async(r:any)=>{const body=r.request().postData()??'';if(body.includes('"execute"')){await new Promise(res=>setTimeout(res,3000));await r.abort().catch(()=>{});}else await r.continue().catch(()=>{});});
+  await btn(p,'Clock out').click();await p.waitForTimeout(500);await shot(p,'confirm-clock-out');
+  await btn(p,'Confirm clock out').click();await p.waitForTimeout(300);if(extra)await seq(p,'progress',[0,200,400,600,800]);await shot(p,'sending',false);
+  await p.locator('[data-clocker-state="recovery"]').waitFor({timeout:20000});await p.waitForTimeout(500);await shot(p,'check-last-action');
+  await btn(p,'Something didn’t save?').click();await p.waitForTimeout(400);await shot(p,'saved-action-help');
+  await p.unroute('**/api/clocker/*/punch');
+  await btn(p,'Check if it saved').click();await p.locator('[data-clocker-state="retry"],[data-clocker-state="success"],[data-clocker-state="review-current"]').first().waitFor({timeout:20000});await p.waitForTimeout(500);await shot(p,'retry-same-action');
+  const retry=btn(p,'Retry same clock action');if(await retry.count()){await retry.click();await success(p);await p.waitForTimeout(500);await shot(p,'receipt-clock-out');await btn(p,'Done').click();}
+ });
+ if(extra)await step('review current',async()=>{
+  // An aborted Clock In on this tablet, then James clocks in on another Main Office tablet: the saved request is obsolete.
+  await enterPin(p,'2468');await ready(p);
+  await p.route('**/api/clocker/*/punch',async(r:any)=>{const body=r.request().postData()??'';if(body.includes('"execute"'))await r.abort().catch(()=>{});else await r.continue().catch(()=>{});});
+  await btn(p,'Clock in').click();await p.locator('[data-clocker-state="recovery"]').waitFor({timeout:20000});await p.unroute('**/api/clocker/*/punch');
+  const C=await fresh();await enroll(C.page,'loc-1','scan-kiosk-main','Back office tablet');await enterPin(C.page,'2468');await ready(C.page);await C.page.getByRole('button',{name:N('Clock in'),exact:true}).click();await success(C.page);await C.ctx.close();
+  await btn(p,'Check if it saved').click();await p.locator('[data-clocker-state="review-current"]').waitFor({timeout:20000});await p.waitForTimeout(500);await shot(p,'review-current-status');
+  await p.getByRole('button',{name:N('Review current status'),exact:true}).click();await ready(p);await p.waitForTimeout(600);await shot(p,'ready-after-review');
+  await btn(p,'Done').click();});
+ await step('other location',async()=>{
+  const C=await fresh();await enroll(C.page,'loc-2','scan-kiosk-west','West Office tablet');await enterPin(C.page,'1357');await ready(C.page);
+  await C.page.getByRole('button',{name:N('Clock in'),exact:true}).click();await success(C.page);await C.ctx.close();
+  await p.locator('[data-clocker-pin="entry"]').waitFor();await enterPin(p,'1357');await ready(p);await p.waitForTimeout(700);await shot(p,'ready-other-location');await btn(p,'Done').click();});
+ if(extra)await step('photo',async()=>{
+  // The company photo policy, simulated the way scripts/clocker-ipad-ui-qa.mjs does (no camera or image storage is used).
+  const policy={version:1,enabled:true,events:['CLOCK_OUT'],retentionDays:30,failureBehavior:'ALLOW_WITH_EXCEPTION',captureMaxBytes:524288,captureMaxDimension:640,uploadWindowSeconds:300};
+  const notice={policyVersion:1,profileVersion:1,companyName:'Northside QA Workforce',retentionDays:30,assistanceContact:'Front desk (fictional)',assistanceInstructions:'Ask the front desk for an assisted clock action.',cleanupDisclosure:'Fictional cleanup schedule.',backupDisclosure:'Fictional backup retention.'};
+  await p.route('**/api/clocker/*/punch',async(r:any)=>{if(r.request().postDataJSON()?.operation==='state'){const response=await r.fetch();const body=await response.json();await r.fulfill({response,json:{...body,photoCaptureAvailable:true}});}else await r.continue();});
+  await p.route('**/api/clocker/*/photos',async(r:any)=>{const body=r.request().postDataJSON();if(body.operation==='policy')await r.fulfill({json:{policy,notice}});else await r.fulfill({json:{commandId:body.command?.commandId,state:'missing'}});});
+  await p.locator('[data-clocker-pin="entry"]').waitFor();await enterPin(p,'2468');await ready(p);await btn(p,'Clock out').click();await btn(p,'Confirm clock out').click();
+  await btn(p,'Continue without photo').waitFor({timeout:20000});await p.waitForTimeout(600);await shot(p,'photo-for-clock-out');
+  await btn(p,'Continue without photo').click();await p.getByRole('heading',{name:N('Clock Out recorded'),exact:true}).waitFor({timeout:20000});await p.waitForTimeout(600);await shot(p,'photo-time-recorded');
+  await p.unroute('**/api/clocker/*/punch');await p.unroute('**/api/clocker/*/photos');await btn(p,'Done').click().catch(()=>{});await p.locator('[data-clocker-pin="entry"]').waitFor();});
+ if(extra)await step('keyboard',async()=>{
+  await p.locator('[data-clocker-pin="entry"]').waitFor();await idle(p);await p.reload();await settle(p);await p.locator('[data-clocker-pin="entry"]').waitFor();await idle(p);await p.waitForTimeout(600);
+  const focus=()=>p.evaluate(()=>{const e=document.activeElement as HTMLElement|null;return e?(e.tagName.toLowerCase()+(e.id?'#'+e.id:'')+' '+(e.getAttribute('aria-label')||e.textContent||'').trim().slice(0,28)):null;});
+  const order:unknown[]=[await focus()];await p.keyboard.press('Shift+Tab');await p.keyboard.press('Shift+Tab');await p.waitForTimeout(150);order.push(await focus());await p.screenshot({path:`${evidence}/kbd-skip-${sizes[0][0]}x${sizes[0][1]}.png`});
+  for(let i=0;i<17;i++){await p.keyboard.press('Tab');await p.waitForTimeout(80);order.push(await focus());if(i===6)await p.screenshot({path:`${evidence}/kbd-key-${sizes[0][0]}x${sizes[0][1]}.png`});}
+  log.push({keyboardOrder:order});
+  await p.locator('#clocker-pin').focus();await p.keyboard.type('24');await p.waitForTimeout(200);await p.screenshot({path:`${evidence}/kbd-typed-${sizes[0][0]}x${sizes[0][1]}.png`});
+  await p.keyboard.press('Escape');await idle(p);await p.waitForTimeout(400);log.push({afterEscape:await p.evaluate(()=>(document.querySelector('#clocker-pin') as HTMLInputElement|null)?.value.length),focus:await focus()});
+  await p.keyboard.type('2468');await p.keyboard.press('Enter');await ready(p);await p.waitForTimeout(500);
+  for(let i=0;i<3;i++){await p.keyboard.press('Tab');await p.waitForTimeout(80);}
+  log.push({readyFocus:await focus()});await p.screenshot({path:`${evidence}/kbd-ready-${sizes[0][0]}x${sizes[0][1]}.png`});await btn(p,'Done').click();});
+ // PIN service outage: no connection at all (the browser's own failure), then the server's unavailable reply.
+ await step('pin offline',async()=>{
+  await p.locator('[data-clocker-pin="entry"]').waitFor();
+  await p.route('**/api/clocker/*/pin',async(r:any)=>{const body=r.request().postData()??'';if(body.includes('"verify"'))await r.abort();else await r.continue();});
+  await enterPin(p,'2468');await p.waitForTimeout(1500);await shot(p,'pin-offline');await p.unroute('**/api/clocker/*/pin');
+  await btn(p,'Check connection').click();await idle(p);await p.waitForTimeout(800);});
+ await step('pin unavailable',async()=>{
+  await p.route('**/api/clocker/*/pin',async(r:any)=>{const body=r.request().postData()??'';if(body.includes('"verify"'))await r.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',error:'PIN verification is unavailable. Check the connection and try again.'})});else await r.continue();});
+  await enterPin(p,'2468');await p.waitForTimeout(1500);await shot(p,'pin-unavailable');await p.unroute('**/api/clocker/*/pin');
+  await btn(p,'Check connection').click();await idle(p);await p.waitForTimeout(800);});
+ if(extra)await step('clear failed',async()=>{
+  await p.route('**/api/clocker/*/pin',async(r:any)=>{const body=r.request().postData()??'';if(body.includes('"clear"'))await r.abort();else await r.continue();});
+  await p.keyboard.press('Escape');await p.waitForTimeout(1500);await shot(p,'pin-clear-failed');await p.unroute('**/api/clocker/*/pin');await btn(p,'Check connection').click();await idle(p);await p.waitForTimeout(600);});
+ if(extra)await step('reconnect',async()=>{
+  // The tablet's credential is gone (cookies cleared) while the PIN screen is open: the server asks to reconnect.
+  await B.ctx.clearCookies();await enterPin(p,'2468');await p.waitForTimeout(1500);await shot(p,'pin-reconnect-tablet');});
+ if(extra)await step('band late hour',async()=>{
+  const C=await fresh();const q2=C.page;await q2.clock.install({time:new Date()});await enroll(q2,'loc-1','scan-kiosk-main','Clock test tablet');
+  const read=async()=>{await q2.waitForTimeout(1300);return q2.evaluate(()=>{const c=document.querySelector('[data-clocker-kiosk] time') as HTMLElement|null,b=c?.closest('aside') as HTMLElement|null;if(!c||!b)return null;
+   const cs=getComputedStyle(b),right=b.getBoundingClientRect().right-parseFloat(cs.paddingRight),last=c.lastElementChild?.getBoundingClientRect().right??c.getBoundingClientRect().right;
+   return {label:c.getAttribute('aria-label'),fontSize:getComputedStyle(c).fontSize,clockRight:Math.round(last),bandContentRight:Math.round(right),fits:last<=right+0.5};});};
+  const now=await read();const m=/^(\d+):(\d+)\s*([ap])/i.exec(String(now?.label??''));
+  if(m){const shown=(Number(m[1])%12)+(m[3].toLowerCase()==='p'?12:0),utc=new Date().getUTCHours(),offset=(shown-utc+24)%24;
+   const target=new Date();target.setUTCHours((22-offset+24)%24,58,0,0);await q2.clock.setFixedTime(target);}
+  for(const [w,h] of sizes){await q2.setViewportSize({width:w,height:h});log.push({bandClock:w+'x'+h,...(await read())});}
+  await q2.setViewportSize({width:sizes[0][0],height:sizes[0][1]});await shot(q2,'band-late-hour');await C.ctx.close();});
+ await B.ctx.close();
+ // The lockout, on its own tablet (it holds that tablet for a few minutes).
+ await step('lockout',async()=>{const L=await fresh();await enroll(L.page,'loc-1','scan-kiosk-main','Back room tablet');
+  for(let i=0;i<6;i++){await idle(L.page);if(await L.page.getByText(N('Too many attempts. Wait a few minutes before trying again.')).count()||await L.page.locator('[data-clocker-blocked="wait"]').count())break;await enterPin(L.page,'90'+String(10+i));await L.page.waitForTimeout(1300);}
+  await shot(L.page,'pin-too-many-attempts');await L.ctx.close();});
+ if(extra)await step('storage',async()=>{
+  // This browser can't open its recovery storage (IndexedDB refused).
+  const S=await fresh();await S.ctx.addInitScript(()=>{try{Object.defineProperty(window,'indexedDB',{value:{open(){const r:any={};setTimeout(()=>{r.error=new DOMException('blocked','UnknownError');r.onerror?.(new Event('error'));},10);return r;}},configurable:true});}catch{/* ignore */}});
+  await enroll(S.page,'loc-1','scan-kiosk-main','Storage test tablet');await enterPin(S.page,'2468');await S.page.locator('[data-clocker-state="storage"]').waitFor({timeout:20000});await S.page.waitForTimeout(600);await shot(S.page,'browser-storage-needed');await S.ctx.close();});
+ if(extra)await step('reduced motion',async()=>{
+  const R=await fresh({reducedMotion:'reduce'});await enroll(R.page,'loc-1','scan-kiosk-main','Reduced motion tablet');
+  await enterPin(R.page,'9191');await R.page.locator('[role=alert]').first().waitFor({timeout:15000});await seq(R.page,'rm-wrong-pin',[0,100,220]);
+  await enterPin(R.page,'2468');await ready(R.page);
+  if(await btn(R.page,'Clock in').count()){await btn(R.page,'Clock in').click();}else{await btn(R.page,'Clock out').click();await btn(R.page,'Confirm clock out').click();}
+  await success(R.page);await seq(R.page,'rm-check',[0,100,220,480]);
+  log.push({reducedMotion:await R.page.evaluate(()=>{const c=document.querySelector('[data-clocker-state=success] span');return c?getComputedStyle(c).animationName:null;})});await R.ctx.close();});
+}
