@@ -21,7 +21,7 @@ describe('Clocker PINs', () => {
     // People with a PIN and inactive people are on their own tabs.
     expect(html).not.toContain('James Ortiz'); expect(html).not.toContain('Luis Torres');
     // Each tab's name is its visible words: the label and its count.
-    expect(html).toMatch(/aria-pressed="true"><span>No PIN<\/span>.<span class="c-pins__count">2<\/span>/); expect(html).toMatch(/aria-pressed="false"><span>PIN set<\/span>.<span class="c-pins__count">1<\/span>/); expect(html).toContain('<span>Inactive</span>');
+    expect(html).toMatch(/aria-pressed="true"><span>No PIN<\/span><span class="pin-label-space">.<\/span><span class="c-pins__count">2<\/span>/); expect(html).toMatch(/aria-pressed="false"><span>PIN set<\/span><span class="pin-label-space">.<\/span><span class="c-pins__count">1<\/span>/); expect(html).toContain('<span>Inactive</span>');
     // The tab already names the group, so the card repeats neither the count nor a status line under each name.
     expect(html.match(/2 people need a PIN/g)).toHaveLength(1); expect(html).not.toContain('No PIN yet');
   });
@@ -34,7 +34,7 @@ describe('Clocker PINs', () => {
   });
   it('when everyone has a PIN it opens on "PIN set", where the action is the quiet Reset PIN', () => {
     const html = render([people[0]]);
-    expect(html).toMatch(/aria-pressed="true"><span>PIN set<\/span>.<span class="c-pins__count">1<\/span>/);
+    expect(html).toMatch(/aria-pressed="true"><span>PIN set<\/span><span class="pin-label-space">.<\/span><span class="c-pins__count">1<\/span>/);
     expect(html).toMatch(/<a href="\/app\/employees\/QA-2\/clocker-pin\?from=pins" class="c-link c-link--l c-pins__act">Reset PIN<span class="c-sr">, James Ortiz<\/span><\/a>/);
     expect(html).not.toContain('<span>Inactive</span>');
   });
@@ -59,6 +59,7 @@ describe('Clocker PINs', () => {
   it('preserves a real space between each Spanish filter and its count before the controls wrap', () => {
     const html = render(people, 'es');
     expect(html).toMatch(/<span>Sin PIN<\/span><span class="pin-label-space">\u00a0<\/span><span class="c-pins__count">2<\/span>/);
-    expect(render(people, 'en')).not.toContain('pin-label-space');
+    // English flag B4 (Nov 26, 2026): English uses the same spacer, so the stacked filter has no blank middle line.
+    expect(render(people, 'en')).toMatch(/<span>No PIN<\/span><span class="pin-label-space">\u00a0<\/span><span class="c-pins__count">/);
   });
 });

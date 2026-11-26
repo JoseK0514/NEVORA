@@ -74,7 +74,7 @@ export function ClockerPinInventory({statuses,details={},lang='en'}:{statuses:Ow
     {lang==='es' ? <PinSearch full={t.pinsSearch} compact={inventoryWords.es.compactSearch} value={query} onChange={setQuery}/>
      : <input type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" value={query} placeholder={t.pinsSearch} onChange={e=>setQuery(e.target.value)}/>}</label>
    {/* Each tab is its label and its count ("No PIN 2"); its name is the same words. */}
-   <CorpSegments label={t.pinsFilter} items={filters.map(key=>({key,current:filter===key,onSelect:()=>setFilter(key),label:<><span>{labels[key]}</span>{lang==='es' ? <span className="pin-label-space">&nbsp;</span> : '\u00a0'}<span className="c-pins__count">{count(key)}</span></>}))}/>
+   <CorpSegments label={t.pinsFilter} items={filters.map(key=>({key,current:filter===key,onSelect:()=>setFilter(key),label:<><span>{labels[key]}</span><span className="pin-label-space">&nbsp;</span><span className="c-pins__count">{count(key)}</span></>}))}/>
   </div>
   <p className="c-sr" role="status">{wanted?`${visible.length}`:''}</p>
   {visible.length?<CorpRows label={heading}>{visible.map(row)}</CorpRows>
