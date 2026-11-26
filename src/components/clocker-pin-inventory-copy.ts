@@ -23,11 +23,11 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:164
     newPeopleShowUpHereUntilYouSetTheirs: "Las personas nuevas aparecen aquí hasta que crees su PIN.",
     // src/components/clocker-owner-copy.ts:166
-    setAPinForEachPersonWhoClocksIn: "Crea un PIN para cada persona que marca en una tableta.",
+    setAPinForEachPersonWhoClocksIn: "Crea un PIN para cada persona que poncha en una tableta.",
     // src/components/clocker-owner-copy.ts:169
     checkTheSpellingOrLookUnderAnotherTab: "Revisa cómo está escrito o busca en otra pestaña.",
     // src/components/clocker-owner-copy.ts:171
-    eachPersonClocksInWithTheirOwnEmployeeId: "Cada persona marca con su propio ID de empleado y su PIN. Nadie puede ver un PIN después de crearlo, ni tú.",
+    eachPersonClocksInWithTheirOwnEmployeeId: "Cada persona poncha con su propio ID de empleado y su PIN. Nadie puede ver un PIN después de crearlo, ni tú.",
     // src/components/clocker-owner-copy.ts:173
     checkYourConnectionThenTryAgainNoPinWas: "Revisa tu conexión e inténtalo de nuevo. No se cambió ningún PIN.",
   },

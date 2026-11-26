@@ -2,7 +2,7 @@ import { copy as approvedHoursRecords } from '../hours-records-copy';
 import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (Nov 23, 2026): the older Hours records view (a Lead's own time, hours-records.tsx) in English and
- * Puerto Rico Spanish (docs/design/voice.md: tú, sentence case, the glossary: "Marcación", "Descanso", "En turno",
+ * Puerto Rico Spanish (docs/design/voice.md: tú, sentence case, the glossary: "Ponche", "Descanso", "En turno",
  * "Solicitud de corrección", "Tarjeta de tiempo", "localidad"). Times and dates come from mobile-format.ts; durations
  * ("4 h 15 min") read the same in both languages. */
 import {timeZoneLabel} from '@/lib/time-zone-label';

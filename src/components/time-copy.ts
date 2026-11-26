@@ -4,7 +4,7 @@ import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (es-rest): the words of the time-off decision parts (Waiting list, Decline and Approve, the unconfirmed
  * decision, Withdraw request) and the correction comparison, in English and Puerto Rico Spanish (docs/design/voice.md: tú,
- * "Días libres", "Marcación", buttons in the infinitive, no exclamation marks). */
+ * "Días libres", "Ponche", buttons in the infinitive, no exclamation marks). */
 const en = {
   allCaughtUp: 'You’re all caught up',
   newShowUpHere: 'New time off requests show up here.',

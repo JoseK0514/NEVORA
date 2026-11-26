@@ -25,13 +25,13 @@ export const copy = {
     // src/components/team-desk-people.tsx:30
     onTheClock: "En turno",
     // src/components/team-desk-people.tsx:31
-    notClockedIn: "Sin marcar",
+    notClockedIn: "Sin ponchar",
     // src/components/team-desk-people.tsx:32
     offToday: "Libre hoy",
     // src/components/team-desk-people.tsx:38
     noneOn: "Nadie está en turno ahora.",
     // src/components/team-desk-people.tsx:38
-    allIn: "Todos los que tienen turno marcaron entrada.",
+    allIn: "Todos los que tienen turno poncharon entrada.",
     // src/components/team-desk-people.tsx:38
     noneOff: "Nadie está libre hoy.",
   },

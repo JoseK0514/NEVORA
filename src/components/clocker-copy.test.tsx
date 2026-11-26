@@ -11,7 +11,7 @@ it('translates complete visible and accessible phrases, retaining interpolation'
 it('renders the one Direction B kiosk: band, workspace chip without a logo, no retired V2 marker',()=>{const html=renderToStaticMarkup(<ClockerShell locationLabel="Office" timeZone="UTC" status="setup" workspaceName="Northside Café">Task</ClockerShell>);expect(html).toContain('data-clocker-kiosk=""');expect(html).toContain('Northside Café');expect(html).not.toContain('data-clocker-v2');expect(html).not.toContain('data-mobile-clocker');});
 it('shows the company logo chip instead of the workspace name when a logo is set',()=>{const html=renderToStaticMarkup(<ClockerShell locationLabel="Office" timeZone="UTC" status="connected" workspaceName="Northside Café" brand={{logoUrl:'/brand/logo.png'}}>Task</ClockerShell>);expect(html).toContain('src="/brand/logo.png"');expect(html).not.toContain('Northside Café');expect(html).toContain('Tablet connected');});
 it('scopes the approved shell, retains custom brand and translates setup semantics',()=>{const html=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerShell locationLabel="Office" timeZone="Asia/Tokyo" status="setup" brand={{style:{'--clocker-accent':'#662288'}}}>Task</ClockerShell></ClockerPresentation>);expect(html).toContain('data-clocker-kiosk=""');expect(html).toContain('lang="es"');expect(html).toContain('--clocker-accent:#662288');expect(html).toContain('Ir al registro de tiempo');expect(html).not.toContain('Tablet connected');});
-it('setup uses one complete language and truthful disabled timekeeping',()=>{const html=renderToStaticMarkup(<ClockerSetup initialLocale="es" locationKey="2" locationLabel="Office" timeZone="UTC"/>);expect(html).toContain('Configura esta tableta');expect(html).toContain('Código de configuración');expect(html).not.toContain('clocker-es');expect(html).not.toContain('Marcar entrada');});
+it('setup uses one complete language and truthful disabled timekeeping',()=>{const html=renderToStaticMarkup(<ClockerSetup initialLocale="es" locationKey="2" locationLabel="Office" timeZone="UTC"/>);expect(html).toContain('Configura esta tableta');expect(html).toContain('Código de configuración');expect(html).not.toContain('clocker-es');expect(html).not.toContain('Ponchar entrada');});
 
 // Direction B's approved new copy (Jose, Nov 8, 2026) is in the copy module in both languages.
 it('carries the approved recorded and recording lines in English and Spanish',()=>{
@@ -67,9 +67,9 @@ it('orders the receipt date for each language and writes one Saved sentence',()=
  expect(today).toMatch(/<p role="status"[^>]*>Esta pantalla se borra en 8 segundos\.<\/p>/);expect(today).not.toContain('Guardado');expect(today.match(/<time /g)).toHaveLength(1);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Reference');
 });
 it.each([
- ['This punch reference belongs to a different punch. Ask your manager to check it.','Esta referencia pertenece a otra marcación. Pide a tu gerente que la revise.'],
- ['Your PIN check changed. Enter your PIN again; nothing was punched twice.','La verificación de tu PIN cambió. Ingresa tu PIN de nuevo; no se registró ninguna marcación dos veces.'],
- ["We couldn't confirm your punch. Tap Check Action Status before trying again.",'No pudimos confirmar tu marcación. Toca Verificar estado de la acción antes de volver a intentarlo.'],
+ ['This punch reference belongs to a different punch. Ask your manager to check it.','Esta referencia pertenece a otro ponche. Pide a tu gerente que la revise.'],
+ ['Your PIN check changed. Enter your PIN again; nothing was punched twice.','La verificación de tu PIN cambió. Ingresa tu PIN de nuevo; no se registró ningún ponche dos veces.'],
+ ["We couldn't confirm your punch. Tap Check Action Status before trying again.",'No pudimos confirmar tu ponche. Toca Verificar estado de la acción antes de volver a intentarlo.'],
 ])('translates the paired punch recovery message %s', (en,es)=>{expect(clockerText('es',en)).toBe(es);});
 it('translates stable PIN/setup codes with legacy-message fallback',async()=>{
  const {clockerErrorText}=await import('./clocker-copy');
@@ -90,7 +90,7 @@ it('has explicit Spanish entries for every stable PIN/setup failure',async()=>{
 // Nov 14 inspection (BR-10): kiosk buttons and headings are sentence case, in plain words, with their Spanish lines.
 it('uses sentence case and plain words for the kiosk actions',()=>{
  for(const gone of ['Clock In','Clock Out','Clock In recorded','Clock Out recorded','Clock Out?','Confirm Clock Out','Try Again','Refresh clock state','Help with a saved action','Hide saved action help','Action reference'])expect(CLOCKER_COPY,gone).not.toHaveProperty([gone]);
- expect(clockerText('es','Clock in')).toBe('Marcar entrada');expect(clockerText('es','Clock out')).toBe('Marcar salida');
+ expect(clockerText('es','Clock in')).toBe('Ponchar entrada');expect(clockerText('es','Clock out')).toBe('Ponchar salida');
  expect(clockerText('es','Clock in recorded')).toBe('Entrada registrada');expect(clockerText('es','Clock out recorded')).toBe('Salida registrada');
  expect(clockerText('es','Confirm clock out')).toBe('Confirmar salida');expect(clockerText('es','Try again')).toBe('Intentar de nuevo');
  expect(clockerText('es','Refresh')).toBe('Actualizar');expect(clockerText('es','Something didn’t save?')).toBe('¿Algo no se guardó?');expect(clockerText('es','Reference')).toBe('Referencia');

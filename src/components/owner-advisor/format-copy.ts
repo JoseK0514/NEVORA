@@ -9,9 +9,9 @@ export const copy = {
   },
   es: {
     // src/components/owner-advisor/format.ts:77
-    publishedShiftStartedWithoutRecordedClock: "1 turno publicado empezó sin una marcación de entrada.",
+    publishedShiftStartedWithoutRecordedClock: "1 turno publicado empezó sin un ponche de entrada.",
     // src/components/owner-advisor/format.ts:78
-    finishedPublishedShiftHasNoRecorded: "1 turno publicado terminó sin marcaciones registradas.",
+    finishedPublishedShiftHasNoRecorded: "1 turno publicado terminó sin ponches registrados.",
     // src/components/owner-advisor/format.ts:79
     planningPeriodNeedsReview: "1 período de planificación necesita revisión,",
   },

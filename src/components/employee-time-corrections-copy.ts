@@ -195,7 +195,7 @@ export const copy = {
     // src/components/employee-time-corrections.tsx:314
     thisReplacesTheSelectedApprovedMissingTimeAfterManagerReview: "Esto reemplaza el tiempo faltante aprobado que elegiste, después de que lo revise un gerente. El ajuste anterior queda en el historial.",
     // src/components/employee-time-corrections.tsx:314
-    missingTimeIsSubmittedAsACorrectionRecordItDoes: "El tiempo faltante se envía como una corrección. No crea una marcación en el Clocker.",
+    missingTimeIsSubmittedAsACorrectionRecordItDoes: "El tiempo faltante se envía como una corrección. No crea un ponche en el Clocker.",
     // src/components/employee-time-corrections.tsx:317
     loadingCorrectionHistory: "Cargando el historial de correcciones…",
     // src/components/employee-time-corrections.tsx:318

@@ -179,7 +179,7 @@ export const copy = {
     // src/app/app/employees/[employeeId]/page.tsx:153
     scheduledWeek: "Programado esta semana",
     // src/app/app/employees/[employeeId]/page.tsx:155
-    clockedWeek: "Marcado esta semana",
+    clockedWeek: "Ponchado esta semana",
     // src/app/app/employees/[employeeId]/page.tsx:155
     detailLabel: "Incluye descansos",
     // src/app/app/employees/[employeeId]/page.tsx:160, src/app/app/employees/[employeeId]/page.tsx:161

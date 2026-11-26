@@ -88,7 +88,7 @@ const es: InboxCopy = {
   viewShiftFor: (name: string) => `Ver el turno programado de ${name}`,
   notAssigned: "Sin asignar",
   groups: {
-    repair: "Turnos por cubrir", open: "Turnos disponibles", missed: "Entradas no marcadas", now: "Necesita atención ahora", corrections: "Correcciones de tiempo",
+    repair: "Turnos por cubrir", open: "Turnos disponibles", missed: "Entradas sin ponchar", now: "Necesita atención ahora", corrections: "Correcciones de tiempo",
     timecards: "Tarjetas de tiempo por aprobar", timeOff: "Días libres", swaps: "Cambios de turno", cantWork: "No puedo trabajar", requests: "Otras solicitudes",
     stillOpen: "Período de pago aún abierto", plan: "Por planificar", earlier: "Antes esta semana",
   },
@@ -402,7 +402,7 @@ export const copy = {
     // src/components/manager-inbox.tsx:183
     shiftEndedAt: 'Turno finalizado en {endAt}',
     // src/components/manager-inbox.tsx:184, src/components/manager-inbox.tsx:408
-    notClockedIn: 'Sin marcar entrada',
+    notClockedIn: 'Sin ponchar',
     // src/components/manager-inbox.tsx:184
     no: 'Sin {CLOCK_IN}',
     // src/components/manager-inbox.tsx:185

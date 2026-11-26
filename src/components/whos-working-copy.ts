@@ -1,5 +1,5 @@
 /* Signed-in Spanish (es-rest): the words of Who's working (whos-working-corp.tsx), English as written and Puerto Rico
- * Spanish (docs/design/voice.md: "En turno", "Marcar entrada"; times "2:37 p. m."; dates "mié, 14 oct"). */
+ * Spanish (docs/design/voice.md: "En turno", "Ponchar entrada"; times "2:37 p. m."; dates "mié, 14 oct"). */
 import { esTimes } from './copy-receipt-copy';
 
 const en = {
@@ -45,14 +45,14 @@ const es: typeof en = {
   onBreakSince: (when: string) => `En descanso desde ${when}`,
   inSince: (when: string) => `En turno desde ${when}`,
   noOne: 'Nadie está en turno ahora',
-  noOneBody: 'Aparecen aquí cuando marcan entrada.',
+  noOneBody: 'Aparecen aquí cuando ponchan entrada.',
   showMore: (n: number) => `Mostrar ${n} más`,
   shiftsToday: 'Turnos de hoy',
   shiftsUnavailable: 'Los turnos de hoy no están disponibles ahora.',
   tryAgain: 'Intentar de nuevo',
   due: (time: string) => `Entrada ${time}`,
-  missed: 'Entradas sin marcar',
-  missedLabel: 'Turnos que terminaron sin marcar entrada',
+  missed: 'Entradas sin ponchar',
+  missedLabel: 'Turnos que terminaron sin ponchar entrada',
   review: 'Revisión',
   toCheck: 'Entradas por revisar',
   toCheckDetail: 'Horas que no coinciden con el horario o los descansos',

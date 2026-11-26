@@ -91,7 +91,7 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:251
     checkAClockInOrClockOutThatSomeoneIsn: "Verifica una entrada o salida si alguien tiene dudas de que se haya guardado.",
     // src/components/clocker-owner-copy.ts:252
-    whenATabletCanTConfirmAPunchItKeeps: "Cuando una tableta no puede confirmar una marcación, guarda un código. Verificar un código aquí nunca cambia el tiempo registrado.",
+    whenATabletCanTConfirmAPunchItKeeps: "Cuando una tableta no puede confirmar un ponche, guarda un código. Verificar un código aquí nunca cambia el tiempo registrado.",
     // src/components/clocker-owner-copy.ts:270
     checkACode: "Verificar un código",
     // src/components/clocker-owner-copy.ts:271
@@ -109,7 +109,7 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:277
     whatWasSaved: "Lo que se guardó",
     // src/components/clocker-owner-copy.ts:278
-    thisPunchWasSaved: "Esta marcación se guardó",
+    thisPunchWasSaved: "Este ponche se guardó",
     // src/components/clocker-owner-copy.ts:279
     tellThePersonOnTheSameTabletTheyTapCheck: "Avísale a la persona. Para terminar, debe tocar Revisar si se guardó en la misma tableta.",
     // src/components/clocker-owner-copy.ts:280
@@ -131,7 +131,7 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:291
     codeCheckedCode: "Código verificado: {code}",
     // src/components/clocker-owner-copy.ts:296
-    recordedPunch: "Marcación registrada",
+    recordedPunch: "Ponche registrado",
     // src/components/clocker-owner-copy.ts:298
     timeWrongOrMissing: "¿Tiempo incorrecto o faltante?",
     // src/components/clocker-owner-copy.ts:299

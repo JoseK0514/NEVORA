@@ -2,7 +2,7 @@ import { copy as approvedDelegatedTimeCorrectionForm } from './delegated-time-co
 import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (es-rest): the words of "Fix someone's time" (delegated-time-correction-form.tsx), English as written
- * and Puerto Rico Spanish (docs/design/voice.md: Marcación, Tarjeta de tiempo, Solicitud de corrección). */
+ * and Puerto Rico Spanish (docs/design/voice.md: Ponche, Tarjeta de tiempo, Solicitud de corrección). */
 const en = {
   failures: {
     self_review: 'Another manager must review this request.',

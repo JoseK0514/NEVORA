@@ -2,7 +2,7 @@ import {copy as noticeSettingsWords} from '@/components/clocker-photo/notice-set
 import {copy as photoReviewWords} from '@/components/clocker-photo/photo-review-copy';
 import {copy as reviewWords} from '@/lib/clocker/photo-client/review-copy';
 /* Signed-in Spanish (es-rest, Nov 23, 2026): Settings › Punch photos (J15, help for your team) and Photo review (J16), in
- * English and Puerto Rico Spanish (docs/design/voice.md: tú, "Marcación", "Dueño"). English is the components' text, word
+ * English and Puerto Rico Spanish (docs/design/voice.md: tú, "Ponche", "Dueño"). English is the components' text, word
  * for word; the privacy lines are Jose's approved wording in English and are listed for his review in Spanish. */
 import type { PortalLang } from '@/lib/i18n/portal-lang';
 import type { PhotoReviewRecord } from '@/lib/clocker/photo-server/contracts';
@@ -102,7 +102,7 @@ const es: PhotoOwnerCopy = {
   privateNote: photoReviewWords.es.privateCompanyPhotosRemovingAPhotoPreservesItsTime,
   closeRecord: photoReviewWords.es.closeRecord,
   retentionEnds: 'La foto se guarda hasta',
-  photoAlt: (name, action) => `Foto privada de marcación de ${name}: ${action.toLowerCase()}`,
+  photoAlt: (name, action) => `Foto privada de ponche de ${name}: ${action.toLowerCase()}`,
   viewPhoto: photoReviewWords.es.viewPrivatePhoto,
   removePhoto: photoReviewWords.es.removePhoto,
   checkOriginal: photoReviewWords.es.checkOriginalRecord,

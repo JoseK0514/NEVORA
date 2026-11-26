@@ -309,7 +309,7 @@ export const copy = {
     // src/components/employee-home-reviewed.tsx:313
     scheduleNotChecked: 'No pudimos verificar tu horario.',
     // src/components/employee-home-reviewed.tsx:316
-    clockStatusBelow: 'El estado de tu marcación, abajo, indica si estás en turno.',
+    clockStatusBelow: 'El estado de tu ponche, abajo, indica si estás en turno.',
     // src/components/employee-home-reviewed.tsx:323
     laterToday: 'Más tarde hoy',
     // src/components/employee-home-reviewed.tsx:329

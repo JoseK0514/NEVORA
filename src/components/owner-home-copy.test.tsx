@@ -30,7 +30,7 @@ it('holds the same keys in English and Spanish', () => {
 
 it('renders Home’s cards in Spanish and keeps English as it was', () => {
   const es = text(withoutB(renderToStaticMarkup(<PortalLangProvider lang="es"><OwnerHomeCorp {...props} /></PortalLangProvider>)));
-  for (const words of ['Hoy', 'Quién está trabajando', 'En turno', 'Sin marcar', 'Turnos disponibles', 'Día de pago', 'vie, 11 dic', 'En 4 días', 'Pendientes', 'Todo al día'])
+  for (const words of ['Hoy', 'Quién está trabajando', 'En turno', 'Sin ponchar', 'Turnos disponibles', 'Día de pago', 'vie, 11 dic', 'En 4 días', 'Pendientes', 'Todo al día'])
     expect(es).toContain(words);
   for (const english of ['Clocked in', 'Open shifts', 'Payday', 'In 4 days', 'Things to do', 'You’re all set']) expect(es).not.toContain(english);
   const en = text(withoutB(renderToStaticMarkup(<OwnerHomeCorp {...props} />)));

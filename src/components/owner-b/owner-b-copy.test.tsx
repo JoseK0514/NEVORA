@@ -12,8 +12,8 @@ const text = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " "
 
 it("matches the English keys and distinguishes the Spanish filter from the employee status", () => {
   expect(Object.keys(OWNER_B_COPY.es.team).sort()).toEqual(Object.keys(OWNER_B_COPY.en.team).sort());
-  expect(OWNER_B_COPY.es.team.notClockedIn).toBe("Sin marcar");
-  expect(ATTENDANCE.es.notClockedIn).toBe("Sin marcar entrada");
+  expect(OWNER_B_COPY.es.team.notClockedIn).toBe("Sin ponchar");
+  expect(ATTENDANCE.es.notClockedIn).toBe("Sin ponchar");
 });
 
 const team = (lang?: "en" | "es") => text(renderToStaticMarkup(<TeamB people={[{ id: "a", name: "Ana Rivera", detail: "Barista · Condado", href: "/app/employees/a", active: true }]}

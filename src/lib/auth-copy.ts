@@ -207,7 +207,7 @@ const es: AuthCopy = {
     languages: "Inicio de sesión y ayuda con la cuenta en inglés y español.",
     helpBefore: "Ayuda en ", helpAfter: ". Nuestra meta es responder en dos días laborables." },
   device: { date: "Martes, 20 de octubre", greeting: "Buenos días, Alex", nextShift: "Próximo turno", inMinutes: "En 22 min", time: "8:00 AM – 4:00 PM",
-    place: "Recepción · Oficina principal", clockIn: "Marcar entrada", thisWeek: "Esta semana", scheduled: "Programadas", worked: "Trabajadas", nextPayday: "Día de pago programado",
+    place: "Recepción · Oficina principal", clockIn: "Ponchar entrada", thisWeek: "Esta semana", scheduled: "Programadas", worked: "Trabajadas", nextPayday: "Día de pago programado",
     payday: "vie, 23 oct", timeOff: "Días libres · 26 oct", approvedBy: "Aprobado por Morgan", approved: "Aprobado", tabs: ["Inicio", "Horario", "Solicitudes", "Pago"] },
   workspaceUnavailable: "No pudimos cargar tu lugar de trabajo",
   employeeId: "ID de empleado",

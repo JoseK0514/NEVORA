@@ -99,11 +99,11 @@ export const copy = {
     // src/lib/owner-advisor/briefing.ts:21
     coverageTitle: "Revisar turnos sin cubrir hoy",
     // src/lib/owner-advisor/briefing.ts:22
-    finishedTitle: "Revisar turnos terminados sin marcaciones",
+    finishedTitle: "Revisar turnos terminados sin ponches",
     // src/lib/owner-advisor/briefing.ts:23
     setupTitle: "Completar las reglas de cobertura",
     // src/lib/owner-advisor/briefing.ts:75
-    punchesSource: "Turnos publicados y marcaciones registradas",
+    punchesSource: "Turnos publicados y ponches registrados",
     // src/lib/owner-advisor/tools.server.ts:53
     todaySource: "Personal de hoy",
     // src/lib/owner-advisor/briefing.ts:97
@@ -111,9 +111,9 @@ export const copy = {
     // src/lib/owner-advisor/briefing.ts:97
     clockOther: "{n} turnos publicados empezaron sin una entrada registrada. Verifica la asistencia antes de buscar quién los cubra.",
     // src/lib/owner-advisor/briefing.ts:97
-    finishedOne: "{n} turno publicado terminó sin marcaciones registradas. Revisa los registros antes de corregir las horas.",
+    finishedOne: "{n} turno publicado terminó sin ponches registrados. Revisa los registros antes de corregir las horas.",
     // src/lib/owner-advisor/briefing.ts:97
-    finishedOther: "{n} turnos publicados terminaron sin marcaciones registradas. Revisa los registros antes de corregir las horas.",
+    finishedOther: "{n} turnos publicados terminaron sin ponches registrados. Revisa los registros antes de corregir las horas.",
     // src/lib/owner-advisor/briefing.ts:109
     coverageSetup: "Para verificar la cobertura, revisa las reglas de personal y cobertura que faltan o tienen errores.",
     // src/lib/owner-advisor/briefing.ts:117
@@ -135,7 +135,7 @@ export const copy = {
     // src/components/owner-advisor/attention.tsx:17
     resolvedSetup: "Las reglas de cobertura ya están configuradas.",
     // src/components/owner-advisor/attention.tsx:17
-    resolvedPunches: "Las marcaciones registradas ya cubren los turnos en seguimiento.",
+    resolvedPunches: "Los ponches registrados ya cubren los turnos en seguimiento.",
     // src/components/owner-advisor/attention.tsx:18
     notCurrent: "El problema original ya no coincide con los registros actuales. La resolución está por confirmar.",
     // src/components/owner-advisor/attention.tsx:19
@@ -163,7 +163,7 @@ export const copy = {
     // src/components/owner-advisor/attention.tsx:85
     needsAttention: "Necesita tu atención",
     // src/components/owner-advisor/attention.tsx:89
-    lede: "Problemas de hoy con el personal y las marcaciones registradas.",
+    lede: "Problemas de hoy con el personal y los ponches registrados.",
     // src/components/owner-advisor/attention.tsx:93
     unavailableTitle: "El resumen de prioridades no está disponible.",
     // src/components/owner-advisor/attention.tsx:93
@@ -175,7 +175,7 @@ export const copy = {
     // src/components/owner-advisor/attention.tsx:97
     emptyPartial: "No pudimos confirmar ningún elemento prioritario con las fuentes disponibles.",
     // src/components/owner-advisor/attention.tsx:97
-    emptyClear: "No se encontraron problemas de personal ni de marcaciones en las fuentes evaluadas hoy.",
+    emptyClear: "No se encontraron problemas de personal ni de ponches en las fuentes evaluadas hoy.",
     // src/components/owner-advisor/attention.tsx:117
     showing: "Ves {itemsCount} de {unreviewed} asuntos por revisar. Consulta las pantallas de origen para verlos todos.",
     // src/components/owner-advisor/attention.tsx:119

@@ -117,13 +117,13 @@ export const copy = {
     // src/components/clocker-photo/punch-photo-flow.tsx:17
     cameraNeedsAttention: 'La cámara necesita atención',
     // src/components/clocker-photo/punch-photo-flow.tsx:17
-    tabletCanSavePunches: 'Esta tableta no puede guardar marcaciones',
+    tabletCanSavePunches: 'Esta tableta no puede guardar ponches',
     // src/components/clocker-photo/punch-photo-flow.tsx:17
     checkingTime: 'Comprobando tu tiempo',
     // src/components/clocker-photo/punch-photo-flow.tsx:17
-    checkLastPunch: 'Comprueba tu última marcación',
+    checkLastPunch: 'Comprueba tu último ponche',
     // src/components/clocker-photo/punch-photo-flow.tsx:17
-    savingPunchPhoto: 'Guardando la foto de tu marcación…',
+    savingPunchPhoto: 'Guardando la foto de tu ponche…',
     // src/components/clocker-photo/punch-photo-flow.tsx:17
     timeRecordedCheckPhoto: 'Hora registrada. Revisa la foto',
     // src/components/clocker-photo/punch-photo-flow.tsx:17
@@ -135,7 +135,7 @@ export const copy = {
     // src/components/clocker-photo/punch-photo-flow.tsx:26
     timeRecordedNoPhotoWasSaved: 'Tu tiempo está registrado. No se guardó ninguna foto; tu gerente puede verlo',
     // src/components/clocker-photo/punch-photo-flow.tsx:27, src/components/clocker-photo/punch-photo-flow.tsx:80
-    punchNotConfirmedYetTapCheck: 'Tu marcación aún no está confirmada. Toca Comprobar si se guardó antes de hacer cualquier otra cosa',
+    punchNotConfirmedYetTapCheck: 'Tu ponche aún no está confirmado. Toca Comprobar si se guardó antes de hacer cualquier otra cosa',
     // src/components/clocker-photo/punch-photo-flow.tsx:28
     timeRecordedPhotoNotConfirmedYet: 'Tu tiempo está registrado. La foto aún no está confirmada; revisarla no registrará tu tiempo dos veces',
     // src/components/clocker-photo/punch-photo-flow.tsx:37
@@ -159,7 +159,7 @@ export const copy = {
     // src/components/clocker-photo/punch-photo-flow.tsx:77
     cameraOffUsePhotoRecordTime: 'La cámara está apagada. Usa esta foto para grabar tu tiempo',
     // src/components/clocker-photo/punch-photo-flow.tsx:80
-    lastPunchStillIsnConfirmedTap: 'Tu última marcación aún no está confirmada. Toca Enviarlo de nuevo. No se registrará dos veces',
+    lastPunchStillIsnConfirmedTap: 'Tu último ponche aún no está confirmado. Toca Enviarlo de nuevo. No se registrará dos veces',
     // src/components/clocker-photo/punch-photo-flow.tsx:81
     noPunchWasSentAskManager: 'No se envió ningún punch. Pide a un gerente que revise esta tableta',
     // src/components/clocker-photo/punch-photo-flow.tsx:83
@@ -167,7 +167,7 @@ export const copy = {
     // src/components/clocker-photo/punch-photo-flow.tsx:83
     recordedTimePreserved: 'Tu tiempo registrado se conserva',
     // src/components/clocker-photo/punch-photo-flow.tsx:83
-    enterPinAgainCheckPunchIsn: 'Ingresa tu PIN de nuevo para comprobar una marcación que no está confirmada',
+    enterPinAgainCheckPunchIsn: 'Ingresa tu PIN de nuevo para comprobar un ponche que no está confirmado',
     // src/components/clocker-photo/punch-photo-flow.tsx:84
     timeRecordedAt: 'Hora registrada en {time}',
     // src/components/clocker-photo/punch-photo-flow.tsx:87

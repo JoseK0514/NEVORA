@@ -167,7 +167,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corrections.tsx:15
     thisHistoryCanTBeLoadedInFullContactYour: "Este historial no se puede cargar completo. Pide ayuda a tu gerente.",
     // src/components/employee-mobile/hours-corrections.tsx:15
-    yourCorrectionHistoryCouldnTBeCheckedRecordedPunchesRemain: "No pudimos verificar tu historial de correcciones. Tus marcaciones registradas siguen en Horas.",
+    yourCorrectionHistoryCouldnTBeCheckedRecordedPunchesRemain: "No pudimos verificar tu historial de correcciones. Tus ponches registrados siguen en Horas.",
     // src/components/employee-mobile/hours-corrections.tsx:17
     thisCorrectionIsnTAvailableToYourCurrentAccount: "Esta corrección no está disponible para tu cuenta actual.",
     // src/components/employee-mobile/hours-corrections.tsx:20
@@ -187,7 +187,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corrections.tsx:23
     requestMissingTime: "Solicitar tiempo sin registrar",
     // src/components/employee-mobile/hours-corrections.tsx:23
-    toCorrectAPunchOrBreakOpenItsRecordedEntry: "Para corregir una marcación o un descanso, abre su entrada registrada en Horas o en Tarjetas de tiempo. Tu gerente revisa cada solicitud.",
+    toCorrectAPunchOrBreakOpenItsRecordedEntry: "Para corregir un ponche o un descanso, abre su entrada registrada en Horas o en Tarjetas de tiempo. Tu gerente revisa cada solicitud.",
     // src/components/employee-mobile/hours-corrections.tsx:27
     correctionStatus: "Estado de la corrección",
     // src/components/employee-mobile/hours-corrections.tsx:27
@@ -205,7 +205,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corrections.tsx:30
     statusByBy: "{status} por {by}",
     // src/components/employee-mobile/hours-corrections.tsx:30
-    yourManagerWillReviewThisRequestOriginalPunchesStayUnchanged: "Tu gerente revisará esta solicitud. Las marcaciones originales no cambian.",
+    yourManagerWillReviewThisRequestOriginalPunchesStayUnchanged: "Tu gerente revisará esta solicitud. Los ponches originales no cambian.",
     // src/components/employee-mobile/hours-corrections.tsx:31
     earlierDecisionsForThisTime: "Decisiones anteriores para este tiempo",
     // src/components/employee-mobile/hours-corrections.tsx:31
@@ -283,7 +283,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corrections.tsx:58
     checkTheProposedDatesTimesAndReason: "Revisa las fechas, horas y el motivo propuestos.",
     // src/components/employee-mobile/hours-corrections.tsx:59
-    yourManagerReviewsThisRequestOriginalPunchesStayUnchangedAnd: "Tu gerente revisa esta solicitud. Las marcaciones originales no cambian y los ajustes aprobados aparecen en tu tarjeta de tiempo. Las horas están en {timeZone}.",
+    yourManagerReviewsThisRequestOriginalPunchesStayUnchangedAnd: "Tu gerente revisa esta solicitud. Los ponches originales no cambian y los ajustes aprobados aparecen en tu tarjeta de tiempo. Las horas están en {timeZone}.",
     // src/components/employee-mobile/hours-corrections.tsx:60
     sending: "Enviando…",
     // src/components/employee-mobile/hours-corrections.tsx:60

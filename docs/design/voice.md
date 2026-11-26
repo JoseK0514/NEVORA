@@ -44,7 +44,7 @@ Calm, specific and kind, like a capable coworker.
 English and Spanish are equals. Neither is a translation of the other.
 
 - **Write the Spanish, don't translate it.** Same facts, same next step, natural Puerto Rico Spanish.
-  "Clock in" is "Marcar entrada", not "Reloj de entrada".
+  "Clock in" is "Ponchar entrada", not "Reloj de entrada".
 - **Tú everywhere**: "Ingresa tu PIN", "¿Olvidaste tu contraseña?", "Tu solicitud fue enviada".
   Use ustedes only when the sentence speaks to a group, such as the support team.
 - **One concept, one word, in both languages.** Use the glossary below. No English words inside Spanish
@@ -60,14 +60,16 @@ English and Spanish are equals. Neither is a translation of the other.
 
 The full list is in `docs/product/review-2026-11-10/reviews/copy-audit.md`, "Glossary".
 
+Jose, Nov 26, 2026: 'ponche/ponchar' is the one word for a punch; 'espacio de trabajo' became 'empresa'.
+
 | Concept | English | Spanish (PR) | Never |
 |---|---|---|---|
 | Business owner role | Owner | Dueño | el Owner, administrador |
 | Things waiting on a manager | Things to do (tab: To do) | Pendientes | Inbox, tasks, actions |
 | Days or hours off | Time off; time-off request | Días libres; solicitud de días libres | leave, PTO, tiempo libre |
-| One clock event | Punch | Marcación | clock action, acción de tiempo |
+| One clock event | Punch | Ponche | clock action, acción de tiempo |
 | Clocked-in state | Clocked in | En turno | Working, On the clock |
-| Ask to change a punch | Correction request; "Fix a punch" | Solicitud de corrección; "Corregir una marcación" | proposal, submission |
+| Ask to change a punch | Correction request; "Fix a punch" | Solicitud de corrección; "Corregir un ponche" | proposal, submission |
 | Can't work a shift | Can't work; can't-work request | No puedo trabajar | callout, Unable to work |
 | Take back a request | Withdraw request | Retirar solicitud | Cancel request |
 | Unassigned shift | Open shift | Turno disponible | gap, coverage gap |
@@ -86,7 +88,7 @@ The full list is in `docs/product/review-2026-11-10/reviews/copy-audit.md`, "Glo
 | About | "You": your shift, your time, your pay | The team: counts, names, what needs a decision |
 | Length | One idea per line. Shortest form that's still clear. | Can carry a count and a name in one line. |
 | Words | Workplace, your manager, Pay | Company, employees, Payroll |
-| Example | Your shift starts at 8:00 AM · Tu turno empieza a las 8:00 a. m. | 3 employees haven't clocked in · 3 empleados no han marcado entrada |
+| Example | Your shift starts at 8:00 AM · Tu turno empieza a las 8:00 a. m. | 3 employees haven't clocked in · 3 empleados no han ponchado entrada |
 | Example | Time off approved · Días libres aprobados | 2 time-off requests to review · 2 solicitudes de días libres por revisar |
 
 The personality is the same for both. Don't make Owner copy colder or Employee copy cuter.
@@ -100,7 +102,7 @@ The personality is the same for both. Don't make Owner copy colder or Employee c
   "Approve time off" · "Aprobar días libres", "Save PIN" · "Guardar PIN". Never "Submit", "OK",
   "Click here", "Enviar" alone, "Aceptar" alone.
 - **Spanish buttons use the infinitive; Spanish sentences use tú.** Button: "Intentar de nuevo", "Guardar",
-  "Marcar entrada". Sentence: "No pudimos cargar tu horario. Inténtalo de nuevo."
+  "Ponchar entrada". Sentence: "No pudimos cargar tu horario. Inténtalo de nuevo."
 - **Links that stay in the app** end with "›". The external arrow only when a link leaves NEVORA.
 - **No terminal periods** on headings, labels and buttons. Full sentences in body copy get periods.
 - **Contractions are fine** in English ("didn't", "can't"). They read as a person, not a system.
@@ -147,9 +149,9 @@ Describe the punch or the record, never the person's character.
 
 | Instead of | Write | Spanish |
 |---|---|---|
-| Ana is late | Ana R. · Clocked in 9 min late | Ana R. · Marcó entrada 9 min tarde |
-| Luis is a no-show / absent | Luis M. · Not clocked in · 35 min | Luis M. · Sin marcar entrada · 35 min |
-| Luis missed his shift | Luis M. · No punches for this shift | Luis M. · Sin marcaciones en este turno |
+| Ana is late | Ana R. · Clocked in 9 min late | Ana R. · Ponchó entrada 9 min tarde |
+| Luis is a no-show / absent | Luis M. · Not clocked in · 35 min | Luis M. · Sin ponchar · 35 min |
+| Luis missed his shift | Luis M. · No punches for this shift | Luis M. · Sin ponches en este turno |
 | Carla is abusing overtime | Carla P. · 4 h over this week | Carla P. · 4 h de más esta semana |
 
 - **Banned in both languages:** no-show, absent, ausente, faltó, llegó tarde (as a label), abuse, violation.

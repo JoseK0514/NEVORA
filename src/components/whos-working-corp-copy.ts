@@ -75,7 +75,7 @@ export const copy = {
     // src/components/whos-working-corp.tsx:109
     tryAgain: 'Intentar de nuevo',
     // src/components/whos-working-corp.tsx:115
-    missedClockIns: 'Sin marcar entrada',
+    missedClockIns: 'Sin ponchar',
     // src/components/whos-working-corp.tsx:115
     shiftsEndedNoClockIn: 'Cambios que terminaron sin reloj',
     // src/components/whos-working-corp.tsx:119

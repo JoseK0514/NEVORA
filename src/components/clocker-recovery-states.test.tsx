@@ -96,7 +96,7 @@ describe('checking a code', () => {
     for (const tree of [review(ready([receipt(1)]), {lang: 'es'}), review(ready([]), {lang: 'es'}), review(ready([receipt(1), receipt(2)]), {lang: 'es'}), review(null, {loading: true, lang: 'es'}),
       review({state: 'unavailable', reason: 'offline'}, {lang: 'es'}), review({state: 'unavailable', reason: 'access_denied'}, {lang: 'es'}), review({state: 'unavailable', reason: 'read_failed'}, {lang: 'es'}), review(null, {invalid: clockerOwnerCopy.es.lookupPattern, lang: 'es'})])
       for (const line of english) expect(text(tree), line).not.toContain(line);
-    expect(text(review(ready([receipt(1)]), {lang: 'es'}))).toContain('Esta marcación se guardó'); expect(text(review(ready([receipt(1)]), {lang: 'es'}))).toContain('James Ortiz · Salida');
+    expect(text(review(ready([receipt(1)]), {lang: 'es'}))).toContain('Este ponche se guardó'); expect(text(review(ready([receipt(1)]), {lang: 'es'}))).toContain('James Ortiz · Salida');
   });
 });
 

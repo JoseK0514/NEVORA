@@ -16,7 +16,7 @@ const help=(lang:'en'|'es',state:ClockerReviewRequest['state']='idle',id:string|
 it.each(['en','es'] as const)('shows saved-punch help as its own card in %s: the references only behind Reference, a quiet ask and Back',lang=>{
  const html=help(lang);
  // Premium pass (#8): the title names the fact, not the button's words (two references here, so the plural).
- expect(html).toContain(lang==='en'?'Your punches are kept on this tablet':'Tus marcaciones están guardadas en esta tableta');
+ expect(html).toContain(lang==='en'?'Your punches are kept on this tablet':'Tus ponches están guardados en esta tableta');
  expect(html).not.toContain(lang==='en'?'Ask your Owner to check':'Pide al dueño que lo revise');
  // Every reference sits inside the one disclosure; nothing raw in the body and no "Show N more".
  const [body,disclosure='']=html.split('<details');

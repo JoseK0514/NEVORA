@@ -25,7 +25,7 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:218
     youCanChooseYourSettingsNowTheyStartWhen: "Puedes elegir la configuración ahora. Empieza cuando las fotos se activen para tu negocio.",
     // src/components/clocker-owner-copy.ts:223
-    turnOnTakePunchPhotosToChooseThese: "Activa Tomar fotos de marcación para elegirlos.",
+    turnOnTakePunchPhotosToChooseThese: "Activa Tomar fotos de ponche para elegirlos.",
     // src/components/clocker-owner-copy.ts:234
     seeSavedPhotosAndRemoveOne: "Ve las fotos guardadas y elimina las que quieras.",
     // src/components/clocker-owner-copy.ts:237

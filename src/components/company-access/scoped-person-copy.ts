@@ -39,7 +39,7 @@ export const copy = {
     // src/components/company-access/scoped-person.tsx:53
     scheduledWeek: "Programadas esta semana",
     // src/components/company-access/scoped-person.tsx:54
-    clockedWeek: "Marcadas esta semana",
+    clockedWeek: "Ponchadas esta semana",
     // src/components/company-access/scoped-person.tsx:54
     detailLabel: "Incluye descansos",
     // src/components/company-access/scoped-person.tsx:57, src/components/company-access/scoped-person.tsx:58

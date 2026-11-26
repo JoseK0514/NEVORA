@@ -9,7 +9,7 @@ export const copy = {
   },
   es: {
     // src/app/app/settings/clocker/photos/page.tsx:19
-    punchPhotos: "Fotos de marcación",
+    punchPhotos: "Fotos de ponche",
     // src/app/app/settings/clocker/photos/page.tsx:24
     photoSettingsUnavailable: "Configuración de fotos no disponible",
     // src/app/app/settings/clocker/photos/page.tsx:36

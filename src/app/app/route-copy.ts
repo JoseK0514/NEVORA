@@ -3,7 +3,7 @@ import { copy as approvedPayrollRoute } from './payroll/payroll-route-copy';
 
 /* Signed-in Spanish (es-rest): the words the small signed-in routes write themselves (tab titles, the closed and unavailable
  * notices) for Timecards, Time corrections, My time, My pay, Payroll, Time exports, Rondo and Updates, in English and
- * Puerto Rico Spanish (docs/design/voice.md: "Tarjeta de tiempo", "Nómina", "Aviso", "Dueño", "Marcación"). The screens'
+ * Puerto Rico Spanish (docs/design/voice.md: "Tarjeta de tiempo", "Nómina", "Aviso", "Dueño", "Ponche"). The screens'
  * own words belong to their components. */
 const en = {
   timecards: 'Timecards',

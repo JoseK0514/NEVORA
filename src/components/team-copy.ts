@@ -45,8 +45,8 @@ const en = {
   hoursAppear: 'Hours appear here as shifts are added.',
 };
 const es: typeof en = {
-  notClockedIn: 'Sin marcar entrada',
-  notClockedInFilter: 'Sin marcar',
+  notClockedIn: 'Sin ponchar',
+  notClockedInFilter: 'Sin ponchar',
   late: 'En turno, llegó tarde',
   clockedIn: 'En turno',
   onBreak: 'En descanso',
@@ -56,7 +56,7 @@ const es: typeof en = {
   all: 'Todos',
   onTheClock: 'En turno',
   noOneClockedIn: 'Nadie está en turno ahora.',
-  everyoneClockedIn: 'Todos los que tienen turno marcaron entrada.',
+  everyoneClockedIn: 'Todos los que tienen turno poncharon entrada.',
   noOneOff: 'Nadie está libre hoy.',
   phoneTitle: 'Escribe los 10 dígitos del número de teléfono',
   none: 'Ninguno',

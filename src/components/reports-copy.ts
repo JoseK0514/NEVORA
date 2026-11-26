@@ -501,7 +501,7 @@ export const copy = {
     // src/components/reports.tsx:230, src/components/reports.tsx:353, src/components/reports.tsx:393
     asOf: "Actualizado el ",
     // src/components/reports.tsx:260
-    hoursComeFromClockInsInclude: "Las horas salen de las marcaciones e incluyen los descansos.",
+    hoursComeFromClockInsInclude: "Las horas salen de los ponches e incluyen los descansos.",
     // src/components/reports.tsx:260
     lateMeansAfterScheduledStartDoesn: "Tarde quiere decir después de la hora de inicio programada. No cambia el pago.",
     // src/components/reports.tsx:260
@@ -519,11 +519,11 @@ export const copy = {
     // src/components/reports.tsx:270, src/components/reports.tsx:365
     offline3: "Conéctate a internet e inténtalo de nuevo.",
     // src/components/reports.tsx:289
-    lateUnmatchedOne: "No se pudo comparar {unmatched} marcación de entrada con el horario.",
+    lateUnmatchedOne: "No se pudo comparar {unmatched} ponche de entrada con el horario.",
     // src/components/reports.tsx:289
     lateUnmatchedOther: "{unmatched} entradas no se pudieron comparar con el horario.",
     // src/components/reports.tsx:289
-    lateUnreadOne: "No pudimos leer las marcaciones de entrada de {unread} persona.",
+    lateUnreadOne: "No pudimos leer los ponches de entrada de {unread} persona.",
     // src/components/reports.tsx:289
     lateUnreadOther: "No pudimos leer las entradas de {unread} personas.",
     // src/components/reports.tsx:300
@@ -543,7 +543,7 @@ export const copy = {
     // src/components/reports.tsx:347
     notEnoughBody: "La gráfica aparece cuando dos días tengan tiempo registrado.",
     // src/components/reports.tsx:348
-    noRecordedBody: "Las horas aparecen aquí a medida que las personas marcan entrada y salida.",
+    noRecordedBody: "Las horas aparecen aquí a medida que las personas ponchan entrada y salida.",
     // src/components/reports.tsx:350
     howWeCount: "Cómo contamos",
     // src/components/reports.tsx:380

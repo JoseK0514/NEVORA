@@ -227,7 +227,7 @@ describe("the page in Spanish", async () => {
       view={{ ...initialView, snapshot, answer: { text: "x", sources: [], periodReview: period(language) } }} actions={actions} />);
     const es = render("es");
     for (const text of ["Excepciones del período", "1–7 oct", "Sin localidad registrada en el período", "Necesita revisión", "revisa la población del período", "Estado registrado: Bloqueado",
-      "La cobertura de localidades está incompleta.", "Revisa las correcciones", "No se infieren marcaciones", "Visto"]) expect(es, text).toContain(text);
+      "La cobertura de localidades está incompleta.", "Revisa las correcciones", "No se infieren ponches", "Visto"]) expect(es, text).toContain(text);
     for (const word of ["Revise ", "ubicación", "NEEDS_REVIEW", "BLOCKED"]) expect(strip(es), word).not.toContain(word);
     const en = render("en");
     for (const text of ['lang="en"', "Period exceptions", "No recorded location in the period", "Needs review", "Recorded status: Blocked", "Location coverage is incomplete."]) expect(en, text).toContain(text);

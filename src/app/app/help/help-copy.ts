@@ -48,7 +48,7 @@ const es: typeof en = {
   confirmSchedule: 'Confirmar tu horario',
   askTimeOff: 'Pedir días libres',
   swapShift: 'Cambiar o ceder un turno',
-  fixPunch: 'Corregir una marcación',
+  fixPunch: 'Corregir un ponche',
   seePay: 'Ver tu comprobante de pago',
   howTo: 'Cómo hacerlo',
   contact: 'Contacto',

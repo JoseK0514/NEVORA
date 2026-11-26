@@ -67,9 +67,9 @@ export const copy = {
     // src/components/time-correction-context.tsx:42
     currentEffective: "Vigente ahora",
     // src/components/time-correction-context.tsx:43
-    approvedMissingTimeNoDevicePunch: "Tiempo faltante aprobado · sin marcación del dispositivo",
+    approvedMissingTimeNoDevicePunch: "Tiempo faltante aprobado · sin ponche del dispositivo",
     // src/components/time-correction-context.tsx:43
-    approvedAdjustmentOriginalPunchUnchanged: "Ajuste aprobado · la marcación original no cambia",
+    approvedAdjustmentOriginalPunchUnchanged: "Ajuste aprobado · el ponche original no cambia",
     // src/components/time-correction-context.tsx:44
     askedFor: "Pedido",
     // src/components/time-correction-context.tsx:47

@@ -61,7 +61,7 @@ describe('first paint (no hooks driven)', () => {
   });
   it('Spanish: the same screen with no English sentence left in it', () => {
     const html = renderToStaticMarkup(<ClockerSetup {...props} initialLocale="es" />);
-    for (const line of ['Configura esta tableta', 'Tu equipo usará esta tableta para marcar en esta localidad.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
+    for (const line of ['Configura esta tableta', 'Tu equipo usará esta tableta para ponchar en esta localidad.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
       expect(html).toContain(line);
     for (const english of ['Set up this tablet', 'Setup code', 'time clock for', 'Connect tablet', 'How to set it up', 'One-time setup']) expect(html).not.toContain(english);
     expect(html).toContain('lang="es"');

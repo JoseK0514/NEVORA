@@ -89,7 +89,7 @@ export const copy = {
     // src/components/delegated-time-correction-form.tsx:18
     theProposedTimeOverlapsOtherWorkReviewTheTimecard: "El tiempo propuesto se solapa con otro trabajo. Revisa la tarjeta de tiempo.",
     // src/components/delegated-time-correction-form.tsx:18
-    closeTheOpenPunchBeforeProposingACorrection: "Cierra la marcación abierta antes de proponer una corrección.",
+    closeTheOpenPunchBeforeProposingACorrection: "Cierra el ponche abierto antes de proponer una corrección.",
     // src/components/delegated-time-correction-form.tsx:18
     reopenTheFinalizedTimecardThroughTheExistingReviewProcessFirst: "Primero reabre la tarjeta de tiempo finalizada con el proceso de revisión existente.",
     // src/components/delegated-time-correction-form.tsx:18
@@ -113,7 +113,7 @@ export const copy = {
     // src/components/delegated-time-correction-form.tsx:73
     currentCorrectionInformationIsUnavailable: "La información actual de correcciones no está disponible.",
     // src/components/delegated-time-correction-form.tsx:76
-    inTimeZoneTheOriginalPunchesAreKept: ", en {timeZone}. Las marcaciones originales se conservan.",
+    inTimeZoneTheOriginalPunchesAreKept: ", en {timeZone}. Los ponches originales se conservan.",
     // src/components/delegated-time-correction-form.tsx:76
     correctingTimeFor: "Corrigiendo el tiempo de ",
     // src/components/delegated-time-correction-form.tsx:77

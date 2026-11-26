@@ -73,9 +73,9 @@ export const copy = {
   },
   es: {
     // src/components/management-close-form.tsx:14
-    aDifferentManagerMustCloseYourPunch: "Otro gerente debe cerrar tu marcación.",
+    aDifferentManagerMustCloseYourPunch: "Otro gerente debe cerrar tu ponche.",
     // src/components/management-close-form.tsx:14
-    thisPunchChangedRefreshAndReviewItAgain: "La marcación cambió. Actualiza la página y revísala de nuevo.",
+    thisPunchChangedRefreshAndReviewItAgain: "El ponche cambió. Actualiza la página y revísalo de nuevo.",
     // src/components/management-close-form.tsx:14
     chooseAnEndAfterTheRecordedStartAndBreaksNo: "Elige una hora de salida posterior a la entrada y a los descansos registrados. Puede ser hasta la hora actual.",
     // src/components/management-close-form.tsx:14
@@ -97,29 +97,29 @@ export const copy = {
     // src/components/management-close-form.tsx:74
     unconfirmed: "Por confirmar",
     // src/components/management-close-form.tsx:78
-    punchClosedTheSelectedEndTimeAndReasonAreRecorded: "Marcación cerrada. Se registraron la hora de salida elegida y el motivo.",
+    punchClosedTheSelectedEndTimeAndReasonAreRecorded: "Ponche cerrado. Se registraron la hora de salida elegida y el motivo.",
     // src/components/management-close-form.tsx:79
-    reviewTheCurrentPunchBeforeContinuing: "Revisa la marcación actual antes de continuar.",
+    reviewTheCurrentPunchBeforeContinuing: "Revisa el ponche actual antes de continuar.",
     // src/components/management-close-form.tsx:79
-    theOriginalOperationConflictsRefreshAndReviewTheCurrentPunch: "Hay un conflicto con el cierre original. Actualiza la página y revisa la marcación actual.",
+    theOriginalOperationConflictsRefreshAndReviewTheCurrentPunch: "Hay un conflicto con el cierre original. Actualiza la página y revisa el ponche actual.",
     // src/components/management-close-form.tsx:81
     theResultIsUnconfirmedRetryTheSameCloseToCheck: "El resultado está por confirmar. Reintenta el mismo cierre para verificar qué se guardó.",
     // src/components/management-close-form.tsx:86
-    aNewPunchIsOpenReviewItsCurrentTimeBefore: "Hay una nueva marcación abierta. Revisa su hora actual antes de otro cierre.",
+    aNewPunchIsOpenReviewItsCurrentTimeBefore: "Hay un nuevo ponche abierto. Revisa su hora actual antes de otro cierre.",
     // src/components/management-close-form.tsx:86
-    reviewNewOpenPunch: "Revisar la nueva marcación",
+    reviewNewOpenPunch: "Revisar el nuevo ponche",
     // src/components/management-close-form.tsx:89
-    closeOpenPunch: "Cerrar marcación abierta",
+    closeOpenPunch: "Cerrar ponche abierto",
     // src/components/management-close-form.tsx:94
     confirmOriginalClose: "Confirmar el cierre original",
     // src/components/management-close-form.tsx:97
     employeenameLocationNameStartedClockInAt: "{employeeName} · {locationName}. Entrada: {clockInAt}",
     // src/components/management-close-form.tsx:98
-    thisPunchIsAlreadyClosed: "Esta marcación ya está cerrada.",
+    thisPunchIsAlreadyClosed: "Este ponche ya está cerrado.",
     // src/components/management-close-form.tsx:98
-    currentPunchInformationIsUnavailable: "La información de la marcación no está disponible.",
+    currentPunchInformationIsUnavailable: "La información del ponche no está disponible.",
     // src/components/management-close-form.tsx:98
-    checkingCurrentPunch: "Revisando la marcación actual…",
+    checkingCurrentPunch: "Revisando el ponche actual…",
     // src/components/management-close-form.tsx:99
     theOpenBreakEndsAtTheSameSelectedTime: "El descanso abierto termina a la misma hora.",
     // src/components/management-close-form.tsx:102
@@ -129,7 +129,7 @@ export const copy = {
     // src/components/management-close-form.tsx:104
     iVerifiedThisEndTimeAndReason: "Verifiqué esta hora de salida y la razón.",
     // src/components/management-close-form.tsx:108
-    refreshCurrentPunch: "Actualizar la marcación",
+    refreshCurrentPunch: "Actualizar el ponche",
     // src/components/management-close-form.tsx:110
     cancelClose: "Cancelar cierre",
     // src/components/management-close-form.tsx:111
@@ -141,6 +141,6 @@ export const copy = {
     // src/components/management-close-form.tsx:22
     anEarlierCloseIsUnconfirmedCheckItsOriginalSavedResult: "Un cierre anterior está por confirmar. Verifica el resultado del cierre original.",
     // src/components/management-close-form.tsx:86
-    checkingTheNewPunch: "Verificando la nueva marcación…",
+    checkingTheNewPunch: "Verificando el nuevo ponche…",
   },
 } as const;

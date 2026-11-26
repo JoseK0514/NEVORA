@@ -51,7 +51,7 @@ const es: typeof en = {
   invitationExpired: 'Invitación vencida', notInvited: 'Aún sin invitar', noPin: 'Aún sin PIN de Clocker',
   notAvailable: 'No disponible', scheduleUnread: 'No pudimos leer todo el horario',
   noPhone: 'Sin número de teléfono', call: (name: string) => `Llamar a ${name}`, message: (name: string) => `Enviar mensaje a ${name}`,
-  hours: 'Horas', scheduledToday: 'Programado hoy', scheduledWeek: 'Programado esta semana', clockedWeek: 'Marcado esta semana', includesBreaks: 'Incluye descansos',
+  hours: 'Horas', scheduledToday: 'Programado hoy', scheduledWeek: 'Programado esta semana', clockedWeek: 'Ponchado esta semana', includesBreaks: 'Incluye descansos',
   work: 'Trabajo', shifts: 'Turnos', timecards: 'Tarjetas de tiempo', availability: 'Disponibilidad', restrictions: 'Cuándo se le puede programar',
   payRate: 'Tarifa de pago', timeOffBalance: 'Balance de días libres',
   accessTitle: 'Acceso e inicio de sesión', access: 'Acceso', role: 'Rol', account: 'Cuenta', employeeId: 'ID de empleado',

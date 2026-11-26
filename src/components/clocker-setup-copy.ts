@@ -45,7 +45,7 @@ export const copy = {
     // src/components/clocker-setup.tsx:167
     deviceIsConnectedToThisLocation: "{device} está conectada a esta localidad.",
     // src/components/clocker-setup.tsx:170
-    thisTabletBecomesThisLocationsTimeClock: "Tu equipo usará esta tableta para marcar en esta localidad.",
+    thisTabletBecomesThisLocationsTimeClock: "Tu equipo usará esta tableta para ponchar en esta localidad.",
     // src/components/clocker-setup.tsx:190
     noConnection: "Sin conexión",
     // src/components/clocker-setup.tsx:190

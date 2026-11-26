@@ -3,7 +3,7 @@ import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (Nov 23, 2026): the older correction history and request form (hours-corrections.tsx, a Lead's own
  * time) in English and Puerto Rico Spanish (docs/design/voice.md: tú, sentence case, the glossary: "Solicitud de
- * corrección", "Marcación", "Descanso", "gerente", "Tarjeta de tiempo", "localidad"; buttons in the infinitive). A
+ * corrección", "Ponche", "Descanso", "gerente", "Tarjeta de tiempo", "localidad"; buttons in the infinitive). A
  * request ("solicitud") is feminine, so its states agree with it. The form's field errors come from
  * src/lib/employee-hours-draft.ts in English; `draftError` gives their Spanish and leaves any other text as it is. */
 import {timeZoneLabel} from '@/lib/time-zone-label';

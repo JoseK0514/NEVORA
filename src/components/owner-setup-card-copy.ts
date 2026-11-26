@@ -87,7 +87,7 @@ export const copy = {
     // src/components/owner-setup-card.tsx:102
     detail: 'Siguiente, {label}',
     // src/components/owner-setup-card.tsx:128
-    step: 'crea los PIN para marcar',
+    step: 'crea los PIN para ponchar',
     // src/components/owner-setup-card.tsx:141
     detailLabel: '{done} de {itemsCount} hecho · Siguiente: {step}',
   },

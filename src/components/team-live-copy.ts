@@ -17,7 +17,7 @@ export const copy = {
   },
   es: {
     // src/lib/action-center/present.ts:159, src/components/team-live.tsx:69
-    notClockedIn: "Sin marcar entrada",
+    notClockedIn: "Sin ponchar",
     // src/components/team-live.tsx:69
     hMin: "{notClockedIn} · {hours} h {minutes} min",
     // src/components/team-live.tsx:69

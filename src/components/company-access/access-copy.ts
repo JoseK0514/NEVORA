@@ -345,7 +345,7 @@ const es: AccessCopy = {
   person: {
     unavailable: 'Perfil del empleado no disponible', notAvailable: 'No disponible', scheduleUnread: 'No pudimos leer todo el horario',
     team: 'Equipo', hours: 'Horas', scheduledToday: 'Programadas hoy', scheduledWeek: 'Programadas esta semana',
-    clockedWeek: 'Marcadas esta semana', includesBreaks: 'Incluye descansos', work: 'Trabajo', shifts: 'Turnos',
+    clockedWeek: 'Ponchadas esta semana', includesBreaks: 'Incluye descansos', work: 'Trabajo', shifts: 'Turnos',
   },
   newEmployee: {
     title: 'Añadir empleado', team: 'Equipo', step: n => `Paso ${n} de 2`, details: 'Sus datos', where: 'Dónde trabaja',
@@ -354,7 +354,7 @@ const es: AccessCopy = {
     addedLine: 'Abre su perfil para revisar sus datos y gestionar la invitación a su cuenta.', openProfile: 'Abrir perfil', addAnother: 'Añadir otro',
     firstName: 'Nombre', firstMissing: 'Escribe un nombre', lastName: 'Apellido', lastMissing: 'Escribe un apellido',
     phone: 'Celular', phoneMissing: 'Escribe un número de celular',
-    email: 'Correo (opcional)', emailHelp: 'Sin correo, esta persona puede marcar en la tableta, pero no puede iniciar sesión en NEVORA.', emailPlaceholder: 'nombre@ejemplo.com',
+    email: 'Correo (opcional)', emailHelp: 'Sin correo, esta persona puede ponchar en la tableta, pero no puede iniciar sesión en NEVORA.', emailPlaceholder: 'nombre@ejemplo.com',
     role: 'Rol', roles: { EMPLOYEE: 'Empleado', LEAD: 'Líder de turno', MANAGER: 'Gerente', OWNER: 'Dueño' },
     location: 'Localidad', chooseLocation: 'Elige una localidad', ownerAssigns: 'Un dueño asigna el acceso de gerencia después.',
     id: 'ID de empleado', idHelp: 'No lo puedes cambiar después.', idPlaceholder: 'P. ej., 10482', idMissing: 'Escribe un ID de empleado',

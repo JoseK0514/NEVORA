@@ -3,7 +3,7 @@ import { copy as approvedHours } from '../hours-copy';
 /* Signed-in Spanish (Nov 23, 2026): the Employee Time and Hours pages' own words (hours.tsx: titles, back links, loading
  * and redirect lines, and the messages it hands to the shared Time screens) in English and Puerto Rico Spanish
  * (docs/design/voice.md: tú, sentence case, the glossary: "Tarjeta de tiempo", "Solicitud de corrección", "gerente",
- * "Marcación", "Descanso", "Pago"; buttons in the infinitive). The page names its tab "Time" or "Hours" and Pay's link
+ * "Ponche", "Descanso", "Pago"; buttons in the infinitive). The page names its tab "Time" or "Hours" and Pay's link
  * "Pay"; `tabName` gives those names in the person's language and leaves any other name as it is. */
 const namesEs: Record<string, string> = {Time: 'Tiempo', Hours: 'Horas', Pay: 'Pago'};
 const en = {

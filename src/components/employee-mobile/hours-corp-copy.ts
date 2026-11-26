@@ -349,17 +349,17 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:86
     clockedInAtClockInAt: "Entrada: {clockInAt}",
     // src/components/employee-mobile/hours-corp.tsx:86
-    notClockedIn: "Sin marcar entrada",
+    notClockedIn: "Sin ponchar",
     // src/components/employee-mobile/hours-corp.tsx:87
     locationnameClockedInAtClockInAt: "{locationName} · Entrada: {clockInAt}",
     // src/components/employee-mobile/hours-corp.tsx:87
     locationnameElapsedSecondsSoFar: "{locationName} · {elapsedSeconds} hasta ahora",
     // src/components/employee-mobile/hours-corp.tsx:87
-    clockInOnTablet: "Marca tu entrada en {tablet}.",
+    clockInOnTablet: "Poncha tu entrada en {tablet}.",
     // src/components/employee-mobile/hours-corp.tsx:88
     endYourBreakOnYourLocationSTablet: "Termina tu descanso en la tableta de tu localidad.",
     // src/components/employee-mobile/hours-corp.tsx:88
-    takeBreaksAndClockOutOnYourLocationSTablet: "Toma tus descansos y marca tu salida en la tableta de tu localidad.",
+    takeBreaksAndClockOutOnYourLocationSTablet: "Toma tus descansos y poncha tu salida en la tableta de tu localidad.",
     // src/components/employee-mobile/hours-corp.tsx:91
     thisWeek: "Esta semana · ",
     // src/components/employee-mobile/hours-corp.tsx:93
@@ -369,7 +369,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:97
     noTimeRecordedYetThisWeek: "Todavía no hay tiempo registrado esta semana",
     // src/components/employee-mobile/hours-corp.tsx:98
-    fixAMissedPunch: "Corregir una marcación",
+    fixAMissedPunch: "Corregir un ponche",
     // src/components/employee-mobile/hours-corp.tsx:101
     hoursIncludeBreaks: "Las horas incluyen los descansos.",
     // src/components/employee-mobile/hours-corp.tsx:109
@@ -379,7 +379,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:113
     totalSoFar: "{total} hasta ahora",
     // src/components/employee-mobile/hours-corp.tsx:115
-    punches: "Marcaciones",
+    punches: "Ponches",
     // src/components/employee-mobile/hours-corp.tsx:118
     location: "Localidad",
     // src/components/employee-mobile/hours-corp.tsx:119
@@ -447,9 +447,9 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:214
     breaktotalOfBreaks: "{breakTotal} de descansos",
     // src/components/employee-mobile/hours-corp.tsx:219
-    noDevicePunchWasCreatedForThisTime: "No se creó una marcación en el dispositivo para este tiempo.",
+    noDevicePunchWasCreatedForThisTime: "No se creó un ponche en el dispositivo para este tiempo.",
     // src/components/employee-mobile/hours-corp.tsx:219
-    yourOriginalPunchesAreKept: "Tus marcaciones originales se conservan.",
+    yourOriginalPunchesAreKept: "Tus ponches originales se conservan.",
     // src/components/employee-mobile/hours-corp.tsx:224
     waiting: "En espera",
     // src/components/employee-mobile/hours-corp.tsx:224
@@ -475,7 +475,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:240
     showingYourRequestsCountMostRecentRequests: "Se muestran tus {requestsCount} solicitudes más recientes.",
     // src/components/employee-mobile/hours-corp.tsx:241
-    toFixADayYouAlreadyClockedOpenItFrom: "Para corregir un día que ya marcaste, ábrelo desde Tiempo.",
+    toFixADayYouAlreadyClockedOpenItFrom: "Para corregir un día que ya ponchaste, ábrelo desde Tiempo.",
     // src/components/employee-mobile/hours-corp.tsx:247
     breakBreakName: "Descanso · {breakName}",
     // src/components/employee-mobile/hours-corp.tsx:248
@@ -483,7 +483,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:249
     recorded: "Registrado",
     // src/components/employee-mobile/hours-corp.tsx:249
-    noPunchesRecorded: "Sin marcaciones registradas",
+    noPunchesRecorded: "Sin ponches registrados",
     // src/components/employee-mobile/hours-corp.tsx:250
     youAskedFor: "Lo que pediste",
     // src/components/employee-mobile/hours-corp.tsx:251
@@ -505,7 +505,7 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:262
     declinedDecidedAt: "Rechazada · {decidedAt}",
     // src/components/employee-mobile/hours-corp.tsx:264
-    yourManagerReviewsThisRequestYourOriginalPunchesStayUnchanged: "Tu gerente revisa esta solicitud. Tus marcaciones originales no cambian.",
+    yourManagerReviewsThisRequestYourOriginalPunchesStayUnchanged: "Tu gerente revisa esta solicitud. Tus ponches originales no cambian.",
     // src/components/employee-mobile/hours-corp.tsx:265
     yourTimecardChangedAfterThisRequestCheckTheCurrentTimes: "Tu tarjeta de tiempo cambió después de esta solicitud. Revisa las horas actuales antes de enviar otra solicitud.",
     // src/components/employee-mobile/hours-corp.tsx:266
@@ -613,11 +613,11 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:92
     breaks: "Descansos",
     // src/components/employee-mobile/hours-corp.tsx:215
-    clockIn: "Marcar entrada",
+    clockIn: "Ponchar entrada",
     // src/components/employee-mobile/hours-corp.tsx:134
     soFar: " hasta ahora",
     // src/components/employee-mobile/hours-corp.tsx:217
-    clockOut: "Marcar salida",
+    clockOut: "Ponchar salida",
     // src/components/employee-mobile/hours-corp.tsx:217
     notYet: "Todavía no",
     // src/components/employee-mobile/hours-corp.tsx:216
@@ -625,9 +625,9 @@ export const copy = {
     // src/components/employee-mobile/hours-corp.tsx:233
     decided: "Decididas",
     // src/components/employee-mobile/hours-corp.tsx:351
-    aMissedWholeShiftWithNoClockInOrClock: "Un turno completo sin marcar, sin entrada ni salida",
+    aMissedWholeShiftWithNoClockInOrClock: "Un turno completo sin ponchar, sin entrada ni salida",
     // src/components/employee-mobile/hours-corp.tsx:351
-    changeYourApprovedTimeForAMissedShift: "Cambia tu tiempo aprobado de un turno sin marcar",
+    changeYourApprovedTimeForAMissedShift: "Cambia tu tiempo aprobado de un turno sin ponchar",
     // src/components/employee-mobile/hours-corp.tsx:359
     chooseACurrentlyAvailableWorkLocation: "Elige una localidad de trabajo disponible.",
   },

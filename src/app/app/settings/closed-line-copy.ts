@@ -39,7 +39,7 @@ export const copy = {
   },
   es: {
     // src/app/app/settings/closed-line.tsx:8
-    punchPhotosAre: "Las fotos de marcación forman",
+    punchPhotosAre: "Las fotos de ponche forman",
     // src/app/app/settings/closed-line.tsx:9
     clockerPinsAre: "Los PIN de Clocker forman",
     // src/app/app/settings/closed-line.tsx:10

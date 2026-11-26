@@ -159,7 +159,7 @@ export const copy = {
     // src/components/owner-advisor/workflows.tsx:112
     superseded: "Existe una corrida de corrección posterior.",
     // src/components/owner-advisor/workflows.tsx:116
-    footer: "Revisa las correcciones y la población en Tarjetas de tiempo; las reglas y los bloqueos financieros en Nómina. No se infieren marcaciones ni tiempo compensado.",
+    footer: "Revisa las correcciones y la población en Tarjetas de tiempo; las reglas y los bloqueos financieros en Nómina. No se infieren ponches ni tiempo compensado.",
     // src/components/owner-advisor/workflows.tsx:61
     spanish: "Español",
     // src/components/owner-advisor/workflows.tsx:88

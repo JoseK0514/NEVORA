@@ -161,7 +161,7 @@ export const copy = {
     // src/components/brand-editor.tsx:136
     text800Am400Pm: "8:00 a. m. – 4:00 p. m.",
     // src/components/brand-editor.tsx:137
-    clockInOnThePlaceTablet: "Marca entrada en la tableta de {place}",
+    clockInOnThePlaceTablet: "Poncha entrada en la tableta de {place}",
     // src/components/brand-editor.tsx:142
     close: "Cerrar",
     // src/components/brand-editor.tsx:144

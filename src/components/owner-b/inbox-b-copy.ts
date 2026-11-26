@@ -149,7 +149,7 @@ export const copy = {
     // src/components/owner-b/inbox-b.tsx:155
     clockInsTitle: 'No pudimos verificar las entradas ahora',
     // src/components/owner-b/inbox-b.tsx:155
-    clockInsLine: 'Puede que falten personas que no han marcado entrada.',
+    clockInsLine: 'Puede que falten personas que no han ponchado entrada.',
     // src/components/owner-b/inbox-b.tsx:161
     allSet: 'Estás al día',
     // src/components/owner-b/inbox-b.tsx:161

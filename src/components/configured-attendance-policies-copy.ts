@@ -111,7 +111,7 @@ export const copy = {
     // src/components/configured-attendance-policies.tsx:7
     noClockIn: 'Sin registro de entrada',
     // src/components/configured-attendance-policies.tsx:8
-    noClockOut: 'Sin marcar salida',
+    noClockOut: 'Sin ponchar salida',
     // src/components/configured-attendance-policies.tsx:9
     lateness: 'Tardanza',
     // src/components/configured-attendance-policies.tsx:10

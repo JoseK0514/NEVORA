@@ -105,9 +105,9 @@ export const copy = {
     // src/components/manager-time-corrections.tsx:27
     weCouldnTConfirmYourDecisionTryAgainItWon: "No pudimos confirmar tu decisión. Inténtalo de nuevo; no se aplicará dos veces.",
     // src/components/manager-time-corrections.tsx:28
-    correctionApprovedTheOriginalRecordedPunchRemainsUnchanged: "Corrección aprobada. La marcación original registrada no cambia.",
+    correctionApprovedTheOriginalRecordedPunchRemainsUnchanged: "Corrección aprobada. El ponche original registrado no cambia.",
     // src/components/manager-time-corrections.tsx:29
-    correctionDeclinedTheOriginalRecordedPunchRemainsUnchanged: "Corrección rechazada. La marcación original registrada no cambia.",
+    correctionDeclinedTheOriginalRecordedPunchRemainsUnchanged: "Corrección rechazada. El ponche original registrado no cambia.",
     // src/components/manager-time-corrections.tsx:38
     correctionApproved: "Corrección aprobada",
     // src/components/manager-time-corrections.tsx:38
@@ -205,7 +205,7 @@ export const copy = {
 
 /* Signed-in Spanish (Nov 23, 2026): the Time corrections queue (Owner and Manager) in English and Puerto Rico Spanish.
  * English is word for word what the queue said before. The Spanish follows docs/design/voice.md (tú, the glossary:
- * "Solicitud de corrección", "Marcación", "Tarjeta de tiempo", "Aprobar", "Rechazar") and reads the same as the
+ * "Solicitud de corrección", "Ponche", "Tarjeta de tiempo", "Aprobar", "Rechazar") and reads the same as the
  * employee's side (employee-time-copy.ts) and the delegated form (delegated-time-correction-copy.ts). */
 import type {PortalLang} from '@/lib/i18n/portal-lang';
 import {timeZoneLabel} from '@/lib/time-zone-label';

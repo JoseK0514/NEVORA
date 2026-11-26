@@ -52,6 +52,6 @@ describe('Punch photos', () => {
   });
   it('Spanish leaks no English sentence', () => {
     expect(englishIn(render(false, 'es'))).toEqual([]); expect(englishIn(render(true, 'es'))).toEqual([]);
-    expect(render(false, 'es')).toContain('Activa Tomar fotos de marcación para elegirlos.');
+    expect(render(false, 'es')).toContain('Activa Tomar fotos de ponche para elegirlos.');
   });
 });

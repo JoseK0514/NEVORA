@@ -3,8 +3,8 @@ import { copy as approvedEmployeeTimeCorrections } from './employee-time-correct
 import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (Nov 23, 2026): the words of the Employee Time panel (My time), its entries and the correction
- * requests, in English and Puerto Rico Spanish (docs/design/voice.md: tú, the glossary: "Marcación", "En turno",
- * "Tarjeta de tiempo", "Solicitud de corrección", "Corregir una marcación"). English is the text the screens showed
+ * requests, in English and Puerto Rico Spanish (docs/design/voice.md: tú, the glossary: "Ponche", "En turno",
+ * "Tarjeta de tiempo", "Solicitud de corrección", "Corregir un ponche"). English is the text the screens showed
  * before, word for word. The components read the person's language with usePortalLang(). */
 import type {PortalLang} from '@/lib/i18n/portal-lang';
 
@@ -83,7 +83,7 @@ const es: typeof en = {
   signIn: approvedEmployeeTimePanel.es.signIn, tryAgain: approvedEmployeeTimePanel.es.tryAgain, refresh: approvedEmployeeTimePanel.es.refresh,
   tryAgainLabel: approvedEmployeeTimePanel.es.tryAgainToLoadYourTimeRecords, refreshingLabel: approvedEmployeeTimePanel.es.refreshingRecordedTime, refreshLabel: approvedEmployeeTimePanel.es.refreshRecordedTime,
   myTime: approvedEmployeeTimePanel.es.myTime2, clockStatus: approvedEmployeeTimePanel.es.clockStatus, currentStatus: approvedEmployeeTimePanel.es.currentStatus,
-  clockedInAt: 'Marcaste entrada a las', sinceClockIn: approvedEmployeeTimePanel.es.sinceClockIn, onBreakSuffix: approvedEmployeeTimePanel.es.onBreak2,
+  clockedInAt: 'Ponchaste entrada a las', sinceClockIn: approvedEmployeeTimePanel.es.sinceClockIn, onBreakSuffix: approvedEmployeeTimePanel.es.onBreak2,
   noOpenEntry: approvedEmployeeTimePanel.es.noOpenTimeEntryWasRecordedAtTheLastCheck,
   returnOnline: approvedEmployeeTimePanel.es.returnOnlineToCheckYourLatestRecords, signInAgain: approvedEmployeeTimePanel.es.signInAgainToSeeYourTime,
   checkConnection: approvedEmployeeTimePanel.es.checkYourConnectionThenTryAgain, checkingPunches: approvedEmployeeTimePanel.es.checkingYourActualPunchesAndBreaks,

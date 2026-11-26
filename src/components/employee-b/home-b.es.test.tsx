@@ -29,7 +29,7 @@ const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/[  ]/g,
 
 it('Employee Home in Spanish: greeting, figures, the next shift, shortcuts and Your week', () => {
   const words = text(home(false));
-  for (const es of ['Hola de nuevo, Ana', 'Día de pago programado', 'en 10 días', 'Próximo turno', 'Mañana', 'Marca entrada en la tableta de Calle Loíza', 'Ahí también marcas descansos y salida',
+  for (const es of ['Hola de nuevo, Ana', 'Día de pago programado', 'en 10 días', 'Próximo turno', 'Mañana', 'Poncha entrada en la tableta de Calle Loíza', 'Ahí también ponchas descansos y salida',
     'Detalles del turno', 'Días libres', 'No puedo trabajar', 'Cambiar turno', 'Corregir mi tiempo', 'Tu semana', 'Programadas', 'Próximos turnos', 'Ver todos', 'Todo listo. No tienes nada pendiente ahora.',
     '9:00 a. m.', '5:00 p. m.', 'Líder de turno', '16–22 nov']) expect(words, es).toContain(es);
   for (const en of ['Welcome back', 'Scheduled payday', 'Next shift', 'Clock in on the', 'Shift details', 'Your week', 'Coming up', 'See all', 'You’re all set', ' AM', ' PM', 'Wed']) expect(words, en).not.toContain(en);

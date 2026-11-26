@@ -249,7 +249,7 @@ export const copy = {
     // src/components/manager-inbox-corp.tsx:229
     open: ' 1 $ abierto',
     // src/components/manager-inbox-corp.tsx:232
-    missedClockIns: 'Sin marcar entrada',
+    missedClockIns: 'Sin ponchar',
     // src/components/manager-inbox-corp.tsx:233
     needsAttentionNow: 'Necesita atención ahora',
     // src/components/manager-inbox-corp.tsx:236, src/components/manager-inbox-corp.tsx:260

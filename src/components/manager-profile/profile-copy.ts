@@ -250,7 +250,7 @@ export const topicCopy = {
     // src/lib/management-profile.ts:5
     'unable-to-work': {label:'No puedo trabajar',detail:'Cuando alguien no puede trabajar su turno'},
     // src/lib/management-profile.ts:6
-    'clock-review': {label:'Entradas por revisar',detail:'Cuando una marcación de entrada requiere revisión'},
+    'clock-review': {label:'Entradas por revisar',detail:'Cuando un ponche de entrada requiere revisión'},
     // src/lib/management-profile.ts:7
     'payroll-ready': {label:'Nómina por revisar',detail:'Cuando un período de pago está listo para revisar'},
   },

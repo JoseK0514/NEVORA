@@ -19,9 +19,9 @@ it('keeps feature copy keys complete in both languages', () => {
     expect(keys(table.es)).toEqual(keys(table.en));
 });
 it('preserves English attendance and uses the approved Spanish row label', () => {
-  expect(TEAM_COPY.es.notClockedInFilter).toBe('Sin marcar');
+  expect(TEAM_COPY.es.notClockedInFilter).toBe('Sin ponchar');
   expect(notClockedInText(42)).toBe('Not clocked in · 42 min');
-  expect(notClockedInText(75, 'es')).toBe('Sin marcar entrada · 1 h 15 min');
+  expect(notClockedInText(75, 'es')).toBe('Sin ponchar · 1 h 15 min');
 });
 it('renders approved photo ID wording without changing the submitted verification statement', () => {
   const html = renderToStaticMarkup(<PortalLangProvider lang="es"><AssistedRecovery hydrated busy={false} message="" issued={null} onSubmit={rs.fn()} onStartAgain={rs.fn()}/></PortalLangProvider>);

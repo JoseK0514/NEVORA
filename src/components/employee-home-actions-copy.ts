@@ -107,7 +107,7 @@ export const copy = {
     // src/components/employee-home-actions.tsx:50
     scheduledNow: 'Turno en curso',
     // src/components/employee-home-actions.tsx:50
-    clockStatusBelowPlain: 'El estado de tu marcación, abajo, indica si estás en turno.',
+    clockStatusBelowPlain: 'El estado de tu ponche, abajo, indica si estás en turno.',
     // src/components/employee-home-actions.tsx:52
     homePaused: 'Inicio en pausa. Vuelve a conectarte para actualizar.',
     // src/components/employee-home-actions.tsx:52

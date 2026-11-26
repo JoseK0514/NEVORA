@@ -113,7 +113,7 @@ export const copy = {
     // src/components/employee-mobile/hours.tsx:54
     yourRequestsAndManagerDecisions: "Tus solicitudes y las decisiones de tu gerente",
     // src/components/employee-mobile/hours.tsx:54
-    yourPunchesBreaksAndRecordedTime: "Tus marcaciones, descansos y tiempo registrado",
+    yourPunchesBreaksAndRecordedTime: "Tus ponches, descansos y tiempo registrado",
     // src/components/employee-mobile/hours.tsx:65
     timecardDay: "Día de la tarjeta",
     // src/components/employee-mobile/hours.tsx:66

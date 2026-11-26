@@ -85,7 +85,7 @@ export const copy = {
     // src/app/app/help/page.tsx:72
     swapOrGiveAway: 'Cambiar o ceder un turno',
     // src/app/app/help/page.tsx:73
-    fixMissed: 'Corregir una marcación',
+    fixMissed: 'Corregir un ponche',
     // src/app/app/help/page.tsx:74
     seePayStatement: 'Vea tu estado de pago',
     // src/app/app/help/page.tsx:92

@@ -593,7 +593,7 @@ export const copy = {
     // src/components/employee-b/account-b-client.tsx:281
     kept: 'Qué guarda {workplace}',
     // src/components/employee-b/account-b-client.tsx:283
-    companyWorkspaceStaysOpenRestTeam: 'El espacio de trabajo de tu empresa permanece abierto para el resto de tu equipo. Para cerrarlo, envía un correo electrónico a {support}',
+    companyWorkspaceStaysOpenRestTeam: 'Tu empresa permanece abierta en NEVORA para el resto de tu equipo. Para cerrarla, envía un correo electrónico a {support}',
     // src/components/employee-b/account-b-client.tsx:284
     mayBeKept: 'Qué se puede guardar',
     // src/components/employee-b/account-b-client.tsx:299

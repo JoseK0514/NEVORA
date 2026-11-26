@@ -20,7 +20,7 @@ export type WorkflowEvidence = { legalResearch?: import("./legal-research").Lega
   businessEvidence?: import('./business/model-contracts').BusinessModelEvidence[]; weeklyPlans?: import('./weekly-contracts').WeeklyModelComparison };
 export const issueLabels: Record<string, [string, string]> = {
   period_open: ["The period has not ended.", "El período no ha terminado."],
-  open_entry: ["A recorded entry has no clock-out.", "Un registro no tiene salida marcada."],
+  open_entry: ["A recorded entry has no clock-out.", "Un registro no tiene ponche de salida."],
   open_break: ["A recorded break has no end.", "Un descanso registrado no tiene fin."],
   pending_correction: ["A time correction awaits review.", "Una corrección de tiempo espera revisión."],
   overlapping_time: ["Recorded entries overlap.", "Hay registros de tiempo superpuestos."],

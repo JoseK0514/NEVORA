@@ -50,7 +50,7 @@ it('names the screens in both languages without the words the review found wrong
  expect(clockerText('es','Your Owner can find this in Clocker recovery.')).toBe('El dueño puede encontrarla en Recuperación de Clocker.');
  // One Spanish name for the product, and "personal" for the people who clock in.
  expect(values.join(' ')).not.toContain('reloj de asistencia');
- expect(clockerText('es','{device} is ready. Your team can clock in now.')).toContain('Tu personal ya puede marcar.');
+ expect(clockerText('es','{device} is ready. Your team can clock in now.')).toContain('Tu personal ya puede ponchar.');
  // One verb for a set-up tablet.
  expect(clockerText('es','This shift was started at another location. Use the connected tablet at that location.')).toBe('Este turno comenzó en otra ubicación. Usa la tableta conectada de esa ubicación.');
  for(const value of values)expect(value).not.toMatch(/tableta[^.]*registrada/);expect(keys.join(' ')).not.toContain('registered Clocker');

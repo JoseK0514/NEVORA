@@ -93,7 +93,7 @@ export function correctionLine(correction: NonNullable<ActionItem['correction']>
   if (wasStart === null && wasEnd === null) return `${day} · ${lang === 'es' ? 'Añadir' : 'Add'} ${asked}`;
   // Only a start recorded: an open entry. A recorded end with no start, or an end not after the start, can't be described
   // truthfully, so the line gives the requested time alone.
-  if (wasStart !== null && wasEnd === null) return `${day} · ${asked}, ${lang === 'es' ? 'antes' : 'was'} ${time(wasStart)} ${lang === 'es' ? 'sin marcar salida' : 'with no clock-out'}`;
+  if (wasStart !== null && wasEnd === null) return `${day} · ${asked}, ${lang === 'es' ? 'antes' : 'was'} ${time(wasStart)} ${lang === 'es' ? 'sin ponchar salida' : 'with no clock-out'}`;
   if (wasStart === null || wasEnd === null || wasEnd <= wasStart) return `${day} · ${asked}`;
   const change = Math.round(((askedEnd - askedStart) - (wasEnd - wasStart)) / 60_000);
   return `${day} · ${asked}, ${lang === 'es' ? 'antes' : 'was'} ${time(wasStart)} – ${time(wasEnd)} · ${change === 0 ? lang === 'es' ? 'misma duración' : 'same length' : `${change > 0 ? '+' : '−'}${lengthText(Math.abs(change))}`}`;
@@ -182,7 +182,7 @@ export function groupHeading(type: ActionItem['type'], count: number, title: str
  * the shift's status, so a shift still in progress is never called missed. */
 export const ATTENDANCE_WORDS = {notClockedIn: 'Not clocked in', late: 'Clocked in late', missed: 'Missed'} as const;
 /** Signed-in Spanish (es-rest R2): the same words in Puerto Rico Spanish (Team and Home already say these). */
-export const ATTENDANCE_WORDS_ES: Record<keyof typeof ATTENDANCE_WORDS, string> = {notClockedIn: 'Sin marcar entrada', late: 'Marcó entrada tarde', missed: 'Sin marcar'};
+export const ATTENDANCE_WORDS_ES: Record<keyof typeof ATTENDANCE_WORDS, string> = {notClockedIn: 'Sin ponchar', late: 'Ponchó entrada tarde', missed: 'No ponchó entrada'};
 export const attendanceWords = (lang: 'en' | 'es' = 'en'): Record<keyof typeof ATTENDANCE_WORDS, string> => lang === 'es' ? ATTENDANCE_WORDS_ES : ATTENDANCE_WORDS;
 export function splitNoClockIn<T extends {status: string}>(shifts: readonly T[]): {running: T[]; ended: T[]} {
   return {running: shifts.filter(shift => shift.status !== 'no_punches'), ended: shifts.filter(shift => shift.status === 'no_punches')};

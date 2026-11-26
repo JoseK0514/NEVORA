@@ -193,7 +193,7 @@ export type AdvisorCopy = typeof en;
  * "localidad"; the lib keeps its own copy for the server). */
 const ES_ISSUES: Record<string, string> = {
   period_open: "El período no ha terminado.",
-  open_entry: "Un registro no tiene salida marcada.",
+  open_entry: "Un registro no tiene ponche de salida.",
   open_break: "Un descanso registrado no tiene fin.",
   pending_correction: "Una corrección de tiempo espera revisión.",
   overlapping_time: "Hay registros de tiempo superpuestos.",

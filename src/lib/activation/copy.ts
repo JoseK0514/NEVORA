@@ -41,7 +41,7 @@ export const activationCopy = {
       ROSTER: 'Añade a alguien a tu equipo',
       LOCATION_AND_RULES: 'Configura las ubicaciones y las reglas de personal',
       FIRST_SCHEDULE_PUBLISHED: 'Publica tu primer horario',
-      TABLET_SETUP: 'Registra una tableta para marcar ponches',
+      TABLET_SETUP: 'Registra una tableta para ponchar',
       FIRST_TIMECARD_REVIEW: 'Revisa tu primera tarjeta de tiempo',
     },
   },

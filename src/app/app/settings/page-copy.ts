@@ -107,7 +107,7 @@ export const copy = {
     // src/app/app/settings/page.tsx:98
     clockerPins: "PIN de Clocker",
     // src/app/app/settings/page.tsx:99
-    punchPhotos: "Fotos de marcación",
+    punchPhotos: "Fotos de ponche",
     // src/app/app/settings/page.tsx:100
     shiftMatching: "Asociación con turnos",
     // src/app/app/settings/page.tsx:102

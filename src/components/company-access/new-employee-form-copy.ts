@@ -109,7 +109,7 @@ export const copy = {
     // src/components/company-access/new-employee-form.tsx:67
     email: "Correo (opcional)",
     // src/components/company-access/new-employee-form.tsx:67
-    withoutEmailPersonCanClockIn: "Sin correo, esta persona puede marcar en la tableta, pero no puede iniciar sesión en NEVORA.",
+    withoutEmailPersonCanClockIn: "Sin correo, esta persona puede ponchar en la tableta, pero no puede iniciar sesión en NEVORA.",
     // src/components/company-access/new-employee-form.tsx:67
     nameExampleCom: "nombre@ejemplo.com",
     // src/components/company-access/new-employee-form.tsx:69

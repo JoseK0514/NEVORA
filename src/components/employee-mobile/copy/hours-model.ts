@@ -3,7 +3,7 @@ import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (Nov 23, 2026): the words hours-model.ts returns to the Employee Time pages (hours-corp.tsx) and
  * their Direction B phone screens (employee-b/time-b.tsx), in English and Puerto Rico Spanish (docs/design/voice.md:
- * tú, sentence case, the glossary: "Tarjeta de tiempo", "Descanso", "Marcación", "gerente"). The helpers take a trailing
+ * tú, sentence case, the glossary: "Tarjeta de tiempo", "Descanso", "Ponche", "gerente"). The helpers take a trailing
  * language that defaults to English, so callers outside employee-mobile keep their English byte for byte. A timecard
  * ("tarjeta") and a correction request ("solicitud") are feminine, so their states agree with them. */
 const en = {

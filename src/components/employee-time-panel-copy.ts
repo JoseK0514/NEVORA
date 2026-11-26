@@ -185,11 +185,11 @@ export const copy = {
     // src/components/employee-time-panel.tsx:67
     myTime: "Mi tiempo ",
     // src/components/employee-time-panel.tsx:70
-    clockStatus: "Estado de marcación",
+    clockStatus: "Estado de ponche",
     // src/components/employee-time-panel.tsx:70
     currentStatus: "Estado actual",
     // src/components/employee-time-panel.tsx:72
-    clockedInAt: "Marcaste entrada a las ",
+    clockedInAt: "Ponchaste entrada a las ",
     // src/components/employee-time-panel.tsx:72
     sinceClockIn: " desde la entrada",
     // src/components/employee-time-panel.tsx:72
@@ -203,11 +203,11 @@ export const copy = {
     // src/components/employee-time-panel.tsx:74
     checkYourConnectionThenTryAgain: "Revisa tu conexión e inténtalo de nuevo.",
     // src/components/employee-time-panel.tsx:74
-    checkingYourActualPunchesAndBreaks: "Revisando tus marcaciones y descansos.",
+    checkingYourActualPunchesAndBreaks: "Revisando tus ponches y descansos.",
     // src/components/employee-time-panel.tsx:75
-    useYourLocationSClockerToRecordPunches: "Usa el Clocker de tu localidad para registrar tus marcaciones.",
+    useYourLocationSClockerToRecordPunches: "Usa el Clocker de tu localidad para registrar tus ponches.",
     // src/components/employee-time-panel.tsx:77
-    recordedPunchesOnly: "Solo marcaciones registradas.",
+    recordedPunchesOnly: "Solo ponches registrados.",
     // src/components/employee-time-panel.tsx:77
     updated: "Actualizado ",
     // src/components/employee-time-panel.tsx:77
@@ -231,7 +231,7 @@ export const copy = {
     // src/components/employee-time-panel.tsx:93
     todaySTotalsHoursIncludeBreaksAndArenTPayroll: "Totales de hoy. Las horas incluyen descansos y no son horas de nómina.",
     // src/components/employee-time-panel.tsx:94
-    noRecordedPunchesToday: "No hay marcaciones registradas hoy.",
+    noRecordedPunchesToday: "No hay ponches registrados hoy.",
     // src/components/employee-time-panel.tsx:105
     recentEntries: "Registros recientes",
     // src/components/employee-time-panel.tsx:105
@@ -273,6 +273,6 @@ export const copy = {
     // src/components/employee-time-panel.tsx:152
     earlierEntries: "Entradas anteriores",
     // src/components/employee-time-panel.tsx:163
-    punchesComeFromYourLocationSClocker: "Las marcaciones vienen del Clocker de tu localidad.",
+    punchesComeFromYourLocationSClocker: "Los ponches vienen del Clocker de tu localidad.",
   },
 } as const;

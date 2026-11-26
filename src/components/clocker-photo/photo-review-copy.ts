@@ -69,13 +69,13 @@ export const copy = {
   },
   es: {
     // src/components/clocker-photo/photo-review.tsx:16
-    clockIn: "Marcar entrada",
+    clockIn: "Ponchar entrada",
     // src/components/clocker-photo/photo-review.tsx:16
     startBreak: "Iniciar descanso",
     // src/components/clocker-photo/photo-review.tsx:16
     endBreak: "Terminar descanso",
     // src/components/clocker-photo/photo-review.tsx:16
-    clockOut: "Marcar salida",
+    clockOut: "Ponchar salida",
     // src/components/clocker-photo/photo-review.tsx:52
     currentCompanyPhotoRecordsLoaded: "Se cargaron los registros de fotos actuales de la empresa.",
     // src/components/clocker-photo/photo-review.tsx:53
@@ -89,11 +89,11 @@ export const copy = {
     // src/components/clocker-photo/photo-review.tsx:75
     photoRemovalCouldNotBeConfirmedCheckTheOriginal: "No pudimos confirmar que se eliminó la foto. Revisa el registro original antes de intentarlo de nuevo.",
     // src/components/clocker-photo/photo-review.tsx:78
-    punchPhotoRemovalConfirmedTheTimeRecordIsPreserved: "Se confirmó que se eliminó la foto de marcación. El registro de tiempo se conserva. Las copias de respaldo siguen el aviso de fotos de tu empresa.",
+    punchPhotoRemovalConfirmedTheTimeRecordIsPreserved: "Se confirmó que se eliminó la foto de ponche. El registro de tiempo se conserva. Las copias de respaldo siguen el aviso de fotos de tu empresa.",
     // src/components/clocker-photo/photo-review.tsx:79
     theRemovalResultIsUnconfirmedCheckTheOriginalRecord: "El resultado de la eliminación no está confirmado. Revisa el registro original antes de intentarlo de nuevo.",
     // src/components/clocker-photo/photo-review.tsx:89
-    clockActions: "Marcaciones",
+    clockActions: "Ponches",
     // src/components/clocker-photo/photo-review.tsx:90
     refresh: "Actualizar",
     // src/components/clocker-photo/photo-review.tsx:90
@@ -101,11 +101,11 @@ export const copy = {
     // src/components/clocker-photo/photo-review.tsx:91
     checkingTheOriginalPhotoRecord: "Revisando el registro de foto original…",
     // src/components/clocker-photo/photo-review.tsx:92
-    noPunchPhotoRecordsYet: "Aún no hay registros de fotos de marcación",
+    noPunchPhotoRecordsYet: "Aún no hay registros de fotos de ponche",
     // src/components/clocker-photo/photo-review.tsx:92
-    photoRecordsAppearAfterAnAuthorizedClockActionNo: "Los registros de fotos aparecen después de una marcación autorizada. Esta página no enciende ninguna cámara ni recoge fotos de empleados.",
+    photoRecordsAppearAfterAnAuthorizedClockActionNo: "Los registros de fotos aparecen después de un ponche autorizado. Esta página no enciende ninguna cámara ni recoge fotos de empleados.",
     // src/components/clocker-photo/photo-review.tsx:93
-    punchPhotoRecords: "Registros de fotos de marcación",
+    punchPhotoRecords: "Registros de fotos de ponche",
     // src/components/clocker-photo/photo-review.tsx:97
     review: "Revisar",
     // src/components/clocker-photo/photo-review.tsx:99
@@ -117,7 +117,7 @@ export const copy = {
     // src/components/clocker-photo/photo-review.tsx:109
     photoRetentionEnds: "La foto se guarda hasta ",
     // src/components/clocker-photo/photo-review.tsx:110
-    privatePunchPhotoForEmployeenameSLabels: "Foto privada de marcación de {employeeName}: {labels}",
+    privatePunchPhotoForEmployeenameSLabels: "Foto privada de ponche de {employeeName}: {labels}",
     // src/components/clocker-photo/photo-review.tsx:111
     viewPrivatePhoto: "Ver foto privada",
     // src/components/clocker-photo/photo-review.tsx:112
@@ -125,7 +125,7 @@ export const copy = {
     // src/components/clocker-photo/photo-review.tsx:113
     checkOriginalRecord: "Revisar registro original",
     // src/components/clocker-photo/photo-review.tsx:114
-    removeThisPunchPhoto: "¿Eliminar esta foto de marcación?",
+    removeThisPunchPhoto: "¿Eliminar esta foto de ponche?",
     // src/components/clocker-photo/photo-review.tsx:114
     theTimeRecordStaysIntactThisRemovesThePrivate: "El registro de tiempo no cambia. Esto elimina la imagen privada guardada; las copias de respaldo siguen el aviso de fotos de tu empresa.",
     // src/components/clocker-photo/photo-review.tsx:115

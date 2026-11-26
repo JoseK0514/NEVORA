@@ -59,7 +59,7 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:264
     check: "Verificar",
     // src/components/clocker-owner-copy.ts:265
-    checkNameSSavedPunch: "Verificar la marcación guardada de {name}",
+    checkNameSSavedPunch: "Verificar el ponche guardado de {name}",
     // src/components/clocker-owner-copy.ts:266
     fixInTimecards: "Corregir en Tarjetas de tiempo",
     // src/components/clocker-owner-copy.ts:267

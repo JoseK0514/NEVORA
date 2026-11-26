@@ -3,7 +3,7 @@ import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (Nov 23, 2026): the words on the Employee and Lead Time screens (time-b.tsx): the Time tab, one day,
  * Past timecards, Your correction requests and Fix my time, in English and Puerto Rico Spanish (docs/design/voice.md: tú,
- * Marcación, En turno, Tarjeta de tiempo, Solicitud de corrección). English is the approved wording, unchanged. Status words,
+ * Ponche, En turno, Tarjeta de tiempo, Solicitud de corrección). English is the approved wording, unchanged. Status words,
  * request kinds, timecard notes and the tablet's name come from the shared Time model (employee-mobile/hours-model), whose
  * helpers take the language, so they are not repeated here. */
 export type TimeLang = 'en' | 'es';

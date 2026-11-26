@@ -140,7 +140,7 @@ const es: typeof en = {
   pickupSentLine: "Un gerente lo revisa antes de que el turno sea tuyo.",
   viewRequests: "Ver mis solicitudes",
   correctionSent: "Solicitud de corrección enviada",
-  correctionLine: "Tu gerente la revisa. Tus marcaciones originales no cambian.",
+  correctionLine: "Tu gerente la revisa. Tus ponches originales no cambian.",
   anotherCorrection: "Pedir otra corrección",
   usualSaved: "Horas habituales guardadas",
   weekSubmitted: "Disponibilidad semanal enviada",

@@ -141,13 +141,13 @@ export const copy = {
     // src/components/employee-b/home-b.tsx:195
     onBreak: 'En descanso',
     // src/components/employee-b/home-b.tsx:195
-    clockedInAt: 'Marcaste entrada a las {clockInAt}',
+    clockedInAt: 'Ponchaste entrada a las {clockInAt}',
     // src/components/employee-b/home-b.tsx:195
     breaksOnTablet: 'Descansos y salida en la tableta de {locationLabel}',
     // src/components/employee-b/home-b.tsx:196, src/components/employee-b/home-b.tsx:197
-    clockInOnTablet: 'Marca entrada en la tableta de {locationLabel}',
+    clockInOnTablet: 'Poncha entrada en la tableta de {locationLabel}',
     // src/components/employee-b/home-b.tsx:197
-    takeBreaksThere: 'Marca tus descansos y tu salida allí también',
+    takeBreaksThere: 'Poncha tus descansos y tu salida allí también',
     // src/components/employee-b/home-b.tsx:201
     shiftDetailsFor: 'Detalles del turno, {date}',
     // src/components/employee-b/home-b.tsx:201

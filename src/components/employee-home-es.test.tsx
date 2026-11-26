@@ -38,7 +38,7 @@ const attention = [item('SCHEDULE', '2026-11-02', 'Schedule published', {href: '
 it('the corporate Home (tablets and desktop) reads in Spanish', () => {
   const plain = text(withoutB(es(<EmployeeHomeCorpView home={projectEmployeeHome(snapshot(attention))} status="ready" refreshing={false} onRetry={() => {}} ownTimeSlot={null}
     displayName="Alexandra" timeZone={zone} workspaceName="Isla Verde Cafés" week={week}/>)));
-  for (const words of ['Hola de nuevo, Alexandra', 'Próximo turno', 'Marca entrada en la tableta de Condado', 'Detalles del turno', 'Líder de turno',
+  for (const words of ['Hola de nuevo, Alexandra', 'Próximo turno', 'Poncha entrada en la tableta de Condado', 'Detalles del turno', 'Líder de turno',
     'Confirma el horario de la próxima semana', 'Revisar solicitud de cambio', 'Responde antes del', 'Próximos turnos', 'Ver todos', 'Pendientes', 'p. m.', 'domingo']) expect(plain).toContain(words);
   for (const words of ['Welcome back', 'Next shift', 'Clock in on', 'Shift details', 'Coming up', 'Things to do', 'Respond by', ' PM']) expect(plain).not.toContain(words);
 });

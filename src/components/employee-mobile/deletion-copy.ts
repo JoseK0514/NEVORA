@@ -150,7 +150,7 @@ const es: typeof en = {
   // src/components/employee-mobile/deletion.tsx:23
   profile: 'Perfil',
   // src/components/employee-mobile/deletion.tsx:50
-  ownerLead: 'El espacio de trabajo de tu empresa sigue abierto para el resto de tu equipo. Para cerrarlo, escribe a ',
+  ownerLead: 'Tu empresa sigue abierta en NEVORA para el resto de tu equipo. Para cerrarla, escribe a ',
   // src/components/employee-mobile/deletion.tsx:10
   ownerTail: '.',
   // src/components/employee-mobile/deletion.tsx:60
@@ -399,7 +399,7 @@ export const copy = {
     // src/components/employee-mobile/deletion.tsx:45
     deleteAccount: 'Eliminar cuenta',
     // src/components/employee-mobile/deletion.tsx:50
-    companyWorkspaceStaysOpenRestTeam: 'El espacio de trabajo de tu empresa permanece abierto para el resto de tu equipo. Para cerrarlo, envía un correo electrónico a {support}',
+    companyWorkspaceStaysOpenRestTeam: 'Tu empresa permanece abierta en NEVORA para el resto de tu equipo. Para cerrarla, envía un correo electrónico a {support}',
     // src/components/employee-mobile/deletion.tsx:60
     yourRequest: 'Tu solicitud',
     // src/components/employee-mobile/deletion.tsx:60

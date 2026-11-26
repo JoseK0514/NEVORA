@@ -26,21 +26,21 @@ it('follows the copy rules: sentence case, no exclamation marks, no em dashes, n
     expect(text, key).not.toMatch(/[!—]|\b(simply|just|seamlessly|successfully|oops)\b/i);
   }
   expect(WORK_COPY.en.shiftEnded('9 AM – 5 PM', 'Main Office')).toBe('Your 9 AM – 5 PM shift has ended. Clock out on the Main Office tablet.');
-  expect(WORK_COPY.es.shiftEnded('9 AM – 5 PM', 'Main Office')).toBe('Tu turno de 9 AM – 5 PM terminó. Marca tu salida en la tableta de Main Office.');
+  expect(WORK_COPY.es.shiftEnded('9 AM – 5 PM', 'Main Office')).toBe('Tu turno de 9 AM – 5 PM terminó. Poncha tu salida en la tableta de Main Office.');
   expect(WORK_COPY.en.leadAll(3)).toBe('You lead all 3');expect(WORK_COPY.es.leadAll(3)).toBe('Lideras los 3');
   // Phase 9: your own clock state once a shift has started with no punch, with how long.
   // Round 2: Home's chip is Requests' own words; Schedule's narrow title and its Confirm chip.
   expect(WORK_COPY.en.needsYourAnswer).toBe('Needs your answer');expect(WORK_COPY.es.needsYourAnswer).toBe('Por responder');
   expect(WORK_COPY.en.whatChanged).toBe('What changed');expect(WORK_COPY.es.whatChanged).toBe('Qué cambió');
   expect(WORK_COPY.en.actionNeeded).toBe('Action needed');expect(WORK_COPY.es.actionNeeded).toBe('Pendiente');
-  expect(WORK_COPY.en.notClockedInFor('12 min')).toBe('Not clocked in · 12 min');expect(WORK_COPY.es.notClockedInFor('12 min')).toBe('Sin marcar entrada · 12 min');
+  expect(WORK_COPY.en.notClockedInFor('12 min')).toBe('Not clocked in · 12 min');expect(WORK_COPY.es.notClockedInFor('12 min')).toBe('Sin ponchar · 12 min');
 });
 
 it('Signed-in Spanish (Nov 23, 2026): the glossary on Home and Schedule, tú, and English kept as it was', () => {
   const {en, es} = WORK_COPY;
-  // Open shift is "Turno disponible"; clocking is "marcar"; things to do is "Pendientes"; shift lead is "Líder de turno".
+  // Open shift is "Turno disponible"; clocking is "ponchar"; things to do is "Pendientes"; shift lead is "Líder de turno".
   expect(es.openShifts).toBe('Turnos disponibles');expect(es.noOpenShifts).toBe('No hay turnos disponibles');expect(es.openToPickUp(1)).toBe('1 turno disponible para tomar');
-  expect(es.clockInOnTablet('Calle Loíza')).toBe('Marca entrada en la tableta de Calle Loíza');expect(es.thingsToDo).toBe('Pendientes');expect(es.shiftLead).toBe('Líder de turno');
+  expect(es.clockInOnTablet('Calle Loíza')).toBe('Poncha entrada en la tableta de Calle Loíza');expect(es.thingsToDo).toBe('Pendientes');expect(es.shiftLead).toBe('Líder de turno');
   expect(es.scTimeOff).toBe('Días libres');expect(es.scCallout).toBe('No puedo trabajar');
   for (const value of Object.values(es)) expect(say(value)).not.toMatch(/\b(usted|su|sus)\b/i);
   // English is word for word what the screens said before the move.
@@ -56,7 +56,7 @@ it.each([
   ['12:00 p. m.', 'las'],
 ])('uses the article for the employee’s recorded clock-in at %s', (time, article) => {
   expect(WORK_COPY.es.stillClockedIn(time)).toBe(`Sigues en turno desde ${article} ${time}`);
-  expect(WORK_COPY.es.clockedInAt(time)).toBe(`Marcaste entrada a ${article} ${time}`);
+  expect(WORK_COPY.es.clockedInAt(time)).toBe(`Ponchaste entrada a ${article} ${time}`);
 });
 
 it.each([

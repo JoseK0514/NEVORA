@@ -234,7 +234,7 @@ const es: RosterImportCopy = {
     required: ["ID (el ID de empleado que usa tu negocio)", "Nombre", "Apellido", "Teléfono (10 dígitos)"],
     optional: "Opcionales: Correo y Rol de acceso (Empleado, Líder o Gerente). Una persona sin rol se añade como Empleado.",
     headers: "Los nombres de las columnas pueden estar en español o en inglés: ID empleado, Nombre, Apellido, Teléfono, Correo, Rol de acceso, o ID, First name, Last name, Phone, Email, Role.",
-    noEmail: "Sin un correo electrónico, la persona puede marcar su entrada en la tableta, pero no puede iniciar sesión en NEVORA.",
+    noEmail: "Sin un correo electrónico, la persona puede ponchar su entrada en la tableta, pero no puede iniciar sesión en NEVORA.",
     limit: "Puedes importar hasta 50 personas a la vez.",
     exampleLabel: "Ejemplo",
     example: {
@@ -282,7 +282,7 @@ const es: RosterImportCopy = {
     columns: { row: "Fila", person: "Persona", role: "Rol y localidad", contact: "Teléfono y correo", status: "Estado", change: "Cambiar" },
     roles: { EMPLOYEE: "Empleado", LEAD: "Líder", MANAGER: "Gerente", OWNER: "Dueño" },
     blank: "Sin indicar",
-    noEmail: "Sin correo. Solo puede marcar en la tableta.",
+    noEmail: "Sin correo. Solo puede ponchar en la tableta.",
     noLocation: "Sin localidad",
     locationNotFound: "No se encontró la localidad",
     ready: "Lista",
@@ -361,8 +361,8 @@ const es: RosterImportCopy = {
     skippedRow: (row, name, why) => `Fila ${row}, ${name}: ${why}`,
     removedByYou: "La quitaste tú.",
     noEmail: n => n === 1
-      ? "1 persona no tiene correo. Puede marcar su entrada en la tableta, pero no puede iniciar sesión en NEVORA."
-      : `${n} personas no tienen correo. Pueden marcar su entrada en la tableta, pero no pueden iniciar sesión en NEVORA.`,
+      ? "1 persona no tiene correo. Puede ponchar su entrada en la tableta, pero no puede iniciar sesión en NEVORA."
+      : `${n} personas no tienen correo. Pueden ponchar su entrada en la tableta, pero no pueden iniciar sesión en NEVORA.`,
     next: "Próximos pasos",
     invite: "Enviar invitaciones",
     inviteLine: "Revisa en Equipo quién recibe una. Solo se puede invitar a las personas con correo.",

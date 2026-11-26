@@ -145,7 +145,7 @@ const es: OwnerBCopy = {
     fillManyLabel: n => `Turnos por cubrir por días libres aprobados, ${n}`,
     fillPrefix: /^Cubrir (el turno de )?/,
     people: n => `${n}${NB}personas`, shiftBegan: "turno desde", shiftEnded: "turno hasta",
-    missedClockIns: n => plural(n, "entrada no marcada", "entradas no marcadas"), missedClockIn: "Entrada no marcada",
+    missedClockIns: n => plural(n, "entrada sin ponchar", "entradas sin ponchar"), missedClockIn: "Entrada sin ponchar",
     corrections: n => `${n} ${n === 1 ? "corrección de tiempo" : "correcciones de tiempo"}`,
     toReview: n => plural(n, "asunto por revisar", "asuntos por revisar"), toReviewSub: "Correcciones de tiempo y tarjetas de tiempo",
     seeAll: "Ver todo", seeAllAria: "Ver todo en Pendientes",
@@ -197,7 +197,7 @@ const es: OwnerBCopy = {
     nothing: "No tienes nada pendiente ahora", nothingLine: "No tienes nada pendiente ahora.", allSet: "Estás al día",
     timecardsToApprove: n => `${plural(n, "tarjeta de tiempo", "tarjetas de tiempo")} por aprobar`,
     home: "Inicio", title: "Pendientes", show: "Mostrar", all: "Todo",
-    clockIns: "Entradas", clockInsTitle: "No pudimos verificar las entradas ahora", clockInsLine: "Puede que falten personas que no han marcado entrada.",
+    clockIns: "Entradas", clockInsTitle: "No pudimos verificar las entradas ahora", clockInsLine: "Puede que falten personas que no han ponchado entrada.",
     more: "Más", timeOff: "Solicitudes de días libres", timeOffSub: "En espera y decididas", shiftRequests: "Cambios de turno", shiftRequestsSub: "Intercambios y coberturas",
     availability: "Disponibilidad", availabilitySub: "Quién puede trabajar y cuándo", later: "Después y hecho", laterEmpty: "Aquí aparecen lo que hay que planificar y los turnos sin cubrir anteriores.",
     findCover: "Cubrir", findCoverFor: what => `Cubrir turno: ${what}`,
@@ -214,8 +214,8 @@ const es: OwnerBCopy = {
   team: {
     title: "Equipo", add: "Añadir", addPerson: word => `Añadir ${word}`, apply: "Aplicar búsqueda", search: people => `Buscar ${people}`,
     searchPlaceholder: "Buscar personas", inactive: "Inactivo", matches: n => `${n} ${n === 1 ? "resultado" : "resultados"}`,
-    show: "Mostrar", all: "Todos", onClock: "En turno", notClockedIn: "Sin marcar", offToday: "Libre hoy",
-    noneOn: "Nadie está en turno ahora.", allIn: "Todos los que tienen turno marcaron entrada.", noneOff: "Nadie está libre hoy.",
+    show: "Mostrar", all: "Todos", onClock: "En turno", notClockedIn: "Sin ponchar", offToday: "Libre hoy",
+    noneOn: "Nadie está en turno ahora.", allIn: "Todos los que tienen turno poncharon entrada.", noneOff: "Nadie está libre hoy.",
     noMatch: (people, query) => `Ningún resultado en ${people} para “${query}”.`, noSearchMatch: "Nadie coincide con esta búsqueda.", none: people => `Todavía no hay ${people}.`,
     clear: "Borrar búsqueda", inactivePeople: people => `${people} inactivos`, tools: "Herramientas del equipo",
   },
@@ -239,7 +239,7 @@ export function clockIn(lang: OwnerBLang, text: string) {
 /** The attendance words (lib/action-center/present's ATTENDANCE_WORDS) in this language. */
 export const ATTENDANCE: Record<OwnerBLang, { notClockedIn: string; late: string; missed: string }> = {
   en: { notClockedIn: "Not clocked in", late: "Clocked in late", missed: "Missed" },
-  es: { notClockedIn: "Sin marcar entrada", late: "Marcó entrada tarde", missed: "No marcó entrada" },
+  es: { notClockedIn: "Sin ponchar", late: "Ponchó entrada tarde", missed: "No ponchó entrada" },
 };
 
 /** Decline's question on a time off row (time-off-waiting-list's ASK), in Spanish; English uses ASK itself. */

@@ -95,7 +95,7 @@ export const copy = {
     // src/components/employee-mobile/hours-cards.tsx:12
     thisPeriodIsStillInProgressTotalsCanChange: "Este período todavía está en curso. Los totales pueden cambiar.",
     // src/components/employee-mobile/hours-cards.tsx:12
-    anEntryIsStillMissingItsClockOut: "A una entrada todavía le falta la marcación de salida.",
+    anEntryIsStillMissingItsClockOut: "A una entrada todavía le falta el ponche de salida.",
     // src/components/employee-mobile/hours-cards.tsx:12
     aBreakIsStillInProgress: "Un descanso todavía está en curso.",
     // src/components/employee-mobile/hours-cards.tsx:12
@@ -119,7 +119,7 @@ export const copy = {
     // src/components/employee-mobile/hours-cards.tsx:20
     viewPeriod: "Ver período",
     // src/components/employee-mobile/hours-cards.tsx:22
-    yourTimecardCouldnTBeCheckedRecordedPunchesRemainAvailable: "No pudimos verificar tu tarjeta de tiempo. Tus marcaciones registradas siguen disponibles en Horas.",
+    yourTimecardCouldnTBeCheckedRecordedPunchesRemainAvailable: "No pudimos verificar tu tarjeta de tiempo. Tus ponches registrados siguen disponibles en Horas.",
     // src/components/employee-mobile/hours-cards.tsx:22
     noTimecardIsAvailableForYourAccountInThisPeriod: "No hay una tarjeta de tiempo disponible para tu cuenta en este período.",
     // src/components/employee-mobile/hours-cards.tsx:23
@@ -151,11 +151,11 @@ export const copy = {
     // src/components/employee-mobile/hours-cards.tsx:26
     anApprovedAdjustmentIsIncluded: "Incluye un ajuste aprobado.",
     // src/components/employee-mobile/hours-cards.tsx:26
-    originalPunches: "Marcaciones originales",
+    originalPunches: "Ponches originales",
     // src/components/employee-mobile/hours-cards.tsx:26
     rawstartatClockOutNotRecorded: "{rawStartAt} – Sin salida registrada",
     // src/components/employee-mobile/hours-cards.tsx:26
-    approvedMissingTimeNoDevicePunchWasCreated: "Tiempo sin marcar aprobado · No se creó una marcación en el dispositivo.",
+    approvedMissingTimeNoDevicePunchWasCreated: "Tiempo sin ponchar aprobado · No se creó un ponche en el dispositivo.",
     // src/components/employee-mobile/hours-cards.tsx:26
     originalRawStartAtRawEndAt: "Original: {rawStartAt} – {rawEndAt}",
     // src/components/employee-mobile/hours-cards.tsx:26

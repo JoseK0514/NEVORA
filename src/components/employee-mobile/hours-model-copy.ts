@@ -51,7 +51,7 @@ export const copy = {
     // src/components/employee-mobile/hours-model.ts:64
     theTabletWhereYouWork: "la tableta donde trabajas",
     // src/components/employee-mobile/hours-model.ts:72
-    anEntryIsStillMissingItsClockOut: "A una entrada todavía le falta la marcación de salida.",
+    anEntryIsStillMissingItsClockOut: "A una entrada todavía le falta el ponche de salida.",
     // src/components/employee-mobile/hours-model.ts:72
     aBreakIsStillInProgress: "Un descanso todavía está en curso.",
     // src/components/employee-mobile/hours-model.ts:72
@@ -79,7 +79,7 @@ export const copy = {
     // src/components/employee-mobile/hours-model.ts:90
     break: "Descanso",
     // src/components/employee-mobile/hours-model.ts:90
-    missedShift: "Turno sin marcar",
+    missedShift: "Turno sin ponchar",
     // src/components/employee-mobile/hours-model.ts:91
     waitingForReview: "En espera de revisión",
     // src/components/employee-mobile/hours-model.ts:91

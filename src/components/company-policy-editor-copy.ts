@@ -295,9 +295,9 @@ export const copy = {
     // src/components/company-policy-editor.tsx:14
     earlyDeparture: "Salida temprano",
     // src/components/company-policy-editor.tsx:15
-    missingClockIn: "Falta marcar entrada",
+    missingClockIn: "Falta ponchar entrada",
     // src/components/company-policy-editor.tsx:15
-    missingClockOut: "Falta marcar salida",
+    missingClockOut: "Falta ponchar salida",
     // src/components/company-policy-editor.tsx:16
     actualTimeOvertimeRisk: "Riesgo de horas extra según el tiempo real",
     // src/components/company-policy-editor.tsx:16
@@ -307,9 +307,9 @@ export const copy = {
     // src/components/company-policy-editor.tsx:20
     earlyDepartures: "Salidas temprano",
     // src/components/company-policy-editor.tsx:20
-    missedClockIns: "Entradas sin marcar",
+    missedClockIns: "Entradas sin ponchar",
     // src/components/company-policy-editor.tsx:21
-    missedClockOuts: "Salidas sin marcar",
+    missedClockOuts: "Salidas sin ponchar",
     // src/components/company-policy-editor.tsx:21
     closeToOvertime: "Cerca de horas extra",
     // src/components/company-policy-editor.tsx:21

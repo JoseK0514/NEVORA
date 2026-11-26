@@ -3,7 +3,7 @@ import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (Nov 23, 2026): the older timecard view (hours-cards.tsx: a period's effective time, entries and
  * approval history) in English and Puerto Rico Spanish (docs/design/voice.md: tú, sentence case, the glossary: "Tarjeta
- * de tiempo", "Marcación", "Descanso", "Comprobante de pago", "gerente"). A timecard ("tarjeta") is feminine, so its
+ * de tiempo", "Ponche", "Descanso", "Comprobante de pago", "gerente"). A timecard ("tarjeta") is feminine, so its
  * states agree with it. Dates and times come from mobile-format.ts; durations ("8 h 2 min") read the same in both. */
 import {timeZoneLabel} from '@/lib/time-zone-label';
 

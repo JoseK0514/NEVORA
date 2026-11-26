@@ -22,7 +22,7 @@ export const clockerLocationCopy = {
     none: 'No active locations',
   },
   es: {
-    title: 'Puede marcar en',
+    title: 'Puede ponchar en',
     where: 'Donde trabaja',
     only: 'Solo estas localidades',
     every: 'Todas las localidades',
@@ -46,16 +46,16 @@ export const clockerLocationCopy = {
  * words. An unknown sentence is shown as the server wrote it. */
 export const clockerLocationServerCopy: Record<string, { es: string }> = {
   'Clocker location access could not be confirmed. Reload the profile before trying again.': {
-    es: 'No se pudo confirmar dónde puede marcar. Vuelve a cargar el perfil antes de intentarlo de nuevo.',
+    es: 'No se pudo confirmar dónde puede ponchar. Vuelve a cargar el perfil antes de intentarlo de nuevo.',
   },
   'This employee changed. Reload their profile before saving.': {
     es: 'Este empleado cambió. Vuelve a cargar su perfil antes de guardar.',
   },
   'Choose a location access mode and valid active locations.': {
-    es: 'Elige dónde puede marcar y localidades activas válidas.',
+    es: 'Elige dónde puede ponchar y localidades activas válidas.',
   },
   'Only an Owner may change Clocker location access.': {
-    es: 'Solo un dueño puede cambiar dónde se puede marcar.',
+    es: 'Solo un dueño puede cambiar dónde se puede ponchar.',
   },
 };
 

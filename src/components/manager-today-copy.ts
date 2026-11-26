@@ -61,10 +61,10 @@ export const copy = {
     // src/components/manager-today.tsx:77
     forDate: ' del {employeeName}',
     // src/components/manager-today.tsx:89
-    missedPunches: 'Marcaciones que faltan ',
+    missedPunches: 'Ponches que faltan ',
     // src/components/manager-today.tsx:90
-    publishedShiftsTodayNoClockIn: 'Turnos publicados para hoy sin marcación de entrada. Un turno se considera empezado si han pasado más de {START_GRACE_MINUTES} minutos.',
+    publishedShiftsTodayNoClockIn: 'Turnos publicados para hoy sin ponche de entrada. Un turno se considera empezado si han pasado más de {START_GRACE_MINUTES} minutos.',
     // src/components/manager-today.tsx:93
-    noPunches: 'Sin marcaciones registradas',
+    noPunches: 'Sin ponches registrados',
   },
 } as const;

@@ -3,7 +3,7 @@ import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 
 /* Signed-in Spanish (Nov 23, 2026): the Employee Time pages on the corporate kit (hours-corp.tsx: the Time tab, one
  * day's punches, past timecards, correction requests and the "Fix my time" sheet) in English and Puerto Rico Spanish
- * (docs/design/voice.md: tú, sentence case, the glossary: "Marcación", "En turno", "Descanso", "Tarjeta de tiempo",
+ * (docs/design/voice.md: tú, sentence case, the glossary: "Ponche", "En turno", "Descanso", "Tarjeta de tiempo",
  * "Solicitud de corrección", "localidad", "gerente"). Dates, times and the words hours-model.ts returns (issues, kinds,
  * card states, the tablet) come from hours-model.ts with the language; durations ("7 h 32 min") read the same in both.
  * A timecard ("tarjeta") and a correction request ("solicitud") are feminine, so their states agree with them. The
@@ -239,7 +239,7 @@ const es: typeof en = {
       self_review: approvedHoursCorp.es.yourCurrentAccountCannotReviewThisRequest,
     },
     close: approvedHoursCorp.es.close,
-    correctionSent: 'Solicitud de corrección enviada', correctionLine: 'Tu gerente la revisa. Tus marcaciones originales no cambian.',
+    correctionSent: 'Solicitud de corrección enviada', correctionLine: 'Tu gerente la revisa. Tus ponches originales no cambian.',
     viewRequest: 'Ver mi solicitud', anotherCorrection: 'Solicitar otra corrección',
     result: approvedHoursCorp.es.submissionResult, status: approvedHoursCorp.es.submissionStatus,
     checkingRequest: approvedHoursCorp.es.checkingYourRequest, checkEarlier: approvedHoursCorp.es.checkYourEarlierRequest,

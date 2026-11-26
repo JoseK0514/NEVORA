@@ -107,7 +107,7 @@ export const copy = {
     // src/components/employee-mobile/hours-records.tsx:16
     elapsedsecondsElapsedBreakSecondsBreaks: "{elapsedSeconds} en total · {breakSeconds} de descansos",
     // src/components/employee-mobile/hours-records.tsx:17
-    recordedPunches: "Marcaciones registradas",
+    recordedPunches: "Ponches registrados",
     // src/components/employee-mobile/hours-records.tsx:17
     clockIn: "Entrada",
     // src/components/employee-mobile/hours-records.tsx:17
@@ -135,13 +135,13 @@ export const copy = {
     // src/components/employee-mobile/hours-records.tsx:22
     offClock: "Fuera de turno",
     // src/components/employee-mobile/hours-records.tsx:24
-    todaySClockStatus: "Estado de marcación de hoy",
+    todaySClockStatus: "Estado de ponche de hoy",
     // src/components/employee-mobile/hours-records.tsx:24
     locationnameSinceClockInAt: "{locationName} · Desde el {clockInAt}",
     // src/components/employee-mobile/hours-records.tsx:24
     noOpenTimeEntryWasRecordedAtTheLastCheck: "No había una entrada abierta en la última verificación.",
     // src/components/employee-mobile/hours-records.tsx:24
-    useYourLocationSClockerToClockInOutOr: "Usa el Clocker de tu localidad para marcar entrada, salida o un descanso.",
+    useYourLocationSClockerToClockInOutOr: "Usa el Clocker de tu localidad para ponchar entrada, salida o un descanso.",
     // src/components/employee-mobile/hours-records.tsx:24
     viewCurrentEntry: "Ver la entrada actual",
     // src/components/employee-mobile/hours-records.tsx:25
@@ -155,7 +155,7 @@ export const copy = {
     // src/components/employee-mobile/hours-records.tsx:26
     todaySEntries: "Entradas de hoy",
     // src/components/employee-mobile/hours-records.tsx:26
-    noRecordedPunchesTodayUseYourLocationSClockerWhen: "No hay marcaciones registradas hoy. Usa el Clocker de tu localidad cuando empieces a trabajar.",
+    noRecordedPunchesTodayUseYourLocationSClockerWhen: "No hay ponches registrados hoy. Usa el Clocker de tu localidad cuando empieces a trabajar.",
     // src/components/employee-mobile/hours-records.tsx:27
     earlierEntries: "Entradas anteriores",
     // src/components/employee-mobile/hours-records.tsx:27

@@ -219,23 +219,23 @@ export const copy = {
     // src/components/employee-b/time-b.tsx:106
     clockedIn: "En turno",
     // src/components/employee-b/time-b.tsx:107
-    notClockedIn: "Sin marcar entrada",
+    notClockedIn: "Sin ponchar",
     // src/components/employee-b/time-b.tsx:108
     onBreakSinceStartAt: "En descanso desde {startAt}",
     // src/components/employee-b/time-b.tsx:108
     clockedInAtClockInAt: "Entrada: {clockInAt}",
     // src/components/employee-b/time-b.tsx:108
-    clockInOnTablet: "Marca entrada en {tablet}",
+    clockInOnTablet: "Poncha entrada en {tablet}",
     // src/components/employee-b/time-b.tsx:111
     locationnameClockedInAtClockInAt: "{locationName} · Entrada: {clockInAt}",
     // src/components/employee-b/time-b.tsx:112
     soFar: " hasta\u00a0ahora",
     // src/components/employee-b/time-b.tsx:112
-    takeBreaksAndClockOutThereToo: "Marca tus descansos y tu salida allí también",
+    takeBreaksAndClockOutThereToo: "Poncha tus descansos y tu salida allí también",
     // src/components/employee-b/time-b.tsx:113
     endYourBreakOnYourLocationSTablet: "Termina tu descanso en la tableta de tu localidad.",
     // src/components/employee-b/time-b.tsx:113
-    takeBreaksAndClockOutOnYourLocationSTablet: "Marca tus descansos y tu salida en la tableta de tu localidad.",
+    takeBreaksAndClockOutOnYourLocationSTablet: "Poncha tus descansos y tu salida en la tableta de tu localidad.",
     // src/components/employee-b/time-b.tsx:115
     rightNow: "Ahora",
     // src/components/employee-b/time-b.tsx:123
@@ -245,7 +245,7 @@ export const copy = {
     // src/components/employee-b/time-b.tsx:129
     noTimeRecordedYetThisWeek: "Todavía no hay tiempo registrado esta semana",
     // src/components/employee-b/time-b.tsx:130
-    fixAMissedPunch: "Corregir una marcación",
+    fixAMissedPunch: "Corregir un ponche",
     // src/components/employee-b/time-b.tsx:132
     hoursIncludeBreaks: "Las horas incluyen los descansos.",
     // src/components/employee-b/time-b.tsx:140
@@ -263,7 +263,7 @@ export const copy = {
     // src/components/employee-b/time-b.tsx:197
     countSoFar: "Llevas {count}",
     // src/components/employee-b/time-b.tsx:171
-    punches: "Marcaciones",
+    punches: "Ponches",
     // src/components/employee-b/time-b.tsx:174
     location: "Localidad",
     // src/components/employee-b/time-b.tsx:175
@@ -293,7 +293,7 @@ export const copy = {
     // src/components/employee-b/time-b.tsx:251
     requestsYouSendStayHereUntilYourManagerDecides: "Las solicitudes que envías se quedan aquí hasta que tu gerente decida.",
     // src/components/employee-b/time-b.tsx:255
-    toFixADayYouAlreadyClockedOpenItFrom: "Para corregir un día que ya marcaste, ábrelo desde Tiempo.",
+    toFixADayYouAlreadyClockedOpenItFrom: "Para corregir un día que ya ponchaste, ábrelo desde Tiempo.",
     // src/components/employee-b/time-b.tsx:257
     showingYourRequestsCountMostRecentRequests: "Se muestran tus {requestsCount} solicitudes más recientes.",
     // src/components/employee-b/time-b.tsx:263
@@ -323,7 +323,7 @@ export const copy = {
     // src/components/employee-b/time-b.tsx:280
     declinedDecidedAt: "Rechazada · {decidedAt}",
     // src/components/employee-b/time-b.tsx:282
-    yourManagerReviewsThisRequestYourOriginalPunchesStayUnchanged: "Tu gerente revisa esta solicitud. Tus marcaciones originales no cambian.",
+    yourManagerReviewsThisRequestYourOriginalPunchesStayUnchanged: "Tu gerente revisa esta solicitud. Tus ponches originales no cambian.",
     // src/components/employee-b/time-b.tsx:283
     changedTimecard: "Tarjeta de tiempo cambiada",
     // src/components/employee-b/time-b.tsx:283
@@ -381,7 +381,7 @@ export const copy = {
     // src/components/employee-b/time-b.tsx:242
     decided: "Decididas",
     // src/components/employee-b/time-b.tsx:265
-    noPunchesRecorded: "Sin marcaciones registradas",
+    noPunchesRecorded: "Sin ponches registrados",
     // src/components/employee-b/time-b.tsx:280
     approved: "Aprobado",
     // src/components/employee-b/time-b.tsx:308

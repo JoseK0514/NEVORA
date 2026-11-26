@@ -79,13 +79,13 @@ export const copy = {
     // src/components/owner-b/team-b.tsx:82
     onTheClock: "En turno",
     // src/components/owner-b/team-b.tsx:83
-    notClockedIn: "Sin marcar",
+    notClockedIn: "Sin ponchar",
     // src/components/owner-b/team-b.tsx:84
     offToday: "Libre hoy",
     // src/components/owner-b/team-b.tsx:88
     noneOn: "Nadie está en turno ahora.",
     // src/components/owner-b/team-b.tsx:88
-    allIn: "Todos los que tienen turno marcaron entrada.",
+    allIn: "Todos los que tienen turno poncharon entrada.",
     // src/components/owner-b/team-b.tsx:88
     noneOff: "Nadie está libre hoy.",
     // src/components/owner-b/team-b.tsx:88

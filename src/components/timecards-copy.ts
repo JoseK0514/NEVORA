@@ -655,19 +655,19 @@ export const copy = {
     // src/components/timecards.tsx:75
     missingTimeAdjustment: "Ajuste por tiempo faltante",
     // src/components/timecards.tsx:75
-    correctedEntry: "Marcación corregida",
+    correctedEntry: "Ponche corregido",
     // src/components/timecards.tsx:75
-    recordedPunch: "Marcación registrada",
+    recordedPunch: "Ponche registrado",
     // src/components/timecards.tsx:76
     effectiveTime: "Tiempo efectivo",
     // src/components/timecards.tsx:76
     startatInProgress: "{startAt} → En curso",
     // src/components/timecards.tsx:77
-    originalPunches: "Marcaciones originales",
+    originalPunches: "Ponches originales",
     // src/components/timecards.tsx:77
     rawstartatNoClockOut: "{rawStartAt} → Sin salida registrada",
     // src/components/timecards.tsx:77
-    noDeviceCapturedPunches: "Sin marcaciones del dispositivo",
+    noDeviceCapturedPunches: "Sin ponches del dispositivo",
     // src/components/timecards.tsx:78
     corrected: " · Corregida",
     // src/components/timecards.tsx:79
@@ -713,7 +713,7 @@ export const copy = {
     // src/components/timecards.tsx:125
     correction: "Corrección",
     // src/components/timecards.tsx:128
-    missingClockOut: "Falta marcar salida",
+    missingClockOut: "Falta ponchar salida",
     // src/components/timecards.tsx:128
     checkBreaks: "Revisar descansos",
     // src/components/timecards.tsx:128
@@ -807,7 +807,7 @@ export const copy = {
     // src/components/timecards.tsx:546
     finalizeAfterTheWaitingCorrectionIsReviewed: "Puedes finalizar cuando se revise la corrección pendiente.",
     // src/components/timecards.tsx:546
-    finalizeAfterTheOpenTimeIsClosed: "Puedes finalizar cuando se cierre la marcación abierta.",
+    finalizeAfterTheOpenTimeIsClosed: "Puedes finalizar cuando se cierre el ponche abierto.",
     // src/components/timecards.tsx:546
     finalizeAfterTheOverlappingTimeIsFixed: "Puedes finalizar cuando se corrijan las horas que se solapan.",
     // src/components/timecards.tsx:546
@@ -815,7 +815,7 @@ export const copy = {
     // src/components/timecards.tsx:546
     approveAfterTheWaitingCorrectionIsReviewed: "Puedes aprobar cuando se revise la corrección pendiente.",
     // src/components/timecards.tsx:546
-    approveAfterTheOpenTimeIsClosed: "Puedes aprobar cuando se cierre la marcación abierta.",
+    approveAfterTheOpenTimeIsClosed: "Puedes aprobar cuando se cierre el ponche abierto.",
     // src/components/timecards.tsx:546
     approveAfterTheOverlappingTimeIsFixed: "Puedes aprobar cuando se corrijan las horas que se solapan.",
     // src/components/timecards.tsx:546
@@ -1017,11 +1017,11 @@ export const copy = {
     // src/components/timecards.tsx:1018
     openPeriodTotalsCanStillChangeUntilItCloses: "Período abierto. Los totales pueden cambiar hasta que cierre.",
     // src/components/timecards.tsx:1019
-    reviewYourRecordedEntriesRequestCorrectionsInMyTime: "Revisa tus marcaciones registradas. Pide correcciones en Mi tiempo.",
+    reviewYourRecordedEntriesRequestCorrectionsInMyTime: "Revisa tus ponches registrados. Pide correcciones en Mi tiempo.",
     // src/components/timecards.tsx:1020
-    dailyPunches: "Marcaciones por día",
+    dailyPunches: "Ponches por día",
     // src/components/timecards.tsx:1020
-    closeDailyPunches: "Cerrar marcaciones por día",
+    closeDailyPunches: "Cerrar ponches por día",
     // src/components/timecards.tsx:1023
     historicalRevisionsHistoryCount: "Versiones anteriores ({historyCount})",
     // src/components/timecards.tsx:1024
@@ -1105,7 +1105,7 @@ export const copy = {
     // src/components/timecards.tsx:1095
     totalsCanChangeUntilThePeriodEndsApprovalOpensAfter: "Los totales pueden cambiar hasta que termine el período. Se aprueba después del {endDate}.",
     // src/components/timecards.tsx:1095
-    reviewTheEntriesAndResolveOpenTimeOrCorrectionsBefore: "Revisa las marcaciones y resuelve el tiempo abierto o las correcciones antes de aprobar.",
+    reviewTheEntriesAndResolveOpenTimeOrCorrectionsBefore: "Revisa los ponches y resuelve el tiempo abierto o las correcciones antes de aprobar.",
     // src/components/timecards.tsx:1096
     notSelectableForApprovalSelf: "No se puede seleccionar para aprobar: {self}.",
     // src/components/timecards.tsx:1096
@@ -1275,7 +1275,7 @@ export const copy = {
 
 /* Signed-in Spanish (Jose, Nov 23, 2026): the Timecards screens' words in English and Puerto Rico Spanish, one table with
  * the same keys in both (the pattern of copy-receipt-copy.ts). English is the screen's wording unchanged; Spanish follows
- * docs/design/voice.md: tú, sentence case, the glossary ("Tarjeta de tiempo", "Marcación", "En turno", "Solicitud de
+ * docs/design/voice.md: tú, sentence case, the glossary ("Tarjeta de tiempo", "Ponche", "En turno", "Solicitud de
  * corrección", "Dueño", "Días libres"), times "6:00 a. m. – 2:00 p. m." and dates "16–22 nov".
  *
  * Status words that the screen also uses as keys ("Clocked in now", "Ready to approve") stay English inside the logic and
@@ -1626,7 +1626,7 @@ const es: typeof en = {
   reviewYours: copy.es.reviewYourRecordedEntriesRequestCorrectionsInMyTime,
   dailyPunches: copy.es.dailyPunches, closeDailyPunches: copy.es.closeDailyPunches,
   somethingWrong: copy.es.somethingWrong, requestACorrection: copy.es.requestACorrection,
-  continueInMyTime: 'Sigue en Mi tiempo. Tus marcaciones originales se conservan.',
+  continueInMyTime: 'Sigue en Mi tiempo. Tus ponches originales se conservan.',
   yourPeriodTimecard: copy.es.yourPeriodTimecard, pickDates: copy.es.pickTheDatesToReview,
   needAttentionTile: copy.es.needAttention,
   requestInMyTime: copy.es.requestACorrectionInMyTime, continueMyTime: copy.es.continueInMyTime,

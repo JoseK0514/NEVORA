@@ -85,7 +85,7 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:23
     yourTablets: "Tus tabletas",
     // src/components/clocker-owner-copy.ts:31
-    aTimeClockTabletIsASharedTabletAt: "Una tableta de registro de tiempo es una tableta compartida en una localidad. Tu equipo marca entrada y salida en ella con su ID de empleado y su PIN.",
+    aTimeClockTabletIsASharedTabletAt: "Una tableta de registro de tiempo es una tableta compartida en una localidad. Tu equipo poncha entrada y salida en ella con su ID de empleado y su PIN.",
     // src/components/clocker-owner-copy.ts:32
     noActiveLocation: "No hay una localidad activa",
     // src/components/clocker-owner-copy.ts:33
@@ -129,13 +129,13 @@ export const copy = {
     // src/components/clocker-owner-copy.ts:110
     youGetANewSetupCodeForTheSame: "Recibe un código de configuración nuevo para la misma localidad.",
     // src/components/clocker-owner-copy.ts:112
-    clockingInAndOutOnThisTabletStopsRight: "Marcar entrada y salida en esta tableta se detiene de inmediato, y cualquier código de configuración suyo deja de funcionar. El tiempo ya registrado se conserva. Puedes configurarla de nuevo después.",
+    clockingInAndOutOnThisTabletStopsRight: "Ponchar entrada y salida en esta tableta se detiene de inmediato, y cualquier código de configuración suyo deja de funcionar. El tiempo ya registrado se conserva. Puedes configurarla de nuevo después.",
     // src/components/clocker-owner-copy.ts:118
     setupCodeReadyFinishOnTheTablet: "Código de configuración listo. Termina en la tableta.",
     // src/components/clocker-owner-copy.ts:139
     weDontKnowIfThisWasSavedRefreshThe: "No sabemos si esto se guardó. Actualiza la lista para ver cómo está la tableta ahora y, si hace falta, inténtalo de nuevo.",
     // src/components/clocker-owner-copy.ts:21
-    theSharedTabletsWhereYourTeamClocksInAnd: "Las tabletas compartidas donde tu equipo marca entrada y salida.",
+    theSharedTabletsWhereYourTeamClocksInAnd: "Las tabletas compartidas donde tu equipo poncha entrada y salida.",
     // src/components/clocker-owner-copy.ts:29
     oneTabletPerLocationWorksBest: "Lo mejor es una tableta por localidad.",
   },

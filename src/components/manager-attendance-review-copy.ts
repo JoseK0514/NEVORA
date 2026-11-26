@@ -103,7 +103,7 @@ export const ATTENDANCE_REVIEW_COPY = {
     // manager-attendance-review.tsx:110 at 8c6ee1b67
     ambiguous: "No pudimos identificar el turno de esta entrada.",
     // manager-attendance-review.tsx:111 at 8c6ee1b67
-    inconsistent: "Las marcaciones no cuadran. Revisa la tarjeta de tiempo.",
+    inconsistent: "Los ponches no cuadran. Revisa la tarjeta de tiempo.",
     // manager-attendance-review.tsx:168 at 8c6ee1b67
     today: "Entradas de hoy",
     // manager-attendance-review.tsx:172 at 8c6ee1b67
@@ -145,7 +145,7 @@ export const ATTENDANCE_REVIEW_COPY = {
     // manager-attendance-review.tsx:216 at 8c6ee1b67
     latest: "No cargaron los últimos registros.",
     // manager-attendance-review.tsx:216 at 8c6ee1b67
-    checkingRecords: "Verificando las marcaciones de hoy.",
+    checkingRecords: "Verificando los ponches de hoy.",
     // manager-attendance-review.tsx:226 at 8c6ee1b67
     updated: "Actualizado ",
     // manager-attendance-review.tsx:227 at 8c6ee1b67
