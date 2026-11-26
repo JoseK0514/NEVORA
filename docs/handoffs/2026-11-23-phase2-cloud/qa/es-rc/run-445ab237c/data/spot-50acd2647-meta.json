@@ -1,0 +1,656 @@
+{
+ "setupLog": [
+  "people ok",
+  "login SWEEP-A ok",
+  "login SWEEP-B ok",
+  "login SWEEP-C ok",
+  "login SWEEP-M ok",
+  "login QA-DANI ok",
+  "eligibility ok",
+  "manager company access ok",
+  "scoped manager ok",
+  "this week ok",
+  "next week draft ok",
+  "time off ok",
+  "clocker keys ok",
+  "clocker pin ok"
+ ],
+ "extra": {
+  "spot": [
+   {
+    "engine": "chromium",
+    "lang": "es",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Equipo",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Ir al contenidoWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": {
+       "text": "Editar",
+       "box": [
+        285,
+        68,
+        91,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "15.5px",
+       "scrollW": 91,
+       "clientW": 91
+      },
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        136,
+        68,
+        118,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 118,
+       "clientW": 118,
+       "truncated": false,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "119.5px 0px 119.5px 0px 91px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": {
+       "text": "Editar",
+       "box": [
+        245,
+        68,
+        131,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "31px",
+       "scrollW": 131,
+       "clientW": 131
+      },
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        102,
+        68,
+        186,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 218,
+       "clientW": 186,
+       "truncated": true,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "99.5px 0px 99.5px 0px 131px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 1440,
+      "big": false,
+      "back": {
+       "text": "Editar",
+       "box": [
+        288,
+        90,
+        69,
+        44
+       ],
+       "color": "rgb(11, 110, 105)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(242, 245, 244)",
+       "underEl": "H1.c-nav__title",
+       "bandBg": "rgb(242, 245, 244)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "13px",
+       "scrollW": 69,
+       "clientW": 69
+      },
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        296,
+        91,
+        800,
+        34
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 800,
+       "clientW": 800,
+       "truncated": false,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "28px"
+      },
+      "nav": {
+       "box": [
+        296,
+        88,
+        812,
+        40
+       ],
+       "gridCols": "800px 0px",
+       "display": "grid"
+      }
+     }
+    ],
+    "timeInputs": 0,
+    "saveLabelBefore": "Guardar cambios",
+    "savingLabel": "GuardarGuardando…Guardando…",
+    "after": "Editar turno Publicado Persona JF Elige a alguien Ana Fictional-Rivera Daniel Fictional-Reyes Elena Fictional-Cruz Fictional Owner James Fictional-Ortiz Maria Fictional-Lopez Localidad Un turno mantie",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "chromium",
+    "lang": "en",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Team",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Skip to contentWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": {
+       "text": "Edit",
+       "box": [
+        300,
+        68,
+        76,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "svg.[object SVGAnimatedString]",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "15.5px",
+       "scrollW": 76,
+       "clientW": 76
+      },
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        131,
+        68,
+        128,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 128,
+       "clientW": 128,
+       "truncated": false,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "127px 0px 127px 0px 76px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": {
+       "text": "Edit",
+       "box": [
+        273,
+        68,
+        103,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "31px",
+       "scrollW": 103,
+       "clientW": 103
+      },
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        102,
+        68,
+        186,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 239,
+       "clientW": 186,
+       "truncated": true,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "113.5px 0px 113.5px 0px 103px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 1440,
+      "big": false,
+      "back": {
+       "text": "Edit",
+       "box": [
+        288,
+        90,
+        57,
+        44
+       ],
+       "color": "rgb(11, 110, 105)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(242, 245, 244)",
+       "underEl": "H1.c-nav__title",
+       "bandBg": "rgb(242, 245, 244)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "13px",
+       "scrollW": 57,
+       "clientW": 57
+      },
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        296,
+        91,
+        800,
+        34
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 800,
+       "clientW": 800,
+       "truncated": false,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "28px"
+      },
+      "nav": {
+       "box": [
+        296,
+        88,
+        812,
+        40
+       ],
+       "gridCols": "800px 0px",
+       "display": "grid"
+      }
+     }
+    ],
+    "timeInputs": 0,
+    "saveLabelBefore": "Save changes",
+    "savingLabel": null,
+    "after": "Edit shift Published Person JF Choose someone Ana Fictional-Rivera Daniel Fictional-Reyes Elena Fictional-Cruz Fictional Owner James Fictional-Ortiz Maria Fictional-Lopez Location A shift keeps its lo",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "webkit",
+    "lang": "es",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Equipo",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Ir al contenidoWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": {
+       "text": "Editar",
+       "box": [
+        284,
+        68,
+        92,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "15.5px",
+       "scrollW": 92,
+       "clientW": 92
+      },
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        136,
+        68,
+        118,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 118,
+       "clientW": 118,
+       "truncated": false,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "119.140625px 0px 119.140625px 0px 91.71875px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": {
+       "text": "Editar",
+       "box": [
+        241,
+        68,
+        135,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "31px",
+       "scrollW": 135,
+       "clientW": 135
+      },
+      "title": {
+       "text": "Horas y reglas",
+       "box": [
+        102,
+        68,
+        186,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 236,
+       "clientW": 186,
+       "truncated": true,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "97.28125px 0px 97.28125px 0px 135.4375px",
+       "display": "grid"
+      }
+     }
+    ],
+    "timeInputs": 0,
+    "saveLabelBefore": "Guardar cambios",
+    "savingLabel": "GuardarGuardando…Guardando…",
+    "after": "Editar turno Publicado Persona JF Localidad Un turno mantiene su localidad. Para moverlo, bórralo y añade uno nuevo. Puesto Fecha Inicio Fin Líder del turno Debe ser Dueño, Gerente o Líder. Nota Cance",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   },
+   {
+    "engine": "webkit",
+    "lang": "en",
+    "rowFound": 1,
+    "urlPerson": "/app/employees/SWEEP-B",
+    "backLink": "Team",
+    "backHref": null,
+    "urlBack": "/app/employees",
+    "focusAfterBack": "BODY  Skip to contentWorkforceNQNorthside QA W",
+    "ring": "none 3px | none",
+    "rules": [
+     {
+      "width": 390,
+      "big": false,
+      "back": {
+       "text": "Edit",
+       "box": [
+        299,
+        68,
+        77,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "svg.[object SVGAnimatedString]",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "15.5px",
+       "scrollW": 77,
+       "clientW": 77
+      },
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        130,
+        68,
+        130,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 130,
+       "clientW": 130,
+       "truncated": false,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "17px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "126.703125px 0px 126.703125px 0px 76.59375px",
+       "display": "grid"
+      }
+     },
+     {
+      "width": 390,
+      "big": true,
+      "back": {
+       "text": "Edit",
+       "box": [
+        271,
+        68,
+        105,
+        44
+       ],
+       "color": "rgba(255, 255, 255, 0.86)",
+       "ownBg": "rgba(0, 0, 0, 0)",
+       "bgUnder": "rgb(255, 255, 255)",
+       "underEl": "DIV.c-nav",
+       "bandBg": "rgb(255, 255, 255)",
+       "visibility": "visible",
+       "opacity": "1",
+       "display": "flex",
+       "clipPath": "none",
+       "hitIsLink": true,
+       "hitEl": "A.c-nav__back",
+       "inViewport": true,
+       "clippedBy": null,
+       "fontSize": "31px",
+       "scrollW": 105,
+       "clientW": 105
+      },
+      "title": {
+       "text": "Hours and rules",
+       "box": [
+        102,
+        68,
+        186,
+        44
+       ],
+       "whiteSpace": "nowrap",
+       "overflow": "hidden",
+       "textOverflow": "ellipsis",
+       "scrollW": 260,
+       "clientW": 186,
+       "truncated": true,
+       "color": "rgb(17, 21, 23)",
+       "fontSize": "34px"
+      },
+      "nav": {
+       "box": [
+        -2,
+        0,
+        394,
+        120
+       ],
+       "gridCols": "112.40625px 0px 112.421875px 0px 105.171875px",
+       "display": "grid"
+      }
+     }
+    ],
+    "timeInputs": 0,
+    "saveLabelBefore": "Save changes",
+    "savingLabel": null,
+    "after": "Edit shift Published Person JF Location A shift keeps its location. To move it, delete it and add a new one. Position Date Start End Shift lead Must be an Owner, Manager or Lead. Note Cancel Save chan",
+    "urlAfter": "/app/schedule/edit?shiftId=es-shift-2"
+   }
+  ]
+ },
+ "week": "2026-11-23",
+ "next": "2026-11-30"
+}

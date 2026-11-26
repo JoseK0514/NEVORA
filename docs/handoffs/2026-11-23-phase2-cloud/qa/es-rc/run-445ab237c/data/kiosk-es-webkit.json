@@ -1,0 +1,2076 @@
+[
+  "open shift: error: null value in column \"employee_id\" of relation \"shifts\" violates not-null constraint",
+  "console Failed to load resource: the server responded with a status of 404 (Not Found)",
+  {
+    "tabs": [
+      "/app",
+      "/app/schedule",
+      "/app/timecards",
+      "/app/payroll",
+      "/app/employees"
+    ],
+    "tabLabels": [
+      "Home",
+      "Schedule",
+      "Time",
+      "Payroll",
+      "Team"
+    ]
+  },
+  {
+    "runList": [
+      "372588d8-8793-495e-84e4-588578ca8cfb"
+    ]
+  },
+  {
+    "nmMode": "c1ed4d1a-3f0b-4fee-b935-37bc342b1a8f",
+    "r": "{\"id\":\"c1ed4d1a-3f0b-4fee-b935-37bc342b1a8f\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Fictional payro"
+  },
+  {
+    "nmMode": "25d7d6c9-3971-4a8a-9c2e-5158d2e319e8",
+    "r": "{\"id\":\"25d7d6c9-3971-4a8a-9c2e-5158d2e319e8\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Front counter i"
+  },
+  {
+    "nmRosterReadsAfterOpen": 2
+  },
+  {
+    "nm": "signin",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "signin",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px"
+  },
+  {
+    "nm": "signin",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "signin",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 70
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": false,
+      "hit": false,
+      "h": 109
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 109
+    },
+    "fs": "32px"
+  },
+  {
+    "nmLuisShown": 0
+  },
+  {
+    "nm": "pin",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "Employee PIN",
+      "2 of 4 digits entered"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Enter your PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Ana C.",
+      "2 of 4 digits entered"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "pin",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [
+      "Employee PIN",
+      "2 of 4 digits entered"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Enter your PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Ana C.",
+      "2 of 4 digits entered"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "pin",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "Employee PIN",
+      "2 of 4 digits entered"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Enter your PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Ana C.",
+      "2 of 4 digits entered"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "pin",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [
+      "Employee PIN",
+      "2 of 4 digits entered"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 70
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Enter your PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Ana C.",
+      "2 of 4 digits entered"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "nmFocusWalk": [
+      {
+        "c": "ACAna C.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "BMBeatriz M.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "CVCarlos V.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "DCDaniela C.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "EREduardo R.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "GTGabriela T.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "HDHéctor D.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "IMIsabel M.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "JOJames O.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "JPJavier P.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "LOLucía O.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "MSMiguel S.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "Use Employee ID",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "Español, switch language t",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "Skip to time clockTime clo",
+        "ring": "none"
+      },
+      {
+        "c": "Skip to time clock",
+        "ring": "3px rgb(255, 255, 255)"
+      },
+      {
+        "c": "ACAna C.",
+        "ring": "3px rgb(11, 110, 105)"
+      },
+      {
+        "c": "BMBeatriz M.",
+        "ring": "3px rgb(11, 110, 105)"
+      }
+    ]
+  },
+  {
+    "nmFocusPin": "clocker-pin",
+    "nmFocusBack": "Choose another name",
+    "nmFocusReturn": "CVCarlos V."
+  },
+  {
+    "nmFocus390": "100%",
+    "tiles": 12,
+    "hidden": []
+  },
+  {
+    "nmFocus390": "200%",
+    "tiles": 12,
+    "hidden": []
+  },
+  {
+    "nmVerified": [
+      "Hi, Ana."
+    ],
+    "nmNamesWhileVerified": 0
+  },
+  {
+    "nmRereadAfterDone": 1
+  },
+  {
+    "nmAnaEntries": [
+      {
+        "location_id": "loc-1",
+        "clock_in_at": "2026-11-26T13:23:00.838Z",
+        "clock_out_at": "2026-11-26T13:23:04.505Z",
+        "status": "CLOCKED_OUT"
+      }
+    ]
+  },
+  "ck console Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  {
+    "nm": "wrong-pin",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "Employee PIN",
+      "0 of 4 digits entered"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Enter your PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Beatriz M.",
+      "PIN not recognized. Try again or ask your manager to check your PIN.",
+      "0 of 4 digits entered"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "wrong-pin",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "Employee PIN",
+      "0 of 4 digits entered"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Enter your PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Beatriz M.",
+      "PIN not recognized. Try again or ask your manager to check your PIN.",
+      "0 of 4 digits entered"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "useid",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "useid",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "useid",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "useid",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 70
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "nmUseIdVerified": [
+      "Hi, James."
+    ]
+  },
+  {
+    "nm": "duplicate",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "fs": "16px"
+  },
+  {
+    "nm": "duplicate",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px"
+  },
+  {
+    "nmDuplicateVerified": [
+      "Hi, Luis."
+    ]
+  },
+  "ck console Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  {
+    "nmStaleReread": 1,
+    "nmStaleMiguelShown": 0
+  },
+  {
+    "nm": "stale",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 14,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O."
+    ],
+    "lines": [
+      "The list changed. Choose your name again.",
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "stale",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 14,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O."
+    ],
+    "lines": [
+      "The list changed. Choose your name again.",
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px"
+  },
+  {
+    "nm": "stale",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 14,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O."
+    ],
+    "lines": [
+      "The list changed. Choose your name again.",
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "stale",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 70
+      }
+    ],
+    "under44": [],
+    "controls": 14,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O."
+    ],
+    "lines": [
+      "The list changed. Choose your name again.",
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": false,
+      "hit": false,
+      "h": 109
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 109
+    },
+    "fs": "32px"
+  },
+  {
+    "nmTilesWhileHidden": 0,
+    "nmReadsOnReturn": 1,
+    "nmReadsOnEscape": 1
+  },
+  {
+    "nm": "search13",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "Search names"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 17,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S.",
+      "Zoe A."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "fs": "16px"
+  },
+  {
+    "nm": "search13",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "Search names"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 17,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S.",
+      "Zoe A."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px"
+  },
+  {
+    "nm": "search-luc",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "Search names"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 5,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [
+      "Lucía O."
+    ],
+    "lines": [
+      "Not on the list? Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "fs": "16px"
+  },
+  {
+    "nm": "search-none",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "Search names"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Choose your name"
+    ],
+    "names": [],
+    "lines": [
+      "No name matches. Use your Employee ID."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "failed",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [
+      "Names couldn’t load. Use your Employee ID."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "failed",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [
+      "Names couldn’t load. Use your Employee ID."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "failed",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [
+      "Names couldn’t load. Use your Employee ID."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "failed",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [
+      "Employee ID"
+    ],
+    "reachFail": [
+      {
+        "c": "Skip to time clock",
+        "ok": false,
+        "h": 70
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Enter your Employee ID"
+    ],
+    "names": [],
+    "lines": [
+      "Names couldn’t load. Use your Employee ID."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "nmFailedThenId": [
+      "Hi, James."
+    ]
+  },
+  {
+    "nmBodies": [
+      "roster:action",
+      "clear:action",
+      "verify:action,pin,selection",
+      "verify:action,employeeId,pin"
+    ]
+  },
+  {
+    "nmMode": "25d7d6c9-3971-4a8a-9c2e-5158d2e319e8",
+    "r": "{\"id\":\"25d7d6c9-3971-4a8a-9c2e-5158d2e319e8\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Front counter i"
+  },
+  {
+    "nmMode": "c1ed4d1a-3f0b-4fee-b935-37bc342b1a8f",
+    "r": "{\"id\":\"c1ed4d1a-3f0b-4fee-b935-37bc342b1a8f\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Fictional payro"
+  },
+  {
+    "nmMode": "b7c54e41-4e44-41eb-9857-4d6cda63212d",
+    "r": "{\"id\":\"b7c54e41-4e44-41eb-9857-4d6cda63212d\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Reduced motion "
+  },
+  {
+    "nmMotion": "signin",
+    "r": {
+      "animations": [],
+      "motionTransitions": [],
+      "fadeCount": 0,
+      "fades": [],
+      "running": [],
+      "reduce": true
+    }
+  },
+  {
+    "nmMotion": "pin",
+    "r": {
+      "animations": [],
+      "motionTransitions": [],
+      "fadeCount": 0,
+      "fades": [],
+      "running": [],
+      "reduce": true
+    }
+  },
+  {
+    "nmMode": "25d7d6c9-3971-4a8a-9c2e-5158d2e319e8",
+    "r": "{\"id\":\"25d7d6c9-3971-4a8a-9c2e-5158d2e319e8\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Front counter i"
+  },
+  {
+    "nmMode": "c1ed4d1a-3f0b-4fee-b935-37bc342b1a8f",
+    "r": "{\"id\":\"c1ed4d1a-3f0b-4fee-b935-37bc342b1a8f\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Fictional payro"
+  },
+  {
+    "nmMode": "b7c54e41-4e44-41eb-9857-4d6cda63212d",
+    "r": "{\"id\":\"b7c54e41-4e44-41eb-9857-4d6cda63212d\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Reduced motion "
+  },
+  {
+    "nmMode": "719db941-e385-450c-ac9d-c12d2378d261",
+    "r": "{\"id\":\"719db941-e385-450c-ac9d-c12d2378d261\",\"locationId\":\"loc-1\",\"workspaceId\":\"workspace-fuel\",\"name\":\"Tableta de prue"
+  },
+  {
+    "nm": "signin-es",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Elige tu nombre"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "¿No apareces? Usa tu ID de empleado."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 64
+    },
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "signin-es",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Elige tu nombre"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "¿No apareces? Usa tu ID de empleado."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px"
+  },
+  {
+    "nm": "signin-es",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Elige tu nombre"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "¿No apareces? Usa tu ID de empleado."
+    ],
+    "wayAtTop": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 56
+    },
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "signin-es",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 117
+      }
+    ],
+    "under44": [],
+    "controls": 15,
+    "h1": [
+      "Elige tu nombre"
+    ],
+    "names": [
+      "Ana C.",
+      "Beatriz M.",
+      "Carlos V.",
+      "Daniela C.",
+      "Eduardo R.",
+      "Gabriela T.",
+      "Héctor D.",
+      "Isabel M.",
+      "James O.",
+      "Javier P.",
+      "Lucía O.",
+      "Miguel S."
+    ],
+    "lines": [
+      "¿No apareces? Usa tu ID de empleado."
+    ],
+    "wayAtTop": {
+      "inView": false,
+      "hit": false,
+      "h": 109
+    },
+    "wayMidList": {
+      "inView": true,
+      "hit": true,
+      "h": 109
+    },
+    "fs": "32px"
+  },
+  {
+    "nm": "pin-es",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "PIN de empleado",
+      "2 de 4 dígitos ingresados"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Ingresa tu PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Lucía O.",
+      "2 de 4 dígitos ingresados"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "pin-es",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [
+      "PIN de empleado",
+      "2 de 4 dígitos ingresados"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Ingresa tu PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Lucía O.",
+      "2 de 4 dígitos ingresados"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "pin-es",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "PIN de empleado",
+      "2 de 4 dígitos ingresados"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Ingresa tu PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Lucía O.",
+      "2 de 4 dígitos ingresados"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "pin-es",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [
+      "PIN de empleado",
+      "2 de 4 dígitos ingresados"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 117
+      }
+    ],
+    "under44": [],
+    "controls": 16,
+    "h1": [
+      "Ingresa tu PIN"
+    ],
+    "names": [],
+    "lines": [
+      "Lucía O.",
+      "2 de 4 dígitos ingresados"
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "readyEsButtons": [
+      "Ponchar entrada",
+      "Listo",
+      "Actualizar"
+    ],
+    "wantIn": "Ponchar entrada",
+    "wantOut": "Ponchar salida"
+  },
+  {
+    "nm": "ready-es",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "ready-es",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "ready-es",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "ready-es",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 117
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "nm": "success-es",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 2,
+    "h1": [
+      "Entrada registrada"
+    ],
+    "names": [],
+    "lines": [
+      "Esta pantalla se borra en 8 segundos."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "success-es",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 2,
+    "h1": [
+      "Entrada registrada"
+    ],
+    "names": [],
+    "lines": [
+      "Esta pantalla se borra en 8 segundos."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "success-es",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 2,
+    "h1": [
+      "Entrada registrada"
+    ],
+    "names": [],
+    "lines": [
+      "Esta pantalla se borra en 8 segundos."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "success-es",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 117
+      }
+    ],
+    "under44": [],
+    "controls": 2,
+    "h1": [
+      "Entrada registrada"
+    ],
+    "names": [],
+    "lines": [
+      "Esta pantalla se borra en 8 segundos."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "nm": "ready-out-es",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 5,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "ready-out-es",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 5,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "ready-out-es",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 5,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "ready-out-es",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 117
+      }
+    ],
+    "under44": [],
+    "controls": 5,
+    "h1": [
+      "Hola, Ana."
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "readyOutEsButtons": [
+      "Ponchar salida",
+      "Listo",
+      "Actualizar",
+      "¿Algo no se guardó?"
+    ]
+  },
+  {
+    "nm": "useid-es",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "useid-es",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "useid-es",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "useid-es",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 117
+      }
+    ],
+    "under44": [],
+    "controls": 4,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  },
+  {
+    "nm": "failed-es",
+    "size": "768x1024",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [
+      "No se pudieron cargar los nombres. Usa tu ID de empleado."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "failed-es",
+    "size": "1024x768",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [
+      "No se pudieron cargar los nombres. Usa tu ID de empleado."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px"
+  },
+  {
+    "nm": "failed-es",
+    "size": "390x844",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 47
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [
+      "No se pudieron cargar los nombres. Usa tu ID de empleado."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "16px",
+    "axe": []
+  },
+  {
+    "nm": "failed-es",
+    "size": "390x844-text200",
+    "over": 0,
+    "clipped": [
+      "ID de empleado"
+    ],
+    "reachFail": [
+      {
+        "c": "Ir al registro de tiempo",
+        "ok": false,
+        "h": 117
+      }
+    ],
+    "under44": [],
+    "controls": 3,
+    "h1": [
+      "Ingresa tu ID de empleado"
+    ],
+    "names": [],
+    "lines": [
+      "No se pudieron cargar los nombres. Usa tu ID de empleado."
+    ],
+    "wayAtTop": null,
+    "wayMidList": null,
+    "fs": "32px"
+  }
+]
