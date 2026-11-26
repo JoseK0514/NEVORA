@@ -129,7 +129,7 @@ export function OfflineNote({ copy }: { copy: PayrollImportCopy }) {
 }
 
 /** A card that says the page can't go on and gives the one way forward. */
-export function StopCard({ kind = "locked", title, line, action, alert, children }: { kind?: "locked" | "failed" | "paused" | "empty" | "offline"; title: string; line?: ReactNode; action?: { label: string; href?: string; onClick?: () => void; busy?: boolean }; alert?: boolean; children?: ReactNode }) {
+export function StopCard({ kind = "locked", title, line, action, alert, children }: { kind?: "locked" | "failed" | "paused" | "empty" | "offline"; title: string; line?: ReactNode; action?: { label: string; href?: string; onClick?: () => void; busy?: boolean; retry?: boolean }; alert?: boolean; children?: ReactNode }) {
   return <BState kind={kind} title={title} line={line} action={action} alert={alert}>{children}</BState>;
 }
 

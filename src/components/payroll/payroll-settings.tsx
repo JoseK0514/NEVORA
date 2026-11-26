@@ -25,6 +25,7 @@ import { revealFeedback } from '@/lib/reveal-feedback';
 import { usePayrollCopy, payrollCopyFor, type PayrollLang } from './payroll-copy';
 import { copy as settingsWords } from './payroll-settings-copy';
 import { periodRange } from './payroll-format';
+import { RetryButton } from "@/components/kit/retry-button";
 
 /** IS-B27: which form sent the running save, so only its button says "Saving…". */
 const SavingForm = createContext<[string | null, (id: string) => void]>([null, () => {}]);
@@ -110,7 +111,7 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
     <BusinessZone.Provider value={timeZone}><SavingForm.Provider value={savingForm}>
     <KeepFocusClear />
     <Feedback operation={operation} />
-    {resource.loading ? <p className="c-note" role="status">{c.loading}</p> : resource.error ? <CorpCard as="div" ariaLabel={c.title}><div className="c-card__body"><p className="c-pset__state" role="alert">{resource.error}</p><button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => void resource.reload()}>{c.tryAgain}</button></div></CorpCard> : data && <>
+    {resource.loading ? <p className="c-note" role="status">{c.loading}</p> : resource.error ? <CorpCard as="div" ariaLabel={c.title}><div className="c-card__body"><p className="c-pset__state" role="alert">{resource.error}</p><RetryButton className="c-btn c-btn--secondary c-btn--md" onClick={() => resource.reload()}>{c.tryAgain}</RetryButton></div></CorpCard> : data && <>
       {!revision && <p className="c-note">{c.unsavedStart} {data.capabilities.internalCalculatorAvailable ? c.unsavedNative : c.unsavedImported}</p>}
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={data} operation={operation} />
       <SetGroup id="payroll-people-settings" label={c.people}>

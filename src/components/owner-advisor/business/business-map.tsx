@@ -212,7 +212,7 @@ export function MapReview({ ctx, mapVersionId, problem }: { ctx: BusinessCtx; ma
   if (state.kind === "gone") return <>{problem}{back}</>;
   if (state.kind === "loading" || state.kind === "idle") return <>{problem}<Skeleton label={t.loading} /></>;
   if (state.kind === "hidden") return <>{problem}<CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title={t.detailsHidden} line={t.detailsHiddenLine} action={{ label: t.showAgain, onClick: () => void read() }} /></CorpCard></>;
-  if (state.kind === "failed") return <>{problem}<CorpCard as="div"><BState kind="failed" alert title={t.mapFailed} line={t.checkConnection} action={{ label: t.tryAgain, onClick: () => void read() }} /></CorpCard></>;
+  if (state.kind === "failed") return <>{problem}<CorpCard as="div"><BState kind="failed" alert title={t.mapFailed} line={t.checkConnection} action={{ retry: true, label: t.tryAgain, onClick: () => void read() }} /></CorpCard></>;
   const result = state.result, map = result.map!;
   // The full map read's own revision, fingerprint and receipt (answer 4): never the staged draft's expected revision.
   const exactCommand = { mapVersionId, expectedRevision: result.receipt!.revision, digest: map.digest, acknowledged: true as const };
@@ -315,7 +315,7 @@ export function FiguresPanel({ ctx, problem, initialResult = null }: { ctx: Busi
       <div className="be-actions"><CorpButton type="submit" kind="primary" size="md" disabled={state.kind === "loading"}>{state.kind === "loading" ? t.reading : t.showFiguresNow}</CorpButton></div>
     </form></CorpBody></CorpCard>
     <div id="be-figures" className="be-results" aria-live="polite">
-      {state.kind === "failed" || state.kind === "gone" ? <CorpCard as="div"><BState kind="failed" alert title={t.figuresFailed} line={state.kind === "gone" ? t.notAcceptedLine : t.checkConnection} action={{ label: t.tryAgain, onClick: () => void read() }} /></CorpCard>
+      {state.kind === "failed" || state.kind === "gone" ? <CorpCard as="div"><BState kind="failed" alert title={t.figuresFailed} line={state.kind === "gone" ? t.notAcceptedLine : t.checkConnection} action={{ retry: true, label: t.tryAgain, onClick: () => void read() }} /></CorpCard>
         : state.kind === "hidden" ? <CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title={t.figuresHidden} line={t.detailsHiddenLine} action={{ label: t.showAgain, onClick: () => void read() }} /></CorpCard>
         : state.kind === "loading" ? <Skeleton label={t.reading} />
         : answer ? <FiguresResult ctx={ctx} result={answer} /> : null}

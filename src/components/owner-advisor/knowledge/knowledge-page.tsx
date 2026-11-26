@@ -179,7 +179,7 @@ export function KnowledgePage({ timeZone, view, client: given }: { timeZone: str
     {head.node}
     {load.state === "loading" ? <Skeleton label={t.loadingKnowledge} />
       : <CorpCard as="div"><BState kind="failed" alert title={t.loadFailed} line={t.checkConnection}
-        action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} /></CorpCard>}
+        action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} /></CorpCard>}
   </CorpPage>;
 
   const ctx: Ctx = { client, timeZone, snapshot: load.snapshot, now, busy: custody?.status === "sending", t, lang, send, go };
@@ -621,7 +621,7 @@ function VersionReview({ ctx, entry, versionId, problem }: { ctx: Ctx; entry: Kn
   if (state.kind === "missing") return <Gone t={t} />;
   if (state.kind === "loading") return <Skeleton label={t.loadingSaved} />;
   if (state.kind !== "ready") return <CorpCard as="div"><BState kind="failed" alert title={t.savedFailed} line={t.checkConnection}
-    action={{ label: t.tryAgain, onClick: () => { setState({ kind: "loading" }); setAttempt(value => value + 1); } }} /></CorpCard>;
+    action={{ retry: true, label: t.tryAgain, onClick: () => { setState({ kind: "loading" }); setAttempt(value => value + 1); } }} /></CorpCard>;
   const version = state.version;
   const number = (id: string) => entry.versions.findIndex(item => item.versionId === id) + 1;
   const publishable = !version.publishedAt && version.versionId === latestOf(entry)?.versionId;

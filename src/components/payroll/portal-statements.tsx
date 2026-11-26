@@ -10,6 +10,7 @@ import { usePayrollResource } from './use-payroll';
 import { payDay, periodRange } from './payroll-format';
 import { Num, PayGroup } from './pay-group';
 import { usePayrollCopy, type PayrollCopy, type PayrollLang } from './payroll-copy';
+import { RetryButton } from "@/components/kit/retry-button";
 
 type Statement = PayrollPortalStatementsResponse['statements'][number];
 
@@ -45,7 +46,7 @@ export function PortalStatements({ runs, names = {} }: { runs: PayrollRun[]; nam
       || a.index - b.index);
   return <PayGroup id="payroll-statements" label={t.payStatements}>
     {loading ? <CorpBody><p className="c-payroll__state" role="status">{t.loadingStatements}</p></CorpBody>
-      : error ? <CorpBody><p className="c-payroll__state" role="alert">{error}</p><CorpButton kind="secondary" size="md" onClick={() => void reload()}>{t.tryAgain}</CorpButton></CorpBody>
+      : error ? <CorpBody><p className="c-payroll__state" role="alert">{error}</p><RetryButton as={CorpButton} kind="secondary" size="md" onClick={() => reload()}>{t.tryAgain}</RetryButton></CorpBody>
       : rows.length ? <ul className="c-rows" aria-label={t.payStatements}>{rows.map(({ statement, run, name, relation }) => {
         const path = `/api/payroll/documents/${encodeURIComponent(statement.id)}`;
         const period = periodRange(statement.period.startDate, statement.period.endDate, lang);

@@ -281,7 +281,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, on
   const failed = !value && !offline && (connection === "unavailable" || connection === "ready");
   // Closing F1 (NV-123, NV-075): a failed read is the kit's state card with its one way forward (Try again).
   if (failed) return <BCard title={c.thingsToDo} id="b-home-needs"><BState kind="failed" title={c.didntLoad} line={c.checkConnection}
-    action={onRetry ? { label: c.tryAgain, onClick: onRetry } : undefined} /></BCard>;
+    action={onRetry ? { retry: true, label: c.tryAgain, onClick: onRetry } : undefined} /></BCard>;
   if (!value) return <BCard title={c.thingsToDo} id="b-home-needs"><p className="b-state" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>
     {offline || connection === "offline" ? c.updatesReconnect : connection === "paused" ? c.updatesBack : connection === "access_lost" ? c.signInAgain : connection === "not_allowed" ? c.noAccess : c.checkingNeeds}</p></BCard>;
   const rows: ReactNode[] = [];

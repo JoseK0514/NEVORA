@@ -183,7 +183,7 @@ export function AccountScreen(props: AccountScreenProps) {
   if (load.state === "loading") body = <CorpCard ariaLabel={t.balancesCard}><div className="rs-skel" role="status" aria-busy="true"><span className="rs-sr">{t.loadingAccount}</span>
     <span className="rs-skel__bar rs-skel__bar--head" aria-hidden="true" />{[42, 34, 40].map((w, i) => <span key={i} className="rs-skel__row" aria-hidden="true"><span className="rs-skel__bar rs-skel__bar--day" /><span className="rs-skel__bar" style={{ width: `${w}%` }} /></span>)}</div></CorpCard>;
   else if (load.state !== "ready") body = <div className="rs-state"><CorpCard ariaLabel={t.accountTitle}>{
-    load.state === "failed" ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
+    load.state === "failed" ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
     : load.state === "signed_out" ? <BState alert kind="locked" title={t.signedOutTitle} line={t.signedOutBody} action={{ label: t.signIn, href: "/login" }} />
     : <BState kind="locked" title={t.deniedTitle} line={t.deniedBody} action={{ label: firstName, href: backHref }} />}</CorpCard></div>;
   else if (step === "edit" && draft) {

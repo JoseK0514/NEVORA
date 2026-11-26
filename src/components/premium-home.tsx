@@ -29,6 +29,7 @@ import { useClockMonitor } from "./clean/use-clock-monitor";
 import { OwnerHomeCorp, toDoSentence } from "./owner-home-corp";
 import type { HomeBWeek } from "./owner-b/home-b";
 import type { NextPay } from "./payroll/my-pay";
+import { RetryButton } from "@/components/kit/retry-button";
 
 /* Manager and Owner Home, rebuilt for the clean Manager app (v3, approved Oct 19; spec in
  * docs/product/specs/clean-manager/spec.md). One job: what needs me now, and how today is going.
@@ -250,7 +251,7 @@ function QuietPending({ connection, onRetry, q = PREMIUM_HOME_COPY.en.quiet }: {
     <div className="q-sec"><h2 id="home-needs-you-title">{q.thingsToDo}</h2></div>
     <p className="q-empty">{message}</p>
     {connection === "access_lost" ? <a className="q-btn q-btn--sec" href="/login">{q.signIn}</a>
-      : !busy && onRetry && connection !== "offline" && connection !== "paused" ? <button type="button" className="q-btn q-btn--sec" onClick={onRetry}>{q.tryAgain}</button> : null}
+      : !busy && onRetry && connection !== "offline" && connection !== "paused" ? <RetryButton className="q-btn q-btn--sec" onClick={onRetry}>{q.tryAgain}</RetryButton> : null}
   </section>;
 }
 

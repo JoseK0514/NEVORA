@@ -13,6 +13,7 @@ import { QuietHeader, QuietList, QuietPage, QuietRow } from '../quiet/quiet';
 import { useEmployeeMobile } from '../employee-mobile/use-mobile';
 import { EmployeePayView } from '../employee-mobile/pay';
 import { CorpPayView } from '../employee-mobile/pay-corp';
+import { RetryButton } from "@/components/kit/retry-button";
 
 /* My pay in the Signature style (phase 1, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-1/p1c-pay.png). The band carries the next payday from the pay
@@ -80,7 +81,7 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
     <div className="q-grp"><h2 id="mp-statements">{t.statements}</h2></div>
     {loading ? <p className="q-empty" role="status">{t.loading}</p>
       : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{errorCode === 'SIGNED_OUT' ? t.signInAgain : t.couldNotLoad}</p>
-        <div className="q-emptyblock__action">{errorCode === 'SIGNED_OUT' ? <Link className="q-btn q-btn--sec" href="/login">{t.signIn}</Link> : <button type="button" className="q-btn q-btn--sec" onClick={() => void reload()}>{t.tryAgain}</button>}</div></div>
+        <div className="q-emptyblock__action">{errorCode === 'SIGNED_OUT' ? <Link className="q-btn q-btn--sec" href="/login">{t.signIn}</Link> : <RetryButton className="q-btn q-btn--sec" onClick={() => reload()}>{t.tryAgain}</RetryButton>}</div></div>
       : statements.length ? <QuietList label={t.statements}>{statements.map((statement, index) => <li key={statement.id} className="q-pay__row">
           {index === 0 ? <Celebration kind="PAYDAY_AVAILABLE" eventKey={statement.id} confirmed={statement.published} /> : null}
           <QuietRow bare href={documentHref(statement)} title={t.paydayTitle(shortDay(statement.payday, lang))} detail={`${periodLabel(statement.period.startDate, statement.period.endDate, lang)} · ${t.pdf}`} label={t.downloadFile(statement.filename)} />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { isValidElement, cloneElement } from "react";
 import type { ReactNode, CSSProperties, Ref, MouseEventHandler } from "react";
 import { BOffline } from "./b-offline";
+import { BRetryButton } from "./b-retry-button";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
@@ -252,7 +253,7 @@ export function BIcon({ tone = "teal", children, size }: { tone?: BTone; childre
   return <span className={`b-ico b-ico--${tone}`} data-size={size && size !== 36 ? size : undefined} aria-hidden="true">{glyph}</span>;
 }
 
-type BtnKind = "teal" | "ghost" | "quiet" | "white" | "glass" | "danger";
+export type BtnKind = "teal" | "ghost" | "quiet" | "white" | "glass" | "danger";
 const btn = (kind: BtnKind, full?: boolean, big?: boolean) => `b-btn b-btn--${kind}${full ? " b-btn--full" : ""}${big ? " b-btn--big" : ""}`;
 export function BButtonLink({ href, kind = "teal", full, big, children, label, prefetch }: { href: string; kind?: BtnKind; full?: boolean; big?: boolean; children: ReactNode; label?: string; prefetch?: boolean }) {
   return <Link className={btn(kind, full, big)} href={href} aria-label={label} prefetch={prefetch}>{children}</Link>;
@@ -467,7 +468,9 @@ export function BStateScreen({ title, titleId, sub, back, children, after, offli
 
 export function BState({ kind, title, line, action, children, icon, alert, silent, size, titleRef, heading, quiet, extra }: { kind: BStateKind; title?: ReactNode; line?: ReactNode;
   /** `busy`: the retry is running; the button keeps its place and shows the spinner with `busyLabel` ("Checking…" when none is given). */
-  action?: { label: ReactNode; onClick?: () => void; href?: string; busy?: boolean; busyLabel?: ReactNode; aria?: string }; children?: ReactNode; icon?: ReactNode; alert?: boolean;
+  /** `retry` (English flag A6, Nov 26, 2026): the action is a "Try again"; it shows "Trying again…" while its onClick runs
+   * (until a returned promise settles, and at least 600 ms) and ignores a second press. Not used with `busy`. */
+  action?: { label: ReactNode; onClick?: () => unknown; href?: string; busy?: boolean; busyLabel?: ReactNode; aria?: string; retry?: boolean }; children?: ReactNode; icon?: ReactNode; alert?: boolean;
   /** No live region here: the screen says its message once in its own alert (the route error pages), and this card is
    * the visible copy. */
   silent?: boolean;
@@ -494,8 +497,9 @@ export function BState({ kind, title, line, action, children, icon, alert, silen
       {line ? <p className="b-statecard__s">{line}</p> : null}
       {children}
       {action ? action.href ? <BButtonLink href={action.href} kind={go} label={action.aria}>{action.label}</BButtonLink>
-        : action.busy === undefined ? <BButton kind={go} onClick={action.onClick} label={action.aria}>{action.label}</BButton>
-        : <BButton kind={go} onClick={action.onClick} busy={action.busy} busyLabel={action.busyLabel ?? (action.busy ? "Checking…" : undefined)} label={action.aria}>{action.label}</BButton> : null}
+        : action.retry && action.busy === undefined ? <BRetryButton kind={go} onClick={action.onClick} label={action.aria}>{action.label}</BRetryButton>
+        : action.busy === undefined ? <BButton kind={go} onClick={action.onClick as (() => void) | undefined} label={action.aria}>{action.label}</BButton>
+        : <BButton kind={go} onClick={action.onClick as (() => void) | undefined} busy={action.busy} busyLabel={action.busyLabel ?? (action.busy ? "Checking…" : undefined)} label={action.aria}>{action.label}</BButton> : null}
       {quiet ?? null}
     </div>
   </div>;

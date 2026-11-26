@@ -278,8 +278,8 @@ export function RestrictionsScreen(props: RestrictionsScreenProps) {
   else if (load.state !== "ready") {
     const state = load.state;
     body = <div className="rs-state"><Card kit={kit} label={title}>{
-      state === "offline" ? <BState alert kind="offline" title={t.offlineTitle} line={t.offlineBody} action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
-      : state === "failed" ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
+      state === "offline" ? <BState alert kind="offline" title={t.offlineTitle} line={t.offlineBody} action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
+      : state === "failed" ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
       : state === "signed_out" ? <BState alert kind="locked" title={t.signedOutTitle} line={t.signedOutBody} action={{ label: t.signIn, href: "/login" }} />
       : state === "access" ? <BState alert kind="locked" title={t.accessTitle} line={t.accessBody} action={{ label: t.reload, onClick: () => window.location.reload() }} />
       : management ? <BState kind="locked" title={ownerRecord ? t.deniedOwnerTitle : t.deniedLocationsTitle} line={ownerRecord ? t.deniedOwnerBody : t.deniedLocationsBody(firstName)} action={{ label: t.backToPerson(firstName), href: back.href }} />

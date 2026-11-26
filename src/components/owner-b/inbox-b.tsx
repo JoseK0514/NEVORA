@@ -75,8 +75,8 @@ function ReadState({ connection, statusLine, onRefresh, c }: { connection: Actio
   if (connection === "paused") return <BState kind="paused" title={c.pausedTitle} line={c.pausedLine} />;
   if (connection === "access_lost") return <BState kind="locked" title={c.endedTitle} line={c.endedLine} action={{ label: c.signIn, href: "/login" }} />;
   // QA A3-06 (Nov 21, 2026): signed in, but without access to these tasks. Not a sign-out, so no Sign in button.
-  if (connection === "not_allowed") return <BState kind="locked" title={c.deniedTitle} line={c.deniedLine} action={{ label: c.tryAgain, onClick: onRefresh }} />;
-  return <BState kind="failed" title={c.failedTitle} line={c.failedLine} action={{ label: c.tryAgain, onClick: onRefresh }} />;
+  if (connection === "not_allowed") return <BState kind="locked" title={c.deniedTitle} line={c.deniedLine} action={{ retry: true, label: c.tryAgain, onClick: onRefresh }} />;
+  return <BState kind="failed" title={c.failedTitle} line={c.failedLine} action={{ retry: true, label: c.tryAgain, onClick: onRefresh }} />;
 }
 
 /** Closing F1 (NV-002): Later and done says what it holds ("Plan ahead 47 · Earlier 3"), so nothing waits unseen. */

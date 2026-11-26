@@ -218,8 +218,8 @@ export function BusinessPage({ timeZone, view, importsEnabled, retrievalEnabled,
     {pendingCard}
     {load.state === "loading" ? <Skeleton label={t.loading} />
       : <CorpCard as="div">{load.state === "offline"
-        ? <BState kind="offline" alert title={t.offline} line={t.offlineLine} action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
-        : <BState kind="failed" alert title={t.loadFailed} line={t.checkConnection} action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />}</CorpCard>}
+        ? <BState kind="offline" alert title={t.offline} line={t.offlineLine} action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
+        : <BState kind="failed" alert title={t.loadFailed} line={t.checkConnection} action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />}</CorpCard>}
   </CorpPage>;
 
   const catalog = load.catalog;
@@ -460,7 +460,7 @@ function VersionReview({ ctx, source, versionId, problem }: { ctx: Ctx; source: 
   if (state.kind === "gone" || (!meta && state.kind !== "loading" && state.kind !== "ready")) return <>{problem}<Gone t={t} /></>;
   if (state.kind === "loading" || state.kind === "idle") return <>{problem}<Skeleton label={t.loadingRows} /></>;
   if (state.kind === "hidden") return <>{problem}<CorpCard as="div"><BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title={t.hidden} line={t.hiddenLine} action={{ label: t.showAgain, onClick: () => void read() }} /></CorpCard></>;
-  if (state.kind === "failed") return <>{problem}<CorpCard as="div"><BState kind="failed" alert title={t.rowsFailed} line={t.checkConnection} action={{ label: t.tryAgain, onClick: () => void read() }} /></CorpCard></>;
+  if (state.kind === "failed") return <>{problem}<CorpCard as="div"><BState kind="failed" alert title={t.rowsFailed} line={t.checkConnection} action={{ retry: true, label: t.tryAgain, onClick: () => void read() }} /></CorpCard></>;
   const result = state.result, version = result.version!;
   const exactCommand = { sourceId, versionId, expectedRevision: result.receipt!.revision, digest: version.digest, acknowledged: true as const };
   const publish = async () => {

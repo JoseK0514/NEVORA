@@ -99,7 +99,7 @@ function FrameWord({word,lang}:{word:keyof AccessCopy['frame'];lang?:AccessLang}
 function FrameStateScreen({phase,offline,checkFailed,lang,onRetry}:{phase:'paused'|'expired'|'ready';offline:boolean;checkFailed:boolean;lang?:AccessLang;onRetry:()=>void}){
  const portal=usePortalLang(),language=lang??portal,words=accessCopy(language).frame;
  const {kind,title,line}=frameStateWords(phase,offline,checkFailed,language);
- return <BStateScreen title={title} back={{href:'/app',label:words.home}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{label:words.tryAgain,onClick:onRetry}}/></BStateScreen>;
+ return <BStateScreen title={title} back={{href:'/app',label:words.home}} offlineInTitle={kind==='offline'}><BState kind={kind} line={line} action={{ retry: true, label:words.tryAgain,onClick:onRetry}}/></BStateScreen>;
 }
 /** Test seam: a fresh tab. */
 export function resetScopedReadTab(){tab.retiredAt=-Infinity;tab.cutoff=null;tab.fence=null;}

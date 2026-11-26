@@ -12,6 +12,7 @@ import type { Today } from "@/lib/today/project";
 import { attendanceWords } from "@/lib/action-center/present";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { WHOS_WORKING_COPY } from "./whos-working-copy";
+import { RetryButton } from "@/components/kit/retry-button";
 
 /* Who's working (Release 1, board O-OnShift): Home's "Who's working" link. Who is clocked in now (the clock monitor), who
  * hasn't clocked in for a shift that started, and published shifts that ended with no clock-in (Today). The attendance
@@ -109,7 +110,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     </CorpCard>
     {today?.state === "unavailable" ? <CorpCard as="div" ariaLabel={t.shiftsToday}><CorpBody>
       <p className="c-who__state">{t.shiftsUnavailable}</p>
-      {onRetry ? <CorpButton kind="secondary" size="md" onClick={onRetry}>{t.tryAgain}</CorpButton> : null}
+      {onRetry ? <RetryButton as={CorpButton} kind="secondary" size="md" onClick={onRetry}>{t.tryAgain}</RetryButton> : null}
     </CorpBody></CorpCard> : null}
     {late.length ? <CorpCard id="who-late" label={headed(ATTENDANCE_WORDS.notClockedIn, late.length)}><ul className="c-rows" aria-label={ATTENDANCE_WORDS.notClockedIn}>{late.map(shift => <li key={shift.id}>
       <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}

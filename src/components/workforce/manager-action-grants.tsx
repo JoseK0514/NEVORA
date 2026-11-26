@@ -113,7 +113,7 @@ export function ManagerActionGrants({ employeeId, firstName, locations, scopeLoc
   else if (load.state === "loading") body = <div className="mg-skel" role="status" aria-busy="true"><span className="mg-sr">{t.loading}</span>
     {shown.slice(0, 2).map(location => <span key={location.id} className="mg-skel__group" aria-hidden="true"><span className="mg-skel__bar mg-skel__bar--h" />{PERMISSION_ORDER.map(p => <span key={p} className="mg-skel__row"><span className="mg-skel__bar" /><span className="mg-skel__bar mg-skel__bar--sw" /></span>)}</span>)}
   </div>;
-  else if (load.state === "failed") body = <BState alert kind="failed" title={t.loadFailedTitle} line={t.loadFailedBody} action={{ label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />;
+  else if (load.state === "failed") body = <BState alert kind="failed" title={t.loadFailedTitle} line={t.loadFailedBody} action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />;
   else body = <>
     <p className="mg-note">{t.panelIntro(firstName)}</p>
     {shown.map(location => <fieldset key={location.id} className="mg-loc">

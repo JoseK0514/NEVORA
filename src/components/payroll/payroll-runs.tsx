@@ -33,6 +33,7 @@ import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { ListChecksIcon } from '@phosphor-icons/react/dist/ssr/ListChecks';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { keepWhole } from '@/lib/keep-whole';
+import { RetryButton } from "@/components/kit/retry-button";
 
 export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history' | 'import';
 type Operation = ReturnType<typeof usePayrollOperation>;
@@ -92,7 +93,7 @@ function StateCard({ children, alert, retry }: { children: ReactNode; alert?: bo
   const c = usePayrollCopy().runs;
   return <CorpCard as="div" ariaLabel={c.payroll}><CorpBody>
     <p className="c-payroll__state" role={alert ? 'alert' : 'status'}>{children}</p>
-    {retry ? <CorpButton kind="secondary" size="md" onClick={retry}>{c.tryAgain}</CorpButton> : null}
+    {retry ? <RetryButton as={CorpButton} kind="secondary" size="md" onClick={retry}>{c.tryAgain}</RetryButton> : null}
   </CorpBody></CorpCard>;
 }
 

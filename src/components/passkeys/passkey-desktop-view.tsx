@@ -5,6 +5,7 @@ import type {Passkey} from '@/lib/passkeys/client';
 import {SigPendingLabel} from '@/components/signature/sig-button';
 import type {AuthLang} from '@/lib/auth-copy';
 import {ACCESS_COPY} from '@/components/access-recovery/copy';
+import { RetryButton } from "@/components/kit/retry-button";
 const dateLabel=(iso:string,lang:AuthLang)=>new Date(iso).toLocaleDateString(lang === 'es' ? 'es-PR' : 'en-US',{month:'short',day:'numeric',year:'numeric'});
 type Props={/** U11: the language of the passkey guidance (the signed-in app is English today). */lang?:AuthLang;load:'loading'|'ready'|'failed';passkeys:Passkey[];busy:'add'|'remove'|null;notice:{tone:'done'|'error'|'info';text:string}|null;confirm:Passkey|null;supported:boolean;phone:boolean;disabled?:boolean;dialog:RefObject<HTMLDialogElement|null>;addButton:RefObject<HTMLButtonElement|null>;onRefresh:()=>void;onAdd:()=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onRemove:(key:Passkey)=>void;onKeep:()=>void};
 /** Shared incumbent desktop/management markup, without a data or ceremony owner. */
@@ -18,7 +19,7 @@ export function PasskeyDesktopView({lang='en',load,passkeys,busy,notice,confirm,
       <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
       <div className="nv-card__body pk-body">
         {load === "loading" ? <p className="pk-muted" role="status">{t.loading}</p> : null}
-        {load === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <button type="button" className="nv-link" onClick={onRefresh}>{t.tryAgain}</button></p> : null}
+        {load === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <RetryButton className="nv-link" onClick={onRefresh}>{t.tryAgain}</RetryButton></p> : null}
         {load === "ready" && passkeys.length === 0 ? <p className="pk-muted pk-what"><b>{a.what}</b><span>{a.private}</span></p> : null}
         {passkeys.length ? <ul className="pk-list">
           {passkeys.map(passkey => (

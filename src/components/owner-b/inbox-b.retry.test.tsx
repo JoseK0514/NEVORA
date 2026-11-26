@@ -9,7 +9,8 @@ rs.mock("./owner-b.css", () => ({}));
 
 import { InboxB } from "./inbox-b";
 
-const retries = (html: string) => html.split(">Try again</button>").length - 1;
+// English flag A6: a retry button now draws its label in the busy-label cell.
+const retries = (html: string) => html.split(/>Try again<\/(?:button|span)>/).length - 1;
 const base = { families: [], total: null, statusLine: "", onRefresh: () => {}, back: false };
 
 it("says both failures and offers one Try again when the list and the clock-ins both failed", () => {

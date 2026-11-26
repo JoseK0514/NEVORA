@@ -17,6 +17,7 @@ import {usePortalLang} from '@/lib/i18n/portal-lang';
 import {useEmployeeDevice} from '../employee-mobile/device-owner';
 import './employee-b.css';
 import './requests.css';
+import { RetryButton } from "@/components/kit/retry-button";
 
 /* Requests and shifts on the Employee phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6,
  * 2026): the Requests tab, the loading screens the phone shows before its private read, and the pieces shared by Time
@@ -143,7 +144,7 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
 export function IncomingB({count, onRetry}: {count: number | null; onRetry: () => void}) {
   const lang = usePortalLang(), copy = requestsCopy(lang);
   if (count === null) return <div className="eb-inline"><span role="status">{copy.swapsCouldntCheck} <Link className="eb-inline__a" href="/app/exchange?tab=foryou">{copy.openSwapsForYou}</Link></span>
-    <button className="eb-inline__b" type="button" onClick={onRetry}>{copy.tryAgain}</button></div>;
+    <RetryButton className="eb-inline__b" onClick={onRetry}>{copy.tryAgain}</RetryButton></div>;
   return count ? <BList label={copy.needsYourAnswer}><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="amber"><ArrowsLeftRightIcon weight="bold"/></BIcon>}
     // Phase 8 (review C, row 17): the same words as the notification for it ("Swap request waiting for you").
     // Round 2 (R4): no filler line under it. This read holds only how many swaps wait (`incoming`), not who sent them,

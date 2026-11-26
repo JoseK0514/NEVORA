@@ -299,7 +299,7 @@ export function WeekCard({ summary, state, hidden, now, onRetry, onShow }: {
   </CorpCard></>;
   if (state === "loading") return <CorpCard as="div"><BState kind="loading" title={t.checkingWeek} line={t.readingWeek} /></CorpCard>;
   if (state === "invalid") return <CorpCard as="div"><BState kind="paused" title={t.cantReadWeek} line={t.cantReadWeekLine} /></CorpCard>;
-  if (state === "unavailable") return <CorpCard as="div"><BState kind="failed" alert title={t.weekFailed} line={t.checkConnection} action={{ label: t.tryAgain, onClick: onRetry }} /></CorpCard>;
+  if (state === "unavailable") return <CorpCard as="div"><BState kind="failed" alert title={t.weekFailed} line={t.checkConnection} action={{ retry: true, label: t.tryAgain, onClick: onRetry }} /></CorpCard>;
   if (hidden) return <HiddenCard onShow={onShow} />;
   return <CorpCard as="div"><BState kind="loading" title={t.checkingWeek} line={t.readingWeek} /></CorpCard>;
 }

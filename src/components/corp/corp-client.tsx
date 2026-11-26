@@ -196,7 +196,7 @@ function CorpSkeletonSlow({ pathname, title, offline }: { pathname: string; titl
     <BLoadingScreen {...shape} title={title ?? (typeof shape.title === "string" ? loadingTitle(shape.title, lang) : shape.title)} loadingText={es ? "Cargando…" : "Loading…"} state={<BState alert kind={offline ? "offline" : "loading"}
       title={es ? offline ? "Estás sin conexión" : "Esto está tardando más de lo normal" : offline ? "You’re offline" : "This is taking longer than usual"}
       line={es ? offline ? "Vuelve a conectarte y vuelve a intentarlo." : "Revisa tu conexión y vuelve a intentarlo." : offline ? "Reconnect, then try again." : "Check your connection, then try again."}
-      action={{ label: es ? "Intentar de nuevo" : "Try again", onClick: () => router.refresh() }} />} />
+      action={{ retry: true, label: es ? "Intentar de nuevo" : "Try again", onClick: () => router.refresh() }} />} />
   </div>;
 }
 

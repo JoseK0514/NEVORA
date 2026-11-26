@@ -25,6 +25,7 @@ import { faceTint } from "@/lib/face-tint";
 const faceStyle = (name: string) => { const [bg, fg] = faceTint(name); return { "--fa": bg, "--fc": fg } as CSSProperties; };
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
+import { RetryButton } from "@/components/kit/retry-button";
 
 const statusText = {
   loading: "Loading your Inbox…", reconnecting: "Reconnecting…", offline: "You’re offline. This updates when you reconnect.", paused: "Paused while you’re away. It updates when you come back.",
@@ -450,13 +451,13 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         {/* ST-26: the status line comes first, so it stays put. */}
         <p role="status" tabIndex={-1} className="q-empty inbox-status-message" style={{ marginTop: 24 }}>{statusText[connection]}</p>
         {connection === "access_lost" ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link>
-          : connection === "unavailable" || connection === "ready" || connection === "not_allowed" ? <button type="button" className="q-btn q-btn--sec" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .q-grp h2", ".inbox-status .q-btn"); }}>Try again</button> : null}
+          : connection === "unavailable" || connection === "ready" || connection === "not_allowed" ? <RetryButton className="q-btn q-btn--sec" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .q-grp h2", ".inbox-status .q-btn"); }}>Try again</RetryButton> : null}
       </div> : total === 0 ? <div className="inbox-clear">
         <p className="q-empty" role="status" style={{ marginTop: 24 }}>Nothing needs you right now.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}</p>
       </div> : <>
         {show("now") && todayFailed ? <section aria-label="Clock-ins">
           <p className="q-empty" style={{ marginTop: 24 }}>Clock-ins can’t be checked right now.</p>
-          <button type="button" className="q-btn q-btn--sec" onClick={refresh}>Try again</button>
+          <RetryButton className="q-btn q-btn--sec" onClick={refresh}>Try again</RetryButton>
         </section> : null}
         {coverageFirst ? [urgentSection, missedSection] : [missedSection, urgentSection]}
         {show("requests") && (value!.requests.length || filter === "requests") ? <Section id="requests" title="Requests" count={value!.requests.length}>

@@ -29,6 +29,7 @@ import {deviceFeedback} from '../employee-mobile/device-feedback-copy';
 import type {DeletionFormState} from '@/app/app/account/delete/actions';
 import {logout} from '@/app/login/actions';
 import './account.css';
+import { BRetryButton } from "../owner-b/b-retry-button";
 
 /* Employee phones, Direction B, the Account group (mock e-profile, e-calendar, e-alerts, e-delete). Each screen draws the
  * read, state and commands its page already owns; the corporate layout beside it is what tablets and desktop show. */
@@ -73,7 +74,7 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
           {ready ? <BCardNote>{copy.personalNote}</BCardNote> : null}
           {ready ? null : <div className="eb-status">
             <p className="b-state" role="status">{state.paused ? t.paused : denied ? t.denied : state.refreshing ? t.checking : t.failed}</p>
-            {denied ? <BButtonLink href="/login" kind="teal" full>{c.signIn}</BButtonLink> : phase === 'unavailable' ? <BButton kind="quiet" full onClick={onRetry}>{c.tryAgain}</BButton> : null}
+            {denied ? <BButtonLink href="/login" kind="teal" full>{c.signIn}</BButtonLink> : phase === 'unavailable' ? <BRetryButton kind="quiet" full onClick={onRetry}>{c.tryAgain}</BRetryButton> : null}
           </div>}
         </BCard>
         <BCard title={t.display} id="b-profile-display">
@@ -135,7 +136,7 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
         <div className="eb-body">
           {paused ? <p className="b-state" role="status">{t.paused}</p> : busy ? <p className="b-state" role="status">{t.saving}</p> : !status ? <p className="b-state" role="status">{t.checking}</p> : !available ? <>
             <p className="b-state" role="status">{status.state === 'unauthorized' ? t.unauthorized : t.failed}</p>
-            {status.state === 'unauthorized' ? <BButtonLink href="/login" kind="teal" full>{c.signIn}</BButtonLink> : <BButton kind="quiet" full onClick={onRetry}>{c.tryAgain}</BButton>}
+            {status.state === 'unauthorized' ? <BButtonLink href="/login" kind="teal" full>{c.signIn}</BButtonLink> : <BRetryButton kind="quiet" full onClick={onRetry}>{c.tryAgain}</BRetryButton>}
           </> : <>
             {/* Phase 9 (spec 2.2): privacy information is the kit's teal callout with ShieldCheck (no circle in a tint). */}
             <BCallout tone="teal" icon="privacy" title={t.privateTitle}>{t.privateText}</BCallout>

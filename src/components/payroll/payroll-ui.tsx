@@ -7,6 +7,7 @@ import type { PayrollDocument } from '@/lib/payroll/contracts';
 import { PAYROLL_SIGNED_OUT, type usePayrollOperation } from './use-payroll';
 import Link from 'next/link';
 import { PageBand } from '@/components/kit/kit';
+import { RetryButton } from "@/components/kit/retry-button";
 
 /** Page frame for payroll pages. Tabs between Timecards, Payroll runs, Time
  * exports and Payroll settings come from the shell's section tabs. */
@@ -23,7 +24,7 @@ export function PayrollPanel({ title, description, children, aside }: { title: s
 export function PayrollState({ title, children, error = false, retry }: { title: string; children: ReactNode; error?: boolean; retry?: () => void }) {
   return <div className={`pw-state${error ? ' pw-state-error' : ''}`} role={error ? 'alert' : 'status'}>
     {error ? <WarningCircleIcon size={22} weight="bold" aria-hidden /> : <FileTextIcon size={22} weight="bold" aria-hidden />}
-    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <button type="button" className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden />Try again</button>}</div>
+    <div><strong>{title}</strong><p>{children}</p>{children === PAYROLL_SIGNED_OUT ? <Link className="pw-button" href="/login">Sign in</Link> : retry && <RetryButton className="pw-button pw-secondary" onClick={() => { retry(); focusAfterRetry('.payroll-workflow .pw-toolbar', '.pw-state .pw-button'); }}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden />Try again</RetryButton>}</div>
   </div>;
 }
 export function OperationFeedback({ operation }: { operation: ReturnType<typeof usePayrollOperation> }) {

@@ -169,7 +169,7 @@ export function PayrollImportFlow({ lang = "en", runId, recoveryScope, actorId }
 
   if (loaded.state === "loading") return frame(0, null, <Skeleton label={copy.common.loading} />);
   if (loaded.state === "failed") return frame(0, null, loaded.why === "network"
-    ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />
+    ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ retry: true, label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />
     : <StopCard title={loaded.why === "denied" ? copy.common.deniedTitle : copy.common.signedOutTitle} line={loaded.why === "denied" ? copy.common.deniedLine : copy.common.signedOutLine} action={loaded.why === "denied" ? { label: copy.imp.hold.missing.action, href: "/app/payroll" } : { label: copy.common.signIn, href: "/login" }} />);
   const custody = holdsCustody(work.write) || work.write.phase === "saved";
   const hold = custody ? null : !runId ? { ...copy.imp.hold.noRun, href: "/app/payroll" } : !run ? { ...copy.imp.hold.missing, href: "/app/payroll" } : run.sourceAuthority === "NATIVE_RECORDED_TIME" ? { ...copy.imp.hold.native, href: back.href }

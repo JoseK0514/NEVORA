@@ -20,6 +20,7 @@ import { HomeB, type HomeBWeek } from "./owner-b/home-b";
 export { toDoSentence } from "./manager-inbox-corp";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { OWNER_HOME_COPY } from "./owner-home-copy";
+import { RetryButton } from "@/components/kit/retry-button";
 
 /* Owner and Manager Home in the corporate look (Release 1; approved board C-Owner, Oct 26). Presentation only: every number
  * comes from Today's published shifts, the clock-in monitor, the shared needs-you count, My pay's next payday and
@@ -223,7 +224,7 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup, setupCa
     return <CorpCard id="home-needs-you" label={h.thingsToDo}>
       {!busy && !quiet && connection !== "access_lost" ? <div className="c-error-card"><p className="c-error-card__title">{h.thingsUnavailable}</p>
         <p className="c-error-card__body">{h.checkConnection}</p>
-        {onRetryActions ? <CorpButton kind="neutral" className="c-error-card__action" onClick={onRetryActions}>{h.tryAgain}</CorpButton> : null}</div>
+        {onRetryActions ? <RetryButton as={CorpButton} kind="neutral" className="c-error-card__action" onClick={onRetryActions}>{h.tryAgain}</RetryButton> : null}</div>
       : <CorpBody><p className="c-home__state" aria-busy={busy || undefined}>{message}</p>
         {connection === "access_lost" ? <CorpButtonLink href="/login" kind="secondary" size="md" native>{h.signIn}</CorpButtonLink> : null}
       </CorpBody>}

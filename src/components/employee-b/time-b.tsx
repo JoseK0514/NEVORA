@@ -52,13 +52,13 @@ export function HoursBScreen({hero,children,sub,backLabel,right}:{hero?:ReactNod
 
 /** A read state or a message with its one way forward, as a card. Review F2 (NV-075): the shared state card (icon circle,
  * one line, one teal pill). */
-export function HoursStatusB({message,action,label,kind='locked'}:{message:ReactNode;action?:{label:ReactNode;onClick?:()=>void;href?:string;busy?:boolean};label?:string;kind?:BStateKind}){
+export function HoursStatusB({message,action,label,kind='locked'}:{message:ReactNode;action?:{label:ReactNode;onClick?:()=>void;href?:string;busy?:boolean;retry?:boolean};label?:string;kind?:BStateKind}){
  const T=timeCopy(usePortalLang());
  return <BCard label={label??T.timeStatus}><BState kind={kind} line={message} action={action}/></BCard>;
 }
 export function HoursUnavailableB({message,onRefresh}:{message:string;onRefresh:()=>void}){
  const T=timeCopy(usePortalLang());
- return <HoursBScreen><HoursStatusB kind="failed" message={message} action={{label:T.tryAgain,onClick:onRefresh}}/></HoursBScreen>;
+ return <HoursBScreen><HoursStatusB kind="failed" message={message} action={{ retry: true, label:T.tryAgain,onClick:onRefresh}}/></HoursBScreen>;
 }
 /** The frame's own states (paused, denied, loading, failed) on the page's hero. */
 export function HoursFrameStatusB({paused,denied,refreshing,refresh}:{paused:boolean;denied:boolean;refreshing:boolean;refresh:()=>void}){

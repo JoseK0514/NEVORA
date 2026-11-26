@@ -249,7 +249,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
 
   if (loaded.state === "loading") return frame(0, null, <Skeleton label={copy.common.loading} />);
   if (loaded.state === "failed") return frame(0, null, loaded.why === "network"
-    ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />
+    ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ retry: true, label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />
     : <StopCard title={loaded.why === "denied" ? copy.common.deniedTitle : copy.common.signedOutTitle} line={loaded.why === "denied" ? copy.common.deniedLine : copy.common.signedOutLine} action={loaded.why === "denied" ? { label: copy.exp.finish.openExports, href: exportsHref } : { label: copy.common.signIn, href: "/login" }} />);
   if(!work.plan&&(Object.keys(work.states).length||work.record.phase!=="idle")){
     const recovery=(key:string,state:WriteState<unknown>,manifest=false)=>{
