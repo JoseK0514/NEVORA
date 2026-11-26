@@ -5,7 +5,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {createDeletionBrowserApp} from './deletion-browser-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
-import {AUTH_COPY} from '../../lib/auth-copy';
+import {AUTH_COPY,AUTH_LANG_COOKIE} from '../../lib/auth-copy';
 import {POLICY_FACTS,SUPPORT_EMAIL} from '../../lib/legal/policies';
 import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 
@@ -23,68 +23,72 @@ it('shows a receipt during manual fulfillment and revokes only the requesting ac
  const deletionPath='/app/account/delete';
  try{
   await seedOwnedApp(app.database.executor);
-  const {actors:[subject,peer]}=await seedOwnedScenario(app.database.executor,'DELRECEIPT',0);
-  await q("UPDATE employees SET role='EMPLOYEE' WHERE id=ANY($1)",[[subject,peer]]);
-  const feeds=[];
-  for(const employee of [subject,peer]){
-   const token=randomBytes(32).toString('base64url');
-   const digest=createHash('sha256').update(token).digest('hex');
-   await q("INSERT INTO calendar_subscriptions(id,workspace_id,employee_id,digest,generation,allowed_location_ids) VALUES(gen_random_uuid(),'workspace-fuel',$1,$2,gen_random_uuid(),ARRAY['loc-1','loc-2'])",[employee,digest]);
-   feeds.push(app.url+'/api/calendar/'+token+'/schedule.ics');
-  }
-  const errors:string[]=[];
-  const signIn=async(employee:string)=>{
-   const context=await browser.newContext({viewport:{width:390,height:844},locale:'en-US',serviceWorkers:'block'});
-   await context.route('**/*',async(route:Route)=>{
-    const target=new URL(route.request().url());
-    if(['http:','https:'].includes(target.protocol)&&target.origin!==origin)await route.abort();
-    else await route.continue();
-   });
-   const page=await context.newPage();
-   page.setDefaultNavigationTimeout(90000);
-   page.on('pageerror',(error:Error)=>errors.push(error.message));
-   await page.goto(app.url+'/login?returnTo='+encodeURIComponent(deletionPath));
-   await page.getByLabel(AUTH_COPY.en.employeeId,{exact:true}).fill(employee);
-   await page.getByLabel(AUTH_COPY.en.password,{exact:true}).fill(TEST_PASSWORD);
-   await page.getByRole('button',{name:AUTH_COPY.en.signIn,exact:true}).click();
-   await page.waitForURL(app.url+deletionPath);
-   return page;
-  };
-  const requestPage=await signIn(subject),secondDevice=await signIn(subject),peerPage=await signIn(peer);
-  for(const url of feeds){
-   const response=await fetch(url);
-   expect(response.status).toBe(200);
-   expect(await response.text()).toContain('BEGIN:VCALENDAR');
-  }
-  const password=requestPage.locator('#deletion-password'),confirm=requestPage.locator('.em-delete-confirm');
-  await password.fill('wrong-fictional-password');
-  await requestPage.locator('#deletion-understand').check();
-  await confirm.click();
-  await expect.poll(()=>requestPage.locator('#deletion-password-error').isVisible()).toBe(true);
-  expect(await q('SELECT id FROM account_deletion_requests WHERE employee_id=$1',[subject])).toEqual([]);
-  await password.fill(TEST_PASSWORD);
-  await confirm.click();
-  const receipt=requestPage.locator('#b-deletion-done-title:visible');
-  await receipt.waitFor();
-  expect(await receipt.innerText()).toBe('Your deletion request was received');
-  const [saved]=await q<{reference:string;status:string}>('SELECT reference,status FROM account_deletion_requests WHERE employee_id=$1',[subject]);
-  expect(saved.status).toBe('received');
-  expect(await requestPage.locator('.em-delete .eb-ref__v:visible').innerText()).toBe(saved.reference);
-  expect(await q('SELECT employee_id FROM employee_sessions WHERE employee_id=ANY($1)',[[subject,peer]])).toEqual([{employee_id:peer}]);
-  const revoked=await fetch(feeds[0]);
-  expect(revoked.status).toBe(404);
-  expect(await revoked.text()).not.toContain('BEGIN:VCALENDAR');
-  expect((await fetch(feeds[1])).status).toBe(200);
-  await secondDevice.goto(app.url+deletionPath);
-  expect(new URL(secondDevice.url()).pathname).toBe('/login');
-  await peerPage.goto(app.url+deletionPath);
-  expect(new URL(peerPage.url()).pathname).toBe(deletionPath);
+  for(const [index,lang] of (['en','es'] as const).entries()){
+   const expectedReceipt=lang==='es'?'Recibimos tu solicitud de eliminación':'Your deletion request was received';
+   const {actors:[subject,peer]}=await seedOwnedScenario(app.database.executor,lang==='es'?'DELRECEIPTES':'DELRECEIPTEN',index);
+   await q("UPDATE employees SET role='EMPLOYEE' WHERE id=ANY($1)",[[subject,peer]]);
+   const feeds=[];
+   for(const employee of [subject,peer]){
+    const token=randomBytes(32).toString('base64url');
+    const digest=createHash('sha256').update(token).digest('hex');
+    await q("INSERT INTO calendar_subscriptions(id,workspace_id,employee_id,digest,generation,allowed_location_ids) VALUES(gen_random_uuid(),'workspace-fuel',$1,$2,gen_random_uuid(),ARRAY['loc-1','loc-2'])",[employee,digest]);
+    feeds.push(app.url+'/api/calendar/'+token+'/schedule.ics');
+   }
+   const errors:string[]=[];
+   const signIn=async(employee:string)=>{
+    const context=await browser.newContext({viewport:{width:390,height:844},locale:lang==='es'?'es-PR':'en-US',serviceWorkers:'block'});
+    await context.addCookies([{name:AUTH_LANG_COOKIE,value:lang,url:origin}]);
+    await context.route('**/*',async(route:Route)=>{
+     const target=new URL(route.request().url());
+     if(['http:','https:'].includes(target.protocol)&&target.origin!==origin)await route.abort();
+     else await route.continue();
+    });
+    const page=await context.newPage();
+    page.setDefaultNavigationTimeout(90000);
+    page.on('pageerror',(error:Error)=>errors.push(error.message));
+    await page.goto(app.url+'/login?returnTo='+encodeURIComponent(deletionPath));
+    await page.getByLabel(AUTH_COPY[lang].employeeId,{exact:true}).fill(employee);
+    await page.getByLabel(AUTH_COPY[lang].password,{exact:true}).fill(TEST_PASSWORD);
+    await page.getByRole('button',{name:AUTH_COPY[lang].signIn,exact:true}).click();
+    await page.waitForURL(app.url+deletionPath);
+    return page;
+   };
+   const requestPage=await signIn(subject),secondDevice=await signIn(subject),peerPage=await signIn(peer);
+   for(const url of feeds){
+    const response=await fetch(url);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toContain('BEGIN:VCALENDAR');
+   }
+   const password=requestPage.locator('#deletion-password'),confirm=requestPage.locator('.em-delete-confirm');
+   await password.fill('wrong-fictional-password');
+   await requestPage.locator('#deletion-understand').check();
+   await confirm.click();
+   await expect.poll(()=>requestPage.locator('#deletion-password-error').isVisible()).toBe(true);
+   expect(await q('SELECT id FROM account_deletion_requests WHERE employee_id=$1',[subject])).toEqual([]);
+   await password.fill(TEST_PASSWORD);
+   await confirm.click();
+   const receipt=requestPage.locator('#b-deletion-done-title:visible');
+   await receipt.waitFor();
+   expect(await receipt.innerText()).toBe(expectedReceipt);
+   const [saved]=await q<{reference:string;status:string}>('SELECT reference,status FROM account_deletion_requests WHERE employee_id=$1',[subject]);
+   expect(saved.status).toBe('received');
+   expect(await requestPage.locator('.em-delete .eb-ref__v:visible').innerText()).toBe(saved.reference);
+   expect(await q('SELECT employee_id FROM employee_sessions WHERE employee_id=ANY($1)',[[subject,peer]])).toEqual([{employee_id:peer}]);
+   const revoked=await fetch(feeds[0]);
+   expect(revoked.status).toBe(404);
+   expect(await revoked.text()).not.toContain('BEGIN:VCALENDAR');
+   expect((await fetch(feeds[1])).status).toBe(200);
+   await secondDevice.goto(app.url+deletionPath);
+   expect(new URL(secondDevice.url()).pathname).toBe('/login');
+   await peerPage.goto(app.url+deletionPath);
+   expect(new URL(peerPage.url()).pathname).toBe(deletionPath);
 
-  await q("UPDATE account_deletion_requests SET status='processing' WHERE reference=$1 AND employee_id=$2 AND status='received'",[saved.reference,subject]);
-  expect(await receipt.innerText()).toBe('Your deletion request was received');
-  expect(await requestPage.locator('.em-delete .eb-ref__v:visible').innerText()).toBe(saved.reference);
-  await requestPage.screenshot({path:resolve(evidence,'chromium-receipt-processing.png')});
-  expect(errors).toEqual([]);
+   await q("UPDATE account_deletion_requests SET status='processing' WHERE reference=$1 AND employee_id=$2 AND status='received'",[saved.reference,subject]);
+   expect(await receipt.innerText()).toBe(expectedReceipt);
+   expect(await requestPage.locator('.em-delete .eb-ref__v:visible').innerText()).toBe(saved.reference);
+   await requestPage.screenshot({path:resolve(evidence,'chromium-'+lang+'-receipt-processing.png')});
+   expect(errors).toEqual([]);
+  }
  }finally{
   try{await browser.close();}finally{await app.close();}
  }
@@ -164,7 +168,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    expect(body.indexOf('What we delete')).toBeLessThan(body.indexOf('Enter your password to confirm'));
    /* The retention disclosure moved to the What may be kept page (board); its schedule is there. */await page.getByRole('link',{name:'What may be kept',exact:true}).click();await page.waitForURL(app.url+'/app/profile/account-deletion');/* B2: the policy page is the Direction B screen; its later sections are rows in #b-doc-sections. */const kept=page.locator('#b-doc-sections details.eb-doc__sec').filter({has:page.locator('summary',{hasText:'What may be kept'})});await kept.locator('summary').click();expect(await kept.innerText()).toContain(POLICY_FACTS.RETENTION_SCHEDULE!.slice(0,60));await page.goBack();await page.waitForURL(app.url+'/app/account/delete');await state('idle');
    record('Profile row opens the deletion review: own account, actual consequences, retention disclosure, password last');
-   /* B2: consequences are the screen's notices, back is the hero's link, and "This can’t be undone." sits in the form's Confirm it’s you group. */await matrix('review',[['title','.em-delete h1:visible'],['consequence','#b-deletion-effects .b-notice__s'],['confirm','.em-delete-confirm'],['back','.em-delete .b-back'],['label','.em-delete .c-field__label'],['undone','.em-delete-form .eb-confirm > .c-note']]);
+   /* B2: consequences are the screen's notices, back is the hero's link, and "This can’t be undone." sits in the form's Confirm it’s you group. */await matrix('review',[['title','.em-delete h1:visible'],['consequence','#b-deletion-effects .b-notice__s'],['confirm','.em-delete-confirm'],['back','.em-delete .b-back'],['label','.em-delete .c-field__label'],['undone','.em-delete-form .eb-delete-go > .c-note']]);
    record('Review light/dark at 320/390/430, sampled contrast, 44px targets, token type, 200% text with actions above navigation');
 
    /* Board: Keep my account is the page's ‹ Profile back link. */stage='keep-account';/* B2: the hero's ‹ Profile link. */await page.locator('.em-delete .b-back').click();await page.waitForURL(app.url+'/app/profile#profile-account-deletion');
