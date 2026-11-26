@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import {DocumentAppearanceScripts} from "./document-appearance-scripts";
 import { readAuthLang } from "../lib/auth-lang.server";
+import { PORTAL_LANG_COOKIE, signedInDocumentLang } from "../lib/i18n/portal-lang-cookie";
 import { SESSION_COOKIE } from "../lib/auth/session-cookie";
 import { WebAnalytics } from "../components/web-analytics";
 import { NUVORA_BRAND } from "../lib/brand";
@@ -37,11 +38,17 @@ const TEXT_SCALE_SCRIPT = `(function(){var d=document.documentElement;function s
  * Authentication belongs to app/app/layout.tsx, not this public document root.
  */
 /** Review 30 (D37): the document's language. Signed out, the pages speak the sign-in language (the nv-lang choice, else the
- * browser's), so a Spanish page's title is read with Spanish rules; signed in, the app is English until a stored language
- * is decided (DESIGN.MD), so a session keeps "en". The Clocker sets its own from the tablet's choice once it starts.
+ * browser's), so a Spanish page's title is read with Spanish rules; signed in, see the branch-audit note below. The Clocker
+ * sets its own from the tablet's choice once it starts.
  * Outside a request (tests, static rendering) it is English. */
+/* Branch audit (Nov 26, 2026): signed in, the document starts in the person's saved language as the portal last wrote it
+ * (the nv-portal-lang hint, portal-lang-cookie.ts), else the sign-in language; PortalLangProvider still sets the saved
+ * choice after load. Before this a signed-in Spanish page arrived as lang="en" until hydration. */
 async function documentLang(): Promise<"en" | "es"> {
-  try { if ((await cookies()).has(SESSION_COOKIE)) return "en"; } catch { return "en"; }
+  try {
+    const jar = await cookies();
+    if (jar.has(SESSION_COOKIE)) return signedInDocumentLang(jar.get(PORTAL_LANG_COOKIE)?.value, await readAuthLang());
+  } catch { return "en"; }
   return readAuthLang();
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, type ReactNode } from 'react';
+import { portalLangCookie } from './portal-lang-cookie';
 
 /** The signed-in app's language. */
 export type PortalLang = 'en' | 'es';
@@ -30,6 +31,8 @@ export function PortalLangProvider({ lang, children }: { lang: PortalLang; child
     root.lang = value;
     remembered = value;
     try { window.sessionStorage.setItem(REMEMBER_KEY, value); } catch { /* Storage blocked: memory only. */ }
+    // The root layout's first-render hint for the next signed-in page (portal-lang-cookie.ts).
+    try { document.cookie = portalLangCookie(value, window.location.protocol === 'https:'); } catch { /* Cookies blocked: no hint. */ }
     return () => { root.lang = previous; };
   }, [value]);
   return <PortalLangContext.Provider value={value}>{children}</PortalLangContext.Provider>;

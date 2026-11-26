@@ -9,7 +9,7 @@ import { WORD_PRESETS, type WordPresetId } from "@/lib/workspace-presentation/wo
 import { CorpSection } from "@/components/corp/corp";
 import { RadioRowB, ResultB, SwitchRowB } from "@/app/app/settings/settings-b-form";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
-import { FEATURES_EDITOR_COPY } from "./features-editor-copy";
+import { FEATURES_EDITOR_COPY, featuresBusyText } from "./features-editor-copy";
 
 /** Owner editor for company words and modules (B2), Settings in Direction B. The server re-checks
  * every rule; a module with requests still waiting cannot be turned off. */
@@ -55,9 +55,11 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
     try {
       for (const [index, command] of pending.current.entries()) {
         const response = await fetch("/api/workspace-presentation", { method: "POST", cache: "no-store", headers: { "content-type": "application/json", "x-nevora-presentation": "1" }, body: JSON.stringify(command) });
-        const body = await response.json().catch(() => null) as { state?: string; message?: string } | null;
+        const body = await response.json().catch(() => null) as { state?: string; message?: string; module?: string; count?: number } | null;
         if (response.status === 401 || response.status === 403) { pending.current = null; setNotice({ tone: "error", text: t.signInAgain }); return; }
-        if (response.status === 409 && body?.state === "busy") { pending.current = null; setNotice({ tone: "error", text: `${index ? t.wordsSaved : ""}${body.message ?? t.stillWaiting}` }); if (index) router.refresh(); return; }
+        // Branch audit, Nov 26, 2026: the server writes its busy sentence in English, so the person's language comes from the
+        // reply's module and count (FEATURES_EDITOR_COPY.blocker), with the server's sentence only as a fallback.
+        if (response.status === 409 && body?.state === "busy") { pending.current = null; setNotice({ tone: "error", text: `${index ? t.wordsSaved : ""}${featuresBusyText(lang, body) ?? body.message ?? t.stillWaiting}` }); if (index) router.refresh(); return; }
         if (response.status === 409) { pending.current = null; setNotice({ tone: "error", text: t.changedElsewhere }); return; }
         if (!response.ok) throw Error();
       }

@@ -89,7 +89,7 @@ export const copy = {
 /* Signed-in Spanish (es-rest): the words of Features and team terms (features-editor.tsx), English as written and Puerto
  * Rico Spanish. English module and word-set names stay in src/lib/workspace-presentation (modules.ts, words.ts); the
  * Spanish here is keyed by their ids. */
-import { blockerText, type ModuleId } from '@/lib/workspace-presentation/modules';
+import { MODULE_IDS, blockerText, type ModuleId } from '@/lib/workspace-presentation/modules';
 import type { WordPresetId } from '@/lib/workspace-presentation/words';
 
 const en = {
@@ -142,3 +142,14 @@ const es: typeof en = {
   tryAgain: copy.es.tryAgain,
 };
 export const FEATURES_EDITOR_COPY = { en, es };
+
+/** The refusal to turn a feature off while its requests wait (409 busy), in the person's language, from the reply's
+ * module and count. The server's own sentence is English, so it is only the caller's fallback (null here when the reply
+ * doesn't carry a known module and a positive whole count). Branch audit, Nov 26, 2026 (the es-rest R2-A fix, on the
+ * current client). */
+export function featuresBusyText(lang: 'en' | 'es', body: { module?: unknown; count?: unknown } | null | undefined): string | null {
+  const id = body?.module, count = body?.count;
+  if (typeof id !== 'string' || !(MODULE_IDS as readonly string[]).includes(id)) return null;
+  if (typeof count !== 'number' || !Number.isInteger(count) || count < 1) return null;
+  return FEATURES_EDITOR_COPY[lang].blocker(id as ModuleId, count);
+}
