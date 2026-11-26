@@ -20,5 +20,7 @@
   :is(#q-root, html) .so-foot__links { display: block; max-width: 100%; text-align: center; text-wrap: balance; }
   :is(#q-root, html) .so-foot__dot { display: none; }
   :is(#q-root, html) .so-foot__item { display: inline-flex; align-items: center; min-height: 44px; margin: 0 calc(var(--b-space-20, 20px) / 2); }
-  :is(#q-root, html) .so-foot a { padding-block: 13px; }
+  /* Nov 26, 2026 (QA, 390 at 200% text): the row holds its link's whole tap box. The -13px margin let a grown link's box
+   * spill into the next row ("Términos" over "Eliminar cuenta", 62px). At 100% the box is still 44px, so nothing moves. */
+  :is(#q-root, html) .so-foot a { padding-block: 13px; margin-block: 0; }
 }

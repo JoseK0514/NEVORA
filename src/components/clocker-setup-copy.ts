@@ -7,7 +7,7 @@ export const copy = {
     // src/components/clocker-setup.tsx:90
     thatLinkDoesntHaveACompleteSetupCodeType: "That link doesn’t have a complete setup code. Type the code from Owner Settings.",
     // src/components/clocker-setup.tsx:123
-    enterTheWholeSetupCodeTheOwnerSeesIn: "Enter the whole setup code the Owner sees in Settings → Clocker tablets.",
+    enterTheWholeSetupCodeTheOwnerSeesIn: "Enter the whole setup code the Owner sees in Settings → Clocker tablets.",
     // src/components/clocker-setup.tsx:167
     deviceIsConnectedToThisLocation: "{device} is connected to this location.",
     // src/components/clocker-setup.tsx:170
@@ -25,7 +25,7 @@ export const copy = {
     // src/components/clocker-setup.tsx:216
     typeACodeInstead: "Type a code instead",
     // src/components/clocker-setup.tsx:222
-    onAnotherDeviceTheOwnerOpensSettingsClockerTablets: "On another device, the Owner opens Settings → Clocker tablets.",
+    onAnotherDeviceTheOwnerOpensSettingsClockerTablets: "On another device, the Owner opens Settings → Clocker tablets.",
     // src/components/clocker-setup.tsx:33
     tabletSetupCouldNotBeConfirmed: "Tablet setup could not be confirmed.",
     // src/components/clocker-setup.tsx:36
@@ -41,7 +41,7 @@ export const copy = {
     // src/components/clocker-setup.tsx:90
     thatLinkDoesntHaveACompleteSetupCodeType: "Ese enlace no trae un código de configuración completo. Escribe el código que aparece en Configuración del dueño.",
     // src/components/clocker-setup.tsx:123
-    enterTheWholeSetupCodeTheOwnerSeesIn: "Escribe el código completo que ve el dueño en Configuración → Tabletas de Clocker.",
+    enterTheWholeSetupCodeTheOwnerSeesIn: "Escribe el código completo que ve el dueño en Configuración → Tabletas de Clocker.",
     // src/components/clocker-setup.tsx:167
     deviceIsConnectedToThisLocation: "{device} está conectada a esta localidad.",
     // src/components/clocker-setup.tsx:170
@@ -59,7 +59,7 @@ export const copy = {
     // src/components/clocker-setup.tsx:216
     typeACodeInstead: "Escribir el código",
     // src/components/clocker-setup.tsx:222
-    onAnotherDeviceTheOwnerOpensSettingsClockerTablets: "En otro dispositivo, el dueño abre Configuración → Tabletas de Clocker.",
+    onAnotherDeviceTheOwnerOpensSettingsClockerTablets: "En otro dispositivo, el dueño abre Configuración → Tabletas de Clocker.",
     // src/components/clocker-setup.tsx:33
     tabletSetupCouldNotBeConfirmed: "No pudimos confirmar la configuración de la tableta.",
     // src/components/clocker-setup.tsx:36

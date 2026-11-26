@@ -149,7 +149,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
     const code = mode === 'received' ? linked.current ?? '' : input.current?.value.trim() ?? '';
     if (!isSetupCode(code)) {
       forget(); setMode('type');
-      setFeedback({ message: 'Enter the whole setup code the Owner sees in Settings → Clocker tablets.', uncertain: false }); return;
+      setFeedback({ message: 'Enter the whole setup code the Owner sees in Settings → Clocker tablets.', uncertain: false }); return;
     }
     // Nothing is sent while the tablet says it is offline, so the code is still good and stays where it is.
     if (navigator.onLine === false) { setFeedback({ message: OFFLINE, uncertain: false, offline: true }); return; }
@@ -197,7 +197,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
   // Phase 8 (#20): the location reads as one name. A short name keeps its words on one line; a long one may still wrap.
   // Gate check (Nov 23): the band's pill already names the location, so the card doesn't repeat it.
   const placeLine = pageWords[locale].thisTabletBecomesThisLocationsTimeClock;
-  const settingsStep = t('On another device, the Owner opens Settings → Clocker tablets.');
+  const settingsStep = t('On another device, the Owner opens Settings → Clocker tablets.');
   const [readyBefore, readyAfter = ''] = t('{device} is ready. Your team can clock in now.', { device: '\u0000' }).split('\u0000');
   const fieldError = error && view === 'type';
   const punchNote = <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20} mark/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>;

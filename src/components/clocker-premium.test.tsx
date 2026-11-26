@@ -58,7 +58,7 @@ it('names the screens in both languages without the words the review found wrong
  expect(keys).not.toContain('We couldn’t load your time, so nothing was recorded. Tell a manager if you need your time recorded now.');
  expect(clockerText('es','Nothing was recorded. Tell a manager if you need your time recorded now.')).toBe('No se registró nada. Avísale a un gerente si necesitas que registre tu tiempo ahora.');
  // The setup step's menu path never breaks at its arrow.
- expect(keys).toContain('On another device, the Owner opens Settings → Clocker tablets.');
+ expect(keys).toContain('On another device, the Owner opens Settings → Clocker tablets.');
  // The photo path's plain words.
  for(const key of ['Use this photo','Check if the photo saved','Send the photo again'])expect(CLOCKER_COPY[key],key).toBeTruthy();
  expect(keys).not.toContain('Use photo & continue');

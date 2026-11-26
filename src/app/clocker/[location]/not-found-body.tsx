@@ -28,7 +28,7 @@ function Body({ legal }: { legal: Record<ClockerLocale, ReactNode> }) {
     </header>
     <section className="nf-sheet" aria-labelledby="not-found-title">
       <div className="nf-card">
-        <p className={`not-found-hint ${styles.lead}`}><ClockerIcon name="stop" size={18} /><span><strong>{t('Tell a manager')}</strong> {t('Your Owner sets this tablet up again in Settings → Clocker tablets.')}</span></p>
+        <p className={`not-found-hint ${styles.lead}`}><ClockerIcon name="stop" size={18} /><span><strong>{t('Tell a manager')}</strong> {t('Your Owner sets this tablet up again in Settings → Clocker tablets.')}</span></p>
         <p className={`not-found-text ${styles.meanwhile}`}>{t('Until then, ask a manager to record your time.')}</p>
         <button type="button" className={`nf-cta ${styles.retry}`} onClick={() => window.location.reload()}>{t('Try again')}</button>
       </div>

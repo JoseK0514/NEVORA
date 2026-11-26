@@ -68,7 +68,7 @@ describe('first paint (no hooks driven)', () => {
   });
   it('every sentence the screen can say has its Spanish line', () => {
     for (const key of ['Setup code received', 'Type a code instead', 'Connecting…', 'Setup not confirmed', 'No connection', 'This tablet is connected to {location}', 'Open the time clock',
-      'This tablet is offline. Connect it to Wi-Fi, then try again.', 'That link doesn’t have a complete setup code. Type the code from Owner Settings.', 'Enter the whole setup code the Owner sees in Settings\u00a0→\u00a0Clocker\u00a0tablets.',
+      'This tablet is offline. Connect it to Wi-Fi, then try again.', 'That link doesn’t have a complete setup code. Type the code from Owner Settings.', 'Enter the whole setup code the Owner sees in Settings\u00a0→ Clocker\u00a0tablets.',
       'This setup code is expired, already used, or for another location. Ask the Owner for a new code.', 'New tablet setup is paused. Use an already registered tablet to finish an existing shift.', 'Allow cookies, then start tablet setup again.']) {
       expect(CLOCKER_COPY[key], key).toBeTruthy(); expect(CLOCKER_COPY[key]).not.toBe(key);
     }
@@ -253,5 +253,5 @@ describe('the setup code from the Owner’s link, and each answer', () => {
 it('keeps the complete Spanish navigation path on first render', () => {
   const html = renderToStaticMarkup(<ClockerSetup locationKey="qa-cafe" locationLabel="Calle Loíza"
     timeZone="America/Puerto_Rico" initialLocale="es" />);
-  expect(html).toContain('Configuración\u00a0→\u00a0Tabletas de Clocker.');
+  expect(html).toContain('Configuración\u00a0→ Tabletas de Clocker.');
 });

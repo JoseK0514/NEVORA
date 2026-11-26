@@ -49,7 +49,7 @@ it('keeps a wrong entry on the form and a missing tablet registration blocking',
  const denied=await failure(401,{state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'});
  expect(denied.recover).toBe(false);expect(denied.code).toBe('PIN_DENIED');expect(denied.pause).toBeNull();
  const device=await failure(401,{state:'device_required',code:'DEVICE_REQUIRED',error:'Reconnect this tablet before entering an employee PIN.'});
- expect(device.recover).toBe(true);expect(device.message).toBe('Tell a manager. Your Owner sets this tablet up again in Settings\u00a0→\u00a0Clocker\u00a0tablets.');
+ expect(device.recover).toBe(true);expect(device.message).toBe('Tell a manager. Your Owner sets this tablet up again in Settings\u00a0→ Clocker\u00a0tablets.');
  // Phase 6: a code the kiosk has never seen gets the kiosk's general sentence, never the server's words.
  const unknown=await failure(400,{code:'FUTURE_CODE',error:'A message the kiosk has never seen.'});
  expect(unknown.message).toBe('We couldn’t check your PIN. Try again, or ask a manager to record your time.');expect(unknown.recover).toBe(false);
@@ -62,7 +62,7 @@ it.each([
  [400,{code:'LOCATION_INVALID',error:'Server words D.'},'This tablet’s link is not valid. Tell a manager.'],
  [400,{code:'PIN_INPUT_INVALID',error:'Server words E.'},'Enter exactly four PIN digits.'],
  // An older server that sends no code: the status decides.
- [401,{state:'device_required',error:'Server words F.'},'Tell a manager. Your Owner sets this tablet up again in Settings\u00a0→\u00a0Clocker\u00a0tablets.'],
+ [401,{state:'device_required',error:'Server words F.'},'Tell a manager. Your Owner sets this tablet up again in Settings\u00a0→ Clocker\u00a0tablets.'],
  [401,{error:'Server words G.'},'Employee ID or PIN not recognized. Check your Employee ID and PIN, or ask your manager.'],
  [503,{error:'Server words H.'},'Your PIN was not checked, and nothing was recorded.'],
  [418,{error:'Server words I.'},'We couldn’t check your PIN. Try again, or ask a manager to record your time.'],
