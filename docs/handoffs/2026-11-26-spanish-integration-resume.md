@@ -1,3 +1,15 @@
+# Spanish integration: DONE (Nov 26, 2026, about 10:25 AM AST)
+
+**Final application commit: 1c67cf9d. Manuals built from it: 804cf0f8** (application hash 72058e11…, check-manuals OK,
+57/57). QA's final report: `docs/handoffs/2026-11-23-phase2-cloud/qa/es-rc/report.md` on `claude-codex-collab-nevora-qa`
+(b00d18639). Every finding from the check is fixed and verified: Spanish copy slips, header collisions, the two LOW
+layout items, Try again R1/R2/O1, and the Hours and rules header. Open items are low or pre-existing; they're listed in
+QA's report. The English UI flags list (`2026-11-26-english-ui-flags.md`) is next, per Jose.
+
+The original pause note follows, for history.
+
+---
+
 # Spanish integration: where we stopped (Nov 26, 2026, about 2:20 AM AST)
 
 Jose paused for the night. Nothing is lost: all code is on `claude-codex-collab-nevora`, and QA's partial results go to
