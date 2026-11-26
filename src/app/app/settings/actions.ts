@@ -4,6 +4,7 @@ import { requireSessionMutationProof } from "@/lib/auth/session";
 import { requireRoles } from "@/lib/auth/permissions";
 import { getWorkspace, saveWorkspaceProfile } from "@/lib/data/workspaces";
 import { createLocation, updateLocation, LocationConcurrencyError } from "@/lib/data/locations";
+import { LOCATION_RETIREMENT_BLOCKED, LocationRetirementBlockedError, type LocationRetirementBlocker } from "@/lib/data/location-retirement";
 import { createPosition, updatePosition, PositionConcurrencyError } from "@/lib/data/positions";
 import type { ConfigurationResult } from "@/components/configuration-form";
 import { readPageLang } from "@/lib/i18n/page-lang.server";
@@ -73,10 +74,12 @@ export async function createLocationAction(
     return await failure(error);
   }
 }
+export type UpdateLocationResult = ConfigurationResult & { locationRetirementBlockers?: LocationRetirementBlocker[] };
+
 /** Uses the rendered update version to reject stale edits; location Clocker identity is retained. */
 export async function updateLocationAction(
   data: FormData,
-): Promise<ConfigurationResult> {
+): Promise<UpdateLocationResult> {
   const actor = await requireRoles(["OWNER"]);
   const proof = await requireSessionMutationProof();
   try {
@@ -93,6 +96,9 @@ export async function updateLocationAction(
     revalidatePath("/app", "layout");
     return { success: SETTINGS_ACTIONS_COPY[await readPageLang()].locationUpdated, updatedAt: location.updatedAt };
   } catch (error) {
+    if (error instanceof LocationRetirementBlockedError) {
+      return { error: error.message, issueCode: LOCATION_RETIREMENT_BLOCKED, locationRetirementBlockers: error.blockers };
+    }
     return await failure(error);
   }
 }

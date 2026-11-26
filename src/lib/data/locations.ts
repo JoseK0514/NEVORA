@@ -6,6 +6,7 @@ import { neonNotificationExecutor } from './notification-transactions';
 import { getWorkspace, workspaceReadGuard } from './workspaces';
 import type { SessionMutationProof } from "../shift-changes/types";
 import { assertManagementProof, managementSessionStatements } from "./management-session";
+import { locationRetirementError, locationRetirementGuard } from './location-retirement';
 export class LocationUnavailableError extends Error { constructor(){super('Location configuration is unavailable.');} }
 export class LocationPermissionError extends Error { constructor(){super('Only an active Owner may edit locations.');} }
 export class LocationConcurrencyError extends Error { constructor(){super('Location changed while you were editing. Your entries are preserved; reload and review the latest details before saving.');} }
@@ -37,7 +38,16 @@ function actorGuard(actorEmployeeId:string):SqlStatement[]{return [
  {text:"SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees WHERE id=$1 AND active=true AND role='OWNER') THEN '1' ELSE 'location_permission_denied' END)::integer",values:[actorEmployeeId]},
 ];}
 async function mutate(statements:SqlStatement[],executor:SqlExecutor,proof:SessionMutationProof,actorEmployeeId:string):Promise<CatalogLocation>{
- try {const results=await mutationTransaction(executor,[...statements,...managementSessionStatements(proof,actorEmployeeId,['OWNER'])]);const location=results[statements.length-1]?.[0] as CatalogLocation|undefined;if(!location)throw new Error('Location not found.');return location;}catch(error){if(error instanceof Error && 'code' in error && error.code==='22P02' && error.message==='invalid input syntax for type integer: "location_version_conflict"')throw new LocationConcurrencyError();if(error instanceof Error && error.message.includes('location_permission_denied'))throw new LocationPermissionError();throw error;}
+ try {
+   const results = await mutationTransaction(executor, [...statements, ...managementSessionStatements(proof, actorEmployeeId, ['OWNER'])]);
+   const location = results[statements.length - 1]?.[0] as CatalogLocation | undefined;
+   if (!location) throw new Error('Location not found.');
+   return location;
+ } catch (error) {
+   if (error instanceof Error && 'code' in error && error.code === '22P02' && error.message === 'invalid input syntax for type integer: "location_version_conflict"') throw new LocationConcurrencyError();
+   if (error instanceof Error && error.message.includes('location_permission_denied')) throw new LocationPermissionError();
+   throw locationRetirementError(error) ?? error;
+ }
 }
 export async function createLocation(input: { name: string; shortName: string; clockerKey?: string; address?: string | null; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<CatalogLocation> {
  assertManagementProof(input.proof,input.actorEmployeeId);
@@ -52,5 +62,16 @@ export async function updateLocation(input: { id: string; name: string; shortNam
  if(!input.expectedUpdatedAt)throw new LocationConcurrencyError();
  const profile=names(input),address=normalizeAddress(input.address);if(typeof input.active!=='boolean')throw new Error('Choose an active state.');
  const sql=executor??neonNotificationExecutor(),workspace=await getWorkspace(sql);
- return mutate([...workspaceReadGuard(workspace),...actorGuard(input.actorEmployeeId),{text:'SELECT id FROM locations WHERE id=$1 AND workspace_id=$2 ORDER BY id FOR UPDATE',values:[input.id,workspace.id]},...managementSessionStatements(input.proof,input.actorEmployeeId,['OWNER']),{text:`SELECT (CASE WHEN EXISTS(SELECT 1 FROM locations WHERE id=$1 AND workspace_id=$2 AND updated_at::text=$3) THEN '1' ELSE 'location_version_conflict' END)::integer`,values:[input.id,workspace.id,input.expectedUpdatedAt]},{text:`UPDATE locations SET name=$1,short_name=$2,active=$3,address=CASE WHEN $6::boolean THEN $7::text ELSE address END,updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=$4 AND workspace_id=$5 RETURNING ${catalogFields}`,values:[profile.name,profile.shortName,input.active,input.id,workspace.id,address!==undefined,address??null]}],sql,input.proof,input.actorEmployeeId);
+ return mutate([
+   // Schedule, Clocker and correction writers lock the workspace first. Take
+   // the exclusive lock before any other locks for the cross-workflow check.
+   ...(!input.active ? [{ text: 'SELECT id FROM workspaces WHERE id=$1 AND singleton FOR UPDATE', values: [workspace.id] }] : []),
+   ...workspaceReadGuard(workspace),
+   ...actorGuard(input.actorEmployeeId),
+   { text: 'SELECT id FROM locations WHERE id=$1 AND workspace_id=$2 ORDER BY id FOR UPDATE', values: [input.id, workspace.id] },
+   ...managementSessionStatements(input.proof, input.actorEmployeeId, ['OWNER']),
+   { text: `SELECT (CASE WHEN EXISTS(SELECT 1 FROM locations WHERE id=$1 AND workspace_id=$2 AND updated_at::text=$3) THEN '1' ELSE 'location_version_conflict' END)::integer`, values: [input.id, workspace.id, input.expectedUpdatedAt] },
+   ...(!input.active ? [locationRetirementGuard(input.id, workspace.id, workspace.timeZone)] : []),
+   { text: `UPDATE locations SET name=$1,short_name=$2,active=$3,address=CASE WHEN $6::boolean THEN $7::text ELSE address END,updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE id=$4 AND workspace_id=$5 RETURNING ${catalogFields}`, values: [profile.name, profile.shortName, input.active, input.id, workspace.id, address !== undefined, address ?? null] },
+ ], sql, input.proof, input.actorEmployeeId);
 }

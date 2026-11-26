@@ -1020,12 +1020,12 @@ it.each([1,3,5,20])('Task 11 separate generic SQL workspace supports exactly %i 
   const q=(text:string,values:unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
   const {evaluateLocationReadiness}=await import('../../lib/scheduling/location-readiness');
   const {createCoverageWindow}=await import('./management-api');
-  const {getShiftValidationContext,ensureSchedule,insertShift,listWeekShifts,updateShift}=await import('./management-api');
+  const {getShiftValidationContext,ensureSchedule,insertShift,listWeekShifts,updateShift,deleteShift}=await import('./management-api');
   const {validateShift}=await import('../../lib/scheduling/validate-shift');
   const {calculateScheduleHealth}=await import('../../lib/scheduling/schedule-health');
   const {listTemplateShifts}=await import('../../lib/data/schedule-templates');
  const {createTemplateFromWeek}=await import('./management-api');
-  const {publishScheduleWithRevision}=await import('./management-api');
+  const {publishScheduleWithRevision,publishScheduleChanges}=await import('./management-api');
   const {readNotificationWeekState}=await import('../../lib/data/notification-transactions');
   const {readAvailabilityInputs}=await import('../../lib/data/availability-inputs');
   const {loadWorkspaceNotificationConfig}=await import('../../lib/notifications/config');
@@ -1107,6 +1107,8 @@ it.each([1,3,5,20])('Task 11 separate generic SQL workspace supports exactly %i 
     expect((await listWeekShifts({weekStart:'2030-10-07'},db.executor))[0].startTime).toBe('08:00');
     expect((await readNotificationWeekState(['2030-10-07'],db.executor)).revisions).toHaveLength(1);
     await expect(q('DELETE FROM positions WHERE id=$1',[finishing.id])).rejects.toMatchObject({code:'23503'});
+    expect(await deleteShift(shiftId,'cedar-owner',db.executor)).toBe(true);
+    expect((await publishScheduleChanges({weekStart:'2030-10-07',managerId:'cedar-owner'},db.executor)).published).toBe(true);
     await updateLocation({id:harbor.id,name:'Quai Étoile — Atelier renamed',shortName:'Quai',active:false,actorEmployeeId:'cedar-owner'},db.executor);
     expect(await findActiveLocationByClockerKey('harbor-atelier',db.executor)).toBeNull();
     expect((await sqlNotificationStateRepository(db.executor,config.workspace).recipientAccess('cedar-worker'))?.allowedLocationIds).toHaveLength(count-1);

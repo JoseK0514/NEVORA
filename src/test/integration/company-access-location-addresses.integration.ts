@@ -3,6 +3,8 @@ import {readEmployeePublishedAssignments} from '../../lib/data/employee-publishe
 import {readEmployeeSchedule} from '../../lib/data/employee-schedule';
 import {readEmployeeWeeklyReview} from '../../lib/data/employee-weekly-review.server';
 import {createLocation, findActiveLocationByClockerKey, listLocations, updateLocation} from '../../lib/data/locations';
+import {publishScheduleChanges} from '../../lib/data/publication-revisions';
+import {deleteShift, getShiftForManagement} from '../../lib/data/schedules';
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture} from './company-access-fixture';
 
@@ -57,9 +59,17 @@ it('keeps optional addresses on the catalog and shares them only on authorized o
       ...actor, id: west.id, name: west.name, shortName: west.shortName, active: true, expectedUpdatedAt: west.updatedAt, address: 'Stale value',
     }, executor)).rejects.toThrow('changed while you were editing');
 
-    const archived = await updateLocation({
+    const retire = () => updateLocation({
       ...actor, id: west.id, name: west.name, shortName: west.shortName, active: false, expectedUpdatedAt: edited.updatedAt,
     }, executor);
+    await expect(retire()).rejects.toMatchObject({blockers: ['SCHEDULE']});
+    for (const shiftId of ['west-own', 'west-peer']) {
+      const shift = await getShiftForManagement(shiftId, executor);
+      expect(await deleteShift(shiftId, owner, executor, shift?.reviewVersion)).toBe(true);
+    }
+    expect(await publishScheduleChanges({weekStart: week, managerId: owner.employee.id, proof: owner}, executor))
+      .toMatchObject({published: true});
+    const archived = await retire();
     expect(archived.address).toBe('91 West St');
     expect((await listLocations({includeInactive: true}, executor)).find(location => location.id === west.id)).toMatchObject({active: false, address: '91 West St'});
     expect((await listLocations({}, executor)).some(location => location.id === west.id)).toBe(false);

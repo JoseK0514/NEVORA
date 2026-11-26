@@ -11,6 +11,7 @@ import type {SessionMutationProof} from '../shift-changes/types';
 import {managementSessionStatements} from '../data/management-session';
 import {saveWorkspaceProfile,WorkspaceTimezoneLockedError} from '../data/workspaces';
 import {createLocation,updateLocation} from '../data/locations';
+import {LOCATION_RETIREMENT_BLOCKED,LocationRetirementBlockedError} from '../data/location-retirement';
 import {createPosition,updatePosition} from '../data/positions';
 import {saveScheduleHealthSettings,createCoverageWindow,deleteCoverageWindow,replaceCoverageWindowPositionRequirements,type CoverageWindow,type LocationStaffingSetting} from '../data/schedule-health';
 import {evaluateLocationReadiness} from '../scheduling/location-readiness';
@@ -111,6 +112,7 @@ export async function saveOnboardingStep(proof:SessionMutationProof,binding:Work
   try{const saved=await recover();if(saved)return saved;}catch{return {state:'unavailable',reasonCode:'ACCESS_OR_SOURCE_UNAVAILABLE'};}
   const message=error instanceof Error?error.message:'',code=error&&typeof error==='object'&&'code'in error?String(error.code):'';
   if(error instanceof WorkspaceTimezoneLockedError)return {state:'invalid',fieldErrors:[{field:'timeZone',code:'TIMEZONE_CONVERSION_REVIEW_REQUIRED'}]};
+  if(error instanceof LocationRetirementBlockedError)return {state:'invalid',fieldErrors:[{field:'active',code:LOCATION_RETIREMENT_BLOCKED,params:Object.fromEntries(error.blockers.map(blocker=>[blocker,true]))}]};
   if(/onboarding_version_changed|version_conflict|changed while|workspace_timezone_locked/.test(message))return {state:'conflict',reason:'version_changed'};
   if(/authorization|permission/.test(message))return {state:'unavailable',reasonCode:'ACCESS_DENIED'};
   if(code==='23505'||/invalid|valid company|valid coverage|active positions/.test(message))return {state:'invalid',fieldErrors:[{field:stepId,code:'CANONICAL_VALIDATION_FAILED'}]};

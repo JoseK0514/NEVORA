@@ -423,6 +423,8 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
       values: [input.primaryLocationId, workspace.id],
     },
     {
+      // Deactivation can retain the employee's existing primary location after
+      // retirement. An active account or a different primary still needs an active site.
       text: `SELECT (CASE WHEN EXISTS (
         SELECT 1
         FROM locations l
@@ -433,7 +435,6 @@ export async function prepareEmployeeProfileMutation(input: EmployeeCoreMutation
             l.active=true
             OR (
               NOT $4::boolean
-              AND target.active=false
               AND target.primary_location_id=l.id
             )
           )
