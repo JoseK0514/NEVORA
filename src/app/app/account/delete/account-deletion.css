@@ -3,6 +3,15 @@
  * [data-employee-mobile]; these give the same layout to `.em-delete--team`. Layered like account.css (nv-b), so the
  * layered !important declarations there are matched here with a stronger selector. */
 @layer nv-b {
+  @media (min-width: 768px) and (orientation: landscape) and (pointer: coarse) {
+    /* On a touch tablet or sideways phone, the Profile link itself fills the tap target. */
+    html body .app-shell[data-nv-b][data-employee-mobile] .em-delete .b-screen .b-back {
+      min-height: var(--b-btn-h) !important;
+    }
+    html body .app-shell[data-nv-b][data-employee-mobile] .em-delete .b-screen .b-back::after {
+      inset: 0;
+    }
+  }
   /* The confirm card: the red button and "This can't be undone." are one piece under the consent line. */
   html body .app-shell[data-nv-b] .c-page.em-delete--team .eb-delete-keep .eb-delete-go { display: flex !important; flex-direction: column !important; gap: var(--b-space-16) !important; }
   html body .app-shell[data-nv-b] .c-page.em-delete--team .eb-delete-keep .em-delete-check > span { flex: 1 1 auto !important; min-width: 0 !important; text-wrap: pretty !important; }
