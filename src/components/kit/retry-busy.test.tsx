@@ -38,3 +38,13 @@ describe("Try again while busy", () => {
     expect(RETRY_MIN_MS).toBeGreaterThanOrEqual(400);
   });
 });
+
+// QA, Nov 26, 2026: the portal's top-level error screen was English-only. It now reads the person's language.
+import { portalErrorAdvice } from "@/components/app-error-screen";
+describe("the portal's top-level error screen in Spanish", () => {
+  it("gives the next step in the person's language", () => {
+    expect(portalErrorAdvice(true)).toBe("Something went wrong on our side. Try again.");
+    expect(portalErrorAdvice(true, "es")).toBe("Algo falló de nuestro lado. Inténtalo de nuevo.");
+    expect(portalErrorAdvice(false, "es")).toBe("Revisa tu conexión y vuelve a intentarlo.");
+  });
+});
