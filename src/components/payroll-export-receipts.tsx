@@ -1,4 +1,11 @@
 "use client";
+import { usePortalLang } from '@/lib/i18n/portal-lang';
+import { periodRange } from './payroll/payroll-format';
+import { copy as exportWording } from './payroll-export-copy';
+import { runsCopy } from './payroll/copy/runs';
+import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
+import { wholeSpanishTimes } from '@/lib/i18n/whole-spanish-times';
+import { copy } from './payroll-export-receipts-copy';
 
 import { useEffect, useState } from "react";
 import { BCard, BList, BRow, BSegs } from "@/components/owner-b/b-kit";
@@ -10,8 +17,8 @@ type Receipt = PayrollExportReceiptSummary;
 type ListState = { state: "loading" } | { state: "ready"; receipts: Receipt[] } | { state: "unavailable"; notAllowed: boolean };
 
 const day = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
-const range = (start: string, end: string) => `${day(start)} – ${day(end)}`;
-const when = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const englishRange = (start: string, end: string) => `${day(start)} – ${day(end)}`;
+const englishWhen = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 
 const headersFor = (actorId: string) => ({ "content-type": "application/json", "x-nevora-payroll-export": "1", "x-nevora-actor": actorId });
 
@@ -30,6 +37,12 @@ function save(text: string, type: string, name: string) {
  * request, read fresh under current access. The list clears while the page is hidden and is read again on return.
  */
 export function PayrollExportReceipts({ actorId, refreshKey }: { actorId: string; refreshKey: number }) {
+  const lang = usePortalLang();
+  const wording = copy[lang];
+  const range = (start: string, end: string) => lang === 'es' ? periodRange(start, end, lang) : englishRange(start, end);
+  const when = (iso: string) => lang === 'es'
+    ? wholeSpanishTimes(new Date(iso).toLocaleString('es-PR', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }))
+    : englishWhen(iso);
   const [list, setList] = useState<ListState>({ state: "loading" });
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -62,31 +75,31 @@ export function PayrollExportReceipts({ actorId, refreshKey }: { actorId: string
       if (!response.ok) {
         release(response);
         const denial = denialOf(nevoraFailure(response), response.status);
-        setMessage(denial === "not_allowed" ? "You don’t have access to exports. Ask the Owner if you need it." : denial === "signed_out" ? "Your session ended. Sign in again to download it." : "The file didn’t download. Try again.");
+        setMessage((denial === "not_allowed" ? wording.youDonTHaveAccessToExportsAskTheOwner : (denial === "signed_out" ? wording.yourSessionEndedSignInAgainToDownloadIt : wording.theFileDidnTDownloadTryAgain)));
         return;
       }
       const body = await response.json() as { state?: string; export?: { csv: string; csvSha256: string; model: { period: { startDate: string } } } };
       const file_ = body.export;
-      if (body.state !== "ready" || !file_ || file_.csvSha256 !== receipt.csvSha256) { setMessage("The file didn’t download. Try again."); return; }
+      if (body.state !== "ready" || !file_ || file_.csvSha256 !== receipt.csvSha256) { setMessage(wording.theFileDidnTDownloadTryAgain); return; }
       if (file === "csv") save(file_.csv, "text/csv;charset=utf-8", `nevora-mapped-${file_.model.period.startDate}-${receipt.operationId}.csv`);
       else save(stableExportJson(file_.model), "application/json", `nevora-canonical-${file_.model.period.startDate}-${receipt.operationId}.json`);
-    } catch { setMessage("The file didn’t download. Try again."); }
+    } catch { setMessage(wording.theFileDidnTDownloadTryAgain); }
     finally { setBusy(null); }
   }
 
   if (list.state === "loading") return null;
   if (list.state === "unavailable") return list.notAllowed ? null
-    : <BCard title="Recent exports"><p className="b-state" role="status">Recent exports didn’t load. Reload the page to try again.</p></BCard>;
+    : <BCard title={wording.recentExports}><p className="b-state" role="status">{wording.recentExportsDidnTLoadReloadThePageToTry}</p></BCard>;
   if (!list.receipts.length) return null;
-  return <BCard title="Recent exports">
-    <BList label="Recent exports">{list.receipts.map(receipt => <BRow key={receipt.operationId}
+  return <BCard title={wording.recentExports}>
+    <BList label={wording.recentExports}>{list.receipts.map(receipt => <BRow key={receipt.operationId}
       title={range(receipt.period.startDate, receipt.period.endDate)}
-      sub={<BSegs parts={[`${receipt.people} ${receipt.people === 1 ? "person" : "people"}`, `Exported ${when(receipt.createdAt)}`]} />}
+      sub={<BSegs parts={[runsCopy[lang].people(receipt.people), formatPortalCopy(wording.exportedDate, { date: when(receipt.createdAt) })]} />}
       extra={<span className="c-exp__dls">
         <button type="button" className="b-btn b-btn--quiet" disabled={busy !== null} aria-busy={busy === `${receipt.operationId}:csv` || undefined}
-          aria-label={`Download CSV for ${range(receipt.period.startDate, receipt.period.endDate)}`} onClick={() => void again(receipt, "csv")}>Download CSV</button>
+          aria-label={formatPortalCopy(wording.downloadCsvForPeriod, { period: range(receipt.period.startDate, receipt.period.endDate) })} onClick={() => void again(receipt, "csv")}>{exportWording[lang].downloadCSV}</button>
         <button type="button" className="b-btn b-btn--quiet" disabled={busy !== null} aria-busy={busy === `${receipt.operationId}:record` || undefined}
-          aria-label={`Time record for ${range(receipt.period.startDate, receipt.period.endDate)}`} onClick={() => void again(receipt, "record")}>Time record</button>
+          aria-label={formatPortalCopy(wording.timeRecordForPeriod, { period: range(receipt.period.startDate, receipt.period.endDate) })} onClick={() => void again(receipt, "record")}>{wording.timeRecord}</button>
       </span>} />)}
     </BList>
     {message ? <p className="b-state" role="alert">{message}</p> : null}

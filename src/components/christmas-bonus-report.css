@@ -4,3 +4,7 @@
  * at every width instead of ending in "…" as kit rows do on tablets and desktop, and only between facts. */
 :is(#c-root, html) .c-bonus #bonus-people .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
 :is(#c-root, html) .c-bonus .c-bonus__fact { white-space: nowrap; }
+/* Signed-in Spanish (G98, Nov 23, 2026): the bonus year's date labels wrap instead of leaving the card
+ * ("Fecha límite para solicitar la exención" at 200% text). */
+:is(#c-root, html):lang(es) .c-bonus #bonus-about .c-row__title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: break-word; }
+:is(#c-root, html):lang(es) .c-bonus #bonus-about .c-row__main { max-width: 100%; }

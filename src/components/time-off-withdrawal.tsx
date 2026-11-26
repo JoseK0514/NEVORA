@@ -6,28 +6,32 @@ import {useRouter,unstable_rethrow} from 'next/navigation';
 import {EmployeeSubmitButton} from './employee-submit-button';
 import {withdrawTimeOffAction} from '@/app/app/requests/actions';
 import {withdrawalIdentity,type WithdrawalActionState} from '@/lib/time-off-withdrawal';
+import {usePortalLang} from '@/lib/i18n/portal-lang';
+import {TIME_COPY} from './time-copy';
 
 
 /** Board E-TimeOffDetail: a red-outline Withdraw request, then one confirm step (the confirmation the server requires). */
 function WithdrawSteps({dateLabel,retry,pending}:{dateLabel:string;retry:boolean;pending:boolean}){
  const [asking,setAsking]=useState(retry);
+ const t=TIME_COPY[usePortalLang()];
  if(!asking&&!retry)return <>
-  <button className="c-btn c-btn--danger c-btn--full" type="button" onClick={()=>setAsking(true)}>Withdraw request</button>
-  <p className="c-note">We’ll ask you to confirm first. Your manager will see that you withdrew it.</p>
+  <button className="c-btn c-btn--danger c-btn--full" type="button" onClick={()=>setAsking(true)}>{t.withdrawRequest}</button>
+  <p className="c-note">{t.confirmFirst}</p>
  </>;
  return <>
   <input type="hidden" name="confirmed" value="yes"/>
-  <p className="tof-ask">{`Withdraw your request for ${dateLabel}?`}</p>
-  <p className="c-note">Your scheduled shifts stay the same.</p>
+  <p className="tof-ask">{t.withdrawAsk(dateLabel)}</p>
+  <p className="c-note">{t.shiftsStay}</p>
   <div className="c-btns">
-   <button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={()=>setAsking(false)}>Keep request</button>
-   <EmployeeSubmitButton className="c-btn c-btn--danger" pendingText="Withdrawing…">{retry?'Try again':'Withdraw'}</EmployeeSubmitButton>
+   <button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={()=>setAsking(false)}>{t.keepRequest}</button>
+   <EmployeeSubmitButton className="c-btn c-btn--danger" pendingText={t.withdrawing}>{retry?t.tryAgain:t.withdraw}</EmployeeSubmitButton>
   </div>
  </>;
 }
 
 export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLabel:string}){
  const router=useRouter();
+ const t=TIME_COPY[usePortalLang()];
  // The browser proxy may reject after the server already committed. Recover
  // that unknown outcome here, while preserving Next navigation/auth signals.
  const [state,action,pending]=useActionState(async(previous:WithdrawalActionState,form:FormData):Promise<WithdrawalActionState>=>{
@@ -36,18 +40,18 @@ export function TimeOffWithdrawal({requestId,dateLabel}:{requestId:string;dateLa
  },{outcome:'idle'} as WithdrawalActionState);
  useEffect(()=>{if(state.outcome==='withdrawn'||state.outcome==='conflict')router.refresh();},[state.outcome,router]);
  const complete=state.outcome==='withdrawn'||state.outcome==='conflict'||state.outcome==='denied';
- return <form className="tof-withdraw-form" action={action} onReset={event=>event.preventDefault()} aria-label={`Withdraw request for ${dateLabel}`} aria-busy={pending}>
+ return <form className="tof-withdraw-form" action={action} onReset={event=>event.preventDefault()} aria-label={t.withdrawFor(dateLabel)} aria-busy={pending}>
   <input type="hidden" name="requestId" value={requestId}/>
   <input type="hidden" name="operationId" value={withdrawalIdentity(requestId)}/>
   {!complete?<WithdrawSteps dateLabel={dateLabel} retry={state.outcome==='unavailable'||state.outcome==='invalid'} pending={pending}/>:null}
   <p className="tof-feedback" role="status" aria-live="polite">
-   {pending?'Withdrawing…':
-    state.outcome==='withdrawn'?'Your request was withdrawn. Your list is updating.':
-    state.outcome==='conflict'?'This request can no longer be withdrawn. Your list is updating.':
-    state.outcome==='unavailable'?'We couldn’t confirm the withdrawal. Try again; it won’t withdraw twice. If this keeps happening, sign in again.':
-    state.outcome==='denied'?'Your session ended. Sign in again to see your requests.':
-    state.outcome==='invalid'?'Confirm, then withdraw.':null}
-   {!pending&&(state.outcome==='denied'||state.outcome==='unavailable')?<> <Link href="/login">Sign in</Link></>:null}
+   {pending?t.withdrawing:
+    state.outcome==='withdrawn'?t.withdrawn:
+    state.outcome==='conflict'?t.conflict:
+    state.outcome==='unavailable'?t.unavailable:
+    state.outcome==='denied'?t.denied:
+    state.outcome==='invalid'?t.invalid:null}
+   {!pending&&(state.outcome==='denied'||state.outcome==='unavailable')?<> <Link href="/login">{t.signIn}</Link></>:null}
   </p>
  </form>;
 }

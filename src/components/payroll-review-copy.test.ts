@@ -1,5 +1,5 @@
 import { expect, it } from '@rstest/core';
-import { payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
+import { copy, payrollReviewIssues, payrollReviewState } from "./payroll-review-copy";
 
 it("explains why an open period cannot be closed without exposing an engine code", () => {
   expect(payrollReviewIssues(["period_open"])).toBe("Period is still open");
@@ -12,4 +12,13 @@ it("preserves all projected blockers and their order without inventing completio
   expect(["DRAFT", "APPROVED", "FINALIZED", "REOPENED"].map(value =>
     payrollReviewState(value as Parameters<typeof payrollReviewState>[0])))
     .toEqual(["Draft timecard", "Approved timecard", "Finalized timecard", "Reopened timecard"]);
+});
+
+it('matches both language tables and renders the approved Spanish issues in order', () => {
+  expect(Object.keys(copy.es).sort()).toEqual(Object.keys(copy.en).sort());
+  for (const key of Object.keys(copy.en) as (keyof typeof copy.en)[]) {
+    expect(copy.es[key].match(/\{\w+\}/g)).toEqual(copy.en[key].match(/\{\w+\}/g));
+  }
+  expect(payrollReviewState('FINALIZED', 'es')).toBe('Tarjeta de tiempo finalizada');
+  expect(payrollReviewIssues(['open_break', 'pending_correction'], 'es')).toBe('El descanso sigue abierto, Corrección por revisar');
 });

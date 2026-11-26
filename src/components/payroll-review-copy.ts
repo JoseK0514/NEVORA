@@ -1,22 +1,55 @@
 import type { TimecardIssue } from "@/lib/timecards/project";
 import type { TimecardItem } from "@/lib/timecards/read-model";
 
-const issues: Record<TimecardIssue, string> = {
-  period_open: "Period is still open",
-  open_entry: "Time entry is still open",
-  open_break: "Break is still open",
-  pending_correction: "Correction awaiting review",
-  overlapping_time: "Overlapping recorded time",
-};
-const states: Record<TimecardItem["state"], string> = {
-  DRAFT: "Draft timecard",
-  APPROVED: "Approved timecard",
-  FINALIZED: "Finalized timecard",
-  REOPENED: "Reopened timecard",
-  NEEDS_REVIEW: "Timecard needs review",
-};
+export const copy = {
+  en: {
+    // src/components/payroll-review-copy.ts:5
+    period_open: "Period is still open",
+    // src/components/payroll-review-copy.ts:6
+    open_entry: "Time entry is still open",
+    // src/components/payroll-review-copy.ts:7
+    open_break: "Break is still open",
+    // src/components/payroll-review-copy.ts:8
+    pending_correction: "Correction awaiting review",
+    // src/components/payroll-review-copy.ts:9
+    overlapping_time: "Overlapping recorded time",
+    // src/components/payroll-review-copy.ts:12
+    DRAFT: "Draft timecard",
+    // src/components/payroll-review-copy.ts:13
+    APPROVED: "Approved timecard",
+    // src/components/payroll-review-copy.ts:14
+    FINALIZED: "Finalized timecard",
+    // src/components/payroll-review-copy.ts:15
+    REOPENED: "Reopened timecard",
+    // src/components/payroll-review-copy.ts:16
+    NEEDS_REVIEW: "Timecard needs review",
+  },
+  es: {
+    // src/components/payroll-review-copy.ts:5
+    period_open: "El período sigue abierto",
+    // src/components/payroll-review-copy.ts:6
+    open_entry: "La entrada sigue abierta",
+    // src/components/payroll-review-copy.ts:7
+    open_break: "El descanso sigue abierto",
+    // src/components/payroll-review-copy.ts:8
+    pending_correction: "Corrección por revisar",
+    // src/components/payroll-review-copy.ts:9
+    overlapping_time: "Horas registradas solapadas",
+    // src/components/payroll-review-copy.ts:12
+    DRAFT: "Tarjeta de tiempo en borrador",
+    // src/components/payroll-review-copy.ts:13
+    APPROVED: "Tarjeta de tiempo aprobada",
+    // src/components/payroll-review-copy.ts:14
+    FINALIZED: "Tarjeta de tiempo finalizada",
+    // src/components/payroll-review-copy.ts:15
+    REOPENED: "Tarjeta de tiempo reabierta",
+    // src/components/payroll-review-copy.ts:16
+    NEEDS_REVIEW: "Tarjeta de tiempo por revisar",
+  },
+} as const;
 
-/** Presentation only: preserves the projected issues and their order. */
-export const payrollReviewIssues = (values: readonly TimecardIssue[]) =>
-  values.map(value => issues[value]).join(", ");
-export const payrollReviewState = (value: TimecardItem["state"]) => states[value];
+/** Presentation only. Keep the projected issues in their original order. */
+export const payrollReviewIssues = (values: readonly TimecardIssue[], lang: keyof typeof copy = 'en') =>
+  values.map(value => copy[lang][value]).join(', ');
+export const payrollReviewState = (value: TimecardItem["state"], lang: keyof typeof copy = 'en') =>
+  copy[lang][value];

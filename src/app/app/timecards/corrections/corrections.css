@@ -42,3 +42,13 @@
 :is(#c-root, html) .c-tcx .manager-correction-reason { display: grid; gap: 2px; }
 :is(#c-root, html) .c-tcx .manager-correction-reason__k { font-size: 0.8125rem; line-height: 1.125rem; font-weight: 600; color: var(--c-grey); }
 :is(#c-root, html) .c-tcx .manager-correction-reason q { quotes: "“" "”"; }
+
+@media (max-width: 390px) {
+  html:lang(es) .c-tcx .manager-correction-row { grid-template-columns: minmax(0, 1fr); }
+  html:lang(es) .c-tcx .manager-corrections-list { min-width: 0; }
+  html:lang(es) .c-tcx .manager-correction-actions { flex-wrap: wrap; }
+}
+
+@media (width < 360px) {
+  :is(#c-root, html):lang(es)[data-text-step="200"] .c-tcx .manager-correction-actions button { flex: 1 0 max-content; }
+}

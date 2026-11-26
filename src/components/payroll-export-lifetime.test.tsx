@@ -1,3 +1,5 @@
+const language = rs.hoisted(() => ({ current: 'en' as 'en' | 'es' }));
+rs.mock('@/lib/i18n/portal-lang', () => ({ usePortalLang: () => language.current }));
 import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
 import type {ReactElement,ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -43,7 +45,7 @@ async function mount(){render();host.mounted=true;cleanup=host.effects[0]();awai
 function stallReadReplacements(){const original=fetch;rs.stubGlobal('fetch',(path:string,init?:RequestInit)=>path==='/api/timecards'||(path==='/api/payroll-export/profiles'&&init?.method!=='POST')?new Promise<Response>(()=>{}):original(path,init));}
 function windowEvent(type:string,target:unknown=window){const event=new Event(type);if(target!==window)Object.defineProperty(event,'target',{value:target});window.dispatchEvent(event);}
 function selectEmployee(){const checkbox=control(n=>n.type==='input'&&n.props.type==='checkbox'&&n.props.checked===false);(checkbox.onChange as (e:unknown)=>void)({target:{checked:true}});}
-beforeEach(()=>{actorId='OWNER';host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
+beforeEach(()=>{language.current='en';actorId='OWNER';host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
 afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
 
 it('explains a fresh duplicate export without retaining old files or offering an uncertain-operation retry',async()=>{
@@ -245,4 +247,22 @@ it('DEC5: an open week says when timecards can be approved, without repeating th
  expect(text).toContain('Timecards can be approved from Mon, Sep 28.');
  expect(text).not.toContain('Its timecards');
  expect(text).not.toMatch(/Timecards for Sep 21/);
+});
+
+
+it('shows the Spanish receipt action after creating an export', async () => {
+  language.current = 'es';
+  generatedReads(45000);
+  await mount();
+  await click('Crear exportación');
+  await rs.waitFor(() => expect(html()).toContain('Crear otra exportación'));
+});
+
+it('explains a period with no finalized timecards in Spanish', async () => {
+  language.current = 'es';
+  rs.stubGlobal('fetch', async (path: string) => Response.json(
+    path === '/api/timecards' ? { ...ready(), cards: [] } : mappings(),
+  ));
+  await mount();
+  expect(html()).toContain('Nadie ha finalizado su tarjeta de tiempo para estas fechas.');
 });

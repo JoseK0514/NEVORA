@@ -1,3 +1,4 @@
+rs.mock('@/lib/i18n/portal-lang', () => ({ usePortalLang: () => 'en' }));
 import * as rstestOriginal0 from "react" with { rstest: 'importActual' };
 import type {ReactElement,ReactNode} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';

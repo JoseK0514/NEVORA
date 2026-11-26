@@ -6,6 +6,8 @@ import { isNextRouterError } from "next/dist/client/components/is-next-router-er
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { BCallout } from "@/components/owner-b/b-kit";
 import "./time-off-decision-form.css";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { TIME_COPY } from "@/components/time-copy";
 
 /** Audit NV-AUDIT-05 (Nov 19, 2026): a time-off decision whose answer never arrives. The server may already have saved it
  * (the connection dropped after it finished, or the server failed part way), so the Manager is told it isn't confirmed
@@ -15,7 +17,7 @@ import "./time-off-decision-form.css";
  *
  * The action, its fields and its redirects are unchanged: a redirect or not-found from the server still reaches Next's
  * router. Used by the request page, the Waiting list and Things to do. */
-export function TimeOffDecisionForm({ className, label, checkHref, waitingLine = "This request is still waiting. Decide again.", children }: {
+export function TimeOffDecisionForm({ className, label, checkHref, waitingLine, children }: {
   className?: string; label?: string;
   /** What the form says when the check finds the request unchanged (cancelling an approval: "still approved"). */
   waitingLine?: string;
@@ -24,6 +26,7 @@ export function TimeOffDecisionForm({ className, label, checkHref, waitingLine =
   children: ReactNode;
 }) {
   const router = useRouter();
+  const t = TIME_COPY[usePortalLang()];
   const [unknown, setUnknown] = useState(false);
   const [asked, setAsked] = useState(false);
   const [checking, startCheck] = useTransition();
@@ -43,12 +46,12 @@ export function TimeOffDecisionForm({ className, label, checkHref, waitingLine =
   const waiting = unknown && asked && !checking;
   return <form action={decide} className={className} aria-label={label}>
     {unknown && !waiting ? <div ref={notice} tabIndex={-1} className="tod-unknown">
-      <BCallout tone="amber" icon="unknown" role="alert" title="Your decision isn’t confirmed yet"
-        action={{ label: checking ? "Checking…" : "Check the request", onClick: check }}>
-        The answer didn’t arrive, so it may already be saved. Check the request before you decide again.
+      <BCallout tone="amber" icon="unknown" role="alert" title={t.notConfirmed}
+        action={{ label: checking ? t.checking : t.checkRequest, onClick: check }}>
+        {t.answerDidntArrive}
       </BCallout>
     </div> : <>
-      {waiting ? <p className="tod-waiting" role="status">{waitingLine}</p> : null}
+      {waiting ? <p className="tod-waiting" role="status">{waitingLine ?? t.stillWaiting}</p> : null}
       {children}
     </>}
   </form>;

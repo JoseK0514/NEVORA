@@ -477,7 +477,7 @@ const es: PayrollImportCopy = {
     },
   },
   exp: {
-    title: "Exportar tiempo pagado",
+    title: "Tiempo pagado",
     steps: ["Revisa los descansos", "Planifica", "Envía", "Termina"],
     hold: {
       title: (hold): string => {

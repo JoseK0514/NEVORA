@@ -5,12 +5,13 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {redirect,notFound,forbidden,unauthorized} from 'next/navigation';
 import type {WithdrawalActionState} from '../lib/time-off-withdrawal';
-const host=rs.hoisted(()=>({state:{outcome:'idle'} as WithdrawalActionState,pending:false}));
+const host=rs.hoisted(()=>({state:{outcome:'idle'} as WithdrawalActionState,pending:false,lang:"en" as "en"|"es"}));
 rs.mock('react',()=>({...rstestOriginal0,
  useActionState:(reduce:(state:WithdrawalActionState,form:FormData)=>Promise<WithdrawalActionState>)=>[host.state,async(form:FormData)=>{host.pending=true;try{const next=await reduce(host.state,form);host.state=next;return next;}finally{host.pending=false;}},host.pending],
  useEffect:()=>{},
 }));
 rs.mock('next/navigation',()=>({...rstestOriginal1,useRouter:()=>({refresh:()=>{}})}));
+rs.mock('@/lib/i18n/portal-lang',()=>({usePortalLang:()=>host.lang}));
 rs.mock('@/app/app/requests/actions',()=>({withdrawTimeOffAction:rs.fn()}));
 import {withdrawTimeOffAction} from '@/app/app/requests/actions';
 import {TimeOffWithdrawal} from './time-off-withdrawal';
@@ -22,7 +23,7 @@ const html=()=>renderToStaticMarkup(render());
 function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const node=v as ReactElement<Record<string,unknown>>;return [node,...nodes(node.props.children as ReactNode)];}
 function form(){const data=new FormData();for(const node of nodes(render()))if(node.type==='input'&&node.props.type==='hidden')data.set(String(node.props.name),String(node.props.value));data.set('confirmed','yes');return data;}
 const submit=(data:FormData=form())=>(render().props.action as (form:FormData)=>Promise<WithdrawalActionState>)(data);
-beforeEach(()=>{host.state={outcome:'idle'};host.pending=false;rs.clearAllMocks();rs.stubEnv('__NEXT_EXPERIMENTAL_AUTH_INTERRUPTS','true');});
+beforeEach(()=>{host.state={outcome:'idle'};host.pending=false;host.lang='en';rs.clearAllMocks();rs.stubEnv('__NEXT_EXPERIMENTAL_AUTH_INTERRUPTS','true');});
 afterEach(()=>{ rs.unstubAllEnvs(); });
 it('recovers rejected browser proxy into an unconfirmed outcome with the same protected retry controls',async()=>{
  rs.mocked(withdrawTimeOffAction).mockRejectedValueOnce(TypeError('Failed to fetch'));
@@ -44,4 +45,13 @@ it.each(['redirect','not-found','forbidden','unauthorized','nested-redirect'] as
  rs.mocked(withdrawTimeOffAction).mockRejectedValueOnce(kind==='nested-redirect'?new Error('Wrapped framework signal',{cause:signal}):signal);
  await expect(submit()).rejects.toBe(signal);
  expect(host.state.outcome).toBe('idle');expect(html()).not.toContain('Try again');
+});
+it('keeps withdrawal outcomes explicit in Spanish',async()=>{
+ host.lang='es';
+ rs.mocked(withdrawTimeOffAction).mockRejectedValueOnce(TypeError('Failed to fetch')).mockResolvedValueOnce({outcome:'withdrawn',receipt});
+ expect(await submit()).toEqual({outcome:'unavailable'});
+ expect(html()).toContain('No pudimos confirmar que se retiró.');
+ expect(html()).toContain('Intentar de nuevo');
+ expect(await submit()).toEqual({outcome:'withdrawn',receipt});
+ expect(html()).toContain('Tu solicitud se retiró.');
 });

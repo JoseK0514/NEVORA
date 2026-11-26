@@ -1,7 +1,9 @@
 import { PayrollRoute } from './payroll-route';
+import { readPageLang } from '@/lib/i18n/page-lang.server';
+import { ROUTE_COPY } from '../route-copy';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Payroll" };
+export async function generateMetadata() { return { title: ROUTE_COPY[await readPageLang()].payroll }; }
 
 export default async function PayrollPage() {
   return <PayrollRoute view="home" />;
