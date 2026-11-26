@@ -188,7 +188,7 @@ const en = {
   errorScreen: {
     title: "This page didn’t load", eyebrow: "Something went wrong",
     server: "Something went wrong on our side. Try again.", offline: "Nothing was changed. Check your connection, then try again.",
-    reference: "Reference: {reference}", retry: "Try again", signIn: "Go to sign in",
+    reference: "Reference: {reference}", retry: "Try again", retrying: "Trying again…", signIn: "Go to sign in",
   },
 };
 
@@ -342,7 +342,7 @@ const es: AuthCopy = {
   errorScreen: {
     title: "Esta página no cargó", eyebrow: "Algo salió mal",
     server: "Algo salió mal de nuestro lado. Inténtalo de nuevo.", offline: "No se cambió nada. Revisa tu conexión e inténtalo de nuevo.",
-    reference: "Referencia: {reference}", retry: "Intentar de nuevo", signIn: "Ir a iniciar sesión",
+    reference: "Referencia: {reference}", retry: "Intentar de nuevo", retrying: "Intentando de nuevo…", signIn: "Ir a iniciar sesión",
   },
 };
 

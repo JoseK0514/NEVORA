@@ -274,8 +274,11 @@ export function BBusyLabel({ busy, busyLabel, children }: { busy: boolean; busyL
 }
 /** `busy` (Phase 7, package C): the button is working. It keeps its width and shows the spinner with `busyLabel` (its own
  * label when none is given), sets aria-busy and takes no second press. Leave `busy` out for a button that never waits. */
-export function BButton({ kind = "teal", full, big, children, label, onClick, disabled, type = "button", name, value, busy, busyLabel }: { kind?: BtnKind; full?: boolean; big?: boolean; children: ReactNode; label?: string; onClick?: () => void; disabled?: boolean; type?: "button" | "submit"; name?: string; value?: string; busy?: boolean; busyLabel?: ReactNode }) {
-  return <button className={btn(kind, full, big)} type={type} aria-label={label} aria-busy={busy || undefined} onClick={onClick} disabled={disabled || busy || undefined} name={name} value={value}>
+/** `keepFocus` (Nov 26, 2026): while busy the button stays focusable (aria-disabled, and presses are ignored) instead of
+ * `disabled`, which would drop keyboard focus to the page; for Try again, where focus must stay put if it fails again. */
+export function BButton({ kind = "teal", full, big, children, label, onClick, disabled, type = "button", name, value, busy, busyLabel, keepFocus }: { kind?: BtnKind; full?: boolean; big?: boolean; children: ReactNode; label?: string; onClick?: () => void; disabled?: boolean; type?: "button" | "submit"; name?: string; value?: string; busy?: boolean; busyLabel?: ReactNode; keepFocus?: boolean }) {
+  const held = keepFocus && busy;
+  return <button className={btn(kind, full, big)} type={type} aria-label={label} aria-busy={busy || undefined} aria-disabled={held || undefined} onClick={held ? undefined : onClick} disabled={disabled || (busy && !keepFocus) || undefined} name={name} value={value}>
     {busy === undefined ? children : <BBusyLabel busy={busy} busyLabel={busyLabel}>{children}</BBusyLabel>}</button>;
 }
 

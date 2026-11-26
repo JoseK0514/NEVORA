@@ -1,0 +1,9 @@
+/* Try again's busy state on the error screens outside the app shell (Nov 26, 2026). One grid cell holds both labels. */
+.nv-retry { display: inline-grid; align-items: center; justify-items: center; max-width: 100%; }
+.nv-retry__face { grid-area: 1 / 1; display: inline-flex; align-items: center; justify-content: center; gap: inherit; column-gap: 8px; }
+.nv-retry__face[data-off] { visibility: hidden; }
+.nv-retry__spin { flex: none; }
+@media (prefers-reduced-motion: no-preference) { .nv-retry__spin { animation: nv-retry-turn 0.9s linear infinite; } }
+@keyframes nv-retry-turn { to { rotate: 360deg; } }
+/* Busy keeps the button's own colours (no disabled grey); the pointer says it is working. */
+button[aria-busy="true"] { cursor: progress; }

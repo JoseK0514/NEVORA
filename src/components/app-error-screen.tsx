@@ -1,6 +1,7 @@
 'use client';
 import { useSyncExternalStore } from 'react';
-import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
+import { RetryLabel } from '@/components/kit/retry-label';
+import { useRetry } from '@/components/kit/use-retry';
 import '@/components/kit/kit.css';
 import './app-error-screen.css';
 import { CardBody, KitStack, Masthead } from '@/components/kit/kit';
@@ -44,6 +45,8 @@ export function ErrorAdvice({digest, className}: {digest?: string; className: st
 /** WR-57/58: the screen for failures above the portal's own boundary (app/app/error.tsx).
  * Same words as that boundary, drawn with the kit itself: the teal band with the wordmark, a white card, kit buttons. */
 export function AppErrorScreen({reset, digest}: {reset: () => void; digest?: string}) {
+  // Nov 26, 2026 (Jose): Try again shows it is working ("Trying again…", the arrow turning) and keeps focus.
+  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('[data-nv-page] [data-nv-band] h1', '.app-error-screen .nv-btn[data-kind="primary"]'); });
   return <main className="nv-page app-error-screen">
     <Masthead title="This page didn’t load" summary="Nothing was changed." />
     <KitStack>
@@ -52,7 +55,7 @@ export function AppErrorScreen({reset, digest}: {reset: () => void; digest?: str
         <CardBody>
           <ErrorAdvice digest={digest} className="app-error-screen__text" />
           <div className="app-error-screen__actions">
-            <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page] [data-nv-band] h1', '.app-error-screen .nv-btn[data-kind="primary"]'); }}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true" />Try again</button>
+            <button type="button" className="nv-btn" data-kind="primary" aria-busy={busy || undefined} aria-disabled={busy || undefined} onClick={busy ? undefined : retry}><RetryLabel busy={busy} idle="Try again" working="Trying again…" /></button>
             {/* eslint-disable-next-line next-preserved/no-html-link-for-pages -- the app shell itself may be what failed, so leave it with a full document load */}
             <a className="nv-btn" data-kind="secondary" href="/app">Go to Home</a>
           </div>

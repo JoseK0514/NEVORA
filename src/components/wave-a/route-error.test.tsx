@@ -4,7 +4,7 @@ import { routeErrorLine, WaveARouteError } from "./route-error";
 
 const count = (text: string, part: string) => text.split(part).length - 1;
 /** The strings a sighted person reads: the markup without the screen-reader-only alert. */
-const visible = (html: string) => html.replace(/<p class="b-sr"[^>]*>[^<]*<\/p>/g, "").replace(/<[^>]+>/g, "\n").split("\n").map(s => s.trim()).filter(Boolean);
+const visible = (html: string) => html.replace(/<p class="b-sr"[^>]*>[^<]*<\/p>/g, "").replace(/<span class="b-busy__on" data-b-off=""[^>]*>(?:<span[^>]*><\/span>)?[^<]*<\/span>/g, "").replace(/<[^>]+>/g, "\n").split("\n").map(s => s.trim()).filter(Boolean);
 
 // G54 (Nov 23, 2026): each fact once, one way back, and the cause said honestly.
 describe("the route error screen", () => {
@@ -20,7 +20,7 @@ describe("the route error screen", () => {
     expect(html).toContain('<a class="b-back" href="/app/schedule">');
     expect(html).not.toContain("Back to Schedule");
     expect(count(html, "<button")).toBe(1);
-    expect(html).toContain(">Try again</button>");
+    expect(html).toContain('<span class="b-busy__idle">Try again</span>');
   });
   it("speaks the whole message once and blames the connection only when offline", () => {
     expect(count(html, 'role="alert"')).toBe(1);

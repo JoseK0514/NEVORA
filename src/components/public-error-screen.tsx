@@ -1,7 +1,8 @@
 'use client';
 import { useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
-import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
+import { RetryLabel } from '@/components/kit/retry-label';
+import { useRetry } from '@/components/kit/use-retry';
 import { BrandWordmark } from '@/components/brand-mark';
 import { AppErrorScreen, errorReference, useOnline } from '@/components/app-error-screen';
 import { SupportReference } from '@/components/access-recovery/support-reference';
@@ -35,6 +36,8 @@ export function PublicErrorScreen({reset, digest, error}: {reset: () => void; di
   const t = AUTH_COPY[lang], words = t.errorScreen, advice = online ? words.server : words.offline;
   const support = supportReferenceOfState(error);
   const found = support ? null : errorReference(digest), reference = found ? words.reference.replace('{reference}', found) : null;
+  // Nov 26, 2026 (Jose): Try again shows it is working and keeps focus while the page is read again.
+  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('main:not(.pe-page) h1, .q-auth h1', '.pe-page .pe-retry'); });
   return <main className="nf-page pe-page" lang={lang}>
     <header className="nf-band">
       <div className="nf-top"><span className="nf-wordmark"><BrandWordmark/></span><LangSwitch lang={lang} label={t.langLabel} quiet/></div>
@@ -49,7 +52,7 @@ export function PublicErrorScreen({reset, digest, error}: {reset: () => void; di
         {reference ? <p className="pe-ref">{reference}</p> : null}
         <SupportReference reference={support} lang={lang} id="public-error-reference" />
         <div className="pe-actions">
-          <button type="button" className="nf-cta pe-retry" onClick={() => { reset(); focusAfterRetry('main:not(.pe-page) h1, .q-auth h1', '.pe-page .pe-retry'); }}><ArrowClockwiseIcon size={18} weight="bold" aria-hidden="true"/>{words.retry}</button>
+          <button type="button" className="nf-cta pe-retry" aria-busy={busy || undefined} aria-disabled={busy || undefined} onClick={busy ? undefined : retry}><RetryLabel busy={busy} idle={words.retry} working={words.retrying} /></button>
           {/* A plain link: what failed may be the page's own layout, so sign in starts with a full document load. */}
           <a className="nf-cta pe-signin" href="/login">{words.signIn}</a>
         </div>

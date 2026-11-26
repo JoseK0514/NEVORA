@@ -20,3 +20,6 @@
 .app-error-screen .nv-masthead__mark { display: none; }
 .app-error-screen .nv-masthead__summary { color: var(--b-on-band-2, rgb(255 255 255 / 0.86)); }
 .app-error-screen .nv-btn { border-radius: var(--nv-r-pill, 999px); }
+/* Nov 26, 2026: Try again while busy keeps its Solid teal (the kit greys aria-disabled buttons; a working button isn't
+ * unavailable). */
+.app-error-screen .nv-btn[data-kind="primary"][aria-busy="true"] { background: var(--nv-accent); color: #FFFFFF; box-shadow: none; cursor: progress; }

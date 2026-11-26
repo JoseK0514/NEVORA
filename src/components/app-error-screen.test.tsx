@@ -22,7 +22,9 @@ it("uses the portal's own error words, with a retry and a full-load link home", 
   expect(html).toContain("This page didn’t load");
   expect(html).toContain('<p class="app-error-screen__text">Something went wrong on our side. Try again.</p>');
   expect(portalErrorAdvice(false)).toBe("Check your connection, then try again.");
-  expect(html).toMatch(/<button type="button" class="nv-btn" data-kind="primary"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/button>/);
+  expect(html).toMatch(/<button type="button" class="nv-btn" data-kind="primary"><span class="nv-retry"><span class="nv-retry__face"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/span>/);
+  // Nov 26, 2026: the busy words wait hidden in the same cell, so the button never changes width.
+  expect(html).toMatch(/<span class="nv-retry__face" data-off="" aria-hidden="true"><svg[^>]*class="nv-retry__spin"[\s\S]*?<\/svg>Trying again…<\/span>/);
   expect(html).toContain('aria-label="NEVORA"');
   expect(html).toContain('href="/app"');
   expect(html).not.toMatch(/ERROR \d|digest/i);
@@ -84,7 +86,7 @@ it("signed-out and public addresses get the public screen: same words, Try again
         expect(html).toContain('<p class="not-found-text">Something went wrong on our side. Try again.</p>');
         // PB-025: the language switch, as on the 404.
         expect(html).toMatch(/<button type="button" class="q-auth__lang" lang="es"[^>]*>Español<\/button>/);
-        expect(html).toMatch(/<button type="button" class="nf-cta pe-retry"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/button>/);
+        expect(html).toMatch(/<button type="button" class="nf-cta pe-retry"><span class="nv-retry"><span class="nv-retry__face"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/span>/);
         expect(html).toContain('href="/login">Go to sign in</a>');
         expect(html).not.toContain('href="/app"');
       }
@@ -101,6 +103,8 @@ it("UI Try again asks Next to refetch (retry), not just re-render the failed res
     expect(tree).toContain('"reset":"RETRY"');
   }
   rs.doMock("@/components/kit/focus-after-retry", () => ({ focusAfterRetry: () => {} }));
+  // Outside React the retry hook can't hold state, so it hands back its action as is (its busy state is tested apart).
+  rs.doMock("@/components/kit/use-retry", () => ({ useRetry: (run: () => void) => ({ busy: false, retry: run }) }));
   // The page is called outside React here, so the language hook answers English.
   rs.doMock("@/lib/i18n/portal-lang", () => ({ usePortalLang: () => "en" }));
   const PortalError = (await import("../app/app/error")).default;

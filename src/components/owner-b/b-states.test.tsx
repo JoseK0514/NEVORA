@@ -135,7 +135,9 @@ describe("one state screen", () => {
     // The visible card is not a second live region.
     expect(html).toContain('<div class="b-statecard" data-kind="failed">');
     expect(html).not.toContain('role="status"');
-    expect(count(html, ">Try again</button>")).toBe(1);
+    // One Try again; its busy words ("Trying again…", Nov 26, 2026) wait hidden in the same cell.
+    expect(count(html, '<span class="b-busy__idle">Try again</span>')).toBe(1);
+    expect(count(html, "<button")).toBe(1);
     expect(html).toContain('<a href="/app/schedule" class="b-btn b-btn--quiet">Back to Schedule</a>');
     expect(html).toContain('<h1 id="b-route-error-title" tabindex="-1">Add shift</h1>');
   });
