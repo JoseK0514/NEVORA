@@ -404,7 +404,7 @@
 
 @layer nv-b {
   @media (max-width: 767px) {
-    .eb-compose:lang(es) .em-message-field > :is(input, select, textarea):focus-visible {
+    .eb-compose .em-message-field > :is(input, select, textarea):focus-visible:not(#d4-none) {
       outline: var(--b-focus-width) solid var(--b-focus) !important;
       outline-offset: var(--b-focus-offset) !important;
     }

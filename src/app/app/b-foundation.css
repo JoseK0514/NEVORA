@@ -620,7 +620,7 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     html body .app-shell[data-nv-b] aside.sidebar :is(a, button, summary):not(.nav-link):focus-visible { outline-color: #08504C !important; }
     html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible { outline: none !important; }
     /* Draw on the link itself as well: the condensed rail can suppress its decorative pseudo-element. */
-    html:lang(es) body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible {
+    html body .app-shell[data-nv-b] aside.sidebar .nav-link:focus-visible:not(#d1-none) {
       outline: var(--b-focus-width) solid var(--b-focus) !important;
       outline-offset: calc(-1 * var(--b-focus-width)) !important;
     }

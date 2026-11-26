@@ -45,11 +45,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__search input:is(:focus, :focus-visible):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { outline: none !important; box-shadow: none !important; }
 }
 
-/* At enlarged Spanish text sizes, give employee details and each filter count their own line. */
+/* At enlarged text sizes (both languages since Nov 26, 2026, English flag B4), give employee details and each filter count their own line. */
 @layer nv-b {
-  .c-page[lang=es] #clocker-pins { container: pin-directory / inline-size; }
+  .c-page #clocker-pins { container: pin-directory / inline-size; }
   @container pin-directory (max-width: 10rem) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-row:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page #clocker-pins .c-row:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       display: grid !important;
       grid-template-columns: auto minmax(0, 1fr) !important;
       grid-template-areas: "avatar name" ". action" !important;
@@ -58,7 +58,7 @@
     #clocker-pins .c-row > .c-av { grid-area: avatar; align-self: start; }
     #clocker-pins .c-row > .c-row__main { grid-area: name; }
     #clocker-pins .c-row > .c-row__trail { grid-area: action; justify-self: start; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-seg > button:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page #clocker-pins .c-seg > button:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       display: flex !important;
       flex-flow: column nowrap !important;
       align-items: center !important;
@@ -76,7 +76,7 @@
    whole labels cannot fit across it, each filter keeps its label beside its count. */
 @layer nv-b {
   @container pin-directory (max-width: 13rem) or ((min-width: 480px) and (max-width: 21rem)) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-pins__tools:has(.c-seg > :nth-child(3)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page #clocker-pins .c-pins__tools:has(.c-seg > :nth-child(3)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       display: grid !important;
       grid-template-columns: minmax(0, 1fr) !important;
       gap: var(--b-space-12) !important;
@@ -100,7 +100,7 @@
     }
   }
   @container pin-directory (max-width: 13rem) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-pins__tools:has(.c-seg > :nth-child(3)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page #clocker-pins .c-pins__tools:has(.c-seg > :nth-child(3)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       & > .c-seg {
         grid-template-columns: minmax(0, 1fr) !important;
         border-radius: var(--b-radius-field) !important;

@@ -52,9 +52,9 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
     expect(text).toMatch(/\.nv-btn\[data-kind="primary"\] \{ background: var\(--b-teal\) !important; color: #FFFFFF !important; \}/);
     expect(text).toMatch(/:is\(\.c-btn, \.q-btn, \.q-bs, \.wc-btn\) \{ border-radius: var\(--b-radius-pill\) !important; \}/);
   });
-  it('paints the Spanish sidebar keyboard outline on the link itself, inside the clipped rail', () => {
+  it('paints the sidebar keyboard outline on the link itself, inside the clipped rail, in both languages (English flag D1)', () => {
     const foundation = css('app/app/b-foundation.css');
-    expect(foundation).toMatch(/html:lang\(es\) body \.app-shell\[data-nv-b\] aside\.sidebar \.nav-link:focus-visible \{\s*outline: var\(--b-focus-width\) solid var\(--b-focus\) !important;\s*outline-offset: calc\(-1 \* var\(--b-focus-width\)\) !important;/);
+    expect(foundation).toMatch(/html body \.app-shell\[data-nv-b\] aside\.sidebar \.nav-link:focus-visible:not\(#d1-none\) \{\s*outline: var\(--b-focus-width\) solid var\(--b-focus\) !important;\s*outline-offset: calc\(-1 \* var\(--b-focus-width\)\) !important;/);
   });
   it('keeps a paintable outline beside each shadow-only focus ring (RA-17)', () => {
     const foundation = css('app/app/b-foundation.css');
@@ -135,9 +135,9 @@ it('keeps the Spanish partial updates notice legible where the list rises over t
   expect(work).toMatch(/#b-updates-title\) \.b-stack > \.b-note\[role="status"\]:first-child \{[^}]*background-color: var\(--b-canvas\)/);
 });
 
-it('gives the Spanish update form fields the kit keyboard outline on phones', () => {
+it('gives the update form fields the kit keyboard outline on phones, in both languages (English flag D4)', () => {
   const work = css('app/app/employee-b-work.css');
-  const fields = '.eb-compose:lang(es) .em-message-field > :is(input, select, textarea):focus-visible';
+  const fields = '.eb-compose .em-message-field > :is(input, select, textarea):focus-visible:not(#d4-none)';
   const rule = work.slice(work.indexOf(fields)).split('}')[0];
   expect(rule).toContain('outline: var(--b-focus-width) solid var(--b-focus) !important');
   expect(rule).toContain('outline-offset: var(--b-focus-offset)');

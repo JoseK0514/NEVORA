@@ -119,8 +119,7 @@ export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal,
   if (publicPlans && initialLanguage === 'es') setAnimateSelection(true);
   setLang(value);
  }
- const spanishPlans = publicPlans && (initialLanguage === "es" || lang === "es");
- const language=<fieldset className={styles.language}><legend className={styles.srOnly}>{t.language}</legend><div className={styles.seg} data-spanish-plans={spanishPlans ? "" : undefined} data-fade={animateSelection ? "" : undefined}>{(['en','es'] as const).map(value=><button key={value} type="button" lang={value} disabled={pending||opening} aria-pressed={lang===value} onClick={()=>chooseLanguage(value)}>{value==='en'?'English':'Español'}</button>)}</div></fieldset>;
+ const language=<fieldset className={styles.language}><legend className={styles.srOnly}>{t.language}</legend><div className={styles.seg} data-public-plans={publicPlans ? "" : undefined} data-fade={animateSelection ? "" : undefined}>{(['en','es'] as const).map(value=><button key={value} type="button" lang={value} disabled={pending||opening} aria-pressed={lang===value} onClick={()=>chooseLanguage(value)}>{value==='en'?'English':'Español'}</button>)}</div></fieldset>;
  return <RecoveryFrame lang={lang} publicPlans={publicPlans} language={language} legal={legal?.[lang]}><h1>{t.title}</h1><p>{t.intro}</p>
   <div aria-live="polite" aria-busy={link==='loading'||panel.refreshing}>
    {subscribed?<p className={styles.callout} data-tone="green" role="status"><CheckCircleIcon size={18} weight="bold" aria-hidden="true"/>{t.subscribed}</p>:unseen?<p className={styles.callout} data-tone="amber" role="status"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{t.unseen}</p>:confirming&&(ready||waiting)?<p className={styles.callout} data-tone="teal" role="status"><ClockIcon size={18} weight="bold" aria-hidden="true"/>{t.confirming}</p>:null}

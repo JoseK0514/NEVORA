@@ -150,16 +150,16 @@
 }
 
 
-/* Keep keyboard focus inside its own segment, even beside the selected language. */
-.frame .seg[data-spanish-plans] button:focus-visible {
+/* Keep keyboard focus inside its own segment, even beside the selected language, in both languages (English flag D3). */
+.frame .seg[data-public-plans] button:focus-visible {
   outline-color:var(--b-focus);
   outline-offset:calc(-1 * var(--b-focus-width) - 1px);
 }
 @media (max-width: 1023px) {
-  .frame .seg[data-spanish-plans] button[aria-pressed="false"]:focus-visible { outline-color:var(--b-focus-on-band); }
+  .frame .seg[data-public-plans] button[aria-pressed="false"]:focus-visible { outline-color:var(--b-focus-on-band); }
 }
 @media (forced-colors: active) {
-  .frame .seg[data-spanish-plans] button[aria-pressed]:focus-visible { outline-color:Highlight; }
+  .frame .seg[data-public-plans] button[aria-pressed]:focus-visible { outline-color:Highlight; }
 }
 
 /* Keep the three footer links together when the enlarged Spanish line outgrows its column. */
