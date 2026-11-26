@@ -167,11 +167,11 @@ export const copy = {
     // src/components/employee-mobile/messages-view.tsx:23
     someCurrentNoticesCouldnBeChecked: 'Algunos avisos actuales no se pudieron comprobar, por lo que no se muestran. Prueba con una búsqueda diferente o muestra Todos, o actualiza para comprobar de nuevo',
     // src/components/employee-mobile/messages-view.tsx:23
-    someCurrentNoticesCouldnBeChecked2: 'Algunas notificaciones actuales no se pudieron comprobar, por lo que no se enumeran. Actualice para volver a comprobar',
+    someCurrentNoticesCouldnBeChecked2: 'Algunos avisos actuales no se pudieron comprobar, por eso no aparecen. Actualiza para comprobar de nuevo',
     // src/components/employee-mobile/messages-view.tsx:23
     someCurrentUpdatesCouldnBeChecked: 'Algunas actualizaciones actuales no se pudieron comprobar, por lo que no se enumeran. Prueba con una búsqueda diferente o muestra Todas, o actualiza para comprobar de nuevo',
     // src/components/employee-mobile/messages-view.tsx:23
-    someCurrentUpdatesCouldnBeChecked2: 'Algunas actualizaciones actuales no pudieron comprobarse, por lo que no se enumeran. Actualice para comprobar de nuevo',
+    someCurrentUpdatesCouldnBeChecked2: 'Algunos avisos actuales no se pudieron comprobar, por eso no aparecen. Actualiza para comprobar de nuevo',
     // src/components/employee-mobile/messages-view.tsx:24
     noMatches: 'No hay resultados en esta página',
     // src/components/employee-mobile/messages-view.tsx:24

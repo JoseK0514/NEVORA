@@ -6,7 +6,9 @@ import { expect, it } from '@rstest/core';
 // The voice guide's glossary (docs/design/voice.md): a punch is "marcación" and a timecard is "tarjeta de tiempo".
 // The Spanish integration review (Nov 26, 2026) found literal translations of "punch" (a blow with the fist) and
 // "time sheet" in shipped copy. These words never describe a clock event or a timecard in NEVORA's Spanish.
-const BANNED = [/puñetazo/i, /\bgolpe\b/i, /\bhojas? de tiempo\b/i, /fijas PIN de reloj/i];
+// QA's copy-slip list on the same day added "brecha de cobertura" (gap is a Never word) and "lectura protegida" (an
+// internal term that reached people).
+const BANNED = [/puñetazo/i, /\bgolpe\b/i, /\bhojas? de tiempo\b/i, /fijas PIN de reloj/i, /brecha de cobertura/i, /lectura protegida/i];
 
 function sources(dir: string): string[] {
   return readdirSync(dir).flatMap(name => {

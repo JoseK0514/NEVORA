@@ -5,7 +5,7 @@ import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 /* Phase 7 (moments): the sentences of the shared success pattern (`BState kind="done"`) where a screen had no copy module
  * of its own. A title names what is now true; the line is the next fact the reply or the screen already holds. "Sent" is
  * never "approved", and a result the server has not confirmed never reaches these strings. The signed-in app renders `en`
- * today; `es` (Puerto Rico, usted) is proved by moments-copy.test.tsx. Payroll sentences are not here: they are locked. */
+ * today; `es` (Puerto Rico, tú, per docs/design/voice.md) is proved by moments-copy.test.tsx. Payroll sentences are not here: they are locked. */
 export type MomentsLang = "en" | "es";
 
 const en = {
@@ -119,7 +119,7 @@ const en = {
 
 const es: typeof en = {
   requestSent: "Solicitud enviada",
-  timeOffLine: "Su gerente decide. Mantenga sus turnos programados hasta que se apruebe.",
+  timeOffLine: "Tu gerente decide. Mantén tus turnos programados hasta que se apruebe.",
   viewRequest: "Ver mi solicitud",
   anotherRequest: "Hacer otra solicitud",
   calloutSent: "Aviso enviado",
@@ -161,7 +161,7 @@ const es: typeof en = {
   sendUpdate: "Enviar un aviso",
   batchAllApproved: (count: number) => count === 1 ? approvedTimecards.es.batchApprovedOne : formatPortalCopy(approvedTimecards.es.batchApprovedOther, { count }),
   batchAllFinalized: (count: number) => count === 1 ? approvedTimecards.es.batchFinalizedOne : formatPortalCopy(approvedTimecards.es.batchFinalizedOther, { count }),
-  batchLine: "Actualice los registros antes de revisar otro grupo.",
+  batchLine: "Actualiza las tarjetas de tiempo antes de revisar otro grupo.",
   batchWord: { approved: approvedTimecards.es.approved, finalized: approvedTimecards.es.finalized, blocked: approvedTimecards.es.blocked, conflict: approvedTimecards.es.changedReviewItAgain, unavailable: approvedTimecards.es.notAvailable, denied: approvedTimecards.es.notAllowed, "outcome-unknown": approvedTimecards.es.notConfirmed, "not-submitted": approvedTimecards.es.notStarted },
   unknownTitle: { APPROVE: approvedTimecards.es.yourApprovalIsnTConfirmedYet, FINALIZE: approvedTimecards.es.finalizingIsnTConfirmedYet, REOPEN: approvedTimecards.es.reopeningIsnTConfirmedYet },
   unknownLine: approvedTimecards.es.theAnswerDidnTArriveSoItMayAlreadyBe,

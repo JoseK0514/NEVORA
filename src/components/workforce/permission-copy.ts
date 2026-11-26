@@ -54,7 +54,7 @@ const es: PermissionCopy = {
   and: "y",
   actions: {
     PUBLISH_SCHEDULE: { name: "Publicar horarios", line: "Publicar la semana de esta ubicación y sus cambios" },
-    APPROVE_LEAVE: { name: "Aprobar tiempo libre", line: "Decidir las solicitudes de tiempo libre del personal de aquí" },
+    APPROVE_LEAVE: { name: "Aprobar días libres", line: "Decidir las solicitudes de días libres del personal de aquí" },
     REVIEW_TIME_EXCEPTION: { name: "Revisar excepciones de tiempo", line: "Aprobar o rechazar correcciones y ponches omitidos" },
   },
   panelTitle: "Lo que puede aprobar",
@@ -84,7 +84,7 @@ const es: PermissionCopy = {
   anOwner: "un dueño",
   publishDenied: owners => `No puedes publicar aquí. Publicar esta ubicación no es parte de tu acceso; pregúntale a ${owners} o publica las ubicaciones que sí puedes.`,
   leaveDenied: owners => `${owners} decide las solicitudes en tus ubicaciones.`,
-  leaveDeniedTitle: "Un dueño decide el tiempo libre",
+  leaveDeniedTitle: "Un dueño decide los días libres",
   exceptionDenied: owners => `Revisar excepciones de tiempo no es parte de tu acceso, o esta es tuya. Pídele a ${owners} que la revise.`,
 };
 

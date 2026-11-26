@@ -111,7 +111,7 @@ export const copy = {
     // src/components/availability-editor.tsx:73
     endTimeMidnightIncludesRestDay: 'Una hora de finalización de medianoche incluye el resto del día',
     // src/components/availability-editor.tsx:74
-    submittingEveryDayUnavailableTellsManager: 'Al enviar con cada día disponible no disponible, le indica a tu gerente que no puede trabajar esta semana',
+    submittingEveryDayUnavailableTellsManager: 'Si envías con todos los días marcados como no disponibles, le dices a tu gerente que no puedes trabajar esta semana',
     // src/components/availability-editor.tsx:76
     savingAvailability: 'Guardando tu disponibilidad',
     // src/components/availability-editor.tsx:76

@@ -43,7 +43,7 @@ export const copy = {
   },
   es: {
     // src/components/action-center-navigation.ts:5
-    viewCoverageGap: 'Ver la brecha de cobertura',
+    viewCoverageGap: 'Ver lo que falta por cubrir',
     // src/components/action-center-navigation.ts:5
     reviewTimeOff: 'Tiempo de revisión de vacaciones',
     // src/components/action-center-navigation.ts:5

@@ -219,9 +219,9 @@ export const copy = {
     // src/components/manager-action-center.tsx:32
     employeesOutsideTheirHourTargetOther: 'Empleados {count} fuera de su objetivo de horas',
     // src/components/manager-action-center.tsx:34
-    coverageGapAtOne: 'Brecha de cobertura {count} en {at}',
+    coverageGapAtOne: '{count} turno sin cubrir en {at}',
     // src/components/manager-action-center.tsx:34
-    coverageGapOne: 'Brecha de cobertura {count}',
+    coverageGapOne: '{count} turno sin cubrir',
     // src/components/manager-action-center.tsx:34
     coverageGapsAtOther: 'Vacíos de cobertura en {count} en {at}',
     // src/components/manager-action-center.tsx:34
@@ -341,7 +341,7 @@ export const copy = {
     // src/components/manager-action-center.tsx:106
     askOwnerIfNeedThem: '. Pregunta al dueño si los necesitas',
     // src/components/manager-action-center.tsx:106
-    taskListUnconfirmedRefreshCurrentProtected: '. La lista de tareas no está confirmada. Actualice una lectura protegida actual antes de revisar',
+    taskListUnconfirmedRefreshCurrentProtected: '. La lista de pendientes no está confirmada. Actualiza la página antes de revisarla',
     // src/components/manager-action-center.tsx:210
     managerActionCenterIntelligence: 'Inteligencia del Centro de Acción del Gerente',
     // src/components/manager-action-center.tsx:211
@@ -383,7 +383,7 @@ export const copy = {
     // src/components/manager-action-center.tsx:227
     countsIncludeOnlyObservedActionsIn: 'Los recuentos incluyen únicamente las acciones observadas en esta vista autorizada. Las fuentes incompletas o limitadas pueden contener acciones adicionales. Los recuentos identifican las tareas de revisión, no las violaciones de políticas',
     // src/components/manager-action-center.tsx:228
-    actionListUnconfirmedRefreshCurrentProtected: '{loading}. La lista de acciones no está confirmada. Actualice una lectura protegida actual antes de revisarla',
+    actionListUnconfirmedRefreshCurrentProtected: '{loading}. La lista de pendientes no está confirmada. Actualiza la página antes de revisarla',
     // src/components/manager-action-center.tsx:229
     actionSourceStatus: 'Estado de la fuente de acción',
     // src/components/manager-action-center.tsx:231

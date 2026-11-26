@@ -291,7 +291,7 @@ export const copy = {
     // src/components/owner-b/home-b.tsx:320
     clockedInCount: '{onClockCount} en turno',
     // src/components/owner-b/home-b.tsx:323
-    onNow: 'Trabajando ahora',
+    onNow: 'En turno',
     // src/components/owner-b/home-b.tsx:333
     onBreak: 'En descanso',
     // src/components/owner-b/home-b.tsx:344

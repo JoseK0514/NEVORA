@@ -80,7 +80,7 @@ export const copy = {
     // src/components/manager-dashboard.tsx:116
     overview: 'Resumen',
     // src/components/manager-dashboard.tsx:117, src/components/manager-dashboard.tsx:269
-    whoWorking: 'Quién está trabajando',
+    whoWorking: 'Quién está en turno',
     // src/components/manager-dashboard.tsx:118, src/components/manager-dashboard.tsx:156, src/components/manager-dashboard.tsx:158, src/components/manager-dashboard.tsx:270
     hoursThisWeek: 'Horas esta semana',
     // src/components/manager-dashboard.tsx:119, src/components/manager-dashboard.tsx:208, src/components/manager-dashboard.tsx:209, src/components/manager-dashboard.tsx:271

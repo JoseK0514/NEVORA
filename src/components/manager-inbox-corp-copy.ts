@@ -333,6 +333,6 @@ export const copy = {
     // src/components/manager-inbox-corp.tsx:390
     someAttendanceComparisonsAreUnavailable: 'Algunas comparaciones de asistencia no están disponibles ',
     // src/components/manager-inbox-corp.tsx:390
-    seeWhoWorking: 'Mira quién está trabajando',
+    seeWhoWorking: 'Mira quién está en turno',
   },
 } as const;

@@ -247,7 +247,7 @@ export const copy = {
     // src/components/employee-b/messages-b.tsx:259
     someCurrentUpdatesCouldnBeChecked: 'Algunas actualizaciones actuales no se pudieron comprobar, por lo que no se enumeran. Prueba con una búsqueda diferente o muestra Todas, o actualiza para comprobar de nuevo',
     // src/components/employee-b/messages-b.tsx:259
-    someCurrentUpdatesCouldnBeChecked2: 'Algunas actualizaciones actuales no pudieron comprobarse, por lo que no se enumeran. Actualice para comprobar de nuevo',
+    someCurrentUpdatesCouldnBeChecked2: 'Algunos avisos actuales no se pudieron comprobar, por eso no aparecen. Actualiza para comprobar de nuevo',
     // src/components/employee-b/messages-b.tsx:260
     noMatches: 'No hay resultados en esta página',
     // src/components/employee-b/messages-b.tsx:260

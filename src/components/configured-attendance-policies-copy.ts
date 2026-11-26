@@ -127,9 +127,9 @@ export const copy = {
     // src/components/configured-attendance-policies.tsx:38
     policyObservationsUnavailableWhileOfflineHidden: 'Las observaciones de la política no están disponibles mientras están fuera de línea o ocultas',
     // src/components/configured-attendance-policies.tsx:65
-    policyObservationsExpiredRefreshReviewCurrent: 'Las observaciones de la política han caducado. Actualice para revisar los hechos actuales',
+    policyObservationsExpiredRefreshReviewCurrent: 'Las observaciones de la política caducaron. Actualiza para revisar los datos actuales',
     // src/components/configured-attendance-policies.tsx:72
-    configuredAttendanceObservationsUnavailableRefreshTry: 'Las observaciones de asistencia configuradas no están disponibles. Actualice para volver a intentarlo',
+    configuredAttendanceObservationsUnavailableRefreshTry: 'Las observaciones de asistencia configuradas no están disponibles. Actualiza para volver a intentarlo',
     // src/components/configured-attendance-policies.tsx:78
     policyObservationsPaused: 'Las observaciones de políticas se han pausado',
     // src/components/configured-attendance-policies.tsx:80

@@ -5,6 +5,6 @@ export const copy = {
   },
   es: {
     // src/components/manager-issue-focus.tsx:25
-    issueNoLongerAvailableInView: "Ese asunto ya no aparece aquí. Puede haber cambiado desde que lo abriste. Revisa la lista actual en tu bandeja de entrada.",
+    issueNoLongerAvailableInView: "Ese asunto ya no aparece aquí. Puede haber cambiado desde que lo abriste. Revisa la lista actual en Pendientes.",
   },
 } as const;

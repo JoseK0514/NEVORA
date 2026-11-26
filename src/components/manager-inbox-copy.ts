@@ -108,7 +108,7 @@ const es: InboxCopy = {
   allSet: "Estás al día", nothingLine: "No tienes nada pendiente ahora.",
   waiting: "Esperando revisión",
   clockInsFailed: "No pudimos verificar las entradas ahora.", clockIns: "Entradas",
-  limited: "Algunas comparaciones de asistencia no están disponibles.", whoIsWorking: "Ver quién está trabajando",
+  limited: "Algunas comparaciones de asistencia no están disponibles.", whoIsWorking: "Ver quién está en turno",
   plan: {
     COVERAGE_GAP: "Turnos disponibles más adelante esta semana", TARGET_MISSING: "Personas sin meta de horas", DEADLINE_MISSING: "Fecha límite de disponibilidad",
     AVAILABILITY_MISSING: "Disponibilidad no enviada", ACKNOWLEDGEMENT_MISSING: "Horario no confirmado", TIMECARD: "Tarjetas de tiempo por revisar",
@@ -308,7 +308,7 @@ export const copy = {
   },
   es: {
     // src/components/manager-inbox.tsx:30
-    loading: 'Cargando tu bandeja de entrada',
+    loading: 'Revisando lo que te necesita…',
     // src/components/manager-inbox.tsx:30
     reconnecting: 'Reconectando…',
     // src/components/manager-inbox.tsx:30
@@ -318,7 +318,7 @@ export const copy = {
     // src/components/manager-inbox.tsx:31
     unavailable: 'El buzón de entrada no está disponible en este momento',
     // src/components/manager-inbox.tsx:31
-    signInAgainSeeInbox: 'Inicia sesión de nuevo para ver tu bandeja de entrada',
+    signInAgainSeeInbox: 'Inicia sesión de nuevo para ver tus pendientes',
     // src/components/manager-inbox.tsx:31
     donHaveAccessInboxAskOwner: 'No tienes acceso al buzón de entrada. Pregunta al dueño si lo necesitas',
     // src/components/manager-inbox.tsx:35, src/components/manager-inbox.tsx:306, src/components/manager-inbox.tsx:338, src/components/manager-inbox.tsx:407, src/components/manager-inbox.tsx:420, src/components/manager-inbox.tsx:457
@@ -340,7 +340,7 @@ export const copy = {
     // src/components/manager-inbox.tsx:103
     requestNote: 'Las fechas, la duración y cualquier nota están en la solicitud. Aprobándola o rechazándola allí',
     // src/components/manager-inbox.tsx:106
-    shiftStillNeedsPeopleOpenCoverage: 'Este cambio todavía necesita gente. Abre la brecha de cobertura para llenarla',
+    shiftStillNeedsPeopleOpenCoverage: 'Este turno todavía necesita gente. Abre lo que falta por cubrir para completarlo',
     // src/components/manager-inbox.tsx:107
     setWeeklyHourTargetInScheduling: 'Establezca una hora objetivo semanal en las reglas de programación',
     // src/components/manager-inbox.tsx:108

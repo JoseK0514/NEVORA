@@ -361,7 +361,7 @@ export const copy = {
     // src/components/notification-inbox.tsx:191
     searchNotifications: 'Notificaciones de búsqueda',
     // src/components/notification-inbox.tsx:191
-    placeholder: 'Buscar en esta bandeja de entrada',
+    placeholder: 'Buscar en esta lista',
     // src/components/notification-inbox.tsx:193
     notificationInViewActionRequiredOne: 'Notificación {itemsCount} en esta opinión · Medidas necesarias',
     // src/components/notification-inbox.tsx:193
