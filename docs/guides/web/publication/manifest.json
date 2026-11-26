@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-26",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "0f61b70854cf01d8ce6b96fd79c369c9c34b6454",
-  "applicationHash": "ed2498ce47d39affeac153e809634b69c978f327c0de3dfd201510dbf808a09d",
+  "sourceSha": "d245a5c5a87f6f6bb54d04b54bf24ac8a257c221",
+  "applicationHash": "3485f570fdc210facf9fc8156764a9bd5040efaee82582acb310d4baafc5e6c9",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "94e9da77b419a672e0e53bf2a2e33a134894bc8adf82c04d8fe66bd0c38e3f4e"
@@ -39,7 +39,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "57b3b0bd253197e82d7c0ad953809bc87a77c26145a6c906a42326058813119d"
+          "sha256": "8f7f15715cec79564dfab8cd01afdf4d9ab534fc38057d1e2d00c8da7d293175"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -211,11 +211,11 @@
         },
         {
           "path": "src/components/team/clocker-location-access-copy.ts",
-          "sha256": "8f77b4d3391537eb36c82b47170064afa80ad7fbee0b354ec2eaa9fc021abfa4"
+          "sha256": "eec15e35b984022da2a06142fff1a7c0f7273957e48edc3ad881677b7d455bb5"
         },
         {
           "path": "src/components/clocker-owner-copy.ts",
-          "sha256": "694ddb41c617669f16b1292398e40d273e14cd6e06314b20ce0564862627f340"
+          "sha256": "1dda26b6c43510ef9d8722ba4e18c00194517a92e1bffa5ae62b2d86b7a63d97"
         },
         {
           "path": "src/components/clocker-roster-copy.ts",
@@ -224,7 +224,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "a66889bd20bc5b3c4de2cd0e10b5022e7ff47ddb0f5caa23afb089545115658e",
+        "sha256": "bea7a3b65a2011aa89694797ed898c8d0e95d1de43c201d0adceded6081550fb",
         "pageCount": 8
       }
     },
@@ -262,7 +262,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "57b3b0bd253197e82d7c0ad953809bc87a77c26145a6c906a42326058813119d"
+          "sha256": "8f7f15715cec79564dfab8cd01afdf4d9ab534fc38057d1e2d00c8da7d293175"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -347,7 +347,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "b2e4b89ca062fff64d1b0412b4aeca631d1b36383c0866866b1b2f7221906ea1",
+        "sha256": "1ffefd92805bd49339b089bed9f1f4274b91bf2a9d76e7931ea1b156f27d0296",
         "pageCount": 4
       }
     },
@@ -466,7 +466,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "43c9752bda2d38e81e19d6eec2e87e0ed3f8692bd237965a6408d936cbf47a8b",
+        "sha256": "ed6c1b3c74f9f50c9c30c8279fdc8c96fc8521a32fbde7c538b922e69e255e71",
         "pageCount": 3
       }
     },
@@ -641,7 +641,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "e2b64a048e853c97d2cdff900fdd10ac77f8a9b1391f00d939c23d85100f40a0",
+        "sha256": "d6519cdee10f56eadf4f48f375f5ca927c255eda6e3c192b006bee634e679551",
         "pageCount": 5
       }
     },
@@ -904,7 +904,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "a7c0243d060d0843a11957ff8ce6833f2d49b695bd4de42fa72f62e0cc8242d6",
+        "sha256": "d55c15e10a62af0ca5a1f74dda2f2ba7d148ca342bb1db76df6836b008073274",
         "pageCount": 7
       }
     },
@@ -1099,7 +1099,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "d22ecd4e7509082dad553bb71aeb0a6bcb76ac588b0246e9ffd095fe3b22d135",
+        "sha256": "af923669b777470cfb21f12c9fa50c78544688a674633eb5b7508b3acb348a3a",
         "pageCount": 7
       }
     }
