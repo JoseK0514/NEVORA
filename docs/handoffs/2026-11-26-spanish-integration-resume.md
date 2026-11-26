@@ -58,7 +58,14 @@ sits word for word in the copy tables.
 Estimate if nothing new turns up: about 2 hours. Running the Try again check and the delta sweep in a second session
 saves 30–45 minutes; Jose hasn't decided on that.
 
-## Decisions waiting for Jose
+## Jose's decisions, Nov 26 (resumed at about 7:50 AM AST)
+
+- "Ponche / ponchar" is the one word for a punch everywhere, replacing "marcación" and "marcar entrada/salida". The
+  wording change is in progress (separate agent, then review, then QA's Spanish delta sweep).
+- "Espacio de trabajo" becomes "empresa" (sign-up and account deletion).
+- English UI flags: start them once the Spanish integration is in and everything is good.
+
+## Decisions waiting for Jose (earlier list)
 
 1. "Ponche/ponchar" for a clock punch. The glossary says "marcación", but Jose approved "Sin ponchar" as a compact label
    and "reloj de ponche" is everyday PR Spanish. Use "marcación" everywhere, or keep "ponche" where it reads naturally?
