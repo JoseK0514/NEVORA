@@ -46,8 +46,8 @@ it('names the screens in both languages without the words the review found wrong
  expect(keys).not.toContain('Return to PIN');expect(values.join(' ')).not.toContain('Volver al PIN');
  expect(clockerText('es','Start over')).toBe('Empezar de nuevo');
  // The Owner's pages show "Clocker recovery"; Spanish names the place as the Owner sees it.
- expect(clockerText('es','Request sent. Your Owner will see it under Clocker recovery.')).toBe('Solicitud enviada. El dueño la verá en Clocker recovery.');
- expect(clockerText('es','Your Owner can find this in Clocker recovery.')).toBe('El dueño puede encontrarla en Clocker recovery.');
+ expect(clockerText('es','Request sent. Your Owner will see it under Clocker recovery.')).toBe('Solicitud enviada. El dueño la verá en Recuperación de Clocker.');
+ expect(clockerText('es','Your Owner can find this in Clocker recovery.')).toBe('El dueño puede encontrarla en Recuperación de Clocker.');
  // One Spanish name for the product, and "personal" for the people who clock in.
  expect(values.join(' ')).not.toContain('reloj de asistencia');
  expect(clockerText('es','{device} is ready. Your team can clock in now.')).toContain('Tu personal ya puede marcar.');

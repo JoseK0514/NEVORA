@@ -9,10 +9,10 @@ import styles from './recovery.module.css';
  * beside the card. `language` replaces the reloading switch, `below` sits under the card (Sign out) and `legal` is the
  * footer line. `brandLine={false}` leaves the sign-in brand line out of the panel: the paused Clocker page passes it
  * (Phase 2, K15), because a shared tablet is not the employee sign-in. */
-export function RecoveryFrame({children,lang='en',language,below,legal,brandLine=true}: {children:ReactNode;lang?:'en'|'es';language?:ReactNode;below?:ReactNode;legal?:ReactNode;brandLine?:boolean}) {
+export function RecoveryFrame({children,lang='en',language,below,legal,brandLine=true,publicPlans=false}: {children:ReactNode;lang?:'en'|'es';language?:ReactNode;below?:ReactNode;legal?:ReactNode;brandLine?:boolean;publicPlans?:boolean}) {
  // The brand line breaks after its first comma, as on sign-in.
  const t=AUTH_COPY[lang],at=t.bandLine.indexOf(', ');
- return <main className={styles.frame} lang={lang}>
+ return <main className={styles.frame} lang={lang} data-public-plans={publicPlans || undefined}>
   <aside className={styles.panel} aria-label="NEVORA">
    <span className={styles.panelMark}><BrandWordmark/></span>
    {brandLine?<div><p className={styles.panelEyebrow}>{t.panelEyebrow}</p><p className={styles.panelLine}>{at<0?t.bandLine:<>{t.bandLine.slice(0,at+1)}<br/>{t.bandLine.slice(at+2)}</>}</p></div>:null}

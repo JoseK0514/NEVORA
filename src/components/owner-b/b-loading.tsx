@@ -2,6 +2,9 @@
 
 import { useLayoutEffect, useSyncExternalStore, type ReactNode } from "react";
 import { BLoadingScreen, type BLoadingShape } from "./b-kit";
+import { usePortalLang, type PortalLang } from "@/lib/i18n/portal-lang";
+import { SETTINGS_COPY } from "@/app/app/settings/settings-copy";
+import { navLabel } from "@/components/shell-copy";
 
 /* Phase 2 (package D): which frame a page's loading placeholder keeps. One table for every role, read by the route's
  * loading.tsx (CorpSkeleton) and by the access check (ScopedReadFrame), so a tab tap and the check that follows look the
@@ -131,6 +134,24 @@ export function loadingShape(pathname: string, employee: boolean): BLoadingShape
   return found ? found[1] : employee ? { ...fallback, back: true } : fallback;
 }
 
+/** Signed-in Spanish (Nov 23, 2026): the placeholder titles that aren't navigation labels; the rest come from the shell's
+ * navigation words (navLabel), the same words the page's band shows once it arrives. */
+const TITLE_ES: Record<string, string> = {
+  "Clocker recovery": "Recuperación de Clocker", "Time corrections": "Correcciones de tiempo", "Time exports": "Exportar horas",
+  "Agreed times": "Horario acordado", "Christmas bonus hours": "Horas del bono de Navidad", "Edit shift": "Editar turno", "Clocker PIN": "PIN del Clocker", "Import pay": "Importar pagos",
+  "Paid time export": "Tiempo pagado", "Pay rate": "Tarifa por hora", "Photo review": SETTINGS_COPY.es.photoReview,
+  "Punch photos": SETTINGS_COPY.es.punchPhotos, "Clocker PINs": SETTINGS_COPY.es.clockerPins,
+  "Shift matching": SETTINGS_COPY.es.shiftMatching, "Clocker tablets": SETTINGS_COPY.es.clockerTablets,
+  "Payroll settings": SETTINGS_COPY.es.payrollSettings,
+  "Time off balance": "Balance de días libres", "Time off policies": "Políticas de días libres",
+  "When they can be scheduled": "Cuándo se le puede asignar turnos",
+};
+/** A placeholder's fixed title in the person's language. */
+export function loadingTitle(title: string, lang: PortalLang): string {
+  return lang === "es" ? TITLE_ES[title] ?? navLabel(title, lang) : title;
+}
+const fixed = (title: ReactNode, lang: PortalLang) => typeof title === "string" ? loadingTitle(title, lang) : title;
+
 const never = () => () => {};
 const address = () => window.location.pathname;
 
@@ -139,6 +160,7 @@ const address = () => window.location.pathname;
  * first paint is already the right one. `title` is the title that page showed last time, when known. */
 export function BRouteLoading({ pathname, title }: { pathname?: string; title?: ReactNode }) {
   const here = useSyncExternalStore(never, address, () => null);
+  const lang = usePortalLang();
   // Phase 7 (package C): the hand-over. When the page replaces this placeholder, <html> carries data-c-arrived for a
   // moment: a screen that appears in that moment skips the usual rise and only its cards' contents fade in over
   // --b-dur-hover (b-shimmer.css; nothing with reduced motion). Before the moment ends, the screens that arrived are
@@ -151,11 +173,12 @@ export function BRouteLoading({ pathname, title }: { pathname?: string; title?: 
     window.setTimeout(() => { for (const screen of document.querySelectorAll("main.page-frame .b-screen")) screen.setAttribute("data-b-arrived", ""); }, 150);
     window.setTimeout(() => root.removeAttribute("data-c-arrived"), 250);
   }, []);
+  const loadingText = lang === "es" ? "Cargando…" : "Loading…";
   const path = pathname || here;
-  if (!path) return <BLoadingScreen title={title} />;
+  if (!path) return <BLoadingScreen title={title} loadingText={loadingText} />;
   const management = loadingShape(path, false), employee = loadingShape(path, true);
   return <>
-    <BLoadingScreen {...management} title={title ?? management.title} shell="management" route={path} />
-    <BLoadingScreen {...employee} title={title ?? employee.title} shell="employee" route={path} />
+    <BLoadingScreen {...management} title={title ?? fixed(management.title, lang)} shell="management" route={path} loadingText={loadingText} />
+    <BLoadingScreen {...employee} title={title ?? fixed(employee.title, lang)} shell="employee" route={path} loadingText={loadingText} />
   </>;
 }

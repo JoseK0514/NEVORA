@@ -34,9 +34,9 @@ it('keeps one request: its reference joins the disclosure, and the status says w
  // Premium pass (#8): once saved, the result stands in the button's place, a teal information line with no done mark.
  expect(sent).toContain('Request sent. Your Owner will see it under Clocker recovery.');expect(sent).toContain('data-tone="teal"');
  expect(sent).not.toMatch(/>(Ask Owner to check|Request sent|Ask again)<\/button>/);expect(sent).not.toContain('disabled');
- expect(help('es','saved','5f0c').replace(/<[^>]+>/g,'')).toContain('Solicitud enviada. El dueño la verá en Clocker recovery.');
- // The Owner's pages name the place "Clocker recovery" in both languages, so the Spanish sentence does too (#10).
- expect(Object.values(CLOCKER_COPY).join(' ')).not.toContain('Recuperación de Clocker');
+ expect(help('es','saved','5f0c').replace(/<[^>]+>/g,'')).toContain('Solicitud enviada. El dueño la verá en Recuperación de Clocker.');
+ // The Spanish status uses the destination name shown on the Owner’s signed-in screen.
+ expect(CLOCKER_COPY['Your Owner can find this in Clocker recovery.']).toContain('Recuperación de Clocker');
  expect(sent.split('<details')[1]).toContain('5f0c0000-aaaa-4bbb-8ccc-000000000001');expect(sent.split('<details')[0]).not.toContain('5f0c0000');
  expect(help('en','unknown','5f0c').replace(/ /g,' ')).toContain('We couldn’t confirm the request. Ask again; it won’t send twice.');
  expect(help('en','idle',null,0)).not.toContain('data-clocker-others-saved');

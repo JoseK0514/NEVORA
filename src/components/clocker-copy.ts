@@ -1,3 +1,4 @@
+import {copy as languageCopy} from './clocker-language-copy';
 import {CLOCKER_TRANSPORT_ERRORS,type ClockerTransportErrorCode} from '../lib/clocker/transport-errors';
 export type ClockerLocale='en'|'es';
 export const CLOCKER_COPY:Record<string,string>={
@@ -83,7 +84,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Review request reference":"Referencia de la solicitud de revisión",
  // Premium pass (#10): the Owner's pages show this place as "Clocker recovery" (its Settings row, page title and tab are
  // English), so the Spanish names it as the Owner sees it, as "Settings → Clocker tablets" does.
- "Your Owner can find this in Clocker recovery.":"El dueño puede encontrarla en Clocker recovery.",
+ "Your Owner can find this in Clocker recovery.":languageCopy.es.yourOwnerCanFindThisInClockerRecovery,
  "Request confirmation is unavailable. Keep this reference; retry uses the same request.":"No pudimos confirmar la solicitud. Conserva esta referencia; al reintentar se usa la misma solicitud.",
  "Stay on break":"Seguir en descanso",
  "Stay clocked in":"Seguir en turno",
@@ -133,14 +134,14 @@ export const CLOCKER_COPY:Record<string,string>={
  "We couldn’t confirm the setup. Allow cookies, then tap Check setup.":"No pudimos confirmar la configuración. Permite las cookies y toca Revisar configuración.",
  "Check tablet setup": "Revisa la configuración de la tableta",
  "Tablet connected":"Tableta conectada",
- "{device} is connected to this location.":"{device} está conectada a esta ubicación.",
+ "{device} is connected to this location.":"{device} está conectada a esta localidad.",
  "Timekeeping is not available yet.": "El registro de tiempo aún no está disponible.",
  "Punching in isn’t turned on yet. Don’t use this tablet to record time.": "Las marcaciones aún no están activadas. No uses esta tableta para registrar tiempo.",
  "Owner access has been signed out on this tablet.": "La sesión del dueño se cerró en esta tableta.",
  "Check connection": "Revisar conexión",
  "One-time setup": "Configuración inicial",
  // The menu path is the Owner’s English screen, bound so a line never starts with the arrow (NV-298).
- "Ask your Owner to add this device in Settings → Clocker tablets. Then paste the one-use setup code.": "Pide al dueño que añada esta tableta en Settings → Clocker tablets. Luego pega el código de un solo uso.",
+ "Ask your Owner to add this device in Settings → Clocker tablets. Then paste the one-use setup code.": languageCopy.es.askYourOwnerToAddThisDeviceInSettings,
  "Use the tablet’s setup code here, not an employee PIN. Allow cookies in this browser.":"Usa aquí el código de la tableta, no un PIN de empleado. Permite las cookies en este navegador.",
  "Checking setup…": "Revisando configuración…",
  "Checking this tablet…": "Revisando esta tableta…",
@@ -149,7 +150,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "This tablet will be the time clock for {location}.": "Esta tableta será el registro de tiempo de {location}.",
  "This tablet becomes this location’s time clock.": "Esta tableta será el registro de tiempo de esta ubicación.",
  "How to set it up": "Cómo configurarla",
- "On another device, the Owner opens Settings → Clocker tablets.": "En otro dispositivo, el dueño abre Settings → Clocker tablets.",
+ "On another device, the Owner opens Settings → Clocker tablets.": languageCopy.es.onAnotherDeviceTheOwnerOpensSettingsClockerTablets,
  "The Owner adds this tablet and gets its setup code.": "El dueño añade esta tableta y obtiene su código de configuración.",
  "Point this tablet’s camera at the code, or type the code below.": "Apunta la cámara de esta tableta al código, o escribe el código abajo.",
  "Setup code received": "Código de configuración recibido",
@@ -157,8 +158,8 @@ export const CLOCKER_COPY:Record<string,string>={
  "Type a code instead": "Escribir un código",
  "Connecting…":"Conectando…",
  "Connecting this tablet…":"Conectando esta tableta…",
- "That link doesn’t have a complete setup code. Type the code from Owner Settings.": "Ese enlace no trae un código de configuración completo. Escribe el código que aparece en Settings del dueño.",
- "Enter the whole setup code the Owner sees in Settings → Clocker tablets.":"Escribe el código completo que ve el dueño en Settings → Clocker tablets.",
+ "That link doesn’t have a complete setup code. Type the code from Owner Settings.": languageCopy.es.thatLinkDoesntHaveACompleteSetupCodeType,
+ "Enter the whole setup code the Owner sees in Settings → Clocker tablets.":languageCopy.es.enterTheWholeSetupCodeTheOwnerSeesIn,
  "This tablet is offline. Connect it to Wi-Fi, then try again.": "Esta tableta está sin conexión. Conéctala a la red Wi-Fi e inténtalo de nuevo.",
  "Setup not confirmed": "Configuración sin confirmar",
  "This tablet is connected to {location}":"Esta tableta quedó conectada a {location}",
@@ -322,7 +323,7 @@ export const CLOCKER_COPY:Record<string,string>={
  // ---- Phase 6 (Nov 17, 2026), the kiosk's clock-in flow. The tablet setup strings are builder B's and are not here. ----
  // Errors by stable code (item 1): each says what happened and what to do next. The kiosk's way out is a manager.
  "We couldn’t check your PIN. Try again, or ask a manager to record your time.":"No pudimos verificar tu PIN. Inténtalo de nuevo o pide a un gerente que registre tu tiempo.",
- "Tell a manager. Your Owner sets this tablet up again in Settings → Clocker tablets.":"Avísale a un gerente. El dueño vuelve a configurar esta tableta en Settings → Clocker tablets.",
+ "Tell a manager. Your Owner sets this tablet up again in Settings → Clocker tablets.":languageCopy.es.tellAManagerYourOwnerSetsThisTabletUp,
  "This tablet’s link is not valid. Tell a manager.":"El enlace de esta tableta no es válido. Avísale a un gerente.",
  "This tablet did not open the Clocker from its own link. Ask a manager to open it again.":"Esta tableta no abrió Clocker desde su propio enlace. Pide a un gerente que lo abra de nuevo.",
  "Your PIN timed out. Enter your Employee ID and PIN again.":"Se acabó el tiempo de tu PIN. Ingresa tu ID de empleado y tu PIN de nuevo.",
@@ -389,7 +390,7 @@ export const CLOCKER_COPY:Record<string,string>={
  "Ask again":"Pedir de nuevo",
  "Request reference":"Referencia de la solicitud",
  "Sending the request.":"Enviando la solicitud.",
- "Request sent. Your Owner will see it under Clocker recovery.":"Solicitud enviada. El dueño la verá en Clocker recovery.",
+ "Request sent. Your Owner will see it under Clocker recovery.":languageCopy.es.requestSentYourOwnerWillSeeItUnderClocker,
  "We couldn’t confirm the request. Ask again; it won’t send twice.":"No pudimos confirmar la solicitud. Pide de nuevo; no se enviará dos veces.",
  "Your punch is not confirmed yet. Tap Check if it saved before doing anything else.":"Tu marcación aún no está confirmada. Toca Revisar si se guardó antes de hacer otra cosa.",
  "Getting ready…":"Preparando…",
@@ -417,7 +418,7 @@ export const CLOCKER_COPY:Record<string,string>={
  // The Clocker's own not-found page (item 8).
  "This time clock link doesn’t work":"El enlace de este registro de tiempo no funciona",
  "Tell a manager":"Avísale a un gerente",
- "Your Owner sets this tablet up again in Settings → Clocker tablets.":"El dueño vuelve a configurar esta tableta en Settings → Clocker tablets.",
+ "Your Owner sets this tablet up again in Settings → Clocker tablets.":languageCopy.es.yourOwnerSetsThisTabletUpAgainInSettings,
 };
 /** True when the kiosk can say this phrase in the chosen language. */
 export function clockerHasText(locale:ClockerLocale,key:string):boolean{return locale==='en'||Object.hasOwn(CLOCKER_COPY,key);}

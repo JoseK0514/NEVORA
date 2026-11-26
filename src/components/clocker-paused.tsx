@@ -1,4 +1,5 @@
 'use client';
+import {copy as pageWords} from './clocker-paused-copy';
 
 import type { ClockerLocale } from './clocker-copy';
 import { ClockerLanguageToggle, ClockerPresentation, useClockerCopy, useClockerPresentation } from './clocker-language';
@@ -19,7 +20,7 @@ import kiosk from './clocker.module.css';
 function PausedBody({ from, unavailable }: { from: string | null; unavailable: boolean }) {
   const t = useClockerCopy(), { locale } = useClockerPresentation();
   return <RecoveryFrame lang={locale} brandLine={false} legal={<p className={kiosk.pausedLegal}>© 2026 VELANI LLC</p>} language={<ClockerLanguageToggle className={kiosk.langSolid} />}>
-    <h1>{unavailable ? t('Access could not be checked') : t('This time clock is paused')}</h1>
+    <h1>{unavailable ? pageWords[locale].accessCouldNotBeChecked : pageWords[locale].thisTimeClockIsPaused}</h1>
     <p>{t('Clocking is unavailable right now. Ask your workplace Owner to review access and billing.')} {t('Until then, ask a manager to record your time.')}</p>
     {/* "When billing is settled" is only true for a pause, not for a status that could not be read. */}
     <p>{t('Open billing on your own device.')}{unavailable ? null : <> {t('This tablet starts working again when billing is settled.')}</>}</p>

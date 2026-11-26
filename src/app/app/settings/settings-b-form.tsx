@@ -8,6 +8,8 @@ import { CorpFormFooter } from "@/components/corp/corp";
 import { Notice } from "./wave-c-kit";
 import { BBusyLabel } from "@/components/owner-b/b-kit";
 import { FieldErrors, defaultEntries, formEntries, useFieldError, useFieldErrors, type FieldMessages } from "./wave-c-form";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SETTINGS_COPY } from "./settings-copy";
 
 /* Settings in Direction B (Nov 23, 2026): the form pieces, drawn with the corporate kit's classes so the Direction B
  * layers dress them as every other Owner form (outlined 48px fields, labels above, the one error style, the solid teal
@@ -90,8 +92,8 @@ export function ResultB({ tone, title, children, action, innerRef }: { tone: "do
 /** The settings save form, as one white card. Phones save from the band (the page's `phoneRight`, `form={id}`); tablets
  * and desktop from the card's footer. With `saveOnChange` both appear only once an entry differs from what was loaded or
  * last saved. The outcome stands under the card and takes focus. */
-export function SettingsFormB({ id, action, children, messages = {}, submitLabel = "Save", pendingLabel = "Saving…", successTitle = "Saved", showServerSuccess = true,
-  errorTitle = "Not saved", onResult, saveOnChange = false, label, cancel, disabled = false, reviewedUpdatedAt }: {
+export function SettingsFormB({ id, action, children, messages = {}, submitLabel: givenSubmit, pendingLabel: givenPending, successTitle: givenSuccess, showServerSuccess = true,
+  errorTitle: givenError, onResult, saveOnChange = false, label, cancel, disabled = false, reviewedUpdatedAt }: {
   id: string;
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
@@ -110,6 +112,9 @@ export function SettingsFormB({ id, action, children, messages = {}, submitLabel
   disabled?: boolean;
   reviewedUpdatedAt?: string;
 }) {
+  // Signed-in Spanish: the form's own defaults follow the person's language; a caller's words are its own.
+  const t = SETTINGS_COPY[usePortalLang()];
+  const submitLabel = givenSubmit ?? t.save, pendingLabel = givenPending ?? t.saving, successTitle = givenSuccess ?? t.saved, errorTitle = givenError ?? t.notSaved;
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
   const [stamp, setStamp] = useState(reviewedUpdatedAt);
@@ -136,13 +141,13 @@ export function SettingsFormB({ id, action, children, messages = {}, submitLabel
     sending.current = true; setPending(true); setResult({}); clear();
     try {
       const saved = await action(data);
-      const next = saved.error || saved.success ? saved : { error: "It may not have saved. Your entries are kept; check the page before you try again." };
+      const next = saved.error || saved.success ? saved : { error: t.mayNotHaveSaved };
       if (saveOnChange && saved.success && !saved.error) { baseline.current = formEntries(data); setDirty(false); }
       if (saved.success && !saved.error) setSavedCount(count => count + 1);
       setResult(next); onResult?.(next);
       if (saved.success && !saved.error && saved.updatedAt && stamp !== undefined) setStamp(saved.updatedAt);
     } catch {
-      const failed = { error: "Your entries are kept. Try again." };
+      const failed = { error: t.entriesKept };
       setResult(failed); onResult?.(failed);
     } finally { sending.current = false; setPending(false); }
   }

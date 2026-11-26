@@ -74,6 +74,14 @@
 .srOnly { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
 .seg { display:flex; flex-wrap:wrap; padding:var(--b-seg-pad); border-radius:var(--b-seg-r); background:var(--b-glass); box-shadow:inset 0 0 0 1px var(--b-glass-edge); }
 .seg button { position:relative; min-height:var(--b-seg-item-h); padding:0 var(--b-seg-item-px); border:0; border-radius:var(--b-seg-item-r); background:none; color:var(--b-on-band); font:inherit; font-size:.875rem; line-height:1.25; font-weight:600; cursor:pointer; }
+@media (prefers-reduced-motion: no-preference) {
+  .seg[data-fade] button[aria-pressed="true"] {
+    animation: selectedLanguage var(--b-dur-press) var(--b-ease-out);
+  }
+  @keyframes selectedLanguage {
+    from { background-color: var(--language-start-fill, var(--b-teal-50)); color: var(--b-ink2); }
+  }
+}
 .seg button::after { content:""; position:absolute; inset:-4px 0; }
 .seg button[aria-pressed="true"] { background:#FFFFFF; color:var(--b-ink); }
 .seg button:disabled { color:var(--b-on-band-2); cursor:default; }
@@ -117,7 +125,7 @@
   .brand { display:none; }
   .lang { min-height:40px; padding:0 var(--b-space-16); background:#FFFFFF; color:var(--b-ink); box-shadow:0 0 0 1px rgb(var(--b-shadow-rgb) / .08),0 1px 2px rgb(var(--b-shadow-rgb) / .06); }
   .lang::after { inset:-2px 0; }
-  .seg { background:#FFFFFF; box-shadow:0 0 0 1px rgb(var(--b-shadow-rgb) / .08),0 1px 2px rgb(var(--b-shadow-rgb) / .06); }
+  .seg { --language-start-fill: #FFFFFF; background:#FFFFFF; box-shadow:0 0 0 1px rgb(var(--b-shadow-rgb) / .08),0 1px 2px rgb(var(--b-shadow-rgb) / .06); }
   .seg button { color:var(--b-ink2); }
   .seg button[aria-pressed="true"] { background:var(--b-teal-50); color:var(--b-teal); }
   .seg button:disabled { color:var(--b-disabled-ink); }
@@ -139,4 +147,26 @@
 @media (forced-colors: active) {
   .action, .secondary, .lang { border: 1px solid ButtonText; }
   .action:disabled, .secondary:disabled, .lang:disabled { border-color: GrayText; }
+}
+
+
+/* Keep keyboard focus inside its own segment, even beside the selected language. */
+.frame .seg[data-spanish-plans] button:focus-visible {
+  outline-color:var(--b-focus);
+  outline-offset:calc(-1 * var(--b-focus-width) - 1px);
+}
+@media (max-width: 1023px) {
+  .frame .seg[data-spanish-plans] button[aria-pressed="false"]:focus-visible { outline-color:var(--b-focus-on-band); }
+}
+@media (forced-colors: active) {
+  .frame .seg[data-spanish-plans] button[aria-pressed]:focus-visible { outline-color:Highlight; }
+}
+
+/* Keep the three footer links together when the enlarged Spanish line outgrows its column. */
+.frame[data-public-plans][lang='es'] .foot { container-type:inline-size; }
+@container (max-width: 23em) {
+  .frame[data-public-plans][lang='es'] .foot :global(.q-legal__owner),
+  .frame[data-public-plans][lang='es'] .foot :global(.q-legal__links) { display:block; }
+  .frame[data-public-plans][lang='es'] .foot :global(.q-legal__lead) { display:none; }
+  .frame[data-public-plans][lang='es'] .foot a { margin-block:0; }
 }

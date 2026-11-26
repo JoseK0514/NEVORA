@@ -29,7 +29,7 @@ describe('Clocker owner copy', () => {
   });
   it('names the person or the tablet in the words that take one', () => {
     expect(en.pinDoneSet('Maria Rivera')).toBe('PIN set for Maria Rivera. Tell them in person.');
-    expect(es.pinDoneSet('Maria Rivera')).toBe('PIN creado para Maria Rivera. Dígaselo en persona.');
+    expect(es.pinDoneSet('Maria Rivera')).toBe('PIN creado para Maria Rivera. Díselo en persona.');
     expect(en.removeTitle('Front counter tablet')).toBe('Remove Front counter tablet?');
     expect(en.ticketTitle('Patio tablet')).toBe('Connect Patio tablet');
     expect(en.pinsNeed(1)).toBe('1 person needs a PIN'); expect(en.pinsNeed(3)).toBe('3 people need a PIN');
@@ -56,4 +56,11 @@ describe('Clocker owner copy', () => {
     expect(englishIn('<p>Add tablet</p>')).toEqual(['addTablet: Add tablet']);
     expect(englishIn('<p>Añadir tableta</p><button aria-label="Administrar Patio">x</button>')).toEqual([]);
   });
+});
+
+it('announces singular and plural tablet counts independently', () => {
+  expect(es.tabletsCount(1, 0, 2)).toBe('1 conectada, 0 sin configurar, 2 eliminadas');
+  expect(es.tabletsCount(2, 0, 1)).toBe('2 conectadas, 0 sin configurar, 1 eliminada');
+  expect(es.tabletsCount(0, 1, 0)).toBe('0 conectadas, 1 sin configurar, 0 eliminadas');
+  expect(en.tabletsCount(1, 0, 1)).toBe('1 connected, 0 not set up, 1 removed');
 });

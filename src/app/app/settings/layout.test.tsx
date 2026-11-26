@@ -84,6 +84,7 @@ describe("Settings for someone who isn't an Owner (PD9, UX10)", () => {
     expect(closedSettingsSubject("/app/settings/clocker/pins")).toBe("Clocker PINs are");
     expect(closedSettingsSubject("/app/settings/clocker/")).toBe("Clocker tablets are");
     expect(closedSettingsSubject("/app/settings/locations/new", "Stores")).toBe("Stores are");
+    expect(closedSettingsSubject("/app/settings/payroll", undefined, "es")).toBe("La configuración de nómina forma");
     expect(closedSettingsSubject("/app/settings")).toBeNull();
     expect(closedSettingsSubject("/app/settings/unknown")).toBeNull();
     expect(closedSettingsSubject(null)).toBeNull();

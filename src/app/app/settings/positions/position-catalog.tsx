@@ -11,14 +11,14 @@ import { toast } from "@/components/toaster";
 import type { Position } from "@/lib/domain";
 import { FieldB, ResultB, SwitchRowB } from "../settings-b-form";
 import { FieldErrors, lockPageScroll, useFieldErrors } from "../wave-c-form";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SETTINGS_COPY } from "../settings-copy";
 
 type PositionAction = (data: FormData) => Promise<ConfigurationResult>;
 type Editing = { kind: "add" } | { kind: "edit"; position: Position };
 const subscribe = () => () => {};
 const clientSnapshot = () => true;
 const serverSnapshot = () => false;
-const nameMessages = { name: { missing: "Enter a position name" } };
-const peopleText = (count: number) => `${count} ${count === 1 ? "person" : "people"}`;
 
 /** J8 Positions in Direction B (Nov 23, 2026). The editor's root is a fragment, so its cards are direct children of the
  * Settings page (SettingsPageB): an Active card with a row per position (name, how many active people hold it) and the
@@ -31,6 +31,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
   people?: Readonly<Record<string, number>>;
 }) {
   const ready = useSyncExternalStore(subscribe, clientSnapshot, serverSnapshot);
+  const t = SETTINGS_COPY[usePortalLang()];
   const [editing, setEditing] = useState<Editing | null>(null);
   const [opened, setOpened] = useState(0);
   const trigger = useRef<string | null>(null);
@@ -50,32 +51,32 @@ export function PositionCatalog({ positions, available, createAction, updateActi
     setEditing(next);
   }
 
-  if (!available) return <CorpErrorCard title="Couldn’t load positions." body="Nothing was changed."
+  if (!available) return <CorpErrorCard title={t.positionsLoadFailed} body={t.nothingChanged}
     // eslint-disable-next-line next-preserved/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript
-    action={<a className="c-btn c-btn--secondary" href="/app/settings/positions">Try again</a>} />;
+    action={<a className="c-btn c-btn--secondary" href="/app/settings/positions">{t.tryAgain}</a>} />;
 
   const active = positions.filter(position => position.active);
   const archived = positions.filter(position => !position.active);
   const row = (position: Position) => <li key={position.id}>
     <CorpRow id={`position-row-${position.id}`} title={position.name} one
-      value={people?.[position.id] === undefined ? undefined : peopleText(people[position.id])}
+      value={people?.[position.id] === undefined ? undefined : t.people(people[position.id])}
       onClick={() => open({ kind: "edit", position }, `position-row-${position.id}`)} />
   </li>;
 
   return <>
-    <p className="c-sr" role="status" aria-live="polite">{positions.length ? `${active.length} active and ${archived.length} archived positions` : ""}</p>
-    {positions.length ? <CorpCard id="positions-active" label="Active" count={active.length}>
-      <CorpRows label="Active positions">
+    <p className="c-sr" role="status" aria-live="polite">{positions.length ? t.positionsStatus(active.length, archived.length) : ""}</p>
+    {positions.length ? <CorpCard id="positions-active" label={t.active} count={active.length}>
+      <CorpRows label={t.activePositions}>
         {active.map(row)}
-        <li><CorpRow id="position-add" title="Add position" icon={<PlusIcon weight="bold" />} one chevron={false} disabled={!ready}
+        <li><CorpRow id="position-add" title={t.addPosition} icon={<PlusIcon weight="bold" />} one chevron={false} disabled={!ready}
           onClick={() => open({ kind: "add" }, "position-add")} /></li>
       </CorpRows>
-    </CorpCard> : <CorpEmpty title="No positions yet" body="Shifts can still be added without a position."
-      action={<button id="position-add" type="button" className="c-btn" disabled={!ready} onClick={() => open({ kind: "add" }, "position-add")}>Add position</button>} />}
-    {archived.length ? <CorpCard id="positions-archived" label="Archived" count={archived.length}>
-      <CorpRows label="Archived positions">{archived.map(row)}</CorpRows>
+    </CorpCard> : <CorpEmpty title={t.noPositions} body={t.noPositionsBody}
+      action={<button id="position-add" type="button" className="c-btn" disabled={!ready} onClick={() => open({ kind: "add" }, "position-add")}>{t.addPosition}</button>} />}
+    {archived.length ? <CorpCard id="positions-archived" label={t.archived} count={archived.length}>
+      <CorpRows label={t.archivedPositions}>{archived.map(row)}</CorpRows>
     </CorpCard> : null}
-    <noscript><p className="c-note">JavaScript is required to add or edit positions.</p></noscript>
+    <noscript><p className="c-note">{t.jsRequiredPositions}</p></noscript>
     {/* The dialog is not a child of the page itself, so the page's card rules (full width, the gap between cards) never
       reach it; display: contents gives its holder no box. */}
     <div style={{ display: "contents" }}>{editing ? <PositionDialog key={opened} editing={editing} createAction={createAction} updateAction={updateAction}
@@ -91,7 +92,8 @@ export function PositionDialog({ editing, createAction, updateAction, onClose }:
   const sending = useRef(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { errors, handlers, clear } = useFieldErrors(nameMessages);
+  const t = SETTINGS_COPY[usePortalLang()];
+  const { errors, handlers, clear } = useFieldErrors({ name: { missing: t.enterPositionName } });
   const position = editing.kind === "edit" ? editing.position : null;
   const id = position ? `position-${position.id}` : "new-position";
 
@@ -121,9 +123,9 @@ export function PositionDialog({ editing, createAction, updateAction, onClose }:
         onClose();
         return;
       }
-      setError(result.error || "It may not have saved. Your entries are kept; check the page before you try again.");
+      setError(result.error || t.mayNotHaveSaved);
     } catch {
-      setError("Your entries are kept. Try again.");
+      setError(t.entriesKept);
     } finally { sending.current = false; setPending(false); }
   }
 
@@ -133,8 +135,8 @@ export function PositionDialog({ editing, createAction, updateAction, onClose }:
       onInput={() => { if (error) setError(null); }}>
       <FormDiscardGuard />
       <div className="c-setb-dlg__head">
-        <div><h2 className="c-setb-dlg__title" id={titleId}>{position ? "Edit position" : "New position"}</h2></div>
-        <button type="button" className="c-setb-dlg__close" aria-label="Close" disabled={pending} onClick={askClose}><XIcon weight="bold" aria-hidden="true" /></button>
+        <div><h2 className="c-setb-dlg__title" id={titleId}>{position ? t.editPosition : t.newPosition}</h2></div>
+        <button type="button" className="c-setb-dlg__close" aria-label={t.close} disabled={pending} onClick={askClose}><XIcon weight="bold" aria-hidden="true" /></button>
       </div>
       <div className="c-setb-dlg__body">
         <fieldset className="c-setb-fieldset" disabled={pending}>
@@ -143,21 +145,21 @@ export function PositionDialog({ editing, createAction, updateAction, onClose }:
             <input type="hidden" name="expectedUpdatedAt" value={position.updatedAt ?? ""} />
           </> : null}
           <FieldErrors errors={errors}>
-            <FieldB label="Name" id={`${id}-name`} name="name" defaultValue={position?.name ?? ""} required maxLength={80} autoComplete="off"
-              placeholder={position ? undefined : "e.g. Front desk"} />
+            <FieldB label={t.name} id={`${id}-name`} name="name" defaultValue={position?.name ?? ""} required maxLength={80} autoComplete="off"
+              placeholder={position ? undefined : t.positionPlaceholder} />
           </FieldErrors>
           {position ? <ul className="c-rows">
-            <li><SwitchRowB id={`${id}-active`} name="active" defaultChecked={position.active} label="Active"
-              description="Archived positions can’t be newly assigned. They stay on past shifts and timecards." /></li>
+            <li><SwitchRowB id={`${id}-active`} name="active" defaultChecked={position.active} label={t.active}
+              description={t.archivedPositionHelp} /></li>
           </ul> : null}
         </fieldset>
       </div>
-      {error ? <ResultB innerRef={feedback} tone="urgent" title="Not saved">{error}</ResultB> : null}
-      <p className="c-sr" role="status" aria-live="polite">{pending ? (position ? "Saving…" : "Adding…") : ""}</p>
+      {error ? <ResultB innerRef={feedback} tone="urgent" title={t.notSaved}>{error}</ResultB> : null}
+      <p className="c-sr" role="status" aria-live="polite">{pending ? (position ? t.saving : t.adding) : ""}</p>
       <div className="c-setb-dlg__acts">
-        <button type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={askClose}>Cancel</button>
+        <button type="button" className="c-btn c-btn--secondary" disabled={pending} onClick={askClose}>{t.cancel}</button>
         <button type="submit" className="c-btn" disabled={pending}>
-          {pending ? (position ? "Saving…" : "Adding…") : position ? "Save position" : "Add position"}
+          {pending ? (position ? t.saving : t.adding) : position ? t.savePosition : t.addPosition}
         </button>
       </div>
     </form>

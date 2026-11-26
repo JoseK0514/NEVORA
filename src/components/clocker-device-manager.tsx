@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent, type RefObject } from 'react';
 import { DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { QuestionIcon } from '@phosphor-icons/react/dist/ssr/Question';
@@ -17,6 +17,7 @@ import { BBusyLabel, BCallout, BCard, BChip, BIcon, BList, BSegsText, BState } f
 import { encodeQr, qrPath } from './access-recovery/qr';
 import { setupLink } from './clocker-setup-link';
 import { CLOCKER_DEVICE_UNCONFIRMED, clockerDeviceServerText, clockerOwnerCopy, clockerOwnerWhen, type ClockerOwnerCopy, type ClockerOwnerLang } from './clocker-owner-copy';
+import { copy as tabletWords } from './clocker-device-manager-copy';
 import './clocker-device-manager.css';
 import './clocker-owner-b.css';
 // Clocker UI step 2: the Inline radio rows are step 1's (clk-choice), so the two sheets draw the same choice.
@@ -27,6 +28,37 @@ type Selection = { operation: Operation; device?: ClockerDeviceView };
 type Ticket = { code: string; expiresAt: string; device: ClockerDeviceView; added: boolean };
 const subscribe = () => () => {};
 const needsSetup = (device: ClockerDeviceView) => device.state === 'UNREGISTERED' || device.state === 'PENDING' || device.state === 'EXPIRED';
+
+/** Measure the complete Spanish label against the row's action column, even while its shorter label is visible. */
+function SetupCodeLabel({ full, compact }: { full: string; compact: string }) {
+  const fullText = useRef<HTMLSpanElement>(null);
+  const [shortened, setShortened] = useState(false);
+
+  useLayoutEffect(() => {
+    const label = fullText.current;
+    const button = label?.closest('button');
+    const column = button?.parentElement;
+    if (!label || !button || !column) return;
+
+    const measure = () => {
+      const insets = (style: CSSStyleDeclaration) => parseFloat(style.paddingInlineStart) + parseFloat(style.paddingInlineEnd);
+      const style = getComputedStyle(button);
+      const available = column.clientWidth - insets(getComputedStyle(column)) - insets(style)
+        - parseFloat(style.borderInlineStartWidth) - parseFloat(style.borderInlineEndWidth);
+      setShortened(label.getBoundingClientRect().width > available);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(column);
+    observer.observe(label);
+    return () => observer.disconnect();
+  }, [full]);
+
+  return <span className="ck-code-label" data-compact={shortened || undefined}>
+    <span className="ck-code-label__full" ref={fullText}>{full}</span>
+    {shortened && <span>{compact}</span>}
+  </span>;
+}
 
 /** What one tablet's row says: the exception as a chip (the normal state is plain grey words), then what and when.
  * Exported for its tests. The states are the server's: connected (ACTIVE), not set up yet (no code, a code that is still
@@ -325,16 +357,19 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const row = (item: ClockerDeviceView) => {
     const active = locationActive(item), line = tabletLine(item, { place: place(item.locationId), locationActive: active, timeZone, lang });
     const removedRow = item.state === 'REVOKED';
+    const setupLabel = lang === 'es'
+      ? <SetupCodeLabel full={t.getCode} compact={tabletWords.es.compactGetCode} />
+      : t.getCode;
     const go = removedRow
       ? <button type="button" className="b-btn b-btn--ghost ck-trow__go" data-clocker-device={item.id} aria-label={t.setUpAgainFor(item.name)} disabled={!hydrated || !active} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{t.setUpAgain}</button>
       : !active ? null : needsSetup(item)
-        ? <button type="button" className="b-btn b-btn--ghost ck-trow__go" data-clocker-code={item.id} aria-label={item.state === 'UNREGISTERED' ? t.getCodeFor(item.name) : t.newCodeFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{item.state === 'UNREGISTERED' ? t.getCode : t.newCode}</button> : null;
+        ? <button type="button" className="b-btn b-btn--ghost ck-trow__go" data-clocker-code={item.id} aria-label={item.state === 'UNREGISTERED' ? t.getCodeFor(item.name) : t.newCodeFor(item.name)} disabled={!hydrated} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{item.state === 'UNREGISTERED' ? setupLabel : t.newCode}</button> : null;
     const text = <span className="b-row__tx">
       <span className="b-row__t"><span className="b-row__tt">{item.name}</span>{line.chip ? <BChip tone="amber">{line.chip}</BChip> : null}</span>
       <span className="b-row__s"><BSegsText text={line.sub} /></span>
     </span>;
     const lead = <BIcon tone={line.tone === 'amber' ? 'amber' : item.state === 'ACTIVE' ? 'teal' : 'grey'}><DeviceTabletIcon weight="bold" /></BIcon>;
-    return <li className="b-li" key={item.id}><div className="b-row ck-trow" data-open={removedRow ? undefined : ''} data-act={go ? '' : undefined}>
+    return <li className="b-li" key={item.id}><div className="b-row ck-trow" data-open={removedRow ? undefined : ''} data-act={go ? '' : undefined} data-new-code={lang === 'es' && item.state !== 'UNREGISTERED' && !removedRow && active && needsSetup(item) || undefined}>
       {removedRow ? <div className="ck-trow__main">{lead}{text}</div>
         : <button type="button" className="ck-trow__main ck-trow__open" data-clocker-device={item.id} aria-haspopup="dialog" disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device: item }, event)}>{lead}{text}</button>}
       <span className="ck-trow__act">{go}</span>

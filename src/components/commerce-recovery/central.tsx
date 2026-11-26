@@ -8,6 +8,7 @@ import {createCentralBillingClient,type BillingAction,type BillingLanguage,type 
 import {takeBillingFragment} from '@/lib/commerce/central-billing';
 import {accessNotice,contactLabel,quoteNotice,supportEmail} from './copy';
 import {RecoveryFrame} from './frame';
+import {copy as publicPlansCopy} from './central-page-copy';
 import styles from './recovery.module.css';
 const words={
  en:{title:'Plan and billing',intro:'See your plan and manage your subscription. Payments are made in Stripe.',entry:'Open Billing from your signed-in workplace Owner account to continue.',unavailable:'Billing is temporarily unavailable. Return to your workplace and try again.',loading:'Checking current billing access…',denied:'This billing access has ended. Return to your workplace and open Billing again.',hidden:'Billing details are hidden. Refresh to check current access.',refresh:'Refresh status',checkout:'Review subscription in Stripe',portal:'Manage billing in Stripe',small:'Review Small plan',team:'Review Team plan',retry:'Retry the original request',opening:'Opening Stripe…',close:'Close billing',language:'Billing language',plan:'Current plan',access:'Access',people:'Active employees',trial:'Trial ends',paid:'Paid through',grace:'Grace period ends',none:'Not selected',utc:'Dates are shown in UTC because the workplace time zone is unavailable.',month:'per month',note:'Stripe shows the details before confirmation. Opening or returning from Stripe does not confirm a payment or plan change.',change:'Upgrades take effect after successful payment. Downgrades take effect at the next renewal.',unknown:'The request could not be confirmed. Refresh access, then retry the original request.',conflict:'The original request must be resolved before changing its language or action. Refresh status or reopen Billing from your workplace.',refused:'Billing could not be opened. No payment or plan change is confirmed.',states:{trial:'Trial',paid:'Active',grace:'Payment needs attention',restricted:'Access paused'},
@@ -24,14 +25,27 @@ const empty:PrivatePanelState<CentralRead>={snapshot:null,paused:true,refreshing
 type Problem=Exclude<BillingResult,{kind:'navigate'}>;
 /** `returning` is the page Stripe sends the Owner back to after Checkout (JR-19); `legal` is the footer line, rendered
  * by the server page in both languages because the language changes here without a reload. */
-export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal}:{apiOrigin:string|null;initialLanguage:BillingLanguage;returning?:boolean;legal?:Record<BillingLanguage,ReactNode>}){
+export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal,publicPlans=false}:{apiOrigin:string|null;initialLanguage:BillingLanguage;returning?:boolean;legal?:Record<BillingLanguage,ReactNode>;publicPlans?:boolean}){
  const [lang,setLang]=useState(initialLanguage),[link,setLink]=useState<'entry'|'loading'|'ready'|'denied'|'unavailable'>('loading'),[panel,setPanel]=useState(empty),[opening,setOpening]=useState(false),[pending,setPending]=useState(false),[problem,setProblem]=useState<Problem|null>(null);
  // JR-11: the workplace this session last showed, kept in memory only, so every state has a real way back.
  const [home,setHome]=useState<{url:string;name:string|null}|null>(null);
  // JR-19: after about two minutes without a subscription, stop saying "confirming" and say what to do.
  const [waited,setWaited]=useState(false);
+ const [animateSelection,setAnimateSelection]=useState(false);
  const client=useRef<Client|null>(null),controls=useRef<ReturnType<typeof createPrivateSnapshotController<CentralRead>>|null>(null),current=useRef(empty),mutation=useRef<AbortController|null>(null),proof=useRef<string|null>(null),captured=useRef(false),generation=useRef({value:0});
  const alert=useRef<HTMLParagraphElement|null>(null);
+ // The public language switch stays on this page to keep the current billing session in memory.
+ useEffect(()=>{
+  if(!publicPlans)return;
+  const root=document.documentElement;
+  const previousLanguage=root.lang;
+  root.lang=lang;
+  const metadata=publicPlansCopy[lang];
+  document.title=metadata.title;
+  const description=document.querySelector<HTMLMetaElement>('meta[name="description"]');
+  if(description)description.content=metadata.description;
+  return ()=>{if(root.lang===lang)root.lang=previousLanguage;};
+ },[publicPlans,lang]);
  const foreground=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
  useEffect(()=>{
   const lifetime=generation.current,setup=++lifetime.value;let active=true;
@@ -66,6 +80,7 @@ export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal}
  useEffect(()=>{if(problem&&foreground())alert.current?.focus();},[problem]);
  useEffect(()=>{if(!returning)return;const timer=setTimeout(()=>setWaited(true),120000);return()=>clearTimeout(timer);},[returning]);
  const ready=panel.snapshot?.state==='ready'?panel.snapshot:null,t=words[lang];
+ const entry=publicPlans?publicPlansCopy[lang].entry:t.entry;
  async function financial(action?:BillingAction){
   if(mutation.current||!foreground()||current.current.snapshot?.state!=='ready')return;
   const transport=client.current;if(!transport)return;const controller=new AbortController();mutation.current=controller;setOpening(true);setProblem(null);
@@ -97,12 +112,19 @@ export function CentralBilling({apiOrigin,initialLanguage,returning=false,legal}
  // done here (no status, or the subscription is confirmed); otherwise it is a text link with the page's other
  // non-payment choices (Refresh status, Close billing), as the links under the sign-in card.
  const primaryBack=!ready||subscribed;
- const back=<a className={primaryBack?styles.action:styles.quiet} href={known?known.url+'/app':'/login'}>{known?known.name?t.backTo(known.name):t.backWorkplace:t.backSignIn}</a>;
- const language=<fieldset className={styles.language}><legend className={styles.srOnly}>{t.language}</legend><div className={styles.seg}>{(['en','es'] as const).map(value=><button key={value} type="button" lang={value} disabled={pending||opening} aria-pressed={lang===value} onClick={()=>{if(!client.current?.hasPending())setLang(value);}}>{value==='en'?'English':'Español'}</button>)}</div></fieldset>;
- return <RecoveryFrame lang={lang} language={language} legal={legal?.[lang]}><h1>{t.title}</h1><p>{t.intro}</p>
+ const signIn=publicPlans?publicPlansCopy[lang].signIn:t.backSignIn;
+ const back=<a className={primaryBack?styles.action:styles.quiet} href={known?known.url+'/app':'/login'}>{known?known.name?t.backTo(known.name):t.backWorkplace:signIn}</a>;
+ function chooseLanguage(value: BillingLanguage) {
+  if (value === lang || client.current?.hasPending()) return;
+  if (publicPlans && initialLanguage === 'es') setAnimateSelection(true);
+  setLang(value);
+ }
+ const spanishPlans = publicPlans && (initialLanguage === "es" || lang === "es");
+ const language=<fieldset className={styles.language}><legend className={styles.srOnly}>{t.language}</legend><div className={styles.seg} data-spanish-plans={spanishPlans ? "" : undefined} data-fade={animateSelection ? "" : undefined}>{(['en','es'] as const).map(value=><button key={value} type="button" lang={value} disabled={pending||opening} aria-pressed={lang===value} onClick={()=>chooseLanguage(value)}>{value==='en'?'English':'Español'}</button>)}</div></fieldset>;
+ return <RecoveryFrame lang={lang} publicPlans={publicPlans} language={language} legal={legal?.[lang]}><h1>{t.title}</h1><p>{t.intro}</p>
   <div aria-live="polite" aria-busy={link==='loading'||panel.refreshing}>
    {subscribed?<p className={styles.callout} data-tone="green" role="status"><CheckCircleIcon size={18} weight="bold" aria-hidden="true"/>{t.subscribed}</p>:unseen?<p className={styles.callout} data-tone="amber" role="status"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{t.unseen}</p>:confirming&&(ready||waiting)?<p className={styles.callout} data-tone="teal" role="status"><ClockIcon size={18} weight="bold" aria-hidden="true"/>{t.confirming}</p>:null}
-   {ready?<><h2>{ready.status.businessName??t.title}</h2>{notice?<p className={styles.callout} data-tone={notice.tone} role="status"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{notice.text}</p>:null}<dl className={styles.details}><div><dt>{t.access}</dt><dd>{t.states[ready.status.state]}</dd></div><div><dt>{t.plan}</dt><dd>{ready.status.plan===null?t.none:ready.status.plan==='small'?'Small':'Team'}</dd></div><div><dt>{t.people}</dt><dd>{ready.status.activeEmployees} / {ready.status.employeeLimit}</dd></div>{([[t.trial,ready.status.trialEndsAt],[t.paid,ready.status.paidThrough],[t.grace,ready.status.graceEndsAt]] as const).map(([label,value])=>value?<div key={label}><dt>{label}</dt><dd>{date(value)}</dd></div>:null)}</dl>{ready.status.timeZone===null?<p className={styles.footer}>{t.utc}</p>:null}<ul className={styles.plans}>{ready.catalog.plans.map(plan=><li key={plan.key}>{plan.key==='small'?'Small':'Team'} · {new Intl.NumberFormat(lang,{style:'currency',currency:ready.catalog.currency,currencyDisplay:'code'}).format(plan.amount/100)} {t.month}</li>)}</ul></>:confirming&&waiting?null:<p className={styles.callout} role="status">{waiting?t.loading:link==='entry'?t.entry:link==='denied'?t.denied:link==='unavailable'?t.unavailable:t.hidden}</p>}
+   {ready?<><h2>{ready.status.businessName??t.title}</h2>{notice?<p className={styles.callout} data-tone={notice.tone} role="status"><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{notice.text}</p>:null}<dl className={styles.details}><div><dt>{t.access}</dt><dd>{t.states[ready.status.state]}</dd></div><div><dt>{t.plan}</dt><dd>{ready.status.plan===null?t.none:ready.status.plan==='small'?'Small':'Team'}</dd></div><div><dt>{t.people}</dt><dd>{ready.status.activeEmployees} / {ready.status.employeeLimit}</dd></div>{([[t.trial,ready.status.trialEndsAt],[t.paid,ready.status.paidThrough],[t.grace,ready.status.graceEndsAt]] as const).map(([label,value])=>value?<div key={label}><dt>{label}</dt><dd>{date(value)}</dd></div>:null)}</dl>{ready.status.timeZone===null?<p className={styles.footer}>{t.utc}</p>:null}<ul className={styles.plans}>{ready.catalog.plans.map(plan=><li key={plan.key}>{plan.key==='small'?'Small':'Team'} · {new Intl.NumberFormat(lang,{style:'currency',currency:ready.catalog.currency,currencyDisplay:'code'}).format(plan.amount/100)} {t.month}</li>)}</ul></>:confirming&&waiting?null:<p className={styles.callout} role="status">{waiting?t.loading:link==='entry'?entry:link==='denied'?t.denied:link==='unavailable'?t.unavailable:t.hidden}</p>}
   </div>
   {problem?<p className={styles.callout} data-tone="red" role="alert" tabIndex={-1} ref={alert}><WarningCircleIcon size={18} weight="bold" aria-hidden="true"/>{problem.kind==='unknown'?t.unknown:refusal==='quote'?quoteNotice(lang):refusal?t.refusals[refusal]:problem.kind==='conflict'?t.conflict:problem.kind==='denied'?t.denied:t.refused}</p>:null}
   {ready&&ready.status.billingAction===null?<p className={styles.callout} role="status">{t.unavailable}</p>:null}

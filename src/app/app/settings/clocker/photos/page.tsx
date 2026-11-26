@@ -14,25 +14,27 @@ import '@/components/clocker-photo/photo-settings.css';
 import '@/components/clocker-owner-b.css';
 import {clockerOwnerCopy} from '@/components/clocker-owner-copy';
 import {readClockerPhotoPolicyAction,saveClockerPhotoPolicyAction,readClockerPhotoNoticeAction,saveClockerPhotoNoticeAction} from './actions';
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { SETTINGS_COPY } from "../../settings-copy";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Punch photos" };
+export async function generateMetadata() { return { title: SETTINGS_COPY[await readPageLang()].punchPhotos }; }
 export const dynamic='force-dynamic';
 export default async function ClockerPhotosPage(){
- await requireRoles(['OWNER']);const proof=await requireSessionMutationProof();
+ await requireRoles(['OWNER']);const proof=await requireSessionMutationProof();const lang=await readPageLang();
  const source=await withOperationalCompany(proof,()=>Promise.all([readClockerPhotoPolicyAction(),readClockerPhotoNoticeAction()]));
- if(source.state==='unavailable')return <OperationalUnavailable title="Photo settings unavailable" reason={source.reason}/>;
- const [result,noticeResult]=source.data,t=clockerOwnerCopy.en;
+ if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={SETTINGS_COPY[lang].photoSettingsUnavailable} reason={source.reason}/>;
+ const [result,noticeResult]=source.data,t=clockerOwnerCopy[lang];
  const help=noticeResult.state==='available'
   ?<ClockerPhotoNoticeSettings initialSettings={noticeResult.settings} saveAction={saveClockerPhotoNoticeAction} readAction={readClockerPhotoNoticeAction}/>
   :<div className="c-photos__helperror" role="alert"><span className="c-row__title">{t.photosHelpFailedTitle}</span><span className="c-field__help">{noticeResult.message}</span><CorpRetryButton/></div>;
  const review=<CorpRow href="/app/settings/clocker/photos/review" title={t.photosReview} detail={t.photosReviewSub} chevron/>;
- return <ScopedReadFrame observation={scopedObservation(source)}><SettingsPageB back={{href:"/app/settings",label:t.settings}} className="ck-owner ck-frame ck-photos c-photos" title={t.photosTitle} titleId="clocker-photos-title"
+ return <ScopedReadFrame observation={scopedObservation(source)}><SettingsPageB back={{href:"/app/settings",label:t.settings}} className="ck-owner ck-frame ck-photos c-photos" title={t.photosTitle} titleId="clocker-photos-title" lang={lang === "es" ? "es" : undefined}
   phoneRight={result.state==='available'?<button type="submit" form="photo-policy-form" className="c-setb-save">{t.photosSave}</button>:undefined}>
   {/* Owner premium R13 (round 2): while capture is unavailable, one card says so, holds the settings and their one Save,
     with help for your team and review as rows inside it. The same two reads, forms and actions as before. */}
    {result.state==='available'
-    ?<ClockerPhotoSettings initialPolicy={result.policy} saveAction={saveClockerPhotoPolicyAction} readAction={readClockerPhotoPolicyAction}>{help}{review}</ClockerPhotoSettings>
-    :<><CorpErrorCard title={t.photosLoadFailedTitle} body={result.message} action={<CorpRetryButton>{t.photosReload}</CorpRetryButton>}/><CorpCard as="div" ariaLabel="Help and review">{help}{review}</CorpCard></>}
+    ?<ClockerPhotoSettings initialPolicy={result.policy} saveAction={saveClockerPhotoPolicyAction} readAction={readClockerPhotoPolicyAction} lang={lang}>{help}{review}</ClockerPhotoSettings>
+    :<><CorpErrorCard title={t.photosLoadFailedTitle} body={result.message} action={<CorpRetryButton>{t.photosReload}</CorpRetryButton>}/><CorpCard as="div" ariaLabel={SETTINGS_COPY[lang].helpAndReview}>{help}{review}</CorpCard></>}
  </SettingsPageB></ScopedReadFrame>;
 }

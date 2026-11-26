@@ -44,3 +44,80 @@
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb .c-pins .c-pins__search input:is(:focus, :focus-visible):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6):not(#s-none7) { outline: none !important; box-shadow: none !important; }
 }
+
+/* At enlarged Spanish text sizes, give employee details and each filter count their own line. */
+@layer nv-b {
+  .c-page[lang=es] #clocker-pins { container: pin-directory / inline-size; }
+  @container pin-directory (max-width: 10rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-row:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) !important;
+      grid-template-areas: "avatar name" ". action" !important;
+      row-gap: var(--b-space-4) !important;
+    }
+    #clocker-pins .c-row > .c-av { grid-area: avatar; align-self: start; }
+    #clocker-pins .c-row > .c-row__main { grid-area: name; }
+    #clocker-pins .c-row > .c-row__trail { grid-area: action; justify-self: start; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-seg > button:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      display: flex !important;
+      flex-flow: column nowrap !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0 !important;
+    }
+    #clocker-pins .c-seg .pin-label-space { display: none; }
+    #clocker-pins .c-seg > button > span:first-child { font-size: .9375rem; line-height: 1.34; }
+    #clocker-pins .c-seg > button > .c-pins__count { line-height: 1.34; }
+  }
+}
+
+
+/* At enlarged text, let all three filters use the width of the card. When three
+   whole labels cannot fit across it, each filter keeps its label beside its count. */
+@layer nv-b {
+  @container pin-directory (max-width: 13rem) or ((min-width: 480px) and (max-width: 21rem)) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-pins__tools:has(.c-seg > :nth-child(3)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: var(--b-space-12) !important;
+      & > .c-seg {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: var(--b-space-4) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: auto !important;
+      }
+      & > .c-seg > button {
+        display: flex !important;
+        flex-flow: row nowrap !important;
+        align-items: center !important;
+        gap: var(--b-space-8) !important;
+        white-space: nowrap !important;
+        min-width: 0 !important;
+      }
+      & .pin-label-space { display: none; }
+    }
+  }
+  @container pin-directory (max-width: 13rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #clocker-pins .c-pins__tools:has(.c-seg > :nth-child(3)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      & > .c-seg {
+        grid-template-columns: minmax(0, 1fr) !important;
+        border-radius: var(--b-radius-field) !important;
+      }
+      & > .c-seg::before { display: none !important; }
+      & > .c-seg > button[aria-pressed="true"] {
+        background: var(--b-white, #fff) !important;
+        box-shadow: var(--b-seg-thumb-shadow, 0 1px 3px rgb(0 0 0 / .12)) !important;
+        border-radius: var(--b-seg-item-r) !important;
+      }
+      & > .c-seg > button {
+        width: 100% !important;
+        flex-flow: row nowrap !important;
+        justify-content: space-between !important;
+        padding-inline: var(--b-space-16) !important;
+        min-height: 44px !important;
+      }
+    }
+  }
+}

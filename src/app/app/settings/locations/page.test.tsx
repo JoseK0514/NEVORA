@@ -2,6 +2,8 @@ import { beforeEach, expect, it, rs } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 
 const data = rs.hoisted(() => ({
+  lang: "en" as "en" | "es",
+  employees: rs.fn(async () => [{ id: "worker", active: true, eligibleLocationIds: ["west"] }, { id: "retired", active: false, eligibleLocationIds: ["east", "west"] }]),
   requireRoles: rs.fn(async (_roles: string[]) => ({ id: "owner", role: "OWNER" })),
   locations: rs.fn(async () => [
     { id: "east", workspaceId: "w", name: "East Office", shortName: "East", clockerKey: "east-office", active: true },
@@ -10,9 +12,10 @@ const data = rs.hoisted(() => ({
   ]),
   workspace: rs.fn(async () => ({ id: "w", name: "Test Company", active: true, timeZone: "America/Puerto_Rico" })),
 }));
+rs.mock("@/lib/i18n/page-lang.server", () => ({ readPageLang: async () => data.lang }));
 rs.mock("@/lib/auth/permissions", () => ({ requireRoles: data.requireRoles }));
 rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: data.workspace }));
-rs.mock("@/lib/data/employees", () => ({ listLocations: data.locations, listEmployees: async () => [{ id: "worker", active: true, eligibleLocationIds: ["west"] }, { id: "retired", active: false, eligibleLocationIds: ["east", "west"] }] }));
+rs.mock("@/lib/data/employees", () => ({ listLocations: data.locations, listEmployees: data.employees }));
 rs.mock("@/lib/data/positions", () => ({ listPositions: async () => [] }));
 rs.mock("@/lib/data/schedule-health", () => ({
   listLocationStaffingSettings: async () => [{ locationId: "west", minimumStaffPerShift: 1, requiresDesignatedLead: false }],
@@ -25,7 +28,7 @@ import { LocationsSearch } from "./locations-search";
 import LocationsError from "./error";
 import { createElement } from "react";
 
-beforeEach(() => { rs.clearAllMocks(); });
+beforeEach(() => { rs.clearAllMocks(); data.lang = "en"; });
 const render = async (q?: string | string[], status?: string | string[]) => renderToStaticMarkup(await LocationsPage({ searchParams: Promise.resolve({ q, status }) }));
 
 // Quiet (v4, approved Oct 23): one row per location (short name, people, status). The approved page has no search
@@ -54,6 +57,16 @@ it("lists every location with its people and status", async () => {
   expect(html).not.toContain('aria-label="Edit ');
   expect(html).not.toContain("2 locations · 1 employee");
   for (const path of ["/app/settings/locations/east", "/app/settings/locations/west", "/app/settings/locations/old", "/app/settings/locations/new"]) expect(html).toContain(`href="${path}"`);
+});
+it("shows the eligible headcount in Spanish for zero, one and several people", async () => {
+  data.lang = "es";
+  data.employees.mockResolvedValueOnce(Array.from({ length: 11 }, (_, index) => ({
+    id: String(index), active: true, eligibleLocationIds: index === 0 ? ["west", "east"] : ["west"],
+  })));
+  const html = await render();
+  for (const count of ["0 personas", "1 persona", "11 personas"]) {
+    expect(html).toContain(`<span class="c-row__value c-row__value--soft">${count}</span>`);
+  }
 });
 it("matches a short name without case sensitivity", async () => {
   const html = await render("  STUDIO  ");

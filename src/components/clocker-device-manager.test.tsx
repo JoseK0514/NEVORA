@@ -25,6 +25,10 @@ rs.mock('react', () => {
     },
   };
 });
+// These handler tests render the component directly with their own hook state.
+rs.mock('../lib/i18n/portal-lang', () => ({
+  usePortalLang: () => 'en',
+}));
 const toast = rs.hoisted(() => rs.fn());
 rs.mock('./toaster', () => ({ toast }));
 rs.mock('../app/app/settings/wave-c-form', () => ({ ...rstestImportedActual1, lockPageScroll: () => () => {} }));
@@ -103,6 +107,11 @@ describe('the page', () => {
     expect(html.match(/data-clocker-code=/g)).toHaveLength(3);
     expect(html).not.toContain('b-btn b-btn--teal');
     expect(html).toMatch(/<button type="button" class="ck-trow__main ck-trow__open" data-clocker-add="" disabled="">.*Add tablet<\/span>/);
+  });
+  it('identifies the tablet when the Spanish setup-code action uses compact wording', () => {
+    const html = render(tablets, locations, 'es');
+    expect(html).toMatch(/aria-label="Obtener código, Patio tablet"[^>]*><span class="ck-code-label"><span class="ck-code-label__full">Obtener código/);
+    expect(render(tablets)).not.toContain('ck-code-label');
   });
   it('empty: says what a time clock tablet is and leads to adding one', () => {
     const html = render([]);

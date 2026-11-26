@@ -1,12 +1,15 @@
 'use client';
 import type {PhotoNotice,PhotoPolicy} from '@/lib/clocker/photo-server/contracts';
 import {parsePhotoNotice} from '@/lib/clocker/photo-server/validation';
-import {useClockerCopy} from '../clocker-language';
+import {useClockerPresentation} from '../clocker-language';
+import {clockerText,type ClockerLocale} from '../clocker-copy';
 import {ClockerIcon} from '../clocker-icon';
 import styles from './photo.module.css';
 /** caret: the kiosk's trailing Phosphor caret on each disclosure (Nov 10 review, NV-306); Owner settings keep the browser's marker. */
-export function ClockerPhotoNotice({policy,notice,caret=false}:{policy:PhotoPolicy;notice:PhotoNotice|null|undefined;caret?:boolean}){
- const t=useClockerCopy(),current=parsePhotoNotice(notice,policy);
+export function ClockerPhotoNotice({policy,notice,caret=false,lang}:{lang?:ClockerLocale;policy:PhotoPolicy;notice:PhotoNotice|null|undefined;caret?:boolean}){
+ const {locale}=useClockerPresentation();
+ const t=(key:string,params?:Record<string,string|number>)=>clockerText(lang??locale,key,params);
+ const current=parsePhotoNotice(notice,policy);
  if(!current)return <p role="status" className={styles.notice}>{t('Your company photo notice is unavailable. Continue without a photo or ask your Owner for help.')}</p>;
  return <aside className={styles.photoNotice} aria-label={t('Company photo notice')}>
   <p className={styles.description}>{t('{company} uses a photo with selected clock actions. Photos are kept for {days} days. Only an authorized Owner can review them.',{company:current.companyName,days:current.retentionDays})}</p>

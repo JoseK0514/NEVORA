@@ -240,3 +240,109 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-setb :is(.c-setb-swatch, .c-setb-swatches button):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { forced-color-adjust: none !important; border: 1px solid CanvasText !important; }
   }
 }
+
+.settings-back-label { position: relative; }
+.settings-back-label__full { white-space: nowrap; }
+.settings-back-label[data-compact] { display: inline-block; overflow: clip; }
+.settings-back-label[data-compact] .settings-back-label__full {
+  position: absolute;
+  inset-inline-start: 0;
+  visibility: hidden;
+}
+
+/* When enlarged Spanish values need the full row, keep the control in its trailing column. */
+@layer nv-b {
+  .c-page[lang=es] #brand-form { container: branding / inline-size; }
+  @container branding (max-width: 10rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #brand-form .c-row:has(> .c-row__value):not(#s-none):not(#s-none2):not(#s-none3):not(#s-none4):not(#s-none5):not(#s-none6) {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto auto !important;
+      grid-template-areas: "main trail chev" "value trail chev" !important;
+      row-gap: var(--b-space-2) !important;
+    }
+    #brand-form .c-row > .c-row__main { grid-area: main !important; }
+    #brand-form .c-row > .c-row__value { grid-area: value !important; justify-self: start !important; text-align: start !important; }
+    #brand-form .c-row > .c-row__trail { grid-area: trail !important; }
+    #brand-form .c-row > .c-chev { grid-area: chev !important; }
+  }
+}
+
+/* At large text sizes, put the supporting fact below the label inside the same
+   tappable row. Use the actual row width because Settings also runs beside a rail. */
+@layer nv-b {
+  .c-page.c-settings[lang=es] .c-rows > li,
+  .c-page[lang=es] li[data-location],
+  .c-page[lang=es] #photo-policy-form .c-rows > li {
+    container: setting-entry / inline-size;
+  }
+  .c-page[lang=es] #edit-location-form .c-rows > li:has(> .c-row > .c-row__value) {
+    container: inactive-clocker / inline-size;
+  }
+  @container setting-entry (max-width: 24rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] :is(#settings-pay, #settings-clocker, #settings-company, #settings-scheduling, li[data-location]) .c-row:is(:has(> .c-row__value), :has(> .c-row__trail)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto !important;
+      grid-template-areas: "icon main chev" ". fact chev" !important;
+      row-gap: var(--b-space-4) !important;
+      & > .c-row__icon { grid-area: icon !important; align-self: start !important; }
+      & > .c-row__main { grid-area: main !important; width: auto !important; }
+      & > :is(.c-row__value,.c-row__trail) { grid-area: fact !important; width: auto !important; max-width: none !important; justify-self: stretch !important; margin: 0 !important; text-align: start !important; }
+      & > .c-chev { grid-area: chev !important; }
+      & .c-row__title, & .c-row__detail span { hyphens: none !important; overflow-wrap: normal !important; word-break: normal !important; }
+    }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #photo-policy-form label.c-row:has(> .ck-switch__state):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-areas: "main toggle" "status toggle" !important;
+      row-gap: var(--b-space-4) !important;
+      & > .c-row__main { grid-area: main !important; }
+      & > .ck-switch__state { grid-area: status !important; justify-self: start !important; margin: 0 !important; }
+      & > .c-switch { grid-area: toggle !important; }
+    }
+  }
+  @container inactive-clocker (max-width: 30rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #edit-location-form .c-row:has(> .c-row__value):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      display: grid !important;
+      grid-template-areas: "main chev" "value chev" !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      & > .c-chev { grid-area: chev !important; }
+      row-gap: var(--b-space-4) !important;
+      & > .c-row__main { grid-area: main !important; }
+      & > .c-row__value { grid-area: value !important; width: 100% !important; max-width: none !important; text-align: start !important; justify-self: stretch !important; }
+    }
+  }
+}
+
+/* At double text size a narrow card still needs room for a complete location or feature name. */
+@layer nv-b {
+  .c-page[lang=es] #features li:has(#module-payStatements) { container: pay-statements-option / inline-size; }
+  @container setting-entry (max-width: 10rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-settings[lang=es] .c-row:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      column-gap: var(--b-space-4) !important;
+      & .c-row__title { hyphens: none !important; overflow-wrap: normal !important; word-break: normal !important; }
+    }
+  }
+  @container pay-statements-option (max-width: 10rem) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] label[for=module-payStatements]:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      gap: var(--b-space-4) !important;
+      & .c-switch { justify-self: end !important; }
+    }
+  }
+}
+
+@layer nv-b {
+  .c-page[lang=es] .c-row[href="/app/settings/locations/new"] .c-row__title {
+    hyphens: none !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+}
+
+@layer nv-b {
+  .c-page[lang=es] :is(#features, #features-words) :is(.c-section__label, .c-row__detail, .c-row__detail span),
+  .c-page[lang=es] a[href="/app/settings/clocker/photos/review"] .c-row__detail {
+    hyphens: none !important;
+  }
+}

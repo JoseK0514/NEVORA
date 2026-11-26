@@ -1,8 +1,9 @@
 import * as rstestOriginal0 from "@/lib/data/workspaces" with { rstest: 'importActual' };
 import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 import {renderToStaticMarkup} from 'react-dom/server';
-const state=rs.hoisted(()=>({role:'OWNER',lang:'en',session:rs.fn(),path:'/app/billing',workspace:rs.fn()}));
-rs.mock('@/lib/auth/session',()=>({requireSession:state.session}));
+const state=rs.hoisted(()=>({role:'OWNER',lang:'en',saved:rs.fn(),session:rs.fn(),path:'/app/billing',workspace:rs.fn()}));
+rs.mock('@/lib/auth/session',()=>({requireSession:state.session,readSessionMutationProof:async()=>({employee:{id:'fictional'}})}));
+rs.mock('@/lib/activation/language.server',()=>({readSavedLanguage:state.saved}));
 rs.mock('@/lib/auth-lang.server',()=>({readAuthLang:async()=>state.lang}));
 rs.mock('@/lib/payroll/service',()=>({payrollFeatureEnabled:()=>true}));
 rs.mock('@/lib/data/workspaces', ()=>({...rstestOriginal0,getWorkspace:state.workspace}));
@@ -14,7 +15,7 @@ import {billingDestination} from './billing';
 import {accessNotice,contactLabel,unreachableNotice} from './copy';
 import {clockerReturnPath} from '@/lib/commerce/recovery-routes';
 import {CommerceRecoveryBoundary} from '@/lib/commerce/recovery-boundary';
-beforeEach(()=>{rs.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.role='OWNER';state.lang='en';state.path='/app/billing';state.session.mockReset().mockImplementation(async()=>({id:'fictional',role:state.role}));state.workspace.mockReset().mockResolvedValue({timeZone:'America/Puerto_Rico'});});
+beforeEach(()=>{rs.stubEnv('NEVORA_COMMERCE_ENABLED','true');state.role='OWNER';state.lang='en';state.saved.mockReset().mockResolvedValue(null);state.path='/app/billing';state.session.mockReset().mockImplementation(async()=>({id:'fictional',role:state.role}));state.workspace.mockReset().mockResolvedValue({timeZone:'America/Puerto_Rico'});});
 it('keeps Owner billing status loading until an authenticated current read completes',async()=>{
  const html=renderToStaticMarkup(await BillingPage());expect(html).toContain('Checking workplace access');expect(html).toContain('disabled');expect(html).not.toContain('Active employees');
 });
@@ -56,13 +57,13 @@ it('still renders billing when the workplace time zone cannot be read, and reads
 it.each(['en','es'] as const)('tells a non-Owner in %s when the billing check itself could not be reached, with a way to try again',async lang=>{
  state.role='MANAGER';state.lang=lang;
  const html=renderToStaticMarkup(await BillingPage({searchParams:Promise.resolve({reason:'billing_status_unavailable'})}));
- expect(html).toContain(unreachableNotice(lang));expect(html).toContain(lang==='en'?'tell your workplace Owner':'avísale al propietario');expect(html).toContain(lang==='en'?'Try again':'Intentar de nuevo');expect(html).not.toContain('Open billing in Velani');
+ expect(html).toContain(unreachableNotice(lang));expect(html).toContain(lang==='en'?'tell your workplace Owner':'avísale al dueño');expect(html).toContain(lang==='en'?'Try again':'Intentar de nuevo');expect(html).not.toContain('Open billing in Velani');
  const paused=renderToStaticMarkup(await BillingPage({searchParams:Promise.resolve({reason:'subscription_required'})}));
- expect(paused).toContain(lang==='en'?'Ask your workplace Owner':'Pídele al propietario');expect(paused).not.toContain(lang==='en'?'Try again':'Intentar de nuevo');
+ expect(paused).toContain(lang==='en'?'Ask your workplace Owner':'Pídele al dueño');expect(paused).not.toContain(lang==='en'?'Try again':'Intentar de nuevo');
 });
 it('titles the tab by what the page returns',async()=>{
  expect((await generateMetadata()).title).toBe('Workplace billing');state.lang='es';expect((await generateMetadata()).title).toBe('Facturación del negocio');
- rs.stubEnv('NEVORA_COMMERCE_ENABLED','false');expect(await generateMetadata()).toEqual({title:'Page not found',robots:{index:false,follow:false},referrer:'no-referrer'});
+ rs.stubEnv('NEVORA_COMMERCE_ENABLED','false');expect(await generateMetadata()).toEqual({title:'Página no encontrada',robots:{index:false,follow:false},referrer:'no-referrer'});
 });
 const paused={state:'restricted',reason:null,activeEmployees:4,employeeLimit:15} as const;
 it('gives one sentence per reason access is paused, in both languages',()=>{
@@ -96,4 +97,15 @@ it.each(['MANAGER','EMPLOYEE'])('%s: My pay statements sits in the actions block
   expect(actions).toBeGreaterThan(paragraph);expect(pay).toBeGreaterThan(actions);
   expect(html.slice(actions,pay)).not.toContain('</p>');
  }
+});
+
+it('uses the saved profile by default and confines an explicit language choice to the billing view',async()=>{
+ state.saved.mockResolvedValue('es');
+ expect((await generateMetadata()).title).toBe('Facturación del negocio');
+ expect(renderToStaticMarkup(await BillingPage())).toContain('Consultando el acceso del negocio');
+ const override={searchParams:Promise.resolve({billingLang:'en'})};
+ expect((await generateMetadata(override)).title).toBe('Workplace billing');
+ expect(renderToStaticMarkup(await BillingPage(override))).toContain('Checking workplace access');
+ expect((await generateMetadata({searchParams:Promise.resolve({billingLang:'unknown'})})).title).toBe('Facturación del negocio');
+ expect((await generateMetadata()).title).toBe('Facturación del negocio');
 });

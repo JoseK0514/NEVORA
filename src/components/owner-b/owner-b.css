@@ -115,6 +115,14 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-back__ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--b-radius-pill); color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--b-space-12); padding: 14px var(--b-space-20) 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title__text { min-width: 0; }
+/* The permission notice keeps the full Settings heading and the display type at large text sizes. */
+@layer nv-b {
+  html[lang=es] .cm-owner-only[lang=es] .b-title__text:has(.closed-settings-title) { min-inline-size: 0 !important; }
+  html[lang=es] .cm-owner-only[lang=es] .b-title h1:has(> .closed-settings-title) {
+    -webkit-hyphens: auto !important;
+    hyphens: auto !important;
+  }
+}
 :is(#c-root, html) .app-shell[data-nv-b] .b-title h1 { font-size: var(--b-fs-display); line-height: var(--b-lh-display); font-weight: 700; letter-spacing: -0.03em; color: var(--b-on-band); text-wrap: balance; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-title--big h1 { font-size: 2.125rem; line-height: 2.5rem; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-eyebrow { font-size: var(--b-fs-body); line-height: 1.25rem; font-weight: 500; color: var(--b-on-band-2); }
@@ -550,6 +558,43 @@
 }
 
 @layer nv-b {
+  @media (max-width: 767px) {
+    html:lang(es)[data-text-step="200"] .b-hero:has(#b-todo-title) .b-seg:has(> :nth-child(4)) {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      grid-auto-flow: row !important;
+    }
+    /* Each item already measures at least 44px in the two-row layout. */
+    html:lang(es)[data-text-step="200"] .b-hero:has(#b-todo-title) .b-seg:has(> :nth-child(4)) > button::after {
+      inset: 0 !important;
+    }
+    html:lang(es)[data-text-step="200"] :is(#b-help-how, #updates-other, #updates-required, .b-screen:has(:is(#b-more-title, #b-help-title, #b-todo-title, #b-updates-title, #b-requests-title)))
+      :is(.b-row, .b-row__hit) {
+      padding-inline: var(--b-space-8) !important;
+      column-gap: var(--b-space-4) !important;
+    }
+    html:lang(es)[data-text-step="200"] .b-card__h:has(> :is(#b-calendar-heading, #b-device-card-title, #b-requests-decided-h)) {
+      flex-wrap: wrap !important;
+      justify-content: flex-start !important;
+      & > h2 { flex: 1 0 100% !important; }
+    }
+    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-status,
+    html:lang(es)[data-text-step="200"] #b-todo-title ~ .b-sub .b-segs__i {
+      white-space: normal !important;
+      max-width: 100%;
+    }
+    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row:has(.b-row__trail) {
+      flex-wrap: wrap;
+    }
+    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row:has(.b-row__trail) > .b-row__hit {
+      flex: 1 1 100%;
+    }
+    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row__trail {
+      margin-inline-start: auto;
+    }
+  }
+}
+
+@layer nv-b {
   /* The older failure card's retry is the kit's teal pill (offline keeps the one disabled look from b-foundation.css). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-offline]) .c-error-card:not(#d-none):not(#d-none2) .b-statecard :is(button, a).c-btn:not(#d-none):not(#d-none2):not(#d-none3) {
     display: inline-flex !important; align-items: center !important; justify-content: center !important; width: auto !important; min-height: 44px !important; height: auto !important; padding: 0 var(--b-gutter) !important;
@@ -711,5 +756,13 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn { transition-property: background-color, box-shadow, scale; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
   @media (hover: hover) {
     :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row--link:hover, .b-row:has(> .b-row__hit[href]:hover)) .b-chev:not(.b-chev--down) { translate: 2px 0; color: var(--b-grey); }
+  }
+}
+
+@media (max-width: 767px) {
+  :is(#c-root, html):lang(es)[data-text-step="200"] .app-shell[data-nv-b] .b-row__s {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
   }
 }

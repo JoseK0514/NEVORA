@@ -1,3 +1,5 @@
+import {readPageLang} from '@/lib/i18n/page-lang.server';
+import {copy} from './page-copy';
 import { ClockerDeviceManager, ClockerDevicesUnavailable } from '@/components/clocker-device-manager';
 import { requireRoles } from '@/lib/auth/permissions';
 import { requireSessionMutationProof } from '@/lib/auth/session';
@@ -10,7 +12,10 @@ import { readPortalLanguage } from '@/lib/activation/language.server';
 import type { ClockerOwnerLang } from '@/components/clocker-owner-copy';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Clocker tablets" };
+export async function generateMetadata() {
+  const lang=await readPageLang();
+  return {title:copy[lang].clockerTablets};
+}
 
 export const dynamic = 'force-dynamic';
 export default async function ClockerDevicesPage() {

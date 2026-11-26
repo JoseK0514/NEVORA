@@ -22,3 +22,14 @@ it('lists a new location as needing setup and keeps inactive locations',async()=
 it('locked workspace uses a plain explanation, a read-only time zone and an editable name',async()=>{const html=renderToStaticMarkup(await WorkspacePage());expect(html).not.toContain('name="timeZone"');expect(html).toContain('<span class="c-row__value">New York</span>');expect(html).toContain('Time zone is locked because you have shifts and timecards. Contact support to change it.');expect(html).toMatch(/<input[^>]*name="name" value="Northside"\/>/);expect(html).toContain('form="company-profile-form"');expect(html).toContain('>Save</button>');});
 it('empty catalog explicitly allows positionless shifts',async()=>{expect(renderToStaticMarkup(await PositionsPage())).toContain('Shifts can still be added without a position.');});
 it('all inactive unheld qualifications shows accurate optional empty state',()=>{const html=renderToStaticMarkup(createElement(EmployeeSchedulingFields,{locations:[],positions:[{id:'old',name:'Retired',active:false} as Position]}));expect(html).toContain('No active positions available. Positions are optional');expect(html).not.toContain('Retired');});
+
+it('announces position counts independently in Spanish', async () => {
+  const {SETTINGS_COPY} = await import('./settings-copy');
+  const {positionsStatus, activeOf} = SETTINGS_COPY.es;
+  expect(positionsStatus(1, 1)).toBe('1 puesto activo y 1 archivado');
+  expect(positionsStatus(1, 0)).toBe('1 puesto activo y 0 archivados');
+  expect(positionsStatus(2, 1)).toBe('2 puestos activos y 1 archivado');
+  expect(positionsStatus(0, 2)).toBe('0 puestos activos y 2 archivados');
+  expect(activeOf(1, 1, 'restaurante')).toBe('restaurante · en uso: 1 de 1');
+  expect(activeOf(1, 2, 'localidades')).toBe('localidades · en uso: 1 de 2');
+});

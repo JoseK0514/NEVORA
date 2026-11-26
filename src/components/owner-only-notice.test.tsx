@@ -4,6 +4,7 @@ import { describe, expect, it, rs } from '@rstest/core';
 
 rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 
+import { PortalLangProvider } from "../lib/i18n/portal-lang";
 import { OwnerOnlyNotice, closedPayrollForManager, ownerNames } from "./owner-only-notice";
 
 const has = (...hrefs: string[]) => (href: string) => hrefs.includes(href);
@@ -52,6 +53,13 @@ describe("the closed-page state screen", () => {
   it("names a closed Settings page on the band (Settings itself, outside the router)", () => {
     const settings = renderToStaticMarkup(<OwnerOnlyNotice state title="Settings" reason="Settings are for Owners" line="Ask an Owner if you need a change here." />);
     expect(settings).toMatch(/<h1 id="owner-only-title"[^>]*>Settings<\/h1>/);
+  });
+  it("preserves the Spanish Settings heading for both restricted layouts", () => {
+    for (const state of [false, true]) {
+      const spanish = renderToStaticMarkup(<PortalLangProvider lang="es"><OwnerOnlyNotice
+        lang="es" state={state} title="Configuración" reason="La configuración es para los dueños" /></PortalLangProvider>);
+      expect(spanish).toMatch(/<h1[^>]*><span class="closed-settings-title"[^>]*>Configuración<\/span><\/h1>/);
+    }
   });
   it("leaves the notice an Employee sees as it was (two layouts, one filled way on)", () => {
     const employee = renderToStaticMarkup(<OwnerOnlyNotice title="Insights" reason="Insights is for Owners and Managers" help="Your own hours are on Time." next={{ href: "/app/my-time", label: "Open Time" }} />);

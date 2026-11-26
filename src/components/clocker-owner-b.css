@@ -204,6 +204,10 @@
 /* ---------- PIN boxes: four boxes over one real, invisible field; dots, never digits ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-pinbox { position: relative; display: grid; grid-template-columns: repeat(4, 56px); gap: var(--b-space-12); width: max-content; max-width: 100%; margin: var(--b-space-8) 0 0; border-radius: 16px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-pinbox input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; background: transparent; color: transparent; caret-color: transparent; opacity: 0; font-size: 16px; cursor: text; }
+/* The transparent input follows the digit boxes even when text fields have a larger minimum height. */
+html:lang(es) :is(#c-root, body) .app-shell[data-nv-b] .ck-pin .ck-pinbox > input {
+  min-height: 0;
+}
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-pinbox > span { display: grid; place-items: center; height: 56px; border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge); }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-pinbox > span > i { width: 10px; height: 10px; border-radius: 50%; background: var(--b-ink); }
 :is(#c-root, html) body .app-shell[data-nv-b] .ck-owner .ck-pinbox:focus-within { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 4px; }
@@ -329,5 +333,21 @@
   @layer nv-b {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .ck-trow__main:focus-visible:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { outline: 2px solid Highlight !important; outline-offset: -2px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .ck-owner .b-btn.ck-trow__go:not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7) { border: 1px solid ButtonText !important; }
+  }
+}
+
+.ck-code-label { position: relative; }
+.ck-code-label__full { display: inline-block; inline-size: max-content; }
+.ck-code-label[data-compact] .ck-code-label__full {
+  position: absolute;
+  inset-inline-end: 0;
+  visibility: hidden;
+}
+
+@layer nv-b {
+  @media (min-width: 768px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page, .c-page).ck-owner .b-row.ck-trow[data-new-code]:not(#ck1):not(#ck2):not(#ck3):not(#ck4):not(#ck5):not(#ck6) { grid-template-columns:minmax(0, 1fr) minmax(148px, max-content) 16px !important; }
+    }
   }
 }

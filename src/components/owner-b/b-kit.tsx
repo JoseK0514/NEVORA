@@ -1,8 +1,9 @@
+import { esTime } from '../employee-b/es-format';
 import "./owner-b.css";
 import { OfflineGlyph } from "./b-glyphs";
 import Link from "next/link";
 import { isValidElement, cloneElement } from "react";
-import type { ReactNode, CSSProperties, Ref } from "react";
+import type { ReactNode, CSSProperties, Ref, MouseEventHandler } from "react";
 import { BOffline } from "./b-offline";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
@@ -110,9 +111,9 @@ export function BList({ children, label }: { children: ReactNode; label?: string
 
 /** One row: lead (avatar, icon or day), a title (with an optional chip beside it) over a 13.5px line, then a trailing value,
  * button or chevron. `wrap` puts `actions` on their own line under the text. */
-export function BRow({ lead, title, chip, sub, end, trail, href, onClick, chevron, label, actions, extra }: {
+export function BRow({ lead, title, chip, sub, end, trail, href, onLinkClick, onClick, chevron, label, actions, extra }: {
   lead?: ReactNode; title: ReactNode; chip?: ReactNode; sub?: ReactNode; end?: ReactNode; trail?: ReactNode; href?: string; onClick?: () => void; chevron?: boolean; label?: string;
-  actions?: ReactNode; extra?: ReactNode;
+  actions?: ReactNode; extra?: ReactNode; onLinkClick?: MouseEventHandler<HTMLAnchorElement>;
 }) {
   const showChev = chevron ?? (!!(href || onClick) && !trail);
   const body = <>
@@ -133,7 +134,7 @@ export function BRow({ lead, title, chip, sub, end, trail, href, onClick, chevro
     {trail ? <span className="b-row__trail">{trail}</span> : null}
     {actions ? <span className="b-row__acts">{actions}</span> : null}
   </div></li>;
-  if (href) return <li className="b-li"><Link className={`${cls} b-row--link`} href={href} aria-label={label}>{body}</Link></li>;
+  if (href) return <li className="b-li"><Link className={`${cls} b-row--link`} href={href} aria-label={label} onClick={onLinkClick}>{body}</Link></li>;
   if (onClick) return <li className="b-li"><button type="button" className={`${cls} b-row--link`} aria-label={label} onClick={onClick}>{body}</button></li>;
   return <li className="b-li"><div className={cls} role={label ? "group" : undefined} aria-label={label}>{body}</div></li>;
 }
@@ -324,15 +325,23 @@ function fullRange(text: string) {
 /** A time range in a row or a title: the full form at every width ("3:00 PM – 4:30 PM"; Jose, Nov 23, 2026, replacing
  * the Nov 15 short phone form). Each time stays whole and the line breaks only after the dash, so a narrow line shows
  * "11:30 PM –" over "12:00 AM", never "11:30" over "PM" or a line that starts with the dash. */
-export function BWhen({ text }: { text: string }) {
-  return <>{keepWhole(compactRange(text))}</>;
+export function BWhen({ text, lang = "en" }: { text: string; lang?: "en" | "es" }) {
+  const range = compactRange(text);
+  return <>{lang === "es" ? esTime(range) : keepWhole(range)}</>;
 }
 
 /** Final polish (Nov 20, 2026): the two people of a swap in a row title, "Ana Colon ⇄ James Ortiz" with the glyph the
  * Shift requests rows lead with (Phosphor ArrowsLeftRight, bold, the 16px inline size) in place of a thin text arrow.
  * It is read "Ana Colon and James Ortiz". Each name stays whole; the glyph stays with the first name. */
-export function BSwapNames({ a, b }: { a: string; b: string }) {
-  return <span className="b-swapnames"><span className="b-swapnames__a">{a.replace(/ /g, "\u00a0")}<ArrowsLeftRightIcon className="b-swapnames__ic" size={16} weight="bold" aria-hidden="true" /></span><span className="b-sr"> and </span><span>{b.replace(/ /g, "\u00a0")}</span></span>;
+export function BSwapNames({ a, b, lang = "en" }: { a: string; b: string; lang?: "en" | "es" }) {
+  const spanish = lang === "es";
+  const separator = spanish
+    ? new Intl.ListFormat("es-PR").formatToParts([a, b]).find(part => part.type === "literal")?.value
+    : " and ";
+  return <span className="b-swapnames">
+    <span className="b-swapnames__a">{spanish ? a : a.replace(/ /g, "\u00a0")}<ArrowsLeftRightIcon className="b-swapnames__ic" size={16} weight="bold" aria-hidden="true" /></span>
+    <span className="b-sr">{separator}</span><span>{spanish ? b : b.replace(/ /g, "\u00a0")}</span>
+  </span>;
 }
 
 /** Premium pass FA (final verification A #10, B #8): a line of facts joined by "·" ("Tue, Nov 24 · 12:00 PM – 8:00 PM ·
@@ -413,14 +422,15 @@ export type BLoadingShape = { title?: ReactNode; back?: boolean; sub?: boolean; 
   route?: string };
 const LOADING_CARDS: BLoadingCard[] = [{ head: true, lines: 3 }, { head: true, lines: 3 }];
 const SKEL_WIDTHS = ["52%", "40%", "60%", "46%", "36%", "56%", "44%", "50%"];
-export function BLoadingScreen({ title, back, sub, strip, action, band, frame = "rail", lift = true, cards = LOADING_CARDS, state, shell, route }: BLoadingShape = {}) {
+export function BLoadingScreen({ title, back, sub, strip, action, band, frame = "rail", lift = true, cards = LOADING_CARDS, state, shell, route, loadingText = "Loading…" }: BLoadingShape & {
+  /** Signed-in Spanish: the spoken loading word ("Cargando…"); English when left out. */ loadingText?: string } = {}) {
   return <div className={back ? "b-screen b-screen--back" : "b-screen"} data-b-load="" data-b-shell={shell} data-b-for={route} data-b-band={typeof band === "number" ? "own" : band}
     style={typeof band === "number" ? { ["--b-band-own" as string]: `${band}px` } : undefined} data-b-frame={state ? "state" : frame} data-b-lift={lift && !state ? "" : undefined} data-b-under={lift ? undefined : ""}>
     <header className="b-hero">
       {back ? <span className="b-skel b-skel--back" aria-hidden="true" /> : null}
       <div className="b-title">
         <div className="b-title__text">
-          <h1>{title ?? <span className="b-skel b-skel--title" aria-hidden="true" />}{state ? null : <span className="b-sr">{title ? " " : ""}Loading…</span>}</h1>
+          <h1>{title ?? <span className="b-skel b-skel--title" aria-hidden="true" />}{state ? null : <span className="b-sr">{title ? " " : ""}{loadingText}</span>}</h1>
           {sub ? <span className="b-skel b-skel--sub" aria-hidden="true" /> : null}
         </div>
         {action ? <span className="b-skel b-skel--action" aria-hidden="true" /> : null}

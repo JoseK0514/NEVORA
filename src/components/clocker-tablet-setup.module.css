@@ -27,3 +27,12 @@
 @media (orientation: landscape) and (max-height: 700px) and (min-width: 700px) {
   .root[data-refused] .steps { display: none; }
 }
+.root:lang(es)[data-clocker-setup="type"] { container: setup-content / inline-size; }
+@container setup-content (max-width: 10rem) {
+  .meta.meta { flex-wrap: wrap; }
+  .meta > [data-clocker-language] { margin-inline-start: auto; }
+}
+
+/* Scale the number's circle and its grid track together with the text. */
+.root:lang(es) .steps > li { grid-template-columns: max-content minmax(0, 1fr); }
+.root:lang(es) .steps .n { min-inline-size: 1.85em; min-block-size: 1.85em; align-self: start; line-height: 1; margin-block-start: 0; }

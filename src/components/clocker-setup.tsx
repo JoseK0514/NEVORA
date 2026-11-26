@@ -1,7 +1,8 @@
 "use client";
+import {copy as pageWords} from "./clocker-setup-copy";
 
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import {ClockerPresentation,ClockerLanguageToggle,ClockerText,useClockerCopy,useClockerKeepNames} from './clocker-language';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
+import {ClockerPresentation,ClockerLanguageToggle,ClockerText,useClockerPresentation,useClockerCopy,useClockerKeepNames} from './clocker-language';
 import {clockerErrorText,type ClockerLocale} from './clocker-copy';
 import styles from './clocker.module.css';
 import setup from './clocker-tablet-setup.module.css';
@@ -20,6 +21,33 @@ class SetupFailure extends Error {
 const OFFLINE = 'This tablet is offline. Connect it to Wi-Fi, then try again.';
 /** How long the "connected" confirmation stays before the time clock opens by itself. */
 export const SETUP_WELCOME_MS = 6000;
+
+
+/** Keep the Settings path together while it fits in the instruction's text column. */
+function SpanishSetupInstruction({ text }: { text: string }) {
+  const instruction = useRef<HTMLSpanElement>(null);
+  const [wrapPath, setWrapPath] = useState(false);
+  useLayoutEffect(() => {
+    const line = instruction.current;
+    const path = text.match(/[^\s]+\u00a0→\u00a0[^\s]+/u)?.[0];
+    const canvas = document.createElement('canvas').getContext('2d');
+    if (!line || !path || !canvas) return;
+    const measure = () => {
+      const style = getComputedStyle(line);
+      canvas.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      setWrapPath(canvas.measureText(path).width > line.getBoundingClientRect().width);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(line);
+    document.fonts.addEventListener('loadingdone', measure);
+    return () => {
+      observer.disconnect();
+      document.fonts.removeEventListener('loadingdone', measure);
+    };
+  }, [text]);
+  return <span ref={instruction}>{wrapPath ? text.replace('\u00a0→\u00a0', ' → ') : text}</span>;
+}
 
 async function send(locationKey: string, body: object, signal?: AbortSignal): Promise<SetupState> {
   const response = await fetch(`/api/clocker/${encodeURIComponent(locationKey)}/setup`, {
@@ -48,6 +76,7 @@ async function send(locationKey: string, body: object, signal?: AbortSignal): Pr
 function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false, brand, workspaceName, layoutHint = null }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean; brand?: { style?: Record<string, string>; logoUrl?: string | null }; workspaceName?: string;
   /** The sign-in layout this tablet last had here (the server read its path-scoped cookie): 'picker', 'id' or none. */
   layoutHint?: RosterHint | null }) {
+  const {locale}=useClockerPresentation();
   const t=useClockerCopy(),keep=useClockerKeepNames();
   const [state, setState] = useState<SetupState>({ state: 'unregistered' });
   const [pending, setPending] = useState(true);
@@ -167,7 +196,8 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
   const [deviceBefore, deviceAfter = ''] = t('{device} is connected to this location.', { device: '\u0000' }).split('\u0000');
   // Phase 8 (#20): the location reads as one name. A short name keeps its words on one line; a long one may still wrap.
   // Gate check (Nov 23): the band's pill already names the location, so the card doesn't repeat it.
-  const placeLine = t('This tablet becomes this location’s time clock.');
+  const placeLine = pageWords[locale].thisTabletBecomesThisLocationsTimeClock;
+  const settingsStep = t('On another device, the Owner opens Settings → Clocker tablets.');
   const [readyBefore, readyAfter = ''] = t('{device} is ready. Your team can clock in now.', { device: '\u0000' }).split('\u0000');
   const fieldError = error && view === 'type';
   const punchNote = <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20} mark/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")} {t("Ask your Owner to contact NEVORA support.")}</p></div>;
@@ -213,13 +243,13 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
             <button className={styles.btn} data-kind="primary" data-busy={pending ? '' : undefined} type="submit">{pending ? <span className={styles.spin} aria-hidden="true"/> : null}{t(connecting ? 'Connecting…' : pending ? 'Checking setup…' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
           </fieldset>
         </form>
-        <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={typeInstead}>{t('Type a code instead')}</button></div>
+        <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={typeInstead}>{pageWords[locale].typeACodeInstead}</button></div>
       </> : <>
         <p className={`${styles.eyebrow} ${setup.eyebrow}`}>{t("One-time setup")}</p>
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t("Set up this tablet")}</h1>
         <p className={`${styles.lead} ${setup.lead}`}>{placeLine}</p>
         <ol className={setup.steps} aria-label={t('How to set it up')}>
-          <li><span className={setup.n} aria-hidden="true">1</span><span>{t('On another device, the Owner opens Settings → Clocker tablets.')}</span></li>
+          <li><span className={setup.n} aria-hidden="true">1</span>{locale === 'es' ? <SpanishSetupInstruction text={settingsStep}/> : <span>{settingsStep}</span>}</li>
           <li><span className={setup.n} aria-hidden="true">2</span><span>{t('The Owner adds this tablet and gets its setup code.')}</span></li>
           <li><span className={setup.n} aria-hidden="true">3</span><span>{t('Point this tablet’s camera at the code, or type the code below.')}</span></li>
         </ol>

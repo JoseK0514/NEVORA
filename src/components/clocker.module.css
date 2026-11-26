@@ -694,3 +694,8 @@
  * request's result is still announced the moment it fills. */
 .helpStack > .quietLine:empty { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); }
 .helpStack + .reference { margin-top: 0; }
+
+/* Let the workplace name use its own line when the brand and the name exceed the header. */
+.page:lang(es) .brand { flex-wrap: wrap; min-inline-size: 0; max-inline-size: 100%; }
+.page:lang(es) .wordmark { min-inline-size: 0; max-inline-size: 100%; }
+.page:lang(es) .workspace { box-sizing: border-box; flex: 0 1 auto; inline-size: max-content; max-inline-size: 100%; block-size: auto; white-space: normal; }

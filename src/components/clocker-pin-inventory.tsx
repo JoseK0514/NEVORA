@@ -1,7 +1,8 @@
 'use client';
 import './clocker-pin-inventory.css';
 import Link from 'next/link';
-import {useState} from 'react';
+import {useLayoutEffect, useRef, useState} from 'react';
+import {copy as inventoryWords} from './clocker-pin-inventory-copy';
 import {MagnifyingGlass} from '@phosphor-icons/react/dist/ssr';
 import type {OwnerPinStatus} from '../lib/clocker/pin-operations.server';
 import {CorpAvatar,CorpRow,CorpRows,CorpSegments} from './corp/corp';
@@ -17,6 +18,33 @@ import {clockerOwnerCopy,type ClockerOwnerLang} from './clocker-owner-copy';
  * Clocker PIN page, which checks the Owner's authority again. */
 type Filter='none'|'set'|'inactive';
 const inFilter=(p:OwnerPinStatus,filter:Filter)=>filter==='inactive'?!p.active:p.active&&(filter==='none'?!p.configured:p.configured);
+function PinSearch({full, compact, value, onChange}: {
+ full: string; compact: string; value: string; onChange: (value: string) => void;
+}) {
+ const input = useRef<HTMLInputElement>(null);
+ const [shortened, setShortened] = useState(false);
+ useLayoutEffect(() => {
+  const field = input.current;
+  if (!field) return;
+  const context = document.createElement('canvas').getContext('2d');
+  if (!context) return;
+  const measure = () => {
+   const style = getComputedStyle(field, '::placeholder');
+   context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+   const fieldStyle = getComputedStyle(field);
+   const space = field.clientWidth - parseFloat(fieldStyle.paddingLeft) - parseFloat(fieldStyle.paddingRight);
+   setShortened(context.measureText(full).width > space);
+  };
+  measure();
+  const observer = new ResizeObserver(measure);
+  observer.observe(field);
+  document.fonts.addEventListener('loadingdone', measure);
+  return () => { observer.disconnect(); document.fonts.removeEventListener('loadingdone', measure); };
+ }, [full, compact]);
+ return <input ref={input} type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off"
+  value={value} placeholder={shortened ? compact : full} onChange={e => onChange(e.target.value)}/>;
+}
+
 export function ClockerPinInventory({statuses,details={},lang='en'}:{statuses:OwnerPinStatus[];
  /** "Barista · Condado" by employee ID; a person without one shows no detail line. */ details?:Record<string,string>;lang?:ClockerOwnerLang}){
  const t=clockerOwnerCopy[lang];
@@ -43,9 +71,10 @@ export function ClockerPinInventory({statuses,details={},lang='en'}:{statuses:Ow
  return <section className="c-card c-pins" id="clocker-pins" aria-label={t.pinsTitle}>
   <div className="c-pins__tools">
    <label className="c-in c-pins__search"><span className="c-sr">{t.pinsSearch}</span><MagnifyingGlass weight="bold" className="c-ic" aria-hidden="true"/>
-    <input type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" value={query} placeholder={t.pinsSearch} onChange={e=>setQuery(e.target.value)}/></label>
+    {lang==='es' ? <PinSearch full={t.pinsSearch} compact={inventoryWords.es.compactSearch} value={query} onChange={setQuery}/>
+     : <input type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" value={query} placeholder={t.pinsSearch} onChange={e=>setQuery(e.target.value)}/>}</label>
    {/* Each tab is its label and its count ("No PIN 2"); its name is the same words. */}
-   <CorpSegments label={t.pinsFilter} items={filters.map(key=>({key,current:filter===key,onSelect:()=>setFilter(key),label:<><span>{labels[key]}</span>&nbsp;<span className="c-pins__count">{count(key)}</span></>}))}/>
+   <CorpSegments label={t.pinsFilter} items={filters.map(key=>({key,current:filter===key,onSelect:()=>setFilter(key),label:<><span>{labels[key]}</span>{lang==='es' ? <span className="pin-label-space">&nbsp;</span> : '\u00a0'}<span className="c-pins__count">{count(key)}</span></>}))}/>
   </div>
   <p className="c-sr" role="status">{wanted?`${visible.length}`:''}</p>
   {visible.length?<CorpRows label={heading}>{visible.map(row)}</CorpRows>

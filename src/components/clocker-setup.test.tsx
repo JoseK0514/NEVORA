@@ -25,7 +25,7 @@ rs.mock('react', () => {
 rs.mock('./clocker-language', () => {
   const real = rstestImportedActual1;
   const {CLOCKER_BUTTON_NAMES,clockerKeepNames,clockerText} = clockerCopyActual;
-  return {...real, useClockerCopy: () => hooks.on ? (key: string, params?: Record<string, string | number>) => clockerText(hooks.locale, key, params) : real.useClockerCopy(),useClockerKeepNames:()=>hooks.on?(sentence:string)=>clockerKeepNames(sentence,CLOCKER_BUTTON_NAMES.map(name=>clockerText(hooks.locale,name))):real.useClockerKeepNames()};
+  return {...real, useClockerPresentation: () => hooks.on ? { locale: hooks.locale } : real.useClockerPresentation(), useClockerCopy: () => hooks.on ? (key: string, params?: Record<string, string | number>) => clockerText(hooks.locale, key, params) : real.useClockerCopy(),useClockerKeepNames:()=>hooks.on?(sentence:string)=>clockerKeepNames(sentence,CLOCKER_BUTTON_NAMES.map(name=>clockerText(hooks.locale,name))):real.useClockerKeepNames()};
 });
 import {ClockerSetup, SETUP_WELCOME_MS} from './clocker-setup';
 import {ClockerPinGate} from './clocker-pin-gate';
@@ -61,7 +61,7 @@ describe('first paint (no hooks driven)', () => {
   });
   it('Spanish: the same screen with no English sentence left in it', () => {
     const html = renderToStaticMarkup(<ClockerSetup {...props} initialLocale="es" />);
-    for (const line of ['Configura esta tableta', 'Esta tableta será el registro de tiempo de esta ubicación.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
+    for (const line of ['Configura esta tableta', 'Tu equipo usará esta tableta para marcar en esta localidad.', 'El dueño añade esta tableta y obtiene su código de configuración.', 'Código de configuración', 'Revisando configuración…'])
       expect(html).toContain(line);
     for (const english of ['Set up this tablet', 'Setup code', 'time clock for', 'Connect tablet', 'How to set it up', 'One-time setup']) expect(html).not.toContain(english);
     expect(html).toContain('lang="es"');
@@ -233,7 +233,7 @@ describe('the setup code from the Owner’s link, and each answer', () => {
 
   it('Spanish: received, connected, refused and not confirmed carry no English sentence', async () => {
     hooks.locale = 'es';
-    await mount(); expect(words()).toContain('Código de configuración recibido'); expect(words()).toContain('Escribir un código');
+    await mount(); expect(words()).toContain('Código de configuración recibido'); expect(words()).toContain('Escribir el código');
     await connect(); expect(words()).toContain('Esta tableta quedó conectada a Calle Loíza'); expect(words()).toContain('Abrir el registro de tiempo');
     expect(words()).not.toMatch(/Setup|Connect|is ready|time clock|signed out/i);
     hooks.states = []; hooks.refs = []; location.hash = `#setup=${code}`; sent.length = 0;
@@ -248,4 +248,10 @@ describe('the setup code from the Owner’s link, and each answer', () => {
     await mount();
     expect((tree as Node).type).toBe(ClockerShell); expect(shellStatus()).toBe('setup');
   });
+});
+
+it('keeps the complete Spanish navigation path on first render', () => {
+  const html = renderToStaticMarkup(<ClockerSetup locationKey="qa-cafe" locationLabel="Calle Loíza"
+    timeZone="America/Puerto_Rico" initialLocale="es" />);
+  expect(html).toContain('Configuración\u00a0→\u00a0Tabletas de Clocker.');
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@rstest/core";
 import type { TodayShift } from "@/lib/today/project";
-import { dayHours } from "./home-b";
+import { dayHours, hourLabelTouchesNow } from "./home-b";
 
 const shift = (employeeId: string, startAt: string, endAt: string): TodayShift => ({ id: `${employeeId}:${startAt}`, employeeId, employeeName: employeeId, locationId: "l", locationName: "Condado",
   positionName: null, startAt, endAt, status: "upcoming", firstClockInAt: null, late: false });
@@ -31,4 +31,13 @@ describe("Home's Today chart (dayHours)", () => {
   it("never draws more than a day of hours", () => {
     expect(dayHours([shift("a", "2026-11-20T13:00:00Z", "2026-11-22T13:00:00Z")], "2026-11-20T15:00:00Z")!.hours).toHaveLength(24);
   });
+});
+
+
+it("keeps the current hour legible without removing an hour that clears it", () => {
+  const now = { left: 90, right: 125 };
+  expect(hourLabelTouchesNow({ left: 41, right: 96 }, now)).toBe(true);
+  expect(hourLabelTouchesNow({ left: 126, right: 178 }, now)).toBe(true);
+  expect(hourLabelTouchesNow({ left: 32, right: 86 }, now)).toBe(false);
+  expect(hourLabelTouchesNow({ left: 129, right: 180 }, now)).toBe(false);
 });

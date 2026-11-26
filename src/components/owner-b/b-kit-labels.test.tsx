@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "@rstest/core";
-import { BCallout, BCard, BChip, BCount, BEmail, BGlyph, BIcon, BList, BLive, BRow, BStatusText, type BMeaning, type BTone } from "./b-kit";
+import { BCallout, BCard, BChip, BCount, BEmail, BGlyph, BIcon, BList, BLive, BRow, BStatusText, BSwapNames, type BMeaning, type BTone } from "./b-kit";
 
 const html = (node: React.ReactElement) => renderToStaticMarkup(node);
 const sheet = readFileSync(join(__dirname, "owner-b.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
@@ -136,4 +136,17 @@ describe("The stylesheet behind them", () => {
     expect(foundation).toMatch(/\.nevora-toast,[\s\S]*?border-radius: var\(--b-radius-menu\) !important;[\s\S]*?box-shadow: var\(--b-elev-2\) !important;/);
     expect(foundation).not.toMatch(/077572/i);
   });
+});
+
+
+it("reads the Spanish swap in name order and allows a line break between family and given names", () => {
+  const names = { a: "Gabriela Santos", b: "James Ortiz" };
+  const spanish = html(<BSwapNames {...names} lang="es" />);
+  expect(spanish).toContain("Gabriela Santos");
+  expect(spanish).toContain('<span class="b-sr"> y </span>');
+  expect(spanish).toContain("James Ortiz");
+  expect(html(<BSwapNames {...names} b="Israel Rivera" lang="es" />)).toContain('<span class="b-sr"> e </span>');
+  const english = html(<BSwapNames {...names} />);
+  expect(english).toContain("Gabriela\u00a0Santos");
+  expect(english).toContain('<span class="b-sr"> and </span>');
 });

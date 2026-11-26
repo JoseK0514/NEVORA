@@ -1,5 +1,7 @@
 'use client';
 import Link from 'next/link';
+import {copy as billingCopy} from './billing-copy';
+import { WholeWordHeading } from "@/components/whole-word-heading";
 import {useEffect,useRef,useState} from 'react';
 import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import type {CommerceStatus} from '@/lib/commerce/status';
@@ -10,7 +12,7 @@ import {accessNotice,contactLabel,supportEmail,unreachableNotice} from './copy';
 import styles from './recovery.module.css';
 const copy={
  en:{title:'Workplace billing',intro:'Review your workplace access and manage your subscription through Velani.',loading:'Checking workplace access…',slow:'Still checking your access. This connection is slow. Your billing details appear when the check finishes.',denied:'Sign in with the current workplace Owner account to manage billing.',status:'Access',plan:'Plan',people:'Active employees',trial:'Trial ends',paid:'Paid through',grace:'Grace period ends',utc:' (UTC)',none:'Not selected',refresh:'Refresh status',billing:'Open billing in Velani',opening:'Opening billing…',failed:'Billing could not be opened. No payment is confirmed. Try again from this page.',back:'Return to workspace',pay:'My pay statements',note:'Velani and Stripe show the payment details before confirmation. Returning here does not confirm a payment.',states:{trial:'Trial',paid:'Active',grace:'Payment needs attention',restricted:'Access paused'}},
- es:{title:'Facturación del negocio',intro:'Revisa el acceso de tu negocio y administra tu suscripción en Velani.',loading:'Consultando el acceso del negocio…',slow:'Seguimos comprobando tu acceso. La conexión está lenta. Los detalles de facturación aparecen cuando termine la comprobación.',denied:'Inicia sesión con la cuenta del propietario actual para administrar la facturación.',status:'Acceso',plan:'Plan',people:'Empleados activos',trial:'La prueba termina',paid:'Pagado hasta',grace:'El periodo de gracia termina',utc:' (UTC)',none:'Sin seleccionar',refresh:'Actualizar estado',billing:'Abrir facturación en Velani',opening:'Abriendo facturación…',failed:'No se pudo abrir la facturación. No hay ningún pago confirmado. Inténtalo de nuevo desde esta página.',back:'Volver al negocio',pay:'Mis comprobantes de pago',note:'Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago.',states:{trial:'Prueba',paid:'Activo',grace:'El pago requiere atención',restricted:'Acceso pausado'}},
+ es:{title:'Facturación del negocio',intro:'Revisa el acceso de tu negocio y administra tu suscripción en Velani.',loading:'Consultando el acceso del negocio…',slow:'Seguimos comprobando tu acceso. La conexión está lenta. Los detalles de facturación aparecen cuando termine la comprobación.',denied:billingCopy.es.signInWithTheCurrentWorkplaceOwnerAccountTo,status:'Acceso',plan:'Plan',people:'Empleados activos',trial:'La prueba termina',paid:'Pagado hasta',grace:'El periodo de gracia termina',utc:' (UTC)',none:'Sin seleccionar',refresh:'Actualizar estado',billing:'Abrir facturación en Velani',opening:'Abriendo facturación…',failed:'No se pudo abrir la facturación. No hay ningún pago confirmado. Inténtalo de nuevo desde esta página.',back:'Volver al negocio',pay:'Mis comprobantes de pago',note:'Velani y Stripe muestran los detalles antes de confirmar un pago. Volver aquí no confirma un pago.',states:{trial:'Prueba',paid:'Activo',grace:'El pago requiere atención',restricted:'Acceso pausado'}},
 };
 type State={phase:'loading'|'unavailable'|'denied'}|{phase:'ready';status:CommerceStatus};
 /** QA S-01's threshold (scoped-read-frame STUCK_MS): a status check still running after this says it is still checking,
@@ -68,7 +70,7 @@ export function BillingRecovery({lang,billingOrigin,payrollEnabled,timeZone}: {l
  // UTC and every date label says so.
  const zone=usableZone(timeZone),suffix=zone?'':t.utc;
  const date=(value:string)=>new Intl.DateTimeFormat(lang,{dateStyle:'medium',timeZone:zone??'UTC'}).format(new Date(value));
- return <><h1>{t.title}</h1><p>{t.intro}</p>
+ return <><h1>{lang === "es" ? <WholeWordHeading text={t.title} /> : t.title}</h1><p>{t.intro}</p>
   <div aria-live="polite" aria-busy={state.phase==='loading'}>
    {state.phase==='loading'?<p className={styles.callout} role="status">{slow?t.slow:t.loading}</p>:state.phase==='denied'?<p className={styles.callout} data-tone="red" role="alert"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{t.denied}</p>:state.phase==='unavailable'?<p className={styles.callout} data-tone="amber" role="status"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{unreachableNotice(lang)}</p>:null}
    {notice?<p className={styles.callout} data-tone={notice.tone} role="status"><WarningCircleIcon className={styles.calloutIcon} weight="bold" aria-hidden="true"/>{notice.text}</p>:null}

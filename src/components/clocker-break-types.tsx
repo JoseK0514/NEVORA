@@ -2,7 +2,7 @@
 
 import { FormDiscardGuard } from './kit/discard-dialog';
 import { leaveWithDiscardGuard } from './kit/use-discard-guard';
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { ArchiveIcon } from '@phosphor-icons/react/dist/ssr/Archive';
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise';
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
@@ -13,10 +13,37 @@ import { breakCategories, type BreakType } from '../lib/clocker/break-types';
 import type { BreakTypeResult } from '../app/app/settings/breaks/actions';
 import { FieldB, ResultB } from '../app/app/settings/settings-b-form';
 import { FieldErrors, lockPageScroll, useFieldErrors } from '../app/app/settings/wave-c-form';
+import { usePortalLang } from '@/lib/i18n/portal-lang';
+import { BREAK_TYPES_COPY, type BreakTypesCopy } from './clocker-break-types-copy';
 
 type Selection = { operation: 'CREATE' | 'EDIT' | 'ARCHIVE' | 'REACTIVATE'; type?: BreakType };
 
-const categoryLabel = (value: BreakType['category']) => breakCategories.find(category => category.value === value)?.label ?? 'Other';
+const categoryLabel = (value: BreakType['category'], t: BreakTypesCopy) => t.categories[breakCategories.find(category => category.value === value)?.value ?? 'OTHER'];
+
+function EmptyBreakActionLabel({ full, short }: { full: string; short: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [compact, setCompact] = useState(false);
+  useLayoutEffect(() => {
+    const label = ref.current, button = label?.closest('button'), area = button?.closest('.c-empty');
+    const canvas = document.createElement('canvas').getContext('2d');
+    if (!label || !button || !area || !canvas) return;
+    const measure = () => {
+      const style = getComputedStyle(label), box = getComputedStyle(button), region = getComputedStyle(area);
+      canvas.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      const width = canvas.measureText(full).width + (parseFloat(style.letterSpacing) || 0) * (full.length - 1);
+      const available = area.clientWidth - parseFloat(region.paddingInlineStart) - parseFloat(region.paddingInlineEnd)
+        - parseFloat(box.paddingInlineStart) - parseFloat(box.paddingInlineEnd) - parseFloat(box.borderLeftWidth) - parseFloat(box.borderRightWidth);
+      setCompact(width > available);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(area);
+    observer.observe(button);
+    document.fonts?.addEventListener('loadingdone', measure);
+    return () => { observer.disconnect(); document.fonts?.removeEventListener('loadingdone', measure); };
+  }, [full]);
+  return <span ref={ref}>{compact ? short : full}</span>;
+}
 
 /** J9 Break types in Direction B (Nov 23, 2026). The editor's root is a fragment, so its cards are direct children of the
  * Settings page (SettingsPageB): an Active card (a row per break: name, reference time, kind; the "Add break type" row;
@@ -34,10 +61,11 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   const errorMessage = useRef<HTMLDivElement>(null);
   const trigger = useRef<string | null>(null);
   const busy = useRef(false);
+  const t = BREAK_TYPES_COPY[usePortalLang()];
   const { errors, handlers, clear } = useFieldErrors({
-    name: { missing: 'Enter a break name' },
-    category: { missing: 'Choose a classification' },
-    targetMinutes: { pattern: 'Enter whole minutes, from 1 to 1,440', length: 'Enter whole minutes, from 1 to 1,440' },
+    name: { missing: t.enterName },
+    category: { missing: t.chooseClassification },
+    targetMinutes: { pattern: t.wholeMinutes, length: t.wholeMinutes },
   });
 
   useEffect(() => {
@@ -97,41 +125,42 @@ export function ClockerBreakTypes({ initialTypes, action }: {
       setTypes(current => current.some(type => type.id === result.breakType.id)
         ? current.map(type => type.id === result.breakType.id ? result.breakType : type)
         : [...current, result.breakType]);
-      toast(selection.operation === 'ARCHIVE' ? 'Break type archived. Existing records stay unchanged.'
-        : selection.operation === 'REACTIVATE' ? 'Break type reactivated.'
-          : existing ? 'Break settings saved. They apply to new breaks.' : 'Break type created.');
+      toast(selection.operation === 'ARCHIVE' ? t.archivedToast
+        : selection.operation === 'REACTIVATE' ? t.reactivatedToast
+          : existing ? t.savedToast : t.createdToast);
       busy.current = false;
       close();
     } catch {
-      setError({ message: 'It may not have saved. Reload break types before you try again.', refresh: true });
+      setError({ message: t.mayNotHaveSaved, refresh: true });
     } finally { busy.current = false; setPending(false); }
   }
 
   const activeCount = types.filter(type => type.active).length;
   const editing = selection?.operation === 'CREATE' || selection?.operation === 'EDIT';
-  const title = selection?.operation === 'CREATE' ? 'Add break type' : selection?.operation === 'EDIT' ? 'Edit break type'
-    : selection?.operation === 'ARCHIVE' ? 'Archive this break type?' : 'Reactivate this break type?';
-  const saveLabel = selection?.operation === 'CREATE' ? 'Create break type' : selection?.operation === 'EDIT' ? 'Save changes'
-    : selection?.operation === 'ARCHIVE' ? 'Archive break type' : 'Reactivate break type';
+  const title = selection?.operation === 'CREATE' ? t.addTitle : selection?.operation === 'EDIT' ? t.editTitle
+    : selection?.operation === 'ARCHIVE' ? t.archiveTitle : t.reactivateTitle;
+  const saveLabel = selection?.operation === 'CREATE' ? t.create : selection?.operation === 'EDIT' ? t.saveChanges
+    : selection?.operation === 'ARCHIVE' ? t.archive : t.reactivate;
 
   const row = (type: BreakType) => <li key={type.id}>
     <CorpRow id={`break-type-${type.id}`} title={type.name} detail={type.targetMinutes === null ? undefined : `${type.targetMinutes}\u00a0min`}
-      value={categoryLabel(type.category)} onClick={() => open({ operation: 'EDIT', type }, `break-type-${type.id}`)} />
+      value={categoryLabel(type.category, t)} onClick={() => open({ operation: 'EDIT', type }, `break-type-${type.id}`)} />
   </li>;
   const archived = types.filter(type => !type.active);
   return <>
-    <p className="c-sr" role="status">Showing {activeCount} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
-    {types.length ? <CorpCard id="break-types-active" label="Active" count={activeCount}>
-      <CorpRows label="Configured break types">
+    <p className="c-sr" role="status">{t.showing(activeCount, types.length)}</p>
+    {types.length ? <CorpCard id="break-types-active" label={t.active} count={activeCount}>
+      <CorpRows label={t.configured}>
         {types.filter(type => type.active).map(row)}
-        {!activeCount ? <CorpEmptyRow as="li">No active break types</CorpEmptyRow> : null}
-        <li><CorpRow id="break-add" title="Add break type" icon={<PlusIcon weight="bold" />} one chevron={false} onClick={() => open({ operation: 'CREATE' }, 'break-add')} /></li>
+        {!activeCount ? <CorpEmptyRow as="li">{t.noActive}</CorpEmptyRow> : null}
+        <li><CorpRow id="break-add" title={t.add} icon={<PlusIcon weight="bold" />} one chevron={false} onClick={() => open({ operation: 'CREATE' }, 'break-add')} /></li>
       </CorpRows>
-      <p className="c-setb-cardnote">Changes apply to new breaks only.</p>
-    </CorpCard> : <CorpEmpty title="No break types yet" body="Add the breaks your team takes, like a 30-minute meal."
-      action={<button id="break-add" type="button" className="c-btn" onClick={() => open({ operation: 'CREATE' }, 'break-add')}>Add break type</button>} />}
-    {archived.length ? <CorpCard id="break-types-archived" label="Archived" count={archived.length}>
-      <CorpRows label="Archived break types">{archived.map(row)}</CorpRows>
+      <p className="c-setb-cardnote">{t.newOnly}</p>
+    </CorpCard> : <CorpEmpty title={t.noneYet} body={t.noneYetBody}
+      action={<button id="break-add" type="button" className="c-btn" aria-label={t.add === t.compactAdd ? undefined : t.add}
+        onClick={() => open({ operation: 'CREATE' }, 'break-add')}>{t.add === t.compactAdd ? t.add : <EmptyBreakActionLabel full={t.add} short={t.compactAdd} />}</button>} />}
+    {archived.length ? <CorpCard id="break-types-archived" label={t.archived} count={archived.length}>
+      <CorpRows label={t.archivedTypes}>{archived.map(row)}</CorpRows>
     </CorpCard> : null}
     {/* The dialog is not a child of the page itself, so the page's card rules (full width, the gap between cards) never
       reach it; display: contents gives its holder no box. */}
@@ -140,36 +169,36 @@ export function ClockerBreakTypes({ initialTypes, action }: {
         <FormDiscardGuard />
         <div className="c-setb-dlg__head">
           <div><h2 className="c-setb-dlg__title" id="break-editor-title">{title}</h2>
-            <p className="c-setb-dlg__text" id="break-editor-description">{selection.operation === 'CREATE' ? 'It’s offered for new breaks as soon as you create it.' : editing ? 'Changes apply to future breaks only.' : selection.operation === 'ARCHIVE' ? 'It won’t be offered for new breaks.' : 'It will be offered for new breaks again.'}</p></div>
-          <button type="button" className="c-setb-dlg__close" aria-label="Close break editor" disabled={pending} onClick={askClose}><XIcon weight="bold" aria-hidden="true" /></button>
+            <p className="c-setb-dlg__text" id="break-editor-description">{selection.operation === 'CREATE' ? t.createHelp : editing ? t.editHelp : selection.operation === 'ARCHIVE' ? t.archiveHelp : t.reactivateHelp}</p></div>
+          <button type="button" className="c-setb-dlg__close" aria-label={t.closeEditor} disabled={pending} onClick={askClose}><XIcon weight="bold" aria-hidden="true" /></button>
         </div>
         <div className="c-setb-dlg__body">
           <fieldset className="c-setb-fieldset" disabled={pending || Boolean(error?.refresh)}>
             {editing ? <FieldErrors errors={errors}>
-              <FieldB label="Break name" id="break-name" name="name" defaultValue={selection.type?.name ?? ''} required maxLength={80} autoComplete="off" placeholder="e.g. Afternoon break" />
-              <FieldB kind="select" label="Classification" id="break-category" name="category" required defaultValue={selection.type?.category ?? ''}>
-                <option value="" disabled>Choose a classification</option>
-                {breakCategories.map(category => <option key={category.value} value={category.value}>{category.label}</option>)}
+              <FieldB label={t.name} id="break-name" name="name" defaultValue={selection.type?.name ?? ''} required maxLength={80} autoComplete="off" placeholder={t.namePlaceholder} />
+              <FieldB kind="select" label={t.classification} id="break-category" name="category" required defaultValue={selection.type?.category ?? ''}>
+                <option value="" disabled>{t.chooseClassification}</option>
+                {breakCategories.map(category => <option key={category.value} value={category.value}>{t.categories[category.value]}</option>)}
               </FieldB>
-              <FieldB label="Reference time" optional unit="min" helpId="break-duration-help"
-                help="1 to 1,440 minutes. Leave blank for no reference time. It never stops a break on its own."
+              <FieldB label={t.referenceTime} optional unit="min" helpId="break-duration-help"
+                help={t.referenceHelp}
                 id="break-minutes" name="targetMinutes" type="text" inputMode="numeric" pattern="(?:[1-9][0-9]{0,2}|1[0-3][0-9]{2}|14[0-3][0-9]|1440)" maxLength={4}
-                defaultValue={selection.type?.targetMinutes ?? ''} placeholder="e.g. 15" />
+                defaultValue={selection.type?.targetMinutes ?? ''} placeholder={t.minutesPlaceholder} />
             </FieldErrors> : <>
               <ul className="c-rows"><li><CorpRow title={selection.type?.name} one
                 icon={selection.operation === 'ARCHIVE' ? <ArchiveIcon weight="bold" /> : <ArrowClockwiseIcon weight="bold" />} /></li></ul>
-              <p className="c-setb-dlg__text">{selection.operation === 'ARCHIVE' ? 'Breaks already in progress can still end. Recorded settings stay unchanged.' : 'Earlier records stay unchanged.'}</p>
+              <p className="c-setb-dlg__text">{selection.operation === 'ARCHIVE' ? t.archiveNote : t.reactivateNote}</p>
             </>}
           </fieldset>
         </div>
-        {error ? <ResultB innerRef={errorMessage} tone="urgent" title={error.message.startsWith('It may not have saved') ? 'Not saved yet' : 'Not saved'}>{error.message}</ResultB> : null}
-        <p role="status" className="c-sr">{pending ? 'Saving your changes…' : ''}</p>
+        {error ? <ResultB innerRef={errorMessage} tone="urgent" title={error.message === t.mayNotHaveSaved || error.message.startsWith('It may not have saved') ? t.notSavedYet : t.notSaved}>{error.message}</ResultB> : null}
+        <p role="status" className="c-sr">{pending ? t.savingChanges : ''}</p>
         <div className="c-setb-dlg__acts">
           {selection.operation === 'EDIT' && selection.type ? <button className="c-btn c-btn--secondary c-setb-dlg__danger" type="button" disabled={pending}
-            onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? 'Archive break type' : 'Reactivate break type'}</button> : null}
-          <button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={askClose} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>Cancel</button>
-          {error?.refresh ? <button type="button" className="c-btn" onClick={() => window.location.reload()}>Reload</button>
-            : <button className={selection.operation === 'ARCHIVE' ? 'c-btn c-btn--danger' : 'c-btn'} type="submit" disabled={pending}>{pending ? 'Saving…' : saveLabel}</button>}
+            onClick={() => { clear(); setError(null); setSelection({ operation: selection.type!.active ? 'ARCHIVE' : 'REACTIVATE', type: selection.type }); }}>{selection.type.active ? t.archive : t.reactivate}</button> : null}
+          <button className="c-btn c-btn--secondary" type="button" disabled={pending} onClick={askClose} data-autofocus={selection.operation === 'ARCHIVE' ? '' : undefined}>{t.cancel}</button>
+          {error?.refresh ? <button type="button" className="c-btn" onClick={() => window.location.reload()}>{t.reload}</button>
+            : <button className={selection.operation === 'ARCHIVE' ? 'c-btn c-btn--danger' : 'c-btn'} type="submit" disabled={pending}>{pending ? t.saving : saveLabel}</button>}
         </div>
       </form> : null}
     </dialog></div>

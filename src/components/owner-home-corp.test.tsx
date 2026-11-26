@@ -11,6 +11,7 @@ import { onlyB, withoutB } from "./owner-b/test-support";
 rs.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 // The kit's "Couldn't load · Try again" refreshes the page through the router when no retry is given.
 rs.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push: () => {}, replace: () => {} }), usePathname: () => "/app" }));
+const { HomeB } = await import("./owner-b/home-b");
 const { OwnerHomeCorp } = await import("./owner-home-corp");
 
 const shift = (id: string, status: TodayShift["status"]): TodayShift => ({
@@ -47,6 +48,13 @@ const base = {
 };
 // The corporate cards (tablets and desktop); the Direction B phone screen has its own tests (owner-b/owner-b.test.tsx).
 const html = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => withoutB(renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />));
+
+it("keeps the day and the short action on a Spanish Home coverage row", () => {
+  const out = renderToStaticMarkup(<HomeB {...base} timecardsReady lang="es" />);
+  expect(out).toContain("Próximo: hoy, ");
+  expect(out).toContain('aria-label="Cubrir turno: ');
+  expect(out).toContain(">Cubrir</a>");
+});
 
 describe("Owner Home on the corporate kit (board C-Owner)", () => {
   it("has a title, at most three cards and the live summary for screen readers", () => {

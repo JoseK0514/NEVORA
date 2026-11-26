@@ -56,4 +56,9 @@ describe('Clocker PINs', () => {
     for (const html of [render(people, 'es'), render([people[0]], 'es'), render([], 'es'), renderToStaticMarkup(createElement(ClockerPinsUnavailable, {lang: 'es'}))]) expect(englishIn(html)).toEqual([]);
     expect(render(people, 'es')).toContain('2 personas necesitan un PIN'); expect(render(people, 'es')).toContain('Crear PIN');
   });
+  it('preserves a real space between each Spanish filter and its count before the controls wrap', () => {
+    const html = render(people, 'es');
+    expect(html).toMatch(/<span>Sin PIN<\/span><span class="pin-label-space">\u00a0<\/span><span class="c-pins__count">2<\/span>/);
+    expect(render(people, 'en')).not.toContain('pin-label-space');
+  });
 });

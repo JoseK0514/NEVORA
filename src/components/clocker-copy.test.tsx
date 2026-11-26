@@ -131,6 +131,6 @@ it('renders the paused page in the given language with billing on the Owner’s 
  expect(en).toContain('lang="en"');expect(en).toContain('This time clock is paused');expect(en).toMatch(/<a [^>]*href="\/clocker\/main"[^>]*>Try again<\/a>/);expect(en).not.toContain('>Clocker<');expect(en).toContain('Open billing on your own device. This tablet starts working again when billing is settled.');
  expect(en).toContain('href="/clocker/main"');expect(en).not.toContain('/login');expect(en).not.toContain('Owner sign in');
  const es=renderToStaticMarkup(<ClockerPaused from={null} unavailable initialLocale="es"/>);
- expect(es).toContain('lang="es"');expect(es).toContain('No se puede comprobar el acceso');expect(es).toContain('Abre la facturación en tu propio dispositivo.');
+ expect(es).toContain('lang="es"');expect(es).toContain('No se pudo verificar el acceso');expect(es).toContain('Abre la facturación en tu propio dispositivo.');
  expect(es).not.toContain('cuando la facturación esté al día');expect(es).not.toContain('<a ');
 });
