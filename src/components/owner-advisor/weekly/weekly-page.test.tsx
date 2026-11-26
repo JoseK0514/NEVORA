@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@rstest/core';
 import { renderToStaticMarkup } from "react-dom/server";
 import { Comparison } from "./weekly-page";
+import { AdvisorLangProvider } from "../lang";
 import { parseWeeklyResult } from "@/lib/owner-advisor/weekly-client";
 
 // Fictional values. An input-limit comparison is hit before any source is admitted (Codex, Nov 16, 2026): no baseline, no
@@ -66,5 +67,22 @@ describe("the search row of a ready comparison", () => {
     const html = renderToStaticMarkup(<Comparison data={ready(false, ["COMPLETE"])} locations={[]} />);
     expect(html).not.toContain("Stopped early");
     expect(html).not.toContain(">Information<");
+  });
+});
+
+describe("the comparison in Spanish", () => {
+  it("speaks Puerto Rico Spanish for the page's own words and keeps server names as written", () => {
+    const html = renderToStaticMarkup(<AdvisorLangProvider lang="es"><Comparison data={ready(true, ["COMPLETE", "BUDGET_EXHAUSTED"])} locations={[]} /></AdvisorLangProvider>);
+    for (const present of ["El horario ahora", "Cobertura", "Aún sin cubrir", "Historial de fines de semana", "5 de 7 conocidos", "Paró antes", "Opción A", "Revisar opción B",
+      "Cubre todas las necesidades", "Localidades", "Incluida", "Publicada", "Fictional Bakery", "16–22 nov", "Cubrir lo que falta", "Todas las localidades", "Opciones para 16–22 nov"])
+      expect(html).toContain(present);
+    for (const absent of ["The schedule now", "Coverage", "Still open", "Weekend history", "Stopped early", "Option A", "Included", "Nov 16", "Fill open gaps", "All locations", " of "])
+      expect(html).not.toContain(absent);
+  });
+  it("says the unavailable cards in Spanish", () => {
+    const html = renderToStaticMarkup(<AdvisorLangProvider lang="es"><Comparison data={unavailable("RESULT_LIMIT")} locations={[]} /></AdvisorLangProvider>);
+    expect(html).toContain("Demasiados cambios para comparar");
+    expect(html).toContain("Prueba con menos localidades");
+    expect(html).not.toContain("Too many changes");
   });
 });

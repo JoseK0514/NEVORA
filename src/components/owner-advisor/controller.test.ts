@@ -341,3 +341,23 @@ it("a review acknowledges only that revision and another refresh requires review
   ]);
   c.stop();
 });
+it("writes its own status messages in Spanish when the page is in Spanish; English stays the default", async () => {
+  rs.useFakeTimers();
+  let state: AdvisorView | undefined;
+  const read = async () => Response.json(snap());
+  const es = createAdvisorController(v => { state = v; }, async (_url, init) => init?.method === "POST" ? Response.json({ code: "daily_limit" }, { status: 429 }) : read(), "es");
+  es.start(); await rs.advanceTimersByTimeAsync(0);
+  es.editQuestion("¿Quién falta hoy?");
+  await es.ask();
+  expect(state?.message).toBe("Se alcanzó el límite de investigaciones de hoy. Inténtalo de nuevo mañana.");
+  es.selectTask(null);
+  expect(state?.message).toBe("Investigación general seleccionada.");
+  es.pause();
+  expect(state?.message).toBe("Vista en pausa. Vuelve cuando tengas conexión para actualizar tu acceso.");
+  es.stop();
+  const en = createAdvisorController(v => { state = v; }, read);
+  en.start(); await rs.advanceTimersByTimeAsync(0);
+  en.selectTask(null);
+  expect(state?.message).toBe("General investigation selected.");
+  en.stop();
+});

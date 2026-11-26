@@ -92,3 +92,10 @@
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .wk.c-page .c-nav--phone .c-nav__title:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
 }
+
+/* At large text sizes let Spanish phrases wrap between whole words. */
+html:lang(es):is([data-text-step="150"], [data-text-step="200"]) #wk-plan :is(.wk-week__text, .wk-week__now, .c-check__text, .c-check__text small) {
+  -webkit-hyphens: none;
+  hyphens: none;
+  word-break: normal;
+}

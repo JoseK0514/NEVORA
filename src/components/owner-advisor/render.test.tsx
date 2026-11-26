@@ -188,9 +188,49 @@ describe("a business citation in an answer", async () => {
   });
   it("renders the card in Spanish with no English label", () => {
     const html = open([uiEvidence("SALES"), uiEvidence("SALES", { state: "unavailable", reason: "MISSING_MAP", sales: null, queryHash: "7".repeat(64) })], later, "es");
-    for (const text of ["Ventas netas", "Ingresos netos", "no es ganancia", "Todos los locales", "Solo este registro", "Verificado antes. Pregunte de nuevo para cifras vigentes", "Abrir registro",
+    for (const text of ["Ventas netas", "Ingresos netos", "no es ganancia", "Todas las localidades", "Solo este registro", "Verificado antes. Pregunta de nuevo para ver cifras vigentes", "Abrir registro",
       "Abrir como texto sin formato", "Cifras no disponibles. Los registros principales no están configurados.", 'aria-label="Cerrar"', "9–15 nov 2026"]) expect(html, text).toContain(text);
     const text = html.replace(/<time[^>]*>[^<]*<\/time>/g, " ").replace(/<[^>]+>/g, " ").replace(/Square sales — Owner import \(USD\)|Square sales|Observed/g, " ");
     for (const word of ["Net sales", "Collected", "Refunds", "Fees", "Net receipts", "Tax recorded", "Locations", "Counts", "Checked", "Open record", "Record", "Figures", "not profit", "Sales"]) expect(text, word).not.toContain(word);
+  });
+});
+
+// ---------- Spanish (G98 signed-in Spanish, Nov 23, 2026) ----------
+describe("the page in Spanish", async () => {
+  const { AdvisorLangProvider } = await import("./lang");
+  const strip = (html: string) => html.replace(/<time[^>]*>[^<]*<\/time>/g, " ").replace(/<[^>]+>/g, " ");
+  it("speaks Spanish from the language provider: tools, briefing, checks, conversation and priorities", () => {
+    const html = renderToStaticMarkup(<AdvisorLangProvider lang="es"><AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }} view={{ ...initialView, loading: false, snapshot, answer: {
+      text: "Prepared options", sources: [], proposals: [{ employeeName: "Fictional Ana", locationId: "L1", locationName: "North", date: "2026-10-22", startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: true, scheduledHours: 12, targetHours: null, publication: "DRAFT", review: "abc123" }],
+    } }} actions={actions} /></AdvisorLangProvider>);
+    for (const text of ["Plan semanal", "Conocimiento de la empresa", "Registros del negocio", "Resumen en vivo", "Actualizar historial", "Prepara tu próximo paso", "Preparar opciones de cobertura",
+      "Revisar asistencia y nómina", "Idioma de la revisión", '<option value="es" selected="">Español</option>', "Las respuestas a preguntas escritas están desactivadas", "Conversación anterior",
+      "Preguntas para empezar", "¿Qué necesita mi atención hoy?", "Tu pregunta", "0/2000 caracteres", ">Preguntar<", "Prioridades del dueño", "Guardar prioridades",
+      "Propuestas de cobertura", "jue, 22 oct", "Personal", "Líder de turno", "meta: sin definir", "Asignación en borrador", "Revisar el reemplazo exacto",
+      "El resumen operativo actual no está disponible."]) expect(html, text).toContain(text);
+    const text = strip(html);
+    for (const word of ["Weekly plan", "Company knowledge", "Business records", "Live briefing", "Refresh history", "Prepare coverage options", "Starter questions", "Your question",
+      "characters", "Owner priorities", "Save priorities", "Coverage proposals", "Staffing", "Shift lead", "Draft assignment", "Observed", " AM", " PM"]) expect(text, word).not.toContain(word);
+    expect(html).toMatch(/8:00\u00a0a\.\u00a0m\.\s–\s12:00\u00a0p\.\u00a0m\./);
+    expect(html).toContain("Prepared options");   // the answer itself is shown as it came
+  });
+  it("lets the lang prop win over the provider, and says loading in Spanish", () => {
+    expect(renderToStaticMarkup(<AdvisorScreen lang="es" tools={{ weekly: true, knowledge: true, business: true }} view={initialView} actions={actions} />)).toContain("Cargando tu resumen y la conversación…");
+    const english = renderToStaticMarkup(<AdvisorLangProvider lang="es"><AdvisorScreen lang="en" tools={{ weekly: true, knowledge: true, business: true }} view={initialView} actions={actions} /></AdvisorLangProvider>);
+    expect(english).toContain("Loading your briefing and conversation…");
+  });
+  it("keeps a period review in its own language: an English review on a Spanish page, a Spanish one with tú and localidad", () => {
+    const period = (language: "en" | "es") => ({ startDate: "2026-10-01", endDate: "2026-10-07", language, observedAt: "2026-10-22T12:00:00Z", readiness: "unverified" as const, partial: false,
+      attendance: { state: "ready" as const, total: 1, employees: [{ name: "Fictional Luis", state: "NEEDS_REVIEW", revision: 2, locations: [], issues: ["no_records"], historical: false }] },
+      payroll: { state: "ready" as const, runs: [{ id: "r1", revision: 1, startDate: "2026-10-01", endDate: "2026-10-07", status: "BLOCKED", ruleRevision: null, superseded: false, coverageComplete: false, codes: ["SETTINGS_REQUIRED"] }] } });
+    const render = (language: "en" | "es") => renderToStaticMarkup(<AdvisorScreen lang="es" tools={{ weekly: true, knowledge: true, business: true }}
+      view={{ ...initialView, snapshot, answer: { text: "x", sources: [], periodReview: period(language) } }} actions={actions} />);
+    const es = render("es");
+    for (const text of ["Excepciones del período", "1–7 oct", "Sin localidad registrada en el período", "Necesita revisión", "revisa la población del período", "Estado registrado: Bloqueado",
+      "La cobertura de localidades está incompleta.", "Revisa las correcciones", "No se infieren marcaciones", "Visto"]) expect(es, text).toContain(text);
+    for (const word of ["Revise ", "ubicación", "NEEDS_REVIEW", "BLOCKED"]) expect(strip(es), word).not.toContain(word);
+    const en = render("en");
+    for (const text of ['lang="en"', "Period exceptions", "No recorded location in the period", "Needs review", "Recorded status: Blocked", "Location coverage is incomplete."]) expect(en, text).toContain(text);
+    expect(en).toMatch(/Oct\s1–7/);
   });
 });

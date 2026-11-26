@@ -314,3 +314,13 @@
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .oa.c-page .c-nav--phone .c-nav__title:not(#rz1):not(#rz2):not(#rz3):not(#rz4):not(#rz5):not(#rz6):not(#rz7):not(#rz8):not(#rz9):not(#rz10) { font-size: 1.75rem !important; line-height: 2.125rem !important; }
 }
+
+/* Signed-in Spanish (G98, Nov 23, 2026): longer words must not leave the card. A section's link drops under its label when
+ * both don't fit ("Verificar de nuevo" at 200% text), and the issue row's choices stack one per line once the card is
+ * narrower than 14rem of text (only with large text: at 100% the two columns stay). */
+:is(#c-root, html):lang(es) .oa .c-section__head { flex-wrap: wrap; row-gap: var(--b-space-4); }
+:is(#c-root, html):lang(es) .oa .oa-headbtn { white-space: normal; text-align: start; }
+@container (max-width: 14rem) {
+  :is(#c-root, html):lang(es) .oa .oa-acts.oa-acts--att, :is(#c-root, html):lang(es) .oa .oa-acts.oa-acts--att.oa-acts--three { grid-template-columns: minmax(0, 1fr); }
+  :is(#c-root, html):lang(es) .oa .oa-acts.oa-acts--att.oa-acts--three > :last-child { grid-column: auto; }
+}

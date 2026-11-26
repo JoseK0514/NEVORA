@@ -23,35 +23,33 @@ import { NotebookPanel } from "./notebook-panel";
 import { CoverageActionPanel } from "./coverage-actions";
 import { comparisonPredatesSave } from "./coverage-plans";
 import { createCoverageActionController, type CoverageActionView } from "./coverage-actions-controller";
-import { dayOf, dayText, whenText, type Clock } from "./format";
+import { dayOf, dayText, whenText, type Clock, type Lang } from "./format";
+import { briefingSource } from "./briefing-text";
+import { useAdvisorLang } from "./lang";
+import { ADVISOR_COPY, type AdvisorCopy } from "./advisor-messages";
 import type { NotebookEdit } from "@/lib/owner-advisor/notebook";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
-const starters = [
-  "What needs my attention today?",
-  "Investigate coverage for tomorrow and compare my options.",
-  "What could go wrong with this plan?",
-];
 /** Rondo's three other pages, as rows with their glyphs (the band no longer carries floating pills). */
 type GuidedTools = { weekly: boolean; knowledge: boolean; business: boolean };
-const TOOLS: { key: keyof GuidedTools; href: string; title: string; icon: ReactNode }[] = [
-  { key: "weekly", href: "/app/ai-manager/weekly", title: "Weekly plan", icon: <CalendarDotsIcon weight="bold" /> },
-  { key: "knowledge", href: "/app/ai-manager/knowledge", title: "Company knowledge", icon: <BookOpenTextIcon weight="bold" /> },
-  { key: "business", href: "/app/ai-manager/business", title: "Business records", icon: <CashRegisterIcon weight="bold" /> },
+const TOOLS: { key: keyof GuidedTools; href: string; icon: ReactNode }[] = [
+  { key: "weekly", href: "/app/ai-manager/weekly", icon: <CalendarDotsIcon weight="bold" /> },
+  { key: "knowledge", href: "/app/ai-manager/knowledge", icon: <BookOpenTextIcon weight="bold" /> },
+  { key: "business", href: "/app/ai-manager/business", icon: <CashRegisterIcon weight="bold" /> },
 ];
 /** `evidence`: the answer's checked business evidence. A business citation that has some opens its figures as a card;
  * every other source, and a business citation without evidence, stays the plain link. */
 /** `shownAt`: the time the card already says; a source observed at that same time doesn't say it again (Rondo fix, Nov 23). */
-function Sources({ sources, evidence, clock = {}, shownAt }: { sources: AdvisorSource[]; evidence?: BusinessModelEvidence[]; clock?: Clock; shownAt?: string }) {
+function Sources({ sources, evidence, clock = {}, shownAt, t, lang }: { sources: AdvisorSource[]; evidence?: BusinessModelEvidence[]; clock?: Clock; shownAt?: string; t: AdvisorCopy["screen"]; lang: Lang }) {
   if (!sources.length) return null;
   return (
-    <ul className="oa-sources" aria-label="Sources">
+    <ul className="oa-sources" aria-label={t.sources}>
       {sources.map((s, i) => isBusinessCitationHref(s.href) && evidence?.length ? <BusinessCitationItem key={i} source={s} evidence={evidence} /> : (
         <li key={i}>
-          <a href={s.href}>{s.label}</a>
-          {shownAt !== undefined && whenText(s.observedAt, clock.timeZone, clock.today) === shownAt ? null : <span>
-            Observed{" "}
+          <a href={s.href}>{briefingSource(s.label, lang)}</a>
+          {shownAt !== undefined && whenText(s.observedAt, clock.timeZone, clock.today, lang) === shownAt ? null : <span>
+            {t.observed}{" "}
             <time dateTime={s.observedAt}>
-              {whenText(s.observedAt, clock.timeZone, clock.today)}
+              {whenText(s.observedAt, clock.timeZone, clock.today, lang)}
             </time>
           </span>}
         </li>
@@ -65,9 +63,11 @@ function Sources({ sources, evidence, clock = {}, shownAt }: { sources: AdvisorS
  * first. Presentation only: every handler, request, field, limit and privacy rule is the one the page had. */
 export function AdvisorScreen({
   view,
-  actions, coverage, tools,
+  actions, coverage, tools, lang: langProp,
 }: {
   view: AdvisorView;
+  /** The person's language; when left out, the hook's (useAdvisorLang). */
+  lang?: Lang;
   tools: GuidedTools;
   coverage?: { view: CoverageActionView; actions: Pick<ReturnType<typeof createCoverageActionController>, "acknowledge" | "save" | "recover" | "check" | "dismiss"> };
   actions: {
@@ -85,6 +85,9 @@ export function AdvisorScreen({
     selectTask?: (id: string | null) => void;
   };
 }) {
+  const hookLang = useAdvisorLang();
+  const lang = langProp ?? hookLang;
+  const t = ADVISOR_COPY[lang].screen;
   const current = view.snapshot;
   const disabled = !current || !!view.busy || view.uncertain;
   const saved = current?.notebook?.state === "ready" ? current.notebook.notebook : undefined;
@@ -98,8 +101,8 @@ export function AdvisorScreen({
   const workDate = data?.date ?? current?.observedAt.slice(0, 10) ?? "";
   return (
     <CorpPage className="c-page--wide oa" labelledBy="oa-title">
-      <CorpNav phoneOnly back={{ href: "/app/more", label: "More" }} title="Rondo AI" titleId="oa-nav-title" />
-      <CorpTitle wide id="oa-title" title="Rondo AI" sub="See what needs your attention, then investigate your options." />
+      <CorpNav phoneOnly back={{ href: "/app/more", label: t.back }} title="Rondo AI" titleId="oa-nav-title" />
+      <CorpTitle wide id="oa-title" title="Rondo AI" sub={t.sub} />
       {view.message && (
         <CorpCard as="div">
           <div className="oa-pad oa-pad--y">
@@ -110,82 +113,82 @@ export function AdvisorScreen({
       {!current ? (
         <CorpCard as="div">
           {view.loading
-            ? <BState kind="loading" title="Loading your briefing and conversation…" />
-            : <BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title="Details hidden" line="Current information is hidden until access is refreshed."
-                action={{ label: "Refresh history", onClick: actions.refresh }} />}
+            ? <BState kind="loading" title={t.loading} />
+            : <BState kind="locked" icon={<EyeSlashIcon weight="bold" />} title={t.hiddenTitle} line={t.hiddenLine}
+                action={{ label: t.refreshHistory, onClick: actions.refresh }} />}
         </CorpCard>
       ) : (
         <div className="oa-layout">
-          {TOOLS.some(tool => tools[tool.key]) && <nav className="oa-tools" aria-label="Rondo AI tools">
+          {TOOLS.some(tool => tools[tool.key]) && <nav className="oa-tools" aria-label={t.toolsLabel}>
             <CorpCard as="div">
               <CorpRows>
-                {TOOLS.filter(tool => tools[tool.key]).map(tool => <li key={tool.href}><CorpRow one href={tool.href} icon={tool.icon} title={tool.title} /></li>)}
+                {TOOLS.filter(tool => tools[tool.key]).map(tool => <li key={tool.href}><CorpRow one href={tool.href} icon={tool.icon} title={t.tools[tool.key]} /></li>)}
               </CorpRows>
             </CorpCard>
           </nav>}
           <div className="oa-main">
-            {current.attention && <AttentionSection briefing={current.attention} disabled={disabled} saving={view.busy === "review"} review={(id, disposition) => actions.reviewItem?.(id, disposition)} refresh={actions.refresh} clock={clock} />}
-            <CorpSection id="oa-briefing" label="Live briefing"
-              aside={<button type="button" className="c-link oa-headbtn" onClick={actions.refresh}>Refresh history</button>}>
+            {current.attention && <AttentionSection briefing={current.attention} disabled={disabled} saving={view.busy === "review"} review={(id, disposition) => actions.reviewItem?.(id, disposition)} refresh={actions.refresh} clock={clock} lang={lang} />}
+            <CorpSection id="oa-briefing" label={t.liveBriefing}
+              aside={<button type="button" className="c-link oa-headbtn" onClick={actions.refresh}>{t.refreshHistory}</button>}>
               <CorpCard as="div">
                 {data ? (
                   <>
                     <p className="oa-facts oa-pad oa-pad--top">
-                      <BSegs parts={[data.companyName, dayText(data.date, "en", year),
-                        <>Observed <time dateTime={current.briefing.observedAt}>{whenText(current.briefing.observedAt, clock.timeZone, clock.today)}</time></>]} />
+                      <BSegs parts={[data.companyName, dayText(data.date, lang, year),
+                        <>{`${t.observed} `}<time dateTime={current.briefing.observedAt}>{whenText(current.briefing.observedAt, clock.timeZone, clock.today, lang)}</time></>]} />
                     </p>
                     <CorpStats items={[
-                      { label: "Scheduled", value: data.counts.scheduled },
-                      { label: "Clocked in", value: data.counts.clockedIn },
-                      { label: "Late", value: data.counts.late },
-                      { label: "Not clocked in", value: data.counts.notClockedIn },
+                      { label: t.stats.scheduled, value: data.counts.scheduled },
+                      { label: t.stats.clockedIn, value: data.counts.clockedIn },
+                      { label: t.stats.late, value: data.counts.late },
+                      { label: t.stats.notClockedIn, value: data.counts.notClockedIn },
                     ]} />
                   </>
                 ) : (
-                  <BState kind="failed" silent title="The current operational briefing is unavailable." line="Refresh to try again." />
+                  <BState kind="failed" silent title={t.briefingUnavailable} line={t.refreshToTry} />
                 )}
                 {current.briefing.partial && data && (
-                  <div className="oa-pad"><BCallout tone="amber">Some operational information is unavailable.</BCallout></div>
+                  <div className="oa-pad"><BCallout tone="amber">{t.briefingPartial}</BCallout></div>
                 )}
-                <Sources sources={current.briefing.sources} clock={clock} shownAt={data ? whenText(current.briefing.observedAt, clock.timeZone, clock.today) : undefined} />
+                <Sources sources={current.briefing.sources} clock={clock} t={t} lang={lang} shownAt={data ? whenText(current.briefing.observedAt, clock.timeZone, clock.today, lang) : undefined} />
               </CorpCard>
             </CorpSection>
-            <WorkflowControls weeklyEnabled={tools.weekly} date={workDate} disabled={disabled} inspect={tool => actions.inspect?.(tool)} />
+            <WorkflowControls weeklyEnabled={tools.weekly} date={workDate} disabled={disabled} inspect={tool => actions.inspect?.(tool)} lang={lang} />
             {coverage && <CoverageActionPanel view={coverage.view} actions={coverage.actions} />}
-            <CorpSection id="oa-conversation" label="Conversation">
+            <CorpSection id="oa-conversation" label={t.conversation}>
               <CorpCard as="div">
                 {current.connection === "unavailable" && (
                   <div className="oa-pad oa-pad--top">
-                    <BCallout tone="teal" title="Answers to typed questions are off">
-                      They need an AI service that you approve. The checks on this page work without it.
+                    <BCallout tone="teal" title={t.answersOffTitle}>
+                      {t.answersOffLine}
                     </BCallout>
                   </div>
                 )}
                 {current.history.length > 0 ? (
                   <details className="oa-fold oa-history" open>
-                    <summary><span>Earlier conversation · historical context</span></summary>
+                    <summary><span>{t.earlier}</span></summary>
                     {current.history.map((m, i) => (
                       <article key={i} className="oa-msg">
-                        <h3 className="oa-msg__who">{m.role === "user" ? "You" : "Rondo"}</h3>
+                        <h3 className="oa-msg__who">{m.role === "user" ? t.you : t.rondo}</h3>
                         <p className="oa-plain oa-msg__text">{m.content}</p>
                       </article>
                     ))}
                   </details>
                 ) : (
-                  <p className="oa-empty">No earlier conversation.</p>
+                  <p className="oa-empty">{t.noEarlier}</p>
                 )}
                 {view.answer && (
-                  <article className="oa-answer" aria-label="Latest answer">
-                    <h3 className="oa-sub">Answer and reasoning</h3>
-                    {view.answer.context?.notebookRevision !== undefined && view.answer.context.notebookRevision !== null && view.answer.context.notebookRevision !== saved?.revision && <BCallout tone="amber">Your saved goals or tasks changed after this investigation. This answer uses earlier saved context; investigate again before relying on it for a new decision.</BCallout>}
-                    <p className="oa-plain oa-answer__text">{comparisonPredatesSave(view.answer.coveragePlans, coverage?.view.lastSavedAt) && <strong>From an earlier comparison: </strong>}{view.answer.text}</p>
-                    <WorkflowResults answer={view.answer} reviewCoverage={actions.reviewCoverage} lastSavedAt={coverage?.view.lastSavedAt} clock={clock} />
-                    <Sources sources={view.answer.sources} evidence={view.answer.businessEvidence} clock={clock} />
+                  <article className="oa-answer" aria-label={t.latestAnswer}>
+                    <h3 className="oa-sub">{t.answerTitle}</h3>
+                    {view.answer.context?.notebookRevision !== undefined && view.answer.context.notebookRevision !== null && view.answer.context.notebookRevision !== saved?.revision && <BCallout tone="amber">{t.contextChanged}</BCallout>}
+                    <p className="oa-plain oa-answer__text">{comparisonPredatesSave(view.answer.coveragePlans, coverage?.view.lastSavedAt) && <strong>{t.earlierComparison}</strong>}{view.answer.text}</p>
+                    <WorkflowResults answer={view.answer} reviewCoverage={actions.reviewCoverage} lastSavedAt={coverage?.view.lastSavedAt} clock={clock} lang={lang} />
+                    <Sources sources={view.answer.sources} evidence={view.answer.businessEvidence} clock={clock} t={t} lang={lang} />
                   </article>
                 )}
-                <h3 className="c-card__sub oa-starters__label" id="oa-starters">Starter questions</h3>
+                <h3 className="c-card__sub oa-starters__label" id="oa-starters">{t.startersLabel}</h3>
                 <ul className="oa-starters" aria-labelledby="oa-starters">
-                  {starters.map((s) => <li key={s}><button type="button" className="oa-addrow oa-starter" disabled={!!view.busy} onClick={() => actions.editQuestion(s)}>{s}</button></li>)}
+                  {t.starters.map((s) => <li key={s}><button type="button" className="oa-addrow oa-starter" disabled={!!view.busy} onClick={() => actions.editQuestion(s)}>{s}</button></li>)}
                 </ul>
                 <form
                   className="oa-form oa-pad oa-ask"
@@ -194,16 +197,16 @@ export function AdvisorScreen({
                     actions.ask();
                   }}
                 >
-                  {(saved || view.focusedTaskId) && <CorpField label="Investigating" htmlFor="oa-investigation-task">
+                  {(saved || view.focusedTaskId) && <CorpField label={t.investigating} htmlFor="oa-investigation-task">
                     <select className="c-in" id="oa-investigation-task" name="investigationTask" value={view.focusedTaskId ?? ""} disabled={!!view.busy} onChange={e => actions.selectTask?.(e.target.value || null)}>
-                      <option value="">General investigation</option>
+                      <option value="">{t.general}</option>
                       {openTasks.map(t => <option key={t.id} value={t.id}>{t.objective}</option>)}
-                      {selectedUnavailable ? <option value={view.focusedTaskId!}>Selected task is no longer open or available</option> : null}
+                      {selectedUnavailable ? <option value={view.focusedTaskId!}>{t.taskGone}</option> : null}
                     </select>
                   </CorpField>}
-                  {selectedUnavailable && <BCallout tone="amber" role="status">Choose an open task or select a general investigation to continue.</BCallout>}
+                  {selectedUnavailable && <BCallout tone="amber" role="status">{t.chooseTask}</BCallout>}
                   <div className="c-field">
-                    <label className="c-field__label" htmlFor="oa-question">Your question</label>
+                    <label className="c-field__label" htmlFor="oa-question">{t.question}</label>
                     <textarea
                       className="c-in oa-area"
                       id="oa-question"
@@ -215,13 +218,13 @@ export function AdvisorScreen({
                       aria-describedby="oa-question-limit"
                     />
                     <span id="oa-question-limit" className="c-field__help oa-help">
-                      {view.question.length}/2000 characters
+                      {t.characters(view.question.length)}
                     </span>
                   </div>
                   <div className="oa-acts oa-acts--end">
                     {view.busy === "ask" && (
                       <CorpButton kind="secondary" size="md" className="b-rowact b-rowact--quiet" onClick={actions.cancel}>
-                        Cancel
+                        {t.cancel}
                       </CorpButton>
                     )}
                     <CorpButton
@@ -235,7 +238,7 @@ export function AdvisorScreen({
                         !view.question.trim()
                       }
                     >
-                      {view.busy === "ask" ? "Investigating…" : "Ask"}
+                      {view.busy === "ask" ? t.asking : t.ask}
                     </CorpButton>
                   </div>
                 </form>
@@ -243,7 +246,7 @@ export function AdvisorScreen({
             </CorpSection>
           </div>
           <div className="oa-side">
-            <CorpSection id="oa-priorities" label="Owner priorities">
+            <CorpSection id="oa-priorities" label={t.priorities}>
               <CorpCard as="div">
                 <CorpBody>
                   <form
@@ -253,9 +256,9 @@ export function AdvisorScreen({
                       actions.save();
                     }}
                   >
-                    <p className="oa-lede">Save what matters to you for future investigations.</p>
+                    <p className="oa-lede">{t.prioritiesLede}</p>
                     <div className="c-field">
-                      <label className="c-field__label" htmlFor="oa-priority-edit">Your priorities</label>
+                      <label className="c-field__label" htmlFor="oa-priority-edit">{t.yourPriorities}</label>
                       <textarea
                         className="c-in oa-area"
                         id="oa-priority-edit"
@@ -267,18 +270,18 @@ export function AdvisorScreen({
                         aria-describedby="oa-priorities-limit"
                       />
                       <span id="oa-priorities-limit" className="c-field__help oa-help">
-                        {view.priorities.length}/2000 characters
+                        {t.characters(view.priorities.length)}
                       </span>
                     </div>
                     {view.conflict && (
-                      <BCallout tone="amber" role="alert" heading="h3" title="Currently saved priorities"
-                        action={{ label: "I’ve reviewed the saved priorities", onClick: actions.reviewConflict }}>
-                        <p className="oa-plain">{current.profile.priorities || "None saved."}</p>
+                      <BCallout tone="amber" role="alert" heading="h3" title={t.savedPriorities}
+                        action={{ label: t.reviewedSaved, onClick: actions.reviewConflict }}>
+                        <p className="oa-plain">{current.profile.priorities || t.noneSaved}</p>
                       </BCallout>
                     )}
                     <div className="oa-acts oa-acts--end">
                       <CorpButton type="submit" kind="secondary" size="md" className="b-rowact b-rowact--go" disabled={disabled || !view.dirty || view.conflict}>
-                        {view.busy === "save" ? "Saving…" : "Save priorities"}
+                        {view.busy === "save" ? t.saving : t.savePriorities}
                       </CorpButton>
                     </div>
                   </form>
@@ -294,7 +297,7 @@ export function AdvisorScreen({
                   }}
                   inspect={tool => actions.inspect?.(tool)}
                   clock={clock}
-                /> : <p className="oa-foot oa-foot--card">Saved goals and tasks are unavailable. Your priorities and existing investigation tools remain available.</p>}
+                /> : <p className="oa-foot oa-foot--card">{t.notebookUnavailable}</p>}
               </CorpCard>
             </CorpSection>
           </div>
@@ -304,6 +307,9 @@ export function AdvisorScreen({
   );
 }
 export function OwnerAdvisor({ tools }: { tools: GuidedTools }) {
+  const lang = useAdvisorLang();
+  // The controller writes its status messages in the language the page opened in.
+  const langRef = useRef(lang);
   const [view, setView] = useState<AdvisorView>(initialView);
   const ref = useRef<ReturnType<typeof createAdvisorController> | null>(null);
   const [coverageView, setCoverageView] = useState<CoverageActionView>({stage:"idle",result:null,acknowledged:false,message:"",lastSavedAt:null});
@@ -319,7 +325,7 @@ export function OwnerAdvisor({ tools }: { tools: GuidedTools }) {
         priorSnapshot = next.snapshot;
         if (next.snapshot) draft.access(next.snapshot.authority, next.snapshot.validForMs); else draft.pause();
       }
-    });
+    }, fetch, langRef.current);
     ref.current = c;
     const cleanup = bindAdvisorLifecycle(
       { start: c.start, pause() { draft.pause(); c.pause(); }, stop() { draft.stop(); c.stop(); } },
@@ -335,6 +341,7 @@ export function OwnerAdvisor({ tools }: { tools: GuidedTools }) {
   }, []);
   return (
     <AdvisorScreen
+      lang={lang}
       tools={tools}
       view={view}
       coverage={{ view: coverageView, actions: {

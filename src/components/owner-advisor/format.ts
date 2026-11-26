@@ -28,14 +28,23 @@ export function periodText(start: string, end: string, lang: Lang = "en", year?:
 
 /** "8:00 AM – 12:00 PM" from stored "08:00" and "12:00", by the app's own helper: an end at 24:00 reads "12:00 AM" and
  * 00:00–24:00 reads "All day". */
-export function clockRange(start: string, end: string) {
-  return formatTimeRange(start, end);
+export function clockRange(start: string, end: string, lang: Lang = "en") {
+  return spanishTimes(formatTimeRange(start, end), lang);
+}
+
+/** The app's English times in Puerto Rico Spanish: "8:00 AM – 12:00 PM" reads "8:00 a. m. – 12:00 p. m." and "All day"
+ * "Todo el día" (docs/design/voice.md). English passes through unchanged. */
+export function spanishTimes(text: string, lang: Lang = "en") {
+  if (lang === "en") return text;
+  return text.replace(/\bAll day\b/g, "Todo el día")
+    .replace(/(\d)\s*(AM|PM|[ap]\.\s*m\.)/gi, (_, digit: string, period: string) =>
+      digit + "\u00a0" + period[0].toLowerCase() + ".\u00a0m.");
 }
 
 /** One person's shift in the one time format (Nov 23, 2026): "6:45 PM – 12:00 AM"; a 00:00–24:00 shift reads "All day".
  * Its length is shiftLength ("24 h", "4 h 30 min"), shown beside it, so a shift never reads as zero hours (QA S-09). */
-export function shiftRange(start: string, end: string) {
-  return formatTimeRange(start, end);
+export function shiftRange(start: string, end: string, lang: Lang = "en") {
+  return spanishTimes(formatTimeRange(start, end), lang);
 }
 export function shiftLength(start: string, end: string) {
   return durationSentence(durationMinutes(start, end));
@@ -63,8 +72,9 @@ export function whenText(iso: string, timeZone?: string, today?: string, lang: L
   if (Number.isNaN(at.getTime())) return iso;
   const zone = (() => { try { new Intl.DateTimeFormat("en-US", { timeZone }); return timeZone; } catch { return undefined; } })();
   const clock = new Intl.DateTimeFormat(LOCALE[lang], { timeZone: zone, hour: "numeric", minute: "2-digit" }).format(at);
+  const time = spanishTimes(clock, lang);
   const day = dayOf(iso, zone);
-  return today && day === today ? clock : `${dayText(day, lang, today?.slice(0, 4))}, ${clock}`;
+  return today && day === today ? time : `${dayText(day, lang, today?.slice(0, 4))}, ${time}`;
 }
 
 /** Everything the page reads instants against: the workspace's zone and today's date there, when known. */

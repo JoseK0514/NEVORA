@@ -1,5 +1,5 @@
 import { expect, it } from "@rstest/core";
-import { attentionDetail, clockRange, dayText, hoursText, periodText, shiftLength, shiftRange, stateText, whenText } from "./format";
+import { spanishTimes, attentionDetail, clockRange, dayText, hoursText, periodText, shiftLength, shiftRange, stateText, whenText } from "./format";
 
 it("says the server's attention sentences with correct plurals and a 12-hour clock, and leaves others exactly as written", () => {
   expect(attentionDetail("1 published shifts started without a recorded clock-in. Verify attendance before choosing coverage."))
@@ -37,4 +37,10 @@ it("reads dates, periods, clock ranges and instants the way people say them, in 
   // 01:27 UTC on Nov 19 is 9:27 PM on Nov 18 in Puerto Rico.
   expect(whenText("2026-11-19T01:27:26Z", "America/Puerto_Rico", "2026-11-18")).toBe("9:27 PM");
   expect(whenText("2026-11-19T01:27:26Z", "America/Puerto_Rico", "2026-11-19")).toBe("Wed, Nov 18, 9:27 PM");
+});
+
+it("keeps each Spanish time together for both input formats", () => {
+  expect(spanishTimes("8:00 AM – 1:05 PM", "es")).toBe("8:00\u00a0a.\u00a0m. – 1:05\u00a0p.\u00a0m.");
+  expect(spanishTimes("1:05 p. m.", "es")).toBe("1:05\u00a0p.\u00a0m.");
+  expect(spanishTimes("8:00 AM – 1:05 PM", "en")).toBe("8:00 AM – 1:05 PM");
 });

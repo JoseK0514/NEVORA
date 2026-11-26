@@ -77,3 +77,24 @@ it("says a group's draft note and its shared source link once, and keeps each pl
   expect(html.match(/Not relevant today/g)).toHaveLength(2);
   expect(html).toContain("1 planning period needs review, starting 5:00 PM. Maximum staffing shortfall:\u00a01.</p>");
 });
+it("shows the approved Spanish for fixed briefing facts and preserves each location name", async () => {
+  const { AdvisorLangProvider } = await import("./lang");
+  const snap = snapshot(), first = snap.attention!.items[0];
+  const gap = (id: string, place: string) => ({ ...first, id: id.repeat(64), fingerprint: id.repeat(64), kind: "coverage" as const, locationName: place, title: "Review today's planning gaps",
+    detail: "1 planning periods need review, starting 17:00. Maximum staffing shortfall: 1. Includes draft commitments; verify published staffing separately.", basis: "Current planning ledger, including drafts" as const,
+    source: { ...first.source, href: "/app/schedule?week=2026-10-19" } });
+  const reviewed = { id: "e".repeat(64), fingerprint: "e".repeat(64), kind: "clock_in" as const, date: "2026-10-23", locationName: "East", title: "Check shifts without a clock-in", state: "open" as const,
+    disposition: "dismissed" as const, deferredUntil: null, evidenceChanged: false, reviewRevision: 1 };
+  const html = renderToStaticMarkup(<AdvisorLangProvider lang="es"><AdvisorScreen tools={{ weekly: true, knowledge: true, business: true }}
+    view={{ ...initialView, snapshot: { ...snap, attention: { ...snap.attention!, total: 3, hidden: 1, reviewed: [reviewed], items: [gap("c", "West"), gap("d", "Main")] } } }} actions={actions} /></AdvisorLangProvider>);
+  for (const text of ["Necesita tu atención", "Verificar de nuevo", "Problemas de hoy con el personal", "Del horario actual, incluidos los borradores", "Revisar fuente", "Dar seguimiento",
+    "Más tarde · 1 hora", "No aplica hoy", "Algunas fuentes no se pudieron evaluar", "Incluye compromisos en borrador; verifica aparte el personal publicado.", "Seguimiento",
+    '<span class="b-sr">1 revisado</span>', "Marcado como no aplica hoy", "Devolver al resumen", "vie, 23 oct", "Visto <time"]) expect(html, text).toContain(text);
+  expect(html).toContain("Revisar turnos sin cubrir hoy");
+  expect(html).toContain("Hay 1 período por revisar a partir de las 5:00\u00a0p.\u00a0m. Máximo de personas que faltan:\u00a01.</p>");
+  expect(html).toContain(">West</h4>");
+  expect(html).toContain(">Main</h4>");
+  expect(html).not.toContain("Review today&#x27;s planning gaps");
+  expect(html).not.toContain("Maximum staffing shortfall");
+  for (const word of ["Includes draft commitments", "Track this issue", "Not relevant today", "Review source", "Follow-through", "From the current schedule", "Observed"]) expect(html, word).not.toContain(word);
+});

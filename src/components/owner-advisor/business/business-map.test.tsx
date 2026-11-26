@@ -164,7 +164,7 @@ describe("main records", () => {
   it("renders every map state in Spanish with no English label", () => {
     const html = [renderToStaticMarkup(<MapView ctx={businessContext(uiCatalog("empty"), "es", uiNow)} />), renderToStaticMarkup(<MapView ctx={ctx("es")} />), renderToStaticMarkup(<MapView ctx={ctx("es")} initialEditing />),
       mapReview("es"), mapReview("es", { confirmDiscard: true }), mapReview("es", {}, uiIds.mapCurrent), renderToStaticMarkup(<MapContents ctx={ctx("es")} map={{ expectedRevision: 0, accounts: [], cells: [] }} />)].join(" ");
-    for (const text of ["Sin configurar", "En uso por Rondo", "Borrador pendiente de revisión", "Lo que cuenta", "Cuentas", "Toda la empresa", "Añadir una entrada", "Comparación", "Publicar para Rondo", "Aún no hay entradas"]) expect(html, text).toContain(text);
+    for (const text of ["Sin configurar", "En uso por Rondo", "Borrador por revisar", "Lo que cuenta", "Cuentas", "Toda la empresa", "Añadir una entrada", "Comparación", "Publicar para Rondo", "Aún no hay entradas"]) expect(html, text).toContain(text);
     const text = html.replace(/<[^>]+>/g, " ").replace(/Square sales|Operating account|Catering invoices|Old register|Condado Café|Santurce Bakery|USD|Rondo|NEVORA|operating|till-condado/g, " ");
     for (const word of ["Main", "Cross-check", "Accounts", "What counts", "In use", "Draft", "Record", "Covers", "Counts as", "Remove", "Edit", "Add an", "Save draft", "Cancel", "Belongs to", "First day", "Publish", "Discard", "Status", "Sales", "Cash", "Not set up", "Choose"])
       expect(new RegExp(`(^|[^\\p{L}])${word}([^\\p{L}]|$)`, "u").test(text), word).toBe(false);

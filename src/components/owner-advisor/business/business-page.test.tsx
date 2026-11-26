@@ -1,4 +1,5 @@
 import { describe, expect, it, rs } from '@rstest/core';
+import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { BUSINESS_VALIDATION_CODES, BUSINESS_VALIDATION_FIELDS } from "@/lib/owner-advisor/business/contracts";
 import { uiCatalog, uiFullRead, uiIds, uiNow } from "@/test/fixtures/rondo-business-ui";
@@ -7,6 +8,7 @@ import {
   BusinessPage, IssueCard, Library, PendingCard, RecordDetail, RecordForm, ReviewContent, businessContext, validationText, type BusinessIssue, type BusinessLoad, type BusinessPending,
 } from "./business-page";
 import { BUSINESS_COPY, type BusinessLang } from "./copy";
+import { AdvisorLangProvider } from "../lang";
 
 rs.mock("next/navigation", () => ({ useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }) }));
 
@@ -258,7 +260,29 @@ describe("Spanish", () => {
   });
   it("says the main states in Spanish", () => {
     const all = renders.map(([, html]) => html).join(" ");
-    for (const text of ["Registros del negocio", "Aún no hay registros", "Borrador pendiente", "En uso por Rondo", "Reemplazado", "Publicar para Rondo", "Aún sin confirmar", "Algo cambió primero", "Sin conexión",
-      "Su sesión terminó", "Los registros del negocio están apagados", "Totales de este archivo", "no es efectivo", "9 nov – 15 nov 2026".slice(0, 0), "Guardar borrador", "¿Eliminar «Square sales»?"]) expect(all, text).toContain(text);
+    for (const text of ["Registros del negocio", "Aún no hay registros", "Borrador pendiente", "En uso por Rondo", "Reemplazado", "Publicar para Rondo", "Por confirmar", "Algo cambió antes", "Estás sin conexión",
+      "Tu sesión terminó", "Los registros del negocio están apagados", "Totales de este archivo", "no es efectivo", "9 nov – 15 nov 2026".slice(0, 0), "Guardar borrador", "¿Eliminar «Square sales»?"]) expect(all, text).toContain(text);
+  });
+});
+
+describe("the person's language, with no lang prop", () => {
+  const inSpanish = (node: ReactNode) => renderToStaticMarkup(<AdvisorLangProvider lang="es">{node}</AdvisorLangProvider>);
+  const words = (html: string) => html.replace(/<[^>]+>/g, " ").replace(/Square sales|Operating account|Catering invoices|Old register|Condado Café|Santurce Bakery|square|banco-popular|old-register|quickbooks|USD|EUR|Rondo|NEVORA/g, " ");
+  it("shows the list in Spanish when Rondo speaks Spanish (the route passes no lang)", () => {
+    const html = inSpanish(<BusinessPage timeZone="America/Puerto_Rico" view={{ name: "library" }} importsEnabled retrievalEnabled initial={ready} />);
+    for (const text of ["Registros del negocio", "Solo los dueños pueden ver esto", "Añadir registro", "3 registros", "Registros principales", "2 entradas", "Verificar cifras", "Ve lo que Rondo leería", "Retirados"])
+      expect(html, text).toContain(text);
+    for (const word of ["Business records", "Add record", "Main records", "Check figures", "See what Rondo would read", "Withdrawn", "records", "entries"]) expect(words(html), word).not.toContain(word);
+  });
+  it("shows the review in Spanish with tú and localidad", () => {
+    const html = review(uiIds.cashDraft, "es") + review(uiIds.salesCurrent, "es");
+    for (const text of ["Resumen", "Totales de este archivo", "Entradas de dinero", "Te deben", "no es efectivo", "Para revisar", "Conviene saber", "Publicar para Rondo", "Este registro es tuyo.", "Descartar borrador"])
+      expect(html, text).toContain(text);
+    for (const word of ["Summary", "Totals", "Money in", "Owed to you", "not cash", "Things to check", "Good to know", "Publish for Rondo", "Discard draft", "Le deben", "suyo", "usted", "Usted", " local "])
+      expect(words(html), word).not.toContain(word);
+  });
+  it("still lets an explicit lang win over Rondo's language", () => {
+    expect(inSpanish(<BusinessPage timeZone="America/Puerto_Rico" view={{ name: "library" }} importsEnabled retrievalEnabled initial={ready} lang="en" />)).toContain("Business records");
+    expect(page(ready)).toContain("Business records");
   });
 });
