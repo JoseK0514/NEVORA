@@ -57,9 +57,10 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
         const response = await fetch("/api/workspace-presentation", { method: "POST", cache: "no-store", headers: { "content-type": "application/json", "x-nevora-presentation": "1" }, body: JSON.stringify(command) });
         const body = await response.json().catch(() => null) as { state?: string; message?: string; module?: string; count?: number } | null;
         if (response.status === 401 || response.status === 403) { pending.current = null; setNotice({ tone: "error", text: t.signInAgain }); return; }
-        // Branch audit, Nov 26, 2026: the server writes its busy sentence in English, so the person's language comes from the
+        // Branch audit, Nov 26, 2026: nothing was saved, so the switches go back to the saved modules (QA saw Time off left
+        // drawn off beside "Not saved"). The server writes its busy sentence in English, so the person's language comes from the
         // reply's module and count (FEATURES_EDITOR_COPY.blocker), with the server's sentence only as a fallback.
-        if (response.status === 409 && body?.state === "busy") { pending.current = null; setNotice({ tone: "error", text: `${index ? t.wordsSaved : ""}${featuresBusyText(lang, body) ?? body.message ?? t.stillWaiting}` }); if (index) router.refresh(); return; }
+        if (response.status === 409 && body?.state === "busy") { pending.current = null; setOff(disabled); setNotice({ tone: "error", text: `${index ? t.wordsSaved : ""}${featuresBusyText(lang, body) ?? body.message ?? t.stillWaiting}` }); if (index) router.refresh(); return; }
         if (response.status === 409) { pending.current = null; setNotice({ tone: "error", text: t.changedElsewhere }); return; }
         if (!response.ok) throw Error();
       }
