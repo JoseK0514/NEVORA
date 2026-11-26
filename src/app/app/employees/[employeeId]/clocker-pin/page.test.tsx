@@ -2,12 +2,13 @@ import { createElement, type ComponentProps } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, expect, it, rs } from '@rstest/core';
 
-const m = rs.hoisted(() => ({ role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied: false, missing: false, read: rs.fn(), profile:rs.fn() }));
+const m = rs.hoisted(() => ({ lang: 'en' as 'en' | 'es', role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied: false, missing: false, read: rs.fn(), profile:rs.fn() }));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>m.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load()}}));
 rs.mock('next/link', () => ({ default: ({ href, children, ...props }: ComponentProps<'a'>) => createElement('a', { href, ...props }, children) }));
 rs.mock('next/navigation', () => ({ notFound: () => { throw Error('notFound'); } }));
 rs.mock('@/lib/auth/permissions', () => ({ MANAGER_ROLES: ['OWNER', 'MANAGER'], requireRoles: async (roles:string[]) => {if(!roles.includes(m.role))throw Error('role_denied');return {role:m.role};} }));
 rs.mock('@/lib/auth/session', () => ({ requireSessionMutationProof: async () => ({ employee: { id: 'actor' }, sessionTokenHash: 'proof' }) }));
+rs.mock('@/lib/i18n/page-lang.server', () => ({readPageLang: async () => m.lang}));
 rs.mock('@/lib/data/employees', () => ({ getEmployeeManagementProfile: m.profile }));
 rs.mock('@/lib/clocker/pin-crypto.server', () => ({ readPinKey: () => { if (m.unavailable) throw Error('private infrastructure error'); return Buffer.alloc(32); } }));
 rs.mock('@/lib/clocker/pins.server', () => ({ readEmployeeClockerPin: m.read }));
@@ -15,7 +16,7 @@ rs.mock('./actions', () => ({ saveClockerPinAction: rs.fn(),checkClockerPinSaveA
 import EmployeeClockerPinPage from './page';
 
 beforeEach(() => {
-  Object.assign(m, { role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied:false, missing: false });
+  Object.assign(m, { lang: 'en', role: 'OWNER', targetRole: 'EMPLOYEE', active: true, version: 0, unavailable: false, denied:false, missing: false });
   m.profile.mockReset();m.profile.mockImplementation(async()=>m.missing?null:({firstName:'Avery',lastName:'Lane',role:m.targetRole,active:m.active}));
   m.read.mockReset();
   m.read.mockImplementation(async () => ({ employeeId: 'worker', version: m.version, configured: m.version > 0 }));
@@ -82,4 +83,17 @@ it('keeps Save unavailable until complete PIN input is present',async()=>{const 
 it('opened from the list of PINs, Back returns to the list; any other value returns to the person',async()=>{
  expect(await render('pins')).toMatch(/<a href="\/app\/settings\/clocker\/pins" class="q-nav__l">.*Clocker PINs<\/a>/);
  expect(await render('https://elsewhere.example')).toMatch(/<a href="\/app\/employees\/worker" class="q-nav__l">/);
+});
+
+it("passes the signed-in Spanish language into both PIN form and closed state", async () => {
+ m.lang = "es";
+ let html = await render();
+ expect(html).toContain("Crear un PIN para Avery Lane");
+ expect(html).toContain("Elige 4 dígitos.");
+ expect(html).toContain("Guardar PIN");
+ expect(html).not.toContain("Set a PIN for Avery Lane");
+ m.active = false;
+ html = await render();
+ expect(html).toContain("Avery Lane está inactiva");
+ expect(html).not.toContain("Avery Lane is inactive");
 });

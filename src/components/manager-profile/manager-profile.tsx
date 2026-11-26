@@ -11,6 +11,7 @@ import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import { timeZoneLabel } from '@/lib/time-zone-label';
 import { currentBrand } from '@/lib/workspace-presentation/current.server';
 import { readManagementProfile } from '@/lib/data/management-profile.server';
+import {profileCopy, profilePrivacyCopy, type ProfileLang} from './profile-copy';
 import { parseManagerProfile } from './contract';
 import { ManagerProfileLive } from './manager-profile-live';
 import { listEmployees } from '@/lib/data/employees';
@@ -19,7 +20,6 @@ import { wordPreset } from '@/lib/workspace-presentation/words';
 import { PasskeySection } from '@/components/passkeys/passkey-section';
 import { AccountPrivacyLinks } from '@/components/legal/account-privacy-links';
 import './manager-profile-upscale.css';
-import { readPortalLanguage } from '@/lib/activation/language.server';
 import { listWorkforcePermissions } from '@/lib/workforce/authority.server';
 import { listLocations } from '@/lib/data/locations';
 import { ManagerAuthoritySection, type ManagerAuthority } from '@/components/workforce/manager-authority';
@@ -27,7 +27,8 @@ import { ManagerAuthoritySection, type ManagerAuthority } from '@/components/wor
 /** Phase 3.5: the Owner and Manager Profile, laid out like the employee Profile (band, details, settings, Sign out).
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
  * alert choices come from the management profile read in CODEX.md, which the client asks for. */
-export async function ManagerProfilePage({ proof }: { proof: SessionMutationProof }) {
+export async function ManagerProfilePage({ proof, lang = 'en' }: { proof: SessionMutationProof; lang?:ProfileLang }) {
+  const t=profileCopy[lang];
   const nativeApp = nativeContext((await headers()).get('user-agent'));
   const [workspace, brand, initial] = await Promise.all([
     getWorkspace(),
@@ -45,11 +46,10 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   const owner = proof.employee.role === 'OWNER';
   // Review Nov 11 (MG-013): a Manager's read-only details name who can change them: the workspace's Owners, from the team
   // list a Manager already sees (as the closed Settings notice does). A failed read leaves "An Owner".
-  const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()))).catch(() => null);
+  const changedBy = owner ? null : await listEmployees().then(list => ownerNames(list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim()), lang)).catch(() => null);
   // SCRUM-215: a Manager's action grants by location, and who to ask for the rest.
-  let authority: ManagerAuthority | null = null, locationNames: Record<string, string> = {}, placeNames: Record<string, string> = {}, profileLang: 'en' | 'es' = 'en';
+  let authority: ManagerAuthority | null = null, locationNames: Record<string, string> = {}, placeNames: Record<string, string> = {};
   if (!owner) {
-    try { profileLang = (await readPortalLanguage(proof)).language; } catch { /* English */ }
     try {
       const [{ access, permissions }, catalog] = await Promise.all([listWorkforcePermissions(proof), listLocations({ includeInactive: true })]);
       authority = { state: 'ready', pairs: permissions, scopeIds: access.scope.mode === 'LOCATIONS' ? access.scope.locationIds : catalog.filter(location => location.active).map(location => location.id) };
@@ -57,13 +57,14 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
       placeNames = Object.fromEntries(catalog.map(location => [location.name, location.shortName || location.name]));
     } catch { authority = { state: 'unavailable' }; }
   }
-  return <div className="q-page premium-manager-profile c-page--narrow" data-nv-page="">
-    <QuietNav back={{ href: "/app/more", label: "More" }} right={owner ? <Link className="q-nav__r" href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`}>Edit</Link> : undefined} />
+  return <div className="q-page premium-manager-profile c-page--narrow" data-nv-page="" lang={lang}>
+    <QuietNav back={{ href: "/app/more", label: t.more }} right={owner ? <Link className="q-nav__r" href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`}>{t.edit}</Link> : undefined} />
     <div className="pmp-content">
       <ManagerProfileLive key={proof.employee.id} initial={initial} identity={{
         employeeId: proof.employee.id,
         name: `${proof.employee.firstName} ${proof.employee.lastName}`.trim(),
         owner,
+        lang,
         company: workspace.name,
         timeZone: timeZoneLabel(workspace.timeZone),
         payHref: offersPay ? '/app/my-pay' : null,
@@ -72,13 +73,13 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         deviceAlerts: nativeApp ? !!readNativeRegistrationConfig(process.env) : readNotificationConfig(process.env).featureEnabled,
         payrollAlerts: payrollFeatureEnabled(),
         changedBy,
-        locationsWord: wordPreset(brand.words).en.locations.toLowerCase(),
+        locationsWord: lang === 'es' ? 'localidades' : wordPreset(brand.words).en.locations.toLowerCase(),
         placeNames,
-      }} authority={authority ? <ManagerAuthoritySection authority={authority} locationNames={locationNames} owners={changedBy} lang={profileLang} /> : null} accountCards={<>
+      }} authority={authority ? <ManagerAuthoritySection authority={authority} locationNames={locationNames} owners={changedBy} lang={lang} /> : null} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
         {/* Codex B-01: the passkeys row is a list item like its neighbours; the item hides while passkeys are off. */}
-        <li className="pmp-passkeys"><PasskeySection asRow /></li>
-        <AccountPrivacyLinks variant="quiet" />
+        <li className="pmp-passkeys"><PasskeySection asRow lang={lang} /></li>
+        <AccountPrivacyLinks variant="quiet" quietCopy={profilePrivacyCopy[lang]} />
       </>} />
     </div>
   </div>;

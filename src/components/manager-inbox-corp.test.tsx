@@ -5,6 +5,7 @@ import type {ActionCenter, ActionItem} from '../lib/action-center/project';
 import {reviewFacts} from '../lib/action-center/review-facts';
 import type {Today, TodayShift} from '../lib/today/project';
 import {onlyB} from './owner-b/test-support';
+import {PortalLangProvider} from '@/lib/i18n/portal-lang';
 
 rs.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {prefetch?: boolean}) => createElement('a', props, children)}));
 // Audit NV-AUDIT-05 (Nov 19, 2026): a time-off row's form reads the router for its "Check the request".
@@ -283,4 +284,15 @@ it('Phase 3 (OW-002, MG-004, MG-005, MG-012): titles carry the fact, the count i
   expect(html).toMatch(/>All<\/button>/);
   expect(html).toMatch(/>Time<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>1<\/span>/);
   expect(html).toMatch(/>Requests<span class="c-count c-num"><span class="sr-only">[\u00a0 ]<\/span>2<\/span>/);
+});
+
+it('renders Spanish Pendientes headings and dated coverage rows in both layouts', () => {
+  const snapshot = ready([items[2]]);
+  const html = renderToStaticMarkup(<PortalLangProvider lang="es"><ThingsToDoPage snapshot={snapshot} timeZone="America/Puerto_Rico"
+    connection="ready" coverageFirst onRefresh={() => {}} /></PortalLangProvider>).replace(/[   ]/g, ' ');
+  expect(html).toContain('Pendientes');
+  expect(html).toContain('Turnos disponibles');
+  expect(html).toContain('1 sin cubrir');
+  expect(html).toContain('1:00 p. m. – 3:00 p. m.');
+  expect(html).not.toContain('1 open');
 });

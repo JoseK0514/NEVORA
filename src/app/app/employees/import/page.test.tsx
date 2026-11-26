@@ -32,14 +32,14 @@ rs.mock("@/lib/data/employees", () => ({
   ],
 }));
 
-import RosterImportPage, { metadata } from "./page";
+import RosterImportPage, { generateMetadata } from "./page";
 
 const render = async () => renderToStaticMarkup(await RosterImportPage());
 
 describe("/app/employees/import", () => {
   it("opens the import for an Owner, with the active locations and the page title", async () => {
     const html = await render();
-    expect(metadata.title).toBe("Import a staff list");
+    expect((await generateMetadata()).title).toBe("Import a staff list");
     expect(html).toContain('class="c-page c-addemp c-sheetpage c-rimp"');
     expect(html).toContain('aria-labelledby="roster-import-title"');
     expect(html).toContain("Step 1 of 3");

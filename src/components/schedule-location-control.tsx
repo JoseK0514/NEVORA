@@ -1,4 +1,6 @@
 "use client";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SCHEDULE_LOCATION_COPY } from "./schedule-location-copy";
 
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 
@@ -101,7 +103,7 @@ export function ScheduleLocationControl({
     <div
       ref={ref}
       className="schedule-location-control"
-      aria-label="Schedule location"
+      aria-label={SCHEDULE_LOCATION_COPY[usePortalLang()].location}
       data-expanded-locations="true"
       data-dense-locations={String(dense)}
     >

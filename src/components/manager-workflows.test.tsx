@@ -13,6 +13,8 @@ import { listManagementCoverage, listManagerPendingExchanges, listTeamExchangeAc
 import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
 import { listPendingCallouts } from "@/lib/data/callouts";
 
+// Language is a presentation dependency; keep these authorization/workflow fixtures database-free.
+rs.mock('@/lib/activation/language.server',()=>({readPortalLanguage:async()=>({language:'en'})}));
 const access=rs.hoisted(()=>({denied:false}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({isOperationalAuthorizationError:()=>false,readOperationalAuthority:async()=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',scope:{mode:'COMPANY'},authority:'fixture',locations:[],observedAt:'2026-10-14T12:00:00Z',validForMs:15000},withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock("@/lib/auth/session", () => ({ requireSession: rs.fn(),requireSessionMutationProof:async()=>({employee:{id:"reviewer",role:"MANAGER"},sessionTokenHash:"a".repeat(64)}) }));

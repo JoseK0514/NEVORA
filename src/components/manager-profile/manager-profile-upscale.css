@@ -113,3 +113,23 @@
 /* Package X (Nov 23, 2026): "What you can approve" values ("Not granted", a place's name) break only between words; at
  * 200% text on a phone "Not granted" broke inside "granted". */
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile .ma .q-row > .q-rv:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4) { overflow-wrap: normal !important; word-break: normal !important; hyphens: none !important; }
+
+/* Give the label its own line when enlarged type leaves too little room beside the email address. */
+@layer nv-b {
+  html:lang(es) #profile-details-list > [data-row=email] { container: profile-email / inline-size; }
+  @container profile-email (max-width: 12rem) {
+    html:lang(es) .app-shell #profile-details-list > [data-row=email] > .q-row:not(#pr1):not(#pr2):not(#pr3):not(#pr4):not(#pr5):not(#pr6):not(#pr7) {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      grid-template-areas: "label label" "value arrow" !important;
+      row-gap: var(--b-space-2) !important;
+      & > .q-rt { grid-area: label !important; hyphens: none !important; }
+      & > .q-rv { grid-area: value !important; max-width: none !important; min-width: 0 !important; text-align: start !important; }
+      & > .q-chev { grid-area: arrow !important; }
+    }
+  }
+}
+
+@layer nv-b {
+  html:lang(es) #profile-details-list [data-row=email] .q-rt b { hyphens: none !important; }
+}

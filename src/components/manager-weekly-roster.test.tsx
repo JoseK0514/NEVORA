@@ -1,3 +1,4 @@
+import { rosterCopy } from './manager-weekly-roster-copy';
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from '@rstest/core';
@@ -268,5 +269,8 @@ it("says one location once and keeps the key for a mixed week", () => {
 it('names the week Today links starting with their visible word', () => {
   const src = readFileSync(join(__dirname, 'manager-weekly-roster.tsx'), 'utf8');
   expect(src).not.toContain('aria-label="Go to this week"');
-  expect(src.match(/aria-label="Today, go to this week">Today<\/a>/g)).toHaveLength(2);
+  // Signed-in Spanish: the words come from the roster's table; both links read the same entries.
+  expect(src.match(/aria-label=\{t\.goToThisWeek\}>\{t\.today\}<\/a>/g)).toHaveLength(2);
+  expect(`${rosterCopy('en').goToThisWeek}|${rosterCopy('en').today}`).toBe('Today, go to this week|Today');
+  expect(rosterCopy('es').goToThisWeek.startsWith(rosterCopy('es').today)).toBe(true);
 });

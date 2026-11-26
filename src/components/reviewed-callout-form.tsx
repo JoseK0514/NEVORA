@@ -11,15 +11,12 @@ import { SheetCancel } from "./quiet/quiet-sheet";
 import { QuietList } from "./quiet/quiet";
 import { SwapShiftRow } from "./reviewed-swap-form";
 import type { ExchangeShift } from "../lib/data/exchanges";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { REVIEWED_FORMS_COPY } from "./reviewed-forms-copy";
 
 // Release 1 (board E-CantWorkSheet): the board's four reasons, as on the phone sheet. The server still accepts the
 // earlier codes, so reports made with them stay readable.
-const reasons = [
-  ["ILLNESS", "Sick"],
-  ["FAMILY_EMERGENCY", "Family emergency"],
-  ["TRANSPORTATION", "Transportation"],
-  ["OTHER", "Other"],
-] as const;
+const reasons = ["ILLNESS", "FAMILY_EMERGENCY", "TRANSPORTATION", "OTHER"] as const;
 
 /** Keep the employee's unsent reason in this mounted form during RSC refresh.
  * New terms require another deliberate submit; refresh never sends a report.
@@ -33,6 +30,7 @@ export function ReviewedCalloutForm({
   shift?: ExchangeShift;
   error?: string;
 }) {
+  const t = REVIEWED_FORMS_COPY[usePortalLang()];
   const [reason, setReason] = useState("");
   const [note, setNote] = useState("");
   const router = useRouter();
@@ -56,15 +54,15 @@ export function ReviewedCalloutForm({
   return (
     <ShiftChangeForm fields={fields ?? {}} className="shift-change-form q-scform" resolvedHref="/app/exchange?tab=requests">
       <div ref={body}>
-        <div className="q-nav"><SheetCancel href="/app/exchange?tab=my" /><h1 className="q-nav__t">Can’t work this shift</h1><PendingButton pending="Sending…" disabled={!fields} className="q-nav__r q-nav__r--b" label="Send report">Send</PendingButton></div>
-        {error ? <p className="q-help q-help--alert" role="alert">Your report wasn’t sent. {error}</p> : null}
-        {shift ? <><div className="q-grp q-grp--m"><h2>Shift</h2></div><QuietList><SwapShiftRow shift={shift} /></QuietList></> : null}
+        <div className="q-nav"><SheetCancel href="/app/exchange?tab=my" /><h1 className="q-nav__t">{t.cantWorkTitle}</h1><PendingButton pending={t.sending} disabled={!fields} className="q-nav__r q-nav__r--b" label={t.sendReport}>{t.send}</PendingButton></div>
+        {error ? <p className="q-help q-help--alert" role="alert">{t.notSent(error)}</p> : null}
+        {shift ? <><div className="q-grp q-grp--m"><h2>{t.shift}</h2></div><QuietList><SwapShiftRow shift={shift} /></QuietList></> : null}
         <fieldset className="q-fieldset" aria-describedby={`${reasonId}-hint`}>
-          <legend className="q-grp">Reason</legend>
-          <p className="nv-sr" id={`${reasonId}-hint`}>Why can’t you work it? Choose the closest match.</p>
+          <legend className="q-grp">{t.reason}</legend>
+          <p className="nv-sr" id={`${reasonId}-hint`}>{t.reasonHint}</p>
           <ul className="q-list">
-            {reasons.map(([value, label]) => <li key={value}><label className="q-row q-row--one q-row--pick">
-              <span className="q-rt"><b>{label}</b></span>
+            {reasons.map(value => <li key={value}><label className="q-row q-row--one q-row--pick">
+              <span className="q-rt"><b>{t.reasons[value]}</b></span>
               <input type="radio" className="q-pick" required name="reasonCode" value={value} checked={reason === value} onChange={() => {
                 setReason(value);
                 noteInput.current?.setCustomValidity(calloutReasonNoteError(value, note) ?? "");
@@ -74,7 +72,7 @@ export function ReviewedCalloutForm({
           </ul>
         </fieldset>
         <div className="q-fl">
-          <div className="q-fl__row"><label className="q-fl__label" htmlFor={`${detailsId}-note`}>Note <span className="q-fl__opt">· {reason === "OTHER" ? "needed for Other" : "optional"}</span></label><span className="q-fl__opt" aria-label={`${note.length} of 300 characters`}>{note.length}/300</span></div>
+          <div className="q-fl__row"><label className="q-fl__label" htmlFor={`${detailsId}-note`}>{t.note} <span className="q-fl__opt">· {reason === "OTHER" ? t.neededForOther : t.optional}</span></label><span className="q-fl__opt" aria-label={t.characters(note.length)}>{note.length}/300</span></div>
           <textarea
             id={`${detailsId}-note`}
             className="q-in"
@@ -90,15 +88,15 @@ export function ReviewedCalloutForm({
               setNote(event.target.value);
               event.target.setCustomValidity(calloutReasonNoteError(reason, event.target.value) ?? "");
             }}
-            placeholder="Add a short note"
+            placeholder={t.notePlaceholder}
           />
-          <p className="q-fl__help" id={detailsId}>{reason === "OTHER" ? "For Other, add at least 3 characters. Share only what your manager needs." : "Share only what your manager needs to review it."}</p>
+          <p className="q-fl__help" id={detailsId}>{reason === "OTHER" ? t.otherHelp : t.noteHelp}</p>
         </div>
-        <p className="q-help">It’s still your shift until a manager approves your report. If they do, the shift opens for someone else to pick up. <Link href="/app/exchange?tab=requests">See my requests</Link></p>
+        <p className="q-help">{t.stillYours} <Link href="/app/exchange?tab=requests">{t.seeRequests}</Link></p>
         {!fields ? (
           <div role="alert">
-            <p className="q-help q-help--alert">The shift changed. Your reason is kept. Refresh to see the shift as it is now, then send.</p>
-            <button type="button" className="q-btn q-btn--sec" onClick={() => router.refresh()}>Refresh the shift</button>
+            <p className="q-help q-help--alert">{t.shiftChanged}</p>
+            <button type="button" className="q-btn q-btn--sec" onClick={() => router.refresh()}>{t.refreshShift}</button>
           </div>
         ) : null}
       </div>

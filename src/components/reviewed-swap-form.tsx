@@ -8,19 +8,21 @@ import { swapDateLabel, swapTimeLabel, swapPositionLabel } from './swap-shift-su
 import { PendingButton } from './wave-a/pending-button';
 import { SheetCancel } from './quiet/quiet-sheet';
 import { QuietList, initialsOf } from './quiet/quiet';
-import { formatWeekRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
 import type {ExchangeShiftDisplay} from '@/lib/shift-changes/shift-display';
 import type { ReviewedSource, ReviewedTarget } from '@/lib/shift-changes/types';
+import { usePortalLang } from '@/lib/i18n/portal-lang';
+import { REVIEWED_FORMS_COPY } from './reviewed-forms-copy';
 
-const shortDay = (date: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(`${date}T12:00:00Z`));
+const shortDay = (date: string, locale = 'en-US') => new Intl.DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(`${date}T12:00:00Z`));
 
 /** "Sun, Oct 25 · 8:00 AM – 4:00 PM": the shift being changed, as one row. */
 export function SwapShiftRow({ shift }: { shift: ExchangeShiftDisplay }) {
-  const where = [shift.locationName, shift.positionName, shift.isDesignatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
+  const t = REVIEWED_FORMS_COPY[usePortalLang()];
+  const where = [shift.locationName, shift.positionName, shift.isDesignatedLead ? t.shiftLead : null].filter(Boolean).join(' · ');
   return <li><div className="q-row q-row--one">
-    <span className="q-rt"><b><time dateTime={shift.date}>{keepWhole(shortDay(shift.date))}</time><span className="nv-sr">, {where}{shift.timeZone ? `, times in ${timeZoneLabel(shift.timeZone)}` : ''}</span></b></span>
-    <span className="q-rv q-rv--l">{keepWhole(swapTimeLabel(shift))}</span>
+    <span className="q-rt"><b><time dateTime={shift.date}>{keepWhole(shortDay(shift.date, t.locale))}</time><span className="nv-sr">, {where}{shift.timeZone ? `, ${t.timesIn(timeZoneLabel(shift.timeZone))}` : ''}</span></b></span>
+    <span className="q-rv q-rv--l">{keepWhole(t.times(swapTimeLabel(shift)))}</span>
   </div></li>;
 }
 
@@ -31,6 +33,7 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
   sourceFields: ReviewedSource;
   targets: { shift: ExchangeShiftDisplay; fields: ReviewedTarget }[];
 }) {
+  const t = REVIEWED_FORMS_COPY[usePortalLang()];
   const [selected, setSelected] = useState('');
   const id = useId();
   const target = targets.find(item => item.shift.id === selected);
@@ -55,20 +58,20 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
 
   return <ShiftChangeForm fields={{ kind: 'PROPOSE_SWAP', ...sourceFields }} className="shift-change-form q-scform" resolvedHref="/app/exchange?tab=requests">
     <div ref={body}>
-      <div className="q-nav"><SheetCancel href="/app/exchange?tab=requests" /><h1 className="q-nav__t">Swap shift</h1><PendingButton pending="Sending…" disabled={!target} className="q-nav__r q-nav__r--b" label={target ? `Send swap request to ${target.shift.employeeName}` : 'Send swap request, choose a shift first'}>Send</PendingButton></div>
-      <div className="q-grp q-grp--m"><h2>Your shift</h2></div>
+      <div className="q-nav"><SheetCancel href="/app/exchange?tab=requests" /><h1 className="q-nav__t">{t.swapTitle}</h1><PendingButton pending={t.sending} disabled={!target} className="q-nav__r q-nav__r--b" label={target ? t.sendSwapTo(target.shift.employeeName) : t.sendSwapChoose}>{t.send}</PendingButton></div>
+      <div className="q-grp q-grp--m"><h2>{t.yourShift}</h2></div>
       <QuietList><SwapShiftRow shift={source} /></QuietList>
       <fieldset className="q-fieldset" aria-describedby={`${id}-hint`}>
-        <legend className="q-grp">Trade with</legend>
-        <p className="nv-sr" id={`${id}-hint`}>{keepWhole(formatWeekRange(source.weekStart))}. Choose one shift to take.</p>
+        <legend className="q-grp">{t.tradeWith}</legend>
+        <p className="nv-sr" id={`${id}-hint`}>{t.chooseOne(keepWhole(t.weekRange(source.weekStart)))}</p>
         <ul className="q-list">
           {sorted.map(({ shift }) => {
-            const detail = [keepWhole(`${shortDay(shift.date)} · ${swapTimeLabel(shift)}`), shift.locationName !== source.locationName ? shift.locationName : null, shift.positionName && shift.positionName !== source.positionName ? shift.positionName : null, shift.isDesignatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
+            const detail = [keepWhole(`${shortDay(shift.date, t.locale)} · ${t.times(swapTimeLabel(shift))}`), shift.locationName !== source.locationName ? shift.locationName : null, shift.positionName && shift.positionName !== source.positionName ? shift.positionName : null, shift.isDesignatedLead ? t.shiftLead : null].filter(Boolean).join(' · ');
             return <li key={shift.id}><label className="q-row q-row--av q-row--pick">
               <span className="q-av" aria-hidden="true">{initialsOf(shift.employeeName)}</span>
               <span className="q-rt"><b>{shift.employeeName}</b><i>{detail}</i></span>
               <input className="q-pick" type="radio" name="targetShiftId" value={shift.id} required checked={selected === shift.id} onChange={() => setSelected(shift.id)}
-                aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? 'Shift lead' : 'Not the shift lead'}${shift.timeZone ? ` · Times in ${shift.timeZone.replaceAll('_', ' ')}` : ''}`} />
+                aria-label={`${swapDateLabel(shift.date)} · ${swapTimeLabel(shift)} · ${shift.employeeName} · ${shift.locationName} · ${swapPositionLabel(shift)} · ${shift.isDesignatedLead ? t.shiftLead : t.notShiftLead}${shift.timeZone ? ` · ${t.timesInCap(shift.timeZone.replaceAll('_', ' '))}` : ''}`} />
               <span className="q-radio" aria-hidden="true" />
             </label></li>;
           })}
@@ -79,9 +82,9 @@ export function ReviewedSwapForm({ source, sourceFields, targets }: {
         <input type="hidden" name="targetTermsFingerprint" value={target.fields.targetTermsFingerprint} />
       </> : null}
       <p className="q-help" role="status">{target
-        ? `Sending means you agree to trade with ${first}. ${first} agrees next; swaps that fit the rules finish on their own, anything else waits for your manager.`
-        : 'Choose the shift you’d take instead. Nothing changes until they agree and any review is done.'}</p>
-      <noscript><p className="q-help">Turn on JavaScript to choose and send a swap.</p></noscript>
+        ? t.agree(first ?? '')
+        : t.chooseInstead}</p>
+      <noscript><p className="q-help">{t.noScript}</p></noscript>
     </div>
   </ShiftChangeForm>;
 }

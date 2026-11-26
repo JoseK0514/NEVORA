@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from '@rstest/core';
 import { parseManagerProfile, type ManagerProfileSnapshot } from './contract';
+import { profileCopy } from './profile-copy';
 import { ALERT_TOPIC_COUNT, ManagerProfileView, managerAccess, type ManagerProfileIdentity } from './manager-profile-live';
 
 const FIXTURES = 'docs/product/specs/p35-profile/fixtures';
@@ -46,6 +47,14 @@ describe('management profile contract', () => {
 // Quiet (v4, approved Oct 23): who you are (name, role · company), Phone, Email and Time zone, then Notifications (its
 // switches fold under it), Alerts on this phone, and Sign out. Locations and My pay aren't on this page.
 describe('Owner and Manager Profile', () => {
+  it('keeps the English and Spanish copy keys and placeholders aligned', () => {
+    expect(Object.keys(profileCopy.es).sort()).toEqual(Object.keys(profileCopy.en).sort());
+    for (const key of Object.keys(profileCopy.en) as (keyof typeof profileCopy.en)[]) {
+      const placeholders = (text: string) => (text.match(/\{[a-zA-Z]\w*\}/g) ?? []).sort();
+      expect(placeholders(profileCopy.es[key])).toEqual(placeholders(profileCopy.en[key]));
+    }
+  });
+
   it('shows what today’s reads know at once, and says it is checking the rest', () => {
     const html = render(owner, null);
     for (const text of ['Fictional Owner', 'Puerto Rico', 'Checking…']) expect(html).toContain(text);
@@ -215,3 +224,12 @@ describe('Profile approval rows on a 320px phone (Z2)', () => {
   });
 });
 
+
+it('renders the Owner profile and its notification choices in the saved locale', () => {
+  const html = render({...owner,lang:'es'},parseManagerProfile(fixture('owner')));
+  for (const text of ['Dueño', 'Teléfono', 'Correo electrónico', 'Zona horaria', 'Notificaciones', 'Solicitudes de días libres']) {
+    expect(html).toContain(text);
+  }
+  expect(html).not.toContain('Time-off requests');
+  expect(render(owner,parseManagerProfile(fixture('owner')))).toContain('Time-off requests');
+});

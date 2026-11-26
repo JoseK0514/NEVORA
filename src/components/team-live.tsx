@@ -6,6 +6,8 @@ import { useClockMonitor } from "./clean/use-clock-monitor";
 import { ATTENDANCE_WORDS } from "@/lib/action-center/present";
 import { lateText } from "@/lib/action-center/request-details";
 import { reviewCopy } from "@/components/review-details/copy";
+import { usePortalLang, type PortalLang } from "@/lib/i18n/portal-lang";
+import { TEAM_COPY } from "@/components/team-copy";
 
 /* Team (Release 1, board G-O-Team): who is working now. Two existing reads, the ones Home uses: Today (published shifts
  * and their clock-ins) and the clock monitor (every open clock-in, so someone clocked in without a scheduled shift reads
@@ -66,9 +68,10 @@ export function teamStateOf(live: Live, id: string): TeamState | null {
 }
 /** "Not clocked in · 42 min": the shift started that long ago and there is no punch. Never "Late" (that word is for
  * someone who clocked in after their start) and never "Missed" (the shift hasn't ended). */
-export const notClockedInText = (minutes: number) => minutes > 0 ? `${ATTENDANCE_WORDS.notClockedIn} · ${minutes >= 60 ? `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ""}` : `${minutes} min`}` : ATTENDANCE_WORDS.notClockedIn;
+export const notClockedInText = (minutes: number, languageOrLabel: string = "en") => { const words = languageOrLabel === "es" ? TEAM_COPY.es.notClockedIn : languageOrLabel === "en" ? ATTENDANCE_WORDS.notClockedIn : languageOrLabel;
+  return minutes > 0 ? `${words} · ${minutes >= 60 ? `${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ""}` : `${minutes} min`}` : words; };
 /** "Clocked in late" for someone on the clock who arrived after their start; otherwise "Clocked in". */
-export const clockedInText = (live: Live, id: string) => live.clockedInLate.has(id) ? lateText({ late: true, lateMinutes: live.clockedInLate.get(id) }, ATTENDANCE_WORDS.late, reviewCopy()) : "Clocked in";
+export const clockedInText = (live: Live, id: string, lang: PortalLang = "en") => live.clockedInLate.has(id) ? lateText({ late: true, lateMinutes: live.clockedInLate.get(id) }, TEAM_COPY[lang].late, reviewCopy(lang)) : TEAM_COPY[lang].clockedIn;
 
 /** One person's live state, the same words and looks as Home's On now on every width (Phase 9, spec 3.1). The normal
  * states are quiet grey text: "Clocked in" with the green live dot, "On break" and "Off today" with none. Only an
@@ -78,12 +81,13 @@ export const clockedInText = (live: Live, id: string) => live.clockedInLate.has(
 export function TeamLivePill({ employeeId }: { employeeId: string }) {
   const live = useContext(TeamLiveContext);
   const state = teamStateOf(live, employeeId);
-  if (state === "working") return live.clockedInLate.has(employeeId) ? <BChip tone="amber" dot>{clockedInText(live, employeeId)}</BChip> : <BStatusText dot="green">{clockedInText(live, employeeId)}</BStatusText>;
-  if (state === "break") return <BStatusText>On break</BStatusText>;
-  if (state === "late") return <BChip tone="amber" dot>{notClockedInText(live.late.get(employeeId) ?? 0)}</BChip>;
-  if (state === "off") return live.partial ? null : <BStatusText>Off today</BStatusText>;
+  const lang = usePortalLang(), t = TEAM_COPY[lang];
+  if (state === "working") return live.clockedInLate.has(employeeId) ? <BChip tone="amber" dot>{clockedInText(live, employeeId, lang)}</BChip> : <BStatusText dot="green">{clockedInText(live, employeeId, lang)}</BStatusText>;
+  if (state === "break") return <BStatusText>{t.onBreak}</BStatusText>;
+  if (state === "late") return <BChip tone="amber" dot>{notClockedInText(live.late.get(employeeId) ?? 0, lang)}</BChip>;
+  if (state === "off") return live.partial ? null : <BStatusText>{t.offToday}</BStatusText>;
   const starts = live.startsAt?.get(employeeId);
-  return starts ? <BStatusText>{`Starts ${starts}`}</BStatusText> : null;
+  return starts ? <BStatusText>{t.starts(starts)}</BStatusText> : null;
 }
 
 /** The Team title's live part. Jose (Nov 23, 2026: each count once), for every role (gaps G24): the filters under the

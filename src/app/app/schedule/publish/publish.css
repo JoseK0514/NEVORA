@@ -41,3 +41,17 @@
 :is(#c-root, html) .c-pub .c-note:has(> .b-donemark) { gap: 12px; }
 /* Desktop at 200% text (DS-7, Nov 23): the kit's .c-btn is 15/20px; the same size in rem on Build and publish. */
 :is(#c-root, html) .c-pub .c-btn { font-size: 0.9375rem; line-height: 1.25rem; }
+
+@layer nv-b {
+  @media (max-width: 480px) {
+    html:lang(es)[data-text-step="200"] .c-pub__start > summary.c-row {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      row-gap: var(--b-space-2);
+      & > .c-row__main, & > .c-row__value { grid-column: 1; width: auto !important; max-width: none !important; text-align: start !important; }
+      & > .c-row__main { grid-row: 1; }
+      & > .c-row__value { grid-row: 2; }
+      & > .c-pub__caret { grid-column: 2; grid-row: 1 / 3; }
+    }
+  }
+}

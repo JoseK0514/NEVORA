@@ -1,3 +1,5 @@
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { EMPLOYEES_COPY } from "../../employees-copy";
 import { scopedObservation } from "@/lib/company-access/observation";
 import { withOperationalCompany } from "@/lib/company-access/operational-scope.server";
 import { readOperationalEmployeeProfile } from "@/lib/company-access/operational-read.server";
@@ -11,7 +13,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { listEmployees } from "@/lib/data/employees";
 import { AccountScreen } from "@/components/time-off-admin/account-screen";
 
-export const metadata = { title: "Time off balance" };
+export async function generateMetadata() { return { title: EMPLOYEES_COPY[await readPageLang()].timeOffBalance }; }
 
 /* PTO screens (Nov 20, 2026): one person's time off balance, for Owners only (a Manager is sent to the restricted page
  * before anything is read). The page reads the person's name, the workplace's date and the Owners' names; the balance,
@@ -31,9 +33,9 @@ export default async function EmployeeTimeOffPage({ params }: { params: Promise<
     return { profile, workspace, owners };
   });
   const title = lang === "es" ? "Perfil no disponible" : "Employee profile unavailable";
-  if (source.state === "unavailable") return <OperationalUnavailable title={title} reason={source.reason} />;
+  if (source.state === "unavailable") return <OperationalUnavailable lang={lang} title={title} reason={source.reason} />;
   const { profile, workspace, owners } = source.data;
-  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable title={title} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
+  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable lang={lang} title={title} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
   const employee = profile.data.profile;
   return <ScopedReadFrame observation={scopedObservation(source)}>
     <AccountScreen key={employee.id} employeeId={employee.id} name={`${employee.firstName} ${employee.lastName}`.trim()} firstName={employee.firstName}

@@ -1,4 +1,5 @@
 "use client";
+import { useViewLang } from "@/components/owner-b/use-owner-lang";
 
 /* Owner roster import (docs/handoffs/2026-11-14-owner-simplicity.md): add your list, check it, import. The list is read
  * in the browser; POST /api/onboarding/roster/preview decides what is valid and writes nothing; POST
@@ -66,12 +67,13 @@ function leave() {
 const noStore = () => () => undefined;
 const emptyImport = () => EMPTY_IMPORT;
 
-export function RosterImport({ lang = "en", actorId, locations, headcounts, billingHref = null }: {
+export function RosterImport({ lang: langProp, actorId, locations, headcounts, billingHref = null }: {
   lang?: RosterImportLang;
   /** The signed-in Owner: an unfinished import is never shown to someone else in the same tab. */
   actorId: string;
   locations: ImportLocation[]; headcounts: Headcounts; billingHref?: string | null;
 }) {
+  const lang = useViewLang(langProp);
   const copy = rosterImportCopy[lang], router = useRouter();
   const [store] = useState(() => typeof window === "undefined" ? null : storeFor(actorId));
   const state = useSyncExternalStore(store?.subscribe ?? noStore, store?.get ?? emptyImport, emptyImport);

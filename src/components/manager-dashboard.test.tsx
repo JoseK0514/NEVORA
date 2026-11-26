@@ -2,7 +2,7 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from '@rstest/core';
 import { withoutB } from "./owner-b/test-support";
-import { ManagerDashboard, homeWeek } from "./manager-dashboard";
+import { ManagerDashboard, homeDateLabel, homeWeek } from "./manager-dashboard";
 import { WeekSummary } from "./clean/week-summary";
 rs.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps<"a">) => createElement("a",{href,...props},children) }));
 
@@ -11,6 +11,14 @@ rs.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps
 const dashboardProps: ComponentProps<typeof ManagerDashboard> = {
     workspaceName:"Northside Services",timeZone:"America/Puerto_Rico",firstName:"Alex",weekStart:"2026-09-28",weekLabel:"Sep 28 – Oct 4",previousWeek:"2026-09-21",nextWeek:"2026-10-05",view:"overview",readyLocationCount:0,totalLocations:2,availabilitySubmitted:2,availabilityEligible:3,activeEmployees:10,unavailableAllWeek:0,coverageIssueCount:0,coverageConfigured:true,pendingRequestCount:7,managerActions:[],locations:[],days:[],hours:[],latestRevision:null,
 };
+
+it("shows the full Spanish Owner Home date in the workplace time zone", () => {
+  const timeZone = "America/Puerto_Rico";
+  const evening = new Date("2026-11-25T02:00:00Z");
+  expect(homeDateLabel(timeZone, "es", evening)).toBe("Martes, 24 Noviembre");
+  expect(homeDateLabel(timeZone, "en", evening)).toBe("Tuesday, November 24");
+  expect(homeDateLabel(timeZone, "es", new Date("2026-11-25T04:00:00Z"))).toBe("Miércoles, 25 Noviembre");
+});
 
 it("loads the current Action Center without exposing unverified server-provided request names or counts", () => {
   const props: ComponentProps<typeof ManagerDashboard> = {

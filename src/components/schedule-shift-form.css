@@ -168,3 +168,8 @@
 /* Desktop at 200% text (DS-7, Nov 23): the kit's .c-btn sets 15/20px, so Save shift stayed put while the page grew. The
  * same 15/20px in rem here, so the sheet's buttons grow with the reader's text size. */
 :is(#c-root, html) .c-shift-page .c-btn { font-size: 0.9375rem; line-height: 1.25rem; }
+
+/* Both labels reserve the same space while the confirmed edit request is in flight. */
+.c-shift__save-label { display: inline-grid; }
+.c-shift__save-label > span { grid-area: 1 / 1; }
+.c-shift__save-label > [aria-hidden] { visibility: hidden; }

@@ -14,3 +14,14 @@
 .actions > * {flex:1 1 9rem;min-height:44px;}
 /* The sheet's action column keeps its buttons on one line (nowrap); the card's text wraps. */
 .body {white-space:normal;}
+
+/* Extend the label around the 20px checkbox without moving the attestation. */
+:global(.c-dcorr):lang(es) .confirmation { position: relative; }
+:global(.c-dcorr):lang(es) .confirmation::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -12px;
+  top: -10px;
+  width: 44px;
+  height: 44px;
+}

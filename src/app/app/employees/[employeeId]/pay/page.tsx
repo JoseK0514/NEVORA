@@ -1,3 +1,5 @@
+import { readPageLang } from "@/lib/i18n/page-lang.server";
+import { EMPLOYEES_COPY } from "../../employees-copy";
 import { scopedObservation } from "@/lib/company-access/observation";
 import { withOperationalCompany } from "@/lib/company-access/operational-scope.server";
 import { readOperationalEmployeeProfile } from "@/lib/company-access/operational-read.server";
@@ -11,7 +13,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { listEmployees } from "@/lib/data/employees";
 import { WagesScreen } from "@/components/wages/wages-screen";
 
-export const metadata = { title: "Pay rate" };
+export async function generateMetadata() { return { title: EMPLOYEES_COPY[await readPageLang()].payRate }; }
 
 /* SCRUM-214 (Nov 19, 2026): one person's pay rates, for Owners only (a Manager is sent to the restricted page before
  * anything is read). The page reads only the person's name and locations (the same scoped profile read as their page),
@@ -32,9 +34,9 @@ export default async function EmployeePayPage({ params }: { params: Promise<{ em
     return { profile, workspace, owners };
   });
   const title = lang === "es" ? "Perfil no disponible" : "Employee profile unavailable";
-  if (source.state === "unavailable") return <OperationalUnavailable title={title} reason={source.reason} />;
+  if (source.state === "unavailable") return <OperationalUnavailable lang={lang} title={title} reason={source.reason} />;
   const { profile, workspace, owners } = source.data;
-  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable title={title} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
+  if (profile.state === "unavailable" || !workspace) return <OperationalUnavailable lang={lang} title={title} reason={profile.state === "unavailable" ? profile.reason : "read_failed"} />;
   const { profile: employee, locations } = profile.data;
   const defaults = [employee.primaryLocationId, ...employee.eligibleLocationIds.filter(id => id !== employee.primaryLocationId)];
   return <ScopedReadFrame observation={scopedObservation(source)}>

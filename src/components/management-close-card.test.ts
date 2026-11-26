@@ -1,3 +1,4 @@
+import {MANAGEMENT_CLOSE_COPY} from './management-close-copy';
 import {describe,expect,test} from '@rstest/core';
 import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
@@ -11,7 +12,7 @@ const card=tsx.slice(tsx.indexOf('<CorpCard'));
 
 describe('Close open punch card',()=>{
   test('the open form is a kit card with its heading, not a loose section',()=>{
-    expect(card).toContain("label={attempt?'Confirm original close':'Close open punch'}");
+    expect(card).toContain("label={attempt?T.confirmOriginal:T.closeOpenPunch}");
     expect(tsx).not.toContain('<h3>');
     expect(tsx).not.toContain('aria-label="Close open punch"');
     expect(card.indexOf('<CorpBody>')).toBeGreaterThan(-1);
@@ -19,7 +20,7 @@ describe('Close open punch card',()=>{
   test('the buttons sit inside the card body, on its inset: Cancel first, the decision last',()=>{
     const body=card.slice(card.indexOf('<CorpBody>'),card.indexOf('</CorpBody>'));
     const actions=body.slice(body.indexOf('styles.actions'));
-    expect(actions.indexOf('Cancel close')).toBeLessThan(actions.indexOf('Record close'));
+    expect(actions.indexOf('T.cancel')).toBeLessThan(actions.indexOf('T.recordClose'));
     expect(actions).toContain('className="c-btn c-btn--secondary"');
     expect(actions).toMatch(/type="submit" form=\{fieldId\+'-form'\} className="c-btn"/);
     expect(body).toContain('className={`c-link ${styles.refresh}`}');
@@ -39,7 +40,13 @@ describe('Close open punch card',()=>{
     expect(sheet).toMatch(/\.c-tc-close > \.c-link[^{]*\{ font-size: 0\.8125rem !important;/);
   });
   test('the English words are unchanged',()=>{
-    for(const words of ['Close open punch','Confirm original close','Started {formatBusinessDateTime','The open break ends at the same selected time.','Confirmed end time ({timeZone})','Reason for closing','I verified this end time and reason.','Record close','Refresh current punch','Cancel close','Retry same close','This punch is already closed.','Current punch information is unavailable.'])
-      expect(tsx).toContain(words);
+    const en=MANAGEMENT_CLOSE_COPY.en;
+    const rendered = [...Object.values(en), en.started('A','B','DATE'), en.endTime('ZONE')].join('\n');
+    for(const words of ['Close open punch','Confirm original close','Started DATE','The open break ends at the same selected time.','Confirmed end time (ZONE)','Reason for closing','I verified this end time and reason.','Record close','Refresh current punch','Cancel close','Retry same close','This punch is already closed.','Current punch information is unavailable.'])
+      expect(rendered).toContain(words);
   });
+});
+
+test('gives the Spanish delegated attestation a full target around the checkbox', () => {
+  expect(css).toMatch(/:global\(\.c-dcorr\):lang\(es\) \.confirmation::before \{[^}]*width: 44px;[^}]*height: 44px;/);
 });

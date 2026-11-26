@@ -260,3 +260,28 @@ html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-a
 /* At large text the day card's "13 shifts · 61 h" drops under the day title instead of running under it (it fits
  * beside the title at the default size, so nothing moves there). */
 :is(#c-root, html) .app-shell[data-nv-b] .c-sched .b-card__h:has(> .b-card__meta) { flex-wrap: wrap; }
+
+/* Keep the Spanish page title whole when the enlarged location and shift actions need their own line. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    @container not style(--nv-rem: 16px) {
+      .app-shell[data-nv-b] .c-page.c-sched:lang(es) > header.c-title .c-title__row {
+        flex-wrap: wrap !important;
+      }
+      .app-shell[data-nv-b] .c-page.c-sched:lang(es) > header.c-title #schedule-title {
+        min-inline-size: max-content !important;
+      }
+    }
+  }
+}
+
+/* Keep the open day and its location readable beside the Spanish week action. */
+@media (max-width: 767px) {
+  .b-notes > .c-sched-review:lang(es) { container: schedule-review / inline-size; }
+
+  @container schedule-review (max-width: 14rem) {
+    .c-sched-review__ctx, .c-sched-review__all { grid-column: 1 / -1; }
+    .c-sched-review__v { padding-block-end: var(--b-space-8); }
+    .c-sched-review__all { justify-self: start; }
+  }
+}
