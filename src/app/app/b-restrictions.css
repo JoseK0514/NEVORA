@@ -174,8 +174,8 @@
 
 /* A short Spanish day choice stays on one line. The group can take another row at large text. */
 @layer nv-b {
-  html:lang(es) .app-shell[data-nv-b] .rs .rs-ed__d { container: agreement-day / inline-size; }
-  html:lang(es) .app-shell[data-nv-b] .rs .rs-ed .b-filters {
+  html:not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-ed__d { container: agreement-day / inline-size; }
+  html:not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-ed .b-filters {
     min-inline-size: 0;
     flex-wrap: wrap !important;
     height: auto !important;
@@ -183,54 +183,54 @@
     row-gap: var(--b-space-8) !important;
   }
   @container agreement-day (max-width: 22rem) {
-    html:lang(es) .app-shell[data-nv-b] .rs .rs-ed .b-filters > button {
+    html:not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-ed .b-filters > button {
       flex: 1 0 auto !important;
       padding-inline: var(--b-space-8) !important;
       white-space: nowrap !important;
     }
   }
   @container agreement-day (min-width: 15rem) and (max-width: 19rem) {
-    html:lang(es) .app-shell[data-nv-b] .rs .rs-ed .b-filters {
+    html:not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-ed .b-filters {
       width: 100% !important;
       display: grid !important;
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-    html:lang(es) .app-shell[data-nv-b] .rs .rs-ed .b-filters > button {
+    html:not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-ed .b-filters > button {
       min-width: 0 !important;
       padding-inline: var(--b-space-4) !important;
     }
   }
   @container agreement-day (max-width: 15rem) {
-    html:lang(es) .app-shell[data-nv-b] .rs .rs-ed .b-filters {
+    html:not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-ed .b-filters {
       border-radius: var(--b-radius-field) !important;
     }
-    html:lang(es) .app-shell[data-nv-b] .rs .rs-ed .b-filters > button {
+    html:not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-ed .b-filters > button {
       min-height: 44px !important;
     }
   }
-  html:lang(es) .app-shell[data-nv-b] .rs :is(.rs-legacy__p, .rs-field__h, .rs-review__p, .rs-separate) {
+  html:not(.nv-any-lang) .app-shell[data-nv-b] .rs :is(.rs-legacy__p, .rs-field__h, .rs-review__p, .rs-separate) {
     hyphens: none !important;
   }
 }
 
 @layer nv-b {
-  html:lang(es) .app-shell[data-nv-b] .rs--c h1 { hyphens: none !important; }
+  html:not(.nv-any-lang) .app-shell[data-nv-b] .rs--c h1 { hyphens: none !important; }
 }
 
 /* Let a whole-day status move below the weekday when its longest word needs more room. */
 @media (max-width: 767px) {
-  :is(#c-root, html):lang(es) .app-shell[data-nv-b] .rs .rs-week__d:is([data-state="any"], [data-state="none"]) {
+  :is(#c-root, html):not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-week__d:is([data-state="any"], [data-state="none"]) {
     display: flex;
     flex-wrap: wrap;
     row-gap: var(--b-space-4);
   }
-  :is(#c-root, html):lang(es) .app-shell[data-nv-b] .rs .rs-week__d:is([data-state="any"], [data-state="none"]) > .rs-week__tx {
+  :is(#c-root, html):not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-week__d:is([data-state="any"], [data-state="none"]) > .rs-week__tx {
     flex: 1 0 min-content;
   }
-  :is(#c-root, html):lang(es) .app-shell[data-nv-b] .rs .rs-week__d:is([data-state="any"], [data-state="none"]) .rs-week__sps {
+  :is(#c-root, html):not(.nv-any-lang) .app-shell[data-nv-b] .rs .rs-week__d:is([data-state="any"], [data-state="none"]) .rs-week__sps {
     min-inline-size: min-content;
   }
-  :is(#c-root, html):lang(es) .app-shell[data-nv-b] .rs :is(.rs-week__any, .rs-week__none) {
+  :is(#c-root, html):not(.nv-any-lang) .app-shell[data-nv-b] .rs :is(.rs-week__any, .rs-week__none) {
     -webkit-hyphens: none;
     hyphens: none;
   }

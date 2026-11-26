@@ -151,5 +151,5 @@ it('keeps the bottom edge of the Spanish directory link above the first person',
 
 it('centers the Spanish Payroll tabs’ hit areas without relying on motion transforms', () => {
   const shell = css('app/app/owner-b-shell.css');
-  expect(shell).toMatch(/nav\.c-pay-tabs:lang\(es\) > a\.c-pay-tabs__tab::after \{[^}]*top: min\(0px, calc\(50% - 22px\)\)[^}]*translate: none/);
+  expect(shell).toMatch(/nav\.c-pay-tabs:not\(\.nv-any-lang\) > a\.c-pay-tabs__tab::after \{[^}]*top: min\(0px, calc\(50% - 22px\)\)[^}]*translate: none/);
 });

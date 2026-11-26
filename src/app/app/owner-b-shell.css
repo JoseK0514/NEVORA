@@ -163,7 +163,7 @@
       translate: -50% -50% !important; transform: none !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
     }
     /* Keep the 44px target centered even when reduced motion removes translations. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame nav.c-pay-tabs:lang(es) > a.c-pay-tabs__tab::after {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b]:not([data-employee-mobile]):not(#p3f):not(#p3f2) main.page-frame nav.c-pay-tabs:not(.nv-any-lang) > a.c-pay-tabs__tab::after {
       top: min(0px, calc(50% - 22px)) !important;
       left: 0 !important;
       translate: none !important;

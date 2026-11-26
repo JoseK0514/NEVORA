@@ -100,6 +100,6 @@ describe('placeholder contrast (release batch)', () => {
 
 it('includes the rounded bottom-edge hit point of Spanish Timecards name buttons', () => {
   const css = read('./owner-b-time-pay.css');
-  expect(css).toMatch(/html:lang\(es\) \.c-tc-table \.c-tc-person\s*\{[^}]*position: relative;/);
-  expect(css).toMatch(/html:lang\(es\) \.c-tc-table \.c-tc-person::after\s*\{[^}]*inset-inline: 0;[^}]*inset-block: calc\(-1 \* var\(--b-space-2\)\);/);
+  expect(css).toMatch(/html:not\(\.nv-any-lang\) \.c-tc-table \.c-tc-person\s*\{[^}]*position: relative;/);
+  expect(css).toMatch(/html:not\(\.nv-any-lang\) \.c-tc-table \.c-tc-person::after\s*\{[^}]*inset-inline: 0;[^}]*inset-block: calc\(-1 \* var\(--b-space-2\)\);/);
 });

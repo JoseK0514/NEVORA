@@ -616,10 +616,10 @@
 
 @layer nv-b {
   @media (width < 360px) {
-    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] .c-exp--time > .c-nav--phone {
+    html:not(.nv-any-lang)[data-text-step="200"] body .app-shell[data-nv-b] .c-exp--time > .c-nav--phone {
       grid-template-columns: minmax(0, 1fr) auto !important;
     }
-    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] .c-exp--time > .c-nav--phone .c-nav__back {
+    html:not(.nv-any-lang)[data-text-step="200"] body .app-shell[data-nv-b] .c-exp--time > .c-nav--phone .c-nav__back {
       white-space: normal !important;
       max-width: 100% !important;
     }
@@ -627,13 +627,13 @@
 }
 
 @media (width >= 768px) {
-  :is(html, #c-root):lang(es)[data-text-step="200"] .c-exp__paid .c-row__detail > span:first-child {
+  :is(html, #c-root):not(.nv-any-lang)[data-text-step="200"] .c-exp__paid .c-row__detail > span:first-child {
     white-space: normal;
   }
 }
 
 /* Size both receipt actions for the longer label, including at enlarged text sizes. */
-html:lang(es) .c-exp .b-row__tx > .c-exp__dls {
+html:not(.nv-any-lang) .c-exp .b-row__tx > .c-exp__dls {
   --receipt-action-width: calc(7rem + 40px);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--receipt-action-width)), 1fr));
@@ -643,52 +643,52 @@ html:lang(es) .c-exp .b-row__tx > .c-exp__dls {
   gap: var(--b-space-8) var(--b-space-12);
 }
 
-:is(#c-root, html):lang(es) .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
+:is(#c-root, html):not(.nv-any-lang) .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
   min-height: var(--b-target);
   white-space: nowrap;
 }
 
 @media (min-width: 768px) and (pointer: coarse) {
-  :is(#c-root, html):lang(es) .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
+  :is(#c-root, html):not(.nv-any-lang) .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
     height: var(--b-target-touch) !important;
   }
 }
 
 @media (width < 360px) {
-  :is(#c-root, html):lang(es)[data-text-step="200"] .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
+  :is(#c-root, html):not(.nv-any-lang)[data-text-step="200"] .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
     padding-inline: var(--b-space-8);
   }
 }
 
 @layer nv-b {
   @media (max-width: 359px) {
-    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] :is(#tcx-nav-title, .ck-recovery > .q-nav > .q-nav__t) {
+    html:not(.nv-any-lang)[data-text-step="200"] body .app-shell[data-nv-b] :is(#tcx-nav-title, .ck-recovery > .q-nav > .q-nav__t) {
       font-size: var(--b-fs-title) !important;
       line-height: var(--b-lh-title) !important;
     }
-    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] .b-hero:has(#b-tc-title) .b-seg {
+    html:not(.nv-any-lang)[data-text-step="200"] body .app-shell[data-nv-b] .b-hero:has(#b-tc-title) .b-seg {
       grid-auto-columns: minmax(min-content, 1fr);
     }
   }
-  html:lang(es)[data-text-step="200"] .c-pay__amt-k { white-space: nowrap; }
+  html:not(.nv-any-lang)[data-text-step="200"] .c-pay__amt-k { white-space: nowrap; }
 }
 
 @layer nv-b {
   @media (max-width: 767px) {
     /* Align both tools with the compact inset used for the longer corrections label. */
-    html:lang(es)[data-text-step="200"] .c-tc .b-list:has(a[href="/app/timecards/corrections"]) .b-row,
-    html:lang(es)[data-text-step="200"] .b-row[href="/app/timecards/corrections"] {
+    html:not(.nv-any-lang)[data-text-step="200"] .c-tc .b-list:has(a[href="/app/timecards/corrections"]) .b-row,
+    html:not(.nv-any-lang)[data-text-step="200"] .b-row[href="/app/timecards/corrections"] {
       padding-inline: var(--b-space-8) !important;
       column-gap: var(--b-space-4) !important;
     }
-    html:lang(es)[data-text-step="200"] #payroll-all .c-row:has(.c-pay__amt) {
+    html:not(.nv-any-lang)[data-text-step="200"] #payroll-all .c-row:has(.c-pay__amt) {
       display: grid !important;
       grid-template-columns: auto minmax(0, 1fr) !important;
       & > .c-row__main { grid-column: 2 !important; }
       & .c-pay__amt { flex-wrap: wrap !important; max-width: 100%; }
       & > .c-row__value { --c-pay-amount-inset: 0px; grid-column: 2 !important; grid-row: 2 !important; justify-self: start !important; max-width: 100% !important; text-align: start !important; }
     }
-    html:lang(es)[data-text-step="200"] #b-hours-weeks .b-row {
+    html:not(.nv-any-lang)[data-text-step="200"] #b-hours-weeks .b-row {
       display: grid !important;
       grid-template-columns: auto minmax(0, 1fr) auto !important;
       gap: var(--b-space-4) var(--b-space-8) !important;
@@ -696,14 +696,14 @@ html:lang(es) .c-exp .b-row__tx > .c-exp__dls {
       & > .b-row__end { grid-column: 2 !important; grid-row: 2 !important; justify-self: start; }
       & > .b-chev { grid-column: 3 !important; grid-row: 1 / 3 !important; }
     }
-    html:lang(es)[data-text-step="200"] .b-screen:has(#b-hours-title) .b-status {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-screen:has(#b-hours-title) .b-status {
       white-space: normal !important;
       max-width: 100%;
       min-width: 0;
     }
   }
   @media (min-width: 768px) and (max-width: 1023px) {
-    html:lang(es)[data-text-step="200"] .b-title:has(#b-pay-title) {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-title:has(#b-pay-title) {
       flex-wrap: wrap !important;
       & > .b-title__text { flex: 1 0 min-content !important; min-width: min-content; }
     }
@@ -713,18 +713,18 @@ html:lang(es) .c-exp .b-row__tx > .c-exp__dls {
 @layer nv-b {
   @media (max-width: 359px) {
     @container not style(--nv-rem: 16px) {
-      html:lang(es) .b-hero:has(#b-tc-title) .b-seg {
+      html:not(.nv-any-lang) .b-hero:has(#b-tc-title) .b-seg {
         display: flex !important;
         flex-wrap: wrap;
         height: auto !important;
       }
-      html:lang(es) .b-hero:has(#b-tc-title) .b-seg > button {
+      html:not(.nv-any-lang) .b-hero:has(#b-tc-title) .b-seg > button {
         flex: 1 1 max-content;
         white-space: nowrap;
       }
       /* These controls are already 48px high; an expanded pseudo-element
        * on the second row would intercept the first row's lower tap point. */
-      html:lang(es) .b-hero:has(#b-tc-title) .b-seg > button::after {
+      html:not(.nv-any-lang) .b-hero:has(#b-tc-title) .b-seg > button::after {
         inset-block: 0 !important;
       }
     }
@@ -733,11 +733,11 @@ html:lang(es) .c-exp .b-row__tx > .c-exp__dls {
 
 /* Extend the hit box inside the cell padding, including at a fractional row boundary. */
 @layer nv-b {
-  html:lang(es) .c-tc-table .c-tc-person {
+  html:not(.nv-any-lang) .c-tc-table .c-tc-person {
     position: relative;
   }
 
-  html:lang(es) .c-tc-table .c-tc-person::after {
+  html:not(.nv-any-lang) .c-tc-table .c-tc-person::after {
     content: "";
     position: absolute;
     inset-inline: 0;

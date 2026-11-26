@@ -8,7 +8,7 @@ const mediaBefore = (css: string, at: number) => css.slice(0, at).match(/@media 
 describe('44px targets on narrow phones', () => {
   it('anchors the Spanish PIN and recovery back-link hit area to the link itself', () => {
     const css = read('./owner-b-pages.css');
-    const rule = 'html:lang(es) body .app-shell[data-nv-b] .q-page:is(.ck-pin, .wc-recovery) > .q-nav > .q-nav__l';
+    const rule = 'html:not(.nv-any-lang) body .app-shell[data-nv-b] .q-page:is(.ck-pin, .wc-recovery) > .q-nav > .q-nav__l';
     const at = css.indexOf(rule);
     expect(at).toBeGreaterThan(-1);
     expect(mediaBefore(css, at)).toBe('@media (max-width: 767px) {');

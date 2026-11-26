@@ -41,7 +41,7 @@ it('G87: white on the band teal itself passes, so a full-strength count does', (
 });
 
 it('keeps Spanish PIN and recovery back links readable on the desktop hover fill', () => {
-  const rule = /html:lang\(es\) body \.app-shell\[data-nv-b\] \.q-page:is\(\.ck-pin, \.wc-recovery\) > \.q-nav \.q-nav__l:hover\s*\{([^}]+)\}/;
+  const rule = /html:not\(\.nv-any-lang\) body \.app-shell\[data-nv-b\] \.q-page:is\(\.ck-pin, \.wc-recovery\) > \.q-nav \.q-nav__l:hover\s*\{([^}]+)\}/;
   expect(read('owner-b-desktop.css').match(rule)?.[1]).toContain('color: var(--b-on-band) !important');
   const token = read('../b-tokens.css').match(/--b-on-band:\s*#([0-9a-f]{6});/i);
   expect(token).toBeTruthy();

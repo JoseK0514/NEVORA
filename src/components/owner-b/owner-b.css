@@ -559,36 +559,36 @@
 
 @layer nv-b {
   @media (max-width: 767px) {
-    html:lang(es)[data-text-step="200"] .b-hero:has(#b-todo-title) .b-seg:has(> :nth-child(4)) {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-hero:has(#b-todo-title) .b-seg:has(> :nth-child(4)) {
       grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       grid-auto-flow: row !important;
     }
     /* Each item already measures at least 44px in the two-row layout. */
-    html:lang(es)[data-text-step="200"] .b-hero:has(#b-todo-title) .b-seg:has(> :nth-child(4)) > button::after {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-hero:has(#b-todo-title) .b-seg:has(> :nth-child(4)) > button::after {
       inset: 0 !important;
     }
-    html:lang(es)[data-text-step="200"] :is(#b-help-how, #updates-other, #updates-required, .b-screen:has(:is(#b-more-title, #b-help-title, #b-todo-title, #b-updates-title, #b-requests-title)))
+    html:not(.nv-any-lang)[data-text-step="200"] :is(#b-help-how, #updates-other, #updates-required, .b-screen:has(:is(#b-more-title, #b-help-title, #b-todo-title, #b-updates-title, #b-requests-title)))
       :is(.b-row, .b-row__hit) {
       padding-inline: var(--b-space-8) !important;
       column-gap: var(--b-space-4) !important;
     }
-    html:lang(es)[data-text-step="200"] .b-card__h:has(> :is(#b-calendar-heading, #b-device-card-title, #b-requests-decided-h)) {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-card__h:has(> :is(#b-calendar-heading, #b-device-card-title, #b-requests-decided-h)) {
       flex-wrap: wrap !important;
       justify-content: flex-start !important;
       & > h2 { flex: 1 0 100% !important; }
     }
-    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-status,
-    html:lang(es)[data-text-step="200"] #b-todo-title ~ .b-sub .b-segs__i {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-status,
+    html:not(.nv-any-lang)[data-text-step="200"] #b-todo-title ~ .b-sub .b-segs__i {
       white-space: normal !important;
       max-width: 100%;
     }
-    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row:has(.b-row__trail) {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row:has(.b-row__trail) {
       flex-wrap: wrap;
     }
-    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row:has(.b-row__trail) > .b-row__hit {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row:has(.b-row__trail) > .b-row__hit {
       flex: 1 1 100%;
     }
-    html:lang(es)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row__trail {
+    html:not(.nv-any-lang)[data-text-step="200"] .b-screen:has(#b-todo-title) .b-row__trail {
       margin-inline-start: auto;
     }
   }
@@ -760,7 +760,7 @@
 }
 
 @media (max-width: 767px) {
-  :is(#c-root, html):lang(es)[data-text-step="200"] .app-shell[data-nv-b] .b-row__s {
+  :is(#c-root, html):not(.nv-any-lang)[data-text-step="200"] .app-shell[data-nv-b] .b-row__s {
     display: block;
     -webkit-line-clamp: unset;
     overflow: visible;

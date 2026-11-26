@@ -30,7 +30,7 @@
     html body .app-shell[data-nv-b] .q-page > .q-nav { top: auto !important; left: auto !important; right: auto !important; pointer-events: auto !important; }
     html body .app-shell[data-nv-b] .q-page > .q-nav > :is(a.q-nav__l, .q-nav__t, span:empty, .q-nav__r) { position: static !important; top: auto !important; left: auto !important; }
     /* Keep the 44px hit area on the link when the phone title shares its nav container. */
-    html:lang(es) body .app-shell[data-nv-b] .q-page:is(.ck-pin, .wc-recovery) > .q-nav > .q-nav__l {
+    html:not(.nv-any-lang) body .app-shell[data-nv-b] .q-page:is(.ck-pin, .wc-recovery) > .q-nav > .q-nav__l {
       position: relative !important;
       inset: auto !important;
     }
@@ -805,7 +805,7 @@ body { --nv-rem: 1rem; }
 }
 
 @layer nv-b {
-  html:lang(es)[data-text-step="200"] .app-shell[data-nv-b] :is(#passkeys-title, #deletion-kept-title, .c-help summary .c-row__title) {
+  html:not(.nv-any-lang)[data-text-step="200"] .app-shell[data-nv-b] :is(#passkeys-title, #deletion-kept-title, .c-help summary .c-row__title) {
     white-space: normal !important;
     overflow: visible !important;
     text-overflow: clip !important;

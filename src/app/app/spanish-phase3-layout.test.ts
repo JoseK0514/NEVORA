@@ -18,10 +18,10 @@ describe('Phase 3 Spanish layout boundaries', () => {
     expect(start).toBeGreaterThan(-1);
     const mobile = css.slice(css.lastIndexOf('@media', start), start);
     expect(mobile).toContain('@media (max-width: 767px)');
-    expect(mobile).toContain(':lang(es)');
+    expect(mobile).toContain(':not(.nv-any-lang)'); // shared with English since Nov 26, 2026 (flags B11, D6)
     expect(css.slice(start).split('}')[0]).toContain('flex-wrap: wrap');
     expect(css).toContain(row + ' > .rs-week__tx {\n    flex: 1 0 min-content;');
-    expect(css).toMatch(/:lang\(es\)[^{}]+:is\(\.rs-week__any, \.rs-week__none\)\s*\{[^}]*\bhyphens: none;/);
+    expect(css).toMatch(/:not\(\.nv-any-lang\)[^{}]+:is\(\.rs-week__any, \.rs-week__none\)\s*\{[^}]*\bhyphens: none;/);
   });
 
   for (const file of files) {
