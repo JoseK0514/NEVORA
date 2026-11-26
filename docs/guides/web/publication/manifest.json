@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-26",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "bf4630a106c68bf952368286be5bca2b44226a87",
-  "applicationHash": "7ca3ac246ef871c08ad14a2129cc123a3783c5c29519081f6210ba1092c09800",
+  "sourceSha": "97038e03e19329d47bef5f237d58dca087c771da",
+  "applicationHash": "49b3c9da79d5d7881c53de172420e24552fefe1f39acd2167f91cbcb1ca77008",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "94e9da77b419a672e0e53bf2a2e33a134894bc8adf82c04d8fe66bd0c38e3f4e"
@@ -224,7 +224,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "c93d15d53a901694ec387cef1cbf88b1d6af89c398d2f9aead1c87acf46d861e",
+        "sha256": "c233a1e702dad662803cf9442495887bd892513e744f0e25e64191bcaa4f42b1",
         "pageCount": 8
       }
     },
@@ -347,7 +347,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "ddc8e53c61c0f8113db8e784cae38b0518405063c3c14631ba37f4bce27033e6",
+        "sha256": "d57db55a3e0cd585aa2730ac26684c6647a283d2f10ec7c3f08909015f039a6a",
         "pageCount": 4
       }
     },
@@ -466,7 +466,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "2b9373976c50505ab89e85b7f6819e48401a5ec10c122a59451c712bbc187329",
+        "sha256": "2f4a662c6adfe50bc5b22740dd7d7ffa47c039df395a6d8119dcda4786841967",
         "pageCount": 3
       }
     },
@@ -552,7 +552,7 @@
         },
         {
           "path": "src/components/owner-advisor/knowledge/knowledge-page.tsx",
-          "sha256": "3d6eb8cdb4c9d9d5b96dbf6e59b6a0285a6723635480043338db5f46992cc53e"
+          "sha256": "030cc52c754852a1b72a3d8d13b309e6d9d38c70a9312980f5867fa98ab1b224"
         },
         {
           "path": "src/lib/owner-advisor/company-knowledge.server.ts",
@@ -568,7 +568,7 @@
         },
         {
           "path": "src/components/owner-advisor/weekly/weekly-page.tsx",
-          "sha256": "b90047ea55083ff94ff8a06422badc71a6d4e0e8ac51adceb9b54079dcdbee9b"
+          "sha256": "375d9f96a629ccebfa124b6455b52d6b87e08c2a90d5a58d6d0b8749b7fe70e9"
         },
         {
           "path": "src/lib/owner-advisor/weekly-contracts.ts",
@@ -641,7 +641,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "e1677c777b42b078ade947159c980a7d0cb4c67d5568304d19469b40bbb33a88",
+        "sha256": "1d70a244b6e9a44700274679843a6c45439521e4859071cdd0cf354cb293acff",
         "pageCount": 5
       }
     },
@@ -904,7 +904,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "a24936fdd9c0bbe06656bb0347e8a8b23d2deb9184d2f157b1de02d7e56d0de1",
+        "sha256": "353932e257443f1f3adc391716390dfa5a7be6bf797c58bbe9b59432bee8438a",
         "pageCount": 7
       }
     },
@@ -1099,7 +1099,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "92c15f4e280551e8d8dcd6edfe819e3883202358afa5f2e705f4683abf30f059",
+        "sha256": "7470413e5aa09b3275120a119fd3ddb4804b028ebdd342cc5346adf6ab951dec",
         "pageCount": 7
       }
     }
