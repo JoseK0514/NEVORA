@@ -184,7 +184,8 @@ describe("management side (Owner, Manager)", () => {
     expect(markup).toContain('type="time" step="300" aria-label="Monday, range 1, from" value="08:00"');
     expect(markup).toContain('aria-label="Remove range 1 on Monday"');
     expect(markup).toContain('aria-label="Add a time range on Monday"');
-    expect(markup).toContain('aria-label="Copy Monday to other days"');
+    // English flag B11 (Nov 26, 2026): named by its visible words plus the day, as in Spanish (no label/name mismatch).
+    expect(markup).toMatch(/id="([^"]+)-copy-1"[^>]*aria-labelledby="\1-copy-1 \1-n-1"/);
     // Saturday 10 PM to 6 AM says where it ends, and Sunday says what Saturday brings into it.
     expect(words).toContain("Ends Sunday at 6:00 AM");
     expect(words).toContain("Also Saturday night until 6:00 AM");

@@ -766,3 +766,8 @@
     overflow: visible;
   }
 }
+
+/* English flag B15 (Nov 26, 2026), shared with Spanish: in "Coming up" the weekday and the date's 40px digits overlapped
+ * by about 3.6px (line-height 1.1). The digits get a little more line height and a 2px gap, so the two never touch. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-day:not(#b15-none) { row-gap: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-day:not(#b15-none) b { line-height: 1.2; }

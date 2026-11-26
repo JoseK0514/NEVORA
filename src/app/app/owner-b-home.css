@@ -548,3 +548,10 @@
     }
   }
 }
+
+/* English flag B9 (Nov 26, 2026): at 1024 the band's "Add employee" shortcut was cut to "Add empl…" (13px hidden). A band
+ * shortcut's label wraps to a second line instead of ending in an ellipsis. Spanish uses a shorter word, so it fits. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__a:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#b9) { white-space: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-qa--band .b-qa__l:not(#fp1):not(#fp2):not(#fp3):not(#fp4):not(#fp5):not(#fp6):not(#b9) { overflow: visible !important; text-overflow: clip !important; overflow-wrap: normal !important; text-wrap: balance; }
+}

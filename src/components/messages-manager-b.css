@@ -176,7 +176,7 @@
 
 @layer nv-b {
   /* The track is 31px tall. The extra seven pixels on each side belong to its switch. */
-  .mb-switch .mb-tog:lang(es)::before {
+  .mb-switch .mb-tog:not(.nv-any-lang)::before {
     content: "";
     position: absolute;
     inset: -7px 0;

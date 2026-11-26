@@ -104,8 +104,7 @@ export function WeekEditor({ plan, onChange, t, problems }: { plan: WeekPlan; on
               focusNext.current = `${base}-s-${day}-${ranges.length}`;
               setDay(day, { mode: "ranges", ranges: [...ranges, { start, end }] });
             }}><PlusIcon size={16} weight="bold" aria-hidden="true" />{t.addRange}</button> : null}
-          <button type="button" id={`${base}-copy-${day}`} className="rs-link rs-link--quiet" aria-label={t.locale === "es-PR" ? undefined : t.copyLabel(name)}
-            aria-labelledby={t.locale === "es-PR" ? `${base}-copy-${day} ${base}-n-${day}` : undefined} aria-expanded="false" onClick={() => { focusNext.current = `${base}-copyfirst-${day}`; setCopying({ day, to: [] }); }}>
+          <button type="button" id={`${base}-copy-${day}`} className="rs-link rs-link--quiet" aria-labelledby={`${base}-copy-${day} ${base}-n-${day}`} aria-expanded="false" onClick={() => { focusNext.current = `${base}-copyfirst-${day}`; setCopying({ day, to: [] }); }}>
             <CopySimpleIcon size={16} weight="bold" aria-hidden="true" />{t.copy}</button>
         </div>}
         {copying?.day === day ? <div className="rs-ed__copy" role="group" aria-labelledby={`${base}-copyt-${day}`}>

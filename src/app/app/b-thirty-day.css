@@ -351,8 +351,8 @@
 
 /* Keep the visible control in place and give its centre a full touch target. */
 @layer nv-b {
-  .c-addemp:lang(es) .c-formhead__up { position: relative !important; }
-  .c-addemp:lang(es) .c-formhead__up::before {
+  .c-addemp:not(.nv-any-lang) .c-formhead__up { position: relative !important; }
+  .c-addemp:not(.nv-any-lang) .c-formhead__up::before {
     content: "";
     position: absolute;
     left: 50%;

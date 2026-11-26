@@ -991,7 +991,7 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-sheetpage > .c-formhead .c-formhead__up:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4)::after { content: "" !important; display: block !important; position: absolute !important; inset: auto !important; top: 50% !important; left: 0 !important; right: 0 !important; width: auto !important; height: 44px !important; translate: 0 -50% !important; transform: none !important; border: 0 !important; background: none !important; box-shadow: none !important; }
 
     /* The import and export headers use the same hit box with reduced motion. */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-sheetpage.c-pim:lang(es) > .c-formhead .c-formhead__up:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4)::after {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-sheetpage.c-pim:not(.nv-any-lang) > .c-formhead .c-formhead__up:not(#nvd-none):not(#nvd-none2):not(#nvd-none3):not(#nvd-none4)::after {
       top: calc(50% - 22px) !important;
       translate: none !important;
     }
@@ -1077,4 +1077,10 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > header.c-title .c-tc-select:not(#gq1):not(#gq2):not(#gq3) { display: inline-flex !important; align-items: center !important; height: var(--b-btn-h-band) !important; min-height: var(--b-btn-h-band) !important; padding: 0 var(--b-inset) !important; border: 0 !important; border-radius: var(--b-radius-pill) !important; background: var(--b-glass) !important; box-shadow: inset 0 0 0 1px var(--b-glass-edge) !important; color: var(--b-on-band) !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-tc > header.c-title .c-tc-select:disabled:not(#gq1):not(#gq2):not(#gq3) { opacity: 0.6 !important; }
   }
+}
+
+/* English flag C4 (Nov 26, 2026), shared: a band tab narrower than 44px lent its edge to the next tab, so a tap 21.5px
+ * from a tab's centre landed on its neighbour. Each band tab is at least 44px wide. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] :is(nav.c-pay-tabs, nav.c-seg, .c-tc-seg):is(.c-page > header.c-title ~ *, .q-page > .q-hd + *) > :is(a, button):not(#c4-none) { min-width: 44px !important; }
 }
