@@ -34,6 +34,14 @@ sits word for word in the copy tables.
   lang mismatches, overflow or HTTP errors. Its two findings are fixed: the copy slips (f0c2edbd) and the header
   collision (e9d92a7b).
 
+## Open findings from QA's pause report (to handle tomorrow)
+
+- **LOW, both languages:** the `/clocker` invalid-key page scrolls sideways at 390 with 200% text.
+- **LOW, both languages:** the signed-out footer links overlap on `/privacy` and `/support` at 390 with 200% text.
+- **To confirm on screen:** three possible overlaps the automated check flagged: Mi tiempo, the Horario band, and Horario
+  at 1440.
+- **Waiting for QA's recheck:** the stacked Spanish header (e9d92a7b) and the Spanish AppErrorScreen (447e6afe).
+
 ## To do tomorrow, in order
 
 1. QA resumes from its RESUME.md:
