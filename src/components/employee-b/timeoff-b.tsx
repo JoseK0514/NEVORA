@@ -123,10 +123,11 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
 }
 
 /** The planning read's state, said in a card: paused, denied (Sign in), checking, or failed (Try again). */
-export function TimeOffStateB({paused, denied, refreshing, onRetry}: {paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void}) {
-  const copy = requestsCopy(usePortalLang());
-  return <BStateCard label={copy.timeOff} text={paused ? copy.timeOffPaused : denied ? copy.accessChanged : refreshing ? copy.loadingTimeOff : copy.timeOffDidntLoad}
-    denied={denied} retry={refreshing || paused ? null : onRetry} kind={paused ? 'paused' : undefined}/>;
+export function TimeOffStateB({paused, denied, refreshing, onRetry, failed = false}: {paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void;
+  /** The last read failed: while it reads again the failed card stays, its Try again busy and focused (English flag A6). */ failed?: boolean}) {
+  const copy = requestsCopy(usePortalLang()), retrying = refreshing && failed && !paused && !denied;
+  return <BStateCard label={copy.timeOff} text={paused ? copy.timeOffPaused : denied ? copy.accessChanged : retrying ? copy.timeOffDidntLoad : refreshing ? copy.loadingTimeOff : copy.timeOffDidntLoad}
+    denied={denied} retry={(refreshing && !retrying) || paused ? null : onRetry} busy={retrying} kind={paused ? 'paused' : undefined}/>;
 }
 
 /** The phone's first frame on Time off, before its private read starts: the page's hero, checking. No private data. */

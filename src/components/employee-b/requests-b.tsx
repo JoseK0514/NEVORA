@@ -18,6 +18,7 @@ import {useEmployeeDevice} from '../employee-mobile/device-owner';
 import './employee-b.css';
 import './requests.css';
 import { RetryButton } from "@/components/kit/retry-button";
+import {ERROR_SCREENS_COPY} from '@/components/error-screens-copy';
 
 /* Requests and shifts on the Employee phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6,
  * 2026): the Requests tab, the loading screens the phone shows before its private read, and the pieces shared by Time
@@ -52,9 +53,9 @@ export function RequestRowB({row}: {row: BRequestRow}) {
  * a retry means it failed, otherwise it is still checking. */
 export function BStateCard({text, denied, retry, busy, label, kind}: {text: ReactNode; denied?: boolean; retry?: (() => void) | null; busy?: boolean; label?: string; kind?: BStateKind}) {
   const look: BStateKind = kind ?? (denied ? 'locked' : retry ? 'failed' : 'loading');
-  const copy = requestsCopy(usePortalLang());
+  const lang = usePortalLang(), copy = requestsCopy(lang);
   return <BCard label={label}>
-    <BState kind={look} line={text} action={denied ? {label: copy.signIn, href: '/login'} : retry ? {label: copy.tryAgain, onClick: retry, busy} : undefined}/>
+    <BState kind={look} line={text} action={denied ? {label: copy.signIn, href: '/login'} : retry ? {label: copy.tryAgain, onClick: retry, busy, busyLabel: busy ? ERROR_SCREENS_COPY[lang].tryingAgain : undefined} : undefined}/>
   </BCard>;
 }
 

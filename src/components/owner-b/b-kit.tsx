@@ -499,7 +499,7 @@ export function BState({ kind, title, line, action, children, icon, alert, silen
       {action ? action.href ? <BButtonLink href={action.href} kind={go} label={action.aria}>{action.label}</BButtonLink>
         : action.retry && action.busy === undefined ? <BRetryButton kind={go} onClick={action.onClick} label={action.aria}>{action.label}</BRetryButton>
         : action.busy === undefined ? <BButton kind={go} onClick={action.onClick as (() => void) | undefined} label={action.aria}>{action.label}</BButton>
-        : <BButton kind={go} onClick={action.onClick as (() => void) | undefined} busy={action.busy} busyLabel={action.busyLabel ?? (action.busy ? "Checking…" : undefined)} label={action.aria}>{action.label}</BButton> : null}
+        : <BButton kind={go} onClick={action.onClick as (() => void) | undefined} busy={action.busy} busyLabel={action.busyLabel ?? (action.busy ? "Checking…" : undefined)} keepFocus label={action.aria}>{action.label}</BButton> : null}
       {quiet ?? null}
     </div>
   </div>;

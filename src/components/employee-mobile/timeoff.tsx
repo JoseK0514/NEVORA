@@ -62,7 +62,7 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
  // Direction B (phones only): the same page as the B screen. The form, its receipt and the withdraw step stay in this page
  // once (b-keep) and are drawn as that screen's cards.
  const b=<TimeOffB page={isNew?'new':isList?'list':'detail'} filter={filter} enabled={read?read.enabled:null} earlier={!isNew&&(pending||uncertain)} requests={shown} request={row??null} zone={read?.timeZone??'UTC'} waiting={read?read.data.requests.filter(r=>r.status==='PENDING').length:null}
-  state={read?null:<TimeOffStateB paused={panel.state.paused} denied={denied} refreshing={panel.state.refreshing} onRetry={panel.refresh}/>}/>;
+  state={read?null:<TimeOffStateB paused={panel.state.paused} denied={denied} refreshing={panel.state.refreshing} onRetry={panel.refresh} failed={panel.state.snapshot?.state==='unavailable'}/>}/>;
  return <PlanningFrame b={b} bTitleId="b-timeoff-title" title={title} sub="" sheet={isNew} back={isList?'/app/requests/hub':isNew?listHref:'/app/requests/hub'} backLabel={t.requests} selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
   {read&&!read.enabled?<p className="c-note" role="status">{t.turnedOff}</p>:read?<>
    {!isNew&&(pending||uncertain)?<section className="c-card"><div className="c-card__body tof-feedback"><p>{t.earlier}</p><Link href="/app/requests?tab=new">{t.returnToSubmission}</Link></div></section>:null}

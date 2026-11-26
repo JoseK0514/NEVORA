@@ -287,6 +287,10 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; initialFilter?: InboxFilter; coverageFirst?: boolean;
 }) {
   const phones = useContext(Phones);
+  // English flag A6 (Nov 26, 2026): after a failed read, Try again stays on screen (busy) while the read runs again.
+  const [lastSettled, setLastSettled] = useState(connection);
+  if (connection !== "loading" && connection !== "reconnecting" && connection !== lastSettled) setLastSettled(connection);
+  const retryingAfterFailure = lastSettled === "unavailable" || lastSettled === "not_allowed";
   // Quiet (v4): three segments; "all" (an old link) opens Act now.
   const [filter, setFilter] = useState<InboxFilter>(initialFilter === "all" ? "now" : initialFilter);
   // Phase 4: on a wide screen the Inbox is a list with a detail pane. The URL keeps the selection, so Back from a review restores it.
@@ -451,7 +455,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
         {/* ST-26: the status line comes first, so it stays put. */}
         <p role="status" tabIndex={-1} className="q-empty inbox-status-message" style={{ marginTop: 24 }}>{statusText[connection]}</p>
         {connection === "access_lost" ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link>
-          : connection === "unavailable" || connection === "ready" || connection === "not_allowed" ? <RetryButton className="q-btn q-btn--sec" onClick={() => { refresh(); focusAfterRetry(".premium-inbox .q-grp h2", ".inbox-status .q-btn"); }}>Try again</RetryButton> : null}
+          : connection === "unavailable" || connection === "ready" || connection === "not_allowed" || (retryingAfterFailure && (connection === "loading" || connection === "reconnecting")) ? <RetryButton className="q-btn q-btn--sec" busy={connection === "loading" || connection === "reconnecting"} onClick={() => { refresh(); focusAfterRetry(".premium-inbox .q-grp h2", ".inbox-status .q-btn"); }}>Try again</RetryButton> : null}
       </div> : total === 0 ? <div className="inbox-clear">
         <p className="q-empty" role="status" style={{ marginTop: 24 }}>Nothing needs you right now.{ready.limitedAttendance ? " Some attendance comparisons are unavailable." : ""}</p>
       </div> : <>

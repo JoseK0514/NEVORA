@@ -7,6 +7,8 @@ import { useRetryPress } from './use-retry-press';
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'children'> & {
   onClick?: () => unknown; children: ReactNode;
+  /** The screen's own read is still running after the press (it stays busy past the minimum until this turns false). */
+  busy?: boolean;
   /** The kit's own button (CorpButton, for example); a plain <button> by default. Extra props go to it unchanged. */
   as?: ComponentType<ButtonHTMLAttributes<HTMLButtonElement>>;
   [extra: string]: unknown;
@@ -15,8 +17,8 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'children
 /** An in-card "Try again" on any kit (English flag A6, Nov 26, 2026). While its retry runs the button says "Trying
  * again…" with the spinner at its resting width (both labels share one cell), carries aria-busy, stays focusable
  * (aria-disabled, presses ignored) and takes no second press. */
-export function RetryButton({ as: Button, onClick, children, disabled, ...rest }: Props) {
-  const { busy, press } = useRetryPress(onClick);
+export function RetryButton({ as: Button, onClick, children, disabled, busy: reading = false, ...rest }: Props) {
+  const { busy: pressed, press } = useRetryPress(onClick), busy = pressed || reading;
   const words = ERROR_SCREENS_COPY[usePortalLang()];
   const props = { type: 'button' as const, ...rest, disabled, 'aria-busy': busy || undefined, 'aria-disabled': busy || undefined, onClick: busy || disabled ? undefined : press };
   const label = <BBusyLabel busy={busy} busyLabel={words.tryingAgain}>{children}</BBusyLabel>;

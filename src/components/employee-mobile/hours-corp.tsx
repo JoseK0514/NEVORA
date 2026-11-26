@@ -48,11 +48,11 @@ export function CorpHoursFrame({contextKey,view,state,ready,refresh,head,headIns
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied',t=hoursCorpCopy[useMobileLang()].frame;
  return <div className={sub?'c-page c-page--narrow c-hours c-hours--sub':'c-page c-page--narrow c-hours'} data-nv-page="" data-corp="" data-hours-context={contextKey} data-hours-view={view}
   data-hours-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'} aria-busy={state.refreshing}>
-  {ready?null:<HoursFrameStatusB paused={state.paused} denied={denied} refreshing={state.refreshing} refresh={refresh}/>}
+  {ready?null:<HoursFrameStatusB paused={state.paused} denied={denied} refreshing={state.refreshing} refresh={refresh} failed={state.snapshot?.state==='unavailable'}/>}
   {ready&&headInside?null:head}
   {ready?children:<CorpCard ariaLabel={t.access}><CorpBody>
    <p className="c-line2" role="status">{state.paused?t.paused:denied?t.denied:state.refreshing?t.refreshing:t.failed}</p>
-   {denied?<CorpButtonLink href="/login" kind="secondary" size="md" full>{t.signIn}</CorpButtonLink>:<CorpButton kind="secondary" size="md" full disabled={state.paused||state.refreshing} onClick={refresh}>{state.refreshing?t.checking:t.tryAgain}</CorpButton>}
+   {denied?<CorpButtonLink href="/login" kind="secondary" size="md" full>{t.signIn}</CorpButtonLink>:<CorpButton kind="secondary" size="md" full disabled={state.paused||undefined} aria-disabled={state.refreshing||undefined} aria-busy={state.refreshing||undefined} onClick={state.refreshing?undefined:refresh}>{state.refreshing?t.checking:t.tryAgain}</CorpButton>}
   </CorpBody></CorpCard>}
  </div>;
 }

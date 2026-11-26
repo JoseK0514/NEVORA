@@ -27,6 +27,8 @@ import { ownerBCopy, clockIn, ATTENDANCE, ASK_ES, type OwnerBCopy, type OwnerBLa
 import { useViewLang } from "./use-owner-lang";
 import type { ReviewCopy } from "@/components/review-details/copy";
 import { BDoneMark, BAvatar, BButton, BButtonLink, BCard, BChip, BCount, BGlyph, BHero, BIcon, BList, BRow, BScreen, BSeg, BSegs, BSegsText, BStack, BState, BStatusText, BSwapNames, BWhen, compactRange } from "./b-kit";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { ERROR_SCREENS_COPY } from "@/components/error-screens-copy";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
  * corporate page (groupThingsToDo); the glass chips filter them by job. An open shift's Find cover opens the same coverage
@@ -70,13 +72,22 @@ const requestIdOf = (item?: ActionItem) => { try { return item?.request ? new UR
 
 /** Closing F1 (NV-075): Things to do's own read, when it isn't ready, is one state card (said once, not also in the band). */
 function ReadState({ connection, statusLine, onRefresh, c }: { connection: ActionCenterConnection; statusLine: string; onRefresh: () => void; c: OwnerBCopy["inbox"] }) {
+  // English flag A6 (Nov 26, 2026): after a failed read, Try again reads again ("loading") without swapping the failed
+  // card for the loading one, so its button stays on screen, busy and focused, until the answer arrives.
+  const [last, setLast] = useState(connection);
+  if (connection !== "loading" && connection !== "reconnecting" && connection !== last) setLast(connection);
+  const failedBefore = last === "unavailable" || last === "not_allowed";
+  const lang = usePortalLang();
+  if ((connection === "loading" || connection === "reconnecting") && failedBefore)
+    return <BState kind={last === "not_allowed" ? "locked" : "failed"} title={last === "not_allowed" ? c.deniedTitle : c.failedTitle} line={last === "not_allowed" ? c.deniedLine : c.failedLine}
+      action={{ label: c.tryAgain, onClick: onRefresh, busy: true, busyLabel: ERROR_SCREENS_COPY[lang].tryingAgain }} />;
   if (connection === "loading" || connection === "reconnecting") return <BState kind="loading" line={statusLine} />;
   if (connection === "offline") return <BState kind="offline" title={c.offlineTitle} line={c.offlineLine} />;
   if (connection === "paused") return <BState kind="paused" title={c.pausedTitle} line={c.pausedLine} />;
   if (connection === "access_lost") return <BState kind="locked" title={c.endedTitle} line={c.endedLine} action={{ label: c.signIn, href: "/login" }} />;
   // QA A3-06 (Nov 21, 2026): signed in, but without access to these tasks. Not a sign-out, so no Sign in button.
-  if (connection === "not_allowed") return <BState kind="locked" title={c.deniedTitle} line={c.deniedLine} action={{ retry: true, label: c.tryAgain, onClick: onRefresh }} />;
-  return <BState kind="failed" title={c.failedTitle} line={c.failedLine} action={{ retry: true, label: c.tryAgain, onClick: onRefresh }} />;
+  if (connection === "not_allowed") return <BState kind="locked" title={c.deniedTitle} line={c.deniedLine} action={{ label: c.tryAgain, onClick: onRefresh, busy: false, busyLabel: ERROR_SCREENS_COPY[lang].tryingAgain }} />;
+  return <BState kind="failed" title={c.failedTitle} line={c.failedLine} action={{ label: c.tryAgain, onClick: onRefresh, busy: false, busyLabel: ERROR_SCREENS_COPY[lang].tryingAgain }} />;
 }
 
 /** Closing F1 (NV-002): Later and done says what it holds ("Plan ahead 47 · Earlier 3"), so nothing waits unseen. */

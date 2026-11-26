@@ -24,6 +24,7 @@ import type {TimecardsResult} from '@/lib/timecards/read-model';
 import type {Period} from '@/lib/timecards/project';
 import type {EmployeeTimeCorrections,PublicCorrectionItem} from '@/lib/time-corrections/read-model';
 import {EARLIER_MAX,boardDuration,cardStatus,cardsHref,clockAt,clockRange,compactDuration,correctionStatus,dateKey,dayLong,dayMedium,entryHref,interval,issueText,kindLabel,rangeLabel,seconds,sentAt,span,statusWord,timeWeek,weekOf,type CardState,type Ready,type StatusTone} from '../employee-mobile/hours-model';
+import {ERROR_SCREENS_COPY} from '@/components/error-screens-copy';
 
 /* Employee Time on the phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026): the Time
  * tab, a day's punches, Past timecards, Your correction requests and Fix my time on the teal hero. Presentation only: each screen
@@ -52,7 +53,7 @@ export function HoursBScreen({hero,children,sub,backLabel,right}:{hero?:ReactNod
 
 /** A read state or a message with its one way forward, as a card. Review F2 (NV-075): the shared state card (icon circle,
  * one line, one teal pill). */
-export function HoursStatusB({message,action,label,kind='locked'}:{message:ReactNode;action?:{label:ReactNode;onClick?:()=>void;href?:string;busy?:boolean;retry?:boolean};label?:string;kind?:BStateKind}){
+export function HoursStatusB({message,action,label,kind='locked'}:{message:ReactNode;action?:{label:ReactNode;onClick?:()=>void;href?:string;busy?:boolean;busyLabel?:ReactNode;retry?:boolean};label?:string;kind?:BStateKind}){
  const T=timeCopy(usePortalLang());
  return <BCard label={label??T.timeStatus}><BState kind={kind} line={message} action={action}/></BCard>;
 }
@@ -61,11 +62,13 @@ export function HoursUnavailableB({message,onRefresh}:{message:string;onRefresh:
  return <HoursBScreen><HoursStatusB kind="failed" message={message} action={{ retry: true, label:T.tryAgain,onClick:onRefresh}}/></HoursBScreen>;
 }
 /** The frame's own states (paused, denied, loading, failed) on the page's hero. */
-export function HoursFrameStatusB({paused,denied,refreshing,refresh}:{paused:boolean;denied:boolean;refreshing:boolean;refresh:()=>void}){
- const offline=typeof navigator!=='undefined'&&navigator.onLine===false,T=timeCopy(usePortalLang());
- return <HoursBScreen><HoursStatusB label={T.timeAccess} kind={paused?(offline?'offline':'paused'):denied?'locked':refreshing?'loading':'failed'}
-  message={paused?T.paused:denied?T.denied:refreshing?T.checking:T.failed}
-  action={denied?{label:T.signIn,href:'/login'}:paused||refreshing?undefined:{label:T.tryAgain,onClick:refresh}}/></HoursBScreen>;
+export function HoursFrameStatusB({paused,denied,refreshing,refresh,failed=false}:{paused:boolean;denied:boolean;refreshing:boolean;refresh:()=>void;
+ /** The last read failed: while it reads again the failed card stays, its Try again busy and focused (English flag A6). */failed?:boolean}){
+ const offline=typeof navigator!=='undefined'&&navigator.onLine===false,lang=usePortalLang(),T=timeCopy(lang);
+ const retrying=refreshing&&failed&&!paused&&!denied;
+ return <HoursBScreen><HoursStatusB label={T.timeAccess} kind={paused?(offline?'offline':'paused'):denied?'locked':retrying?'failed':refreshing?'loading':'failed'}
+  message={paused?T.paused:denied?T.denied:retrying?T.failed:refreshing?T.checking:T.failed}
+  action={denied?{label:T.signIn,href:'/login'}:paused||(refreshing&&!retrying)?undefined:{label:T.tryAgain,onClick:refresh,busy:retrying,busyLabel:ERROR_SCREENS_COPY[lang].tryingAgain}}/></HoursBScreen>;
 }
 /** An earlier fix is still being checked: the way back to it, first on every Time page. */
 export function HoursRecoveryB({href}:{href:string}){
