@@ -7,6 +7,10 @@
  * screen itself has left the page. */
 export const SETTLE_MS = 2000;
 
+/* QA O1 at 1440 (Nov 26, 2026): the first match can be a heading hidden at that width (the phone-only bar's title, for
+ * example); focusing a hidden element does nothing and leaves focus on <body>. Take the first match that is drawn. */
+const visible = (selector: string) => [...document.querySelectorAll<HTMLElement>(selector)].find(element => element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden') ?? null;
+
 export function focusAfterRetry(target: string, retry: string, timeout = 15000, { waitForGone }: { waitForGone?: string } = {}) {
   const start = performance.now();
   const from = document.activeElement;
@@ -23,12 +27,12 @@ export function focusAfterRetry(target: string, retry: string, timeout = 15000, 
     if (landed) {
       // Settling: keep the heading focused through a late re-render, then stop.
       if (now - landedAt > SETTLE_MS) return;
-      if (active === document.body || active === null) { const found = document.querySelector<HTMLElement>(target); if (found) land(found); }
+      if (active === document.body || active === null) { const found = visible(target); if (found) land(found); }
       window.setTimeout(tick, 100);
       return;
     }
     const screenGone = !waitForGone || !document.querySelector(waitForGone);
-    const found = screenGone ? document.querySelector<HTMLElement>(target) : null;
+    const found = screenGone ? visible(target) : null;
     if (found) { land(found); window.setTimeout(tick, 100); return; }
     const again = document.querySelector<HTMLElement>(retry);
     if (again && again !== from && document.activeElement === document.body) return land(again);
