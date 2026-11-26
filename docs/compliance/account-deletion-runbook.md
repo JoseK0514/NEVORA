@@ -33,6 +33,17 @@ manifest. There is no blanket `DELETE employees` or safe universal purge order i
 foreign keys, RLS, audit triggers or append-only controls to make removal succeed. If those controls require a
 new erasure mechanism, keep the case processing and give engineering the specific blocked table/constraint.
 
+Assign these roles in the restricted case before starting fulfillment. Jose is the initial Support responder and
+authorizes the production operator. Record the named operator and handoff if someone else does the work.
+
+| Step | Owner | Evidence in the restricted case |
+| --- | --- | --- |
+| Intake and claim | Support responder, then authorized deletion operator | Exact environment, database incarnation and workspace, request UUID and reference, subject bound at claim, policy version, verification and confirmation times, due date, and claim receipt. |
+| Work and retention decisions | Employer's authorized records owner, with Jose for VELANI policy or unresolved holds | Open punch, correction, time-off, exchange and payroll disposition. Approved removal manifest, retention purpose, source date, end date or hold release condition, and access owner per category. |
+| Data and provider work | Deletion operator for database and objects. Authorized provider or backup custodian for external work. | Scoped operation receipts or post-operation counts, provider references or reason a category is inapplicable, restore-window readback, snapshot disposition and restore reapplication instructions. |
+| Verification and notice | Deletion operator verifies. Support responder owns the completion notice. | Timestamped readbacks for each manifest item and remaining access paths. Approved notice channel and outcome, or evidence that no address was on file. |
+| Completion record and follow-up | Deletion operator records closure. Support reconciles any notice and tracks the case. | Exact completed row and timestamp, incident or retry reconciliation if applicable, and the privacy-evidence disposal date. |
+
 ## 1. See open requests
 
 ```sql
@@ -43,13 +54,15 @@ SELECT reference, workspace_id, channel, status, confirmed_at
 ```
 
 Complete each within `DELETION_COMPLETION_PERIOD` (see `src/lib/legal/policies.ts`), counted from `confirmed_at`.
+Support reports the reference as received or in progress while the request is open. Escalate a blocked case
+to Jose before its deadline and record the blocker, responsible person and next check in the restricted case.
 
 ## 2. Start one
 
 ```sql
 UPDATE account_deletion_requests SET status = 'processing', updated_at = clock_timestamp()
  WHERE reference = $1 AND workspace_id = $2 AND employee_id = $3 AND status = 'received'
- RETURNING reference, workspace_id, employee_id, status;
+ RETURNING id, reference, workspace_id, employee_id, policy_version, verified_at, confirmed_at, status;
 ```
 
 Bind the exact reference, workspace and verified request subject. Exactly one returned row claims processing.
@@ -57,8 +70,10 @@ Zero rows means no claim: reread that exact case. A lost response is unknown; re
 continuing. If processing already began, resume its existing manifest and completed steps; do not claim fresh
 custody merely because the row says processing. Support withdrawal may proceed only while status is received.
 
-Sessions and calendar feeds were already removed when the request was accepted. Sign-in is blocked while the
-request is open.
+Acceptance ends the subject's application sessions, revokes their passkeys and calendar feeds, and blocks
+sign-in while the request is open. Check that those effects belong to the verified subject before processing.
+If an Owner was refused because no activated replacement Owner is available, route them to Support for
+the existing ownership handoff. A refusal leaves their access and the request queue intact.
 
 ## 3. Check what is in flight
 
@@ -70,18 +85,24 @@ neither breaks a work record nor leaves a half-finished one.
 
 Follow the table in `README.md` (“Data inventory”). In short:
 
-- Delete: credentials, recovery proofs, Clocker PIN, push subscriptions, inbox notifications, receipts, calendar
-  subscriptions, contributed updates the person authored (or de-identify the author).
+- Delete per the approved manifest: credentials, recovery proofs, Clocker PIN, push subscriptions, inbox
+  notifications, receipts, and contributed updates the person authored (or de-identify the author).
+- Calendar: verify zero unrevoked subscriptions and that former feed links are refused. The subscription rows
+  contain token digests and revocation evidence, and the operation rows are append-only. The current schema
+  rejects their deletion. Have the records owner document the approved purpose, access restriction and disposal
+  disposition for this retained history. Escalate any erasure or disposal the schema blocks and leave the case
+  processing until the required disposition is feasible and recorded.
 - Employer work records (shifts, time, corrections, payroll): keep or de-identify as `RETENTION_SCHEDULE` says;
   restrict access to what is kept.
 - `employees` row: clear first name, last name, phone and email (replace with a neutral label such as
   “Former team member”) and set `birth_date` to NULL (migration 0068) when work records must stay; keep it inactive
   and remove all sign-in/recovery material. Hire and termination dates are employment records: handle them with the
   work records above.
-  The schema requires non-null name/phone fields: use a reviewed neutral label/empty contact value, not an
-  invented reachable address or `NULL` that violates the schema. Otherwise remove the row only after reviewing
-  its actual dependencies. The request's `employee_id` may become null by its existing foreign key; preserve the
-  opaque request/reference and private fulfillment evidence.
+  Use a reviewed neutral label and an empty phone value. The current schema creates a protected
+  `operational_subject_versions` reference even for a new employee. Use the approved inactive, neutralized row
+  when that reference must be kept. Escalate a required hard deletion with the exact constraints it would hit.
+  Preserve the opaque request/reference and private fulfillment evidence if the employee foreign key becomes null
+  after an authorized removal.
 - Outside the database: email provider, push provider, logs, backups (`BACKUP_EXPIRY`).
 
 Apply the longest applicable approved retention period: work/payroll records three years from final entry;
@@ -97,28 +118,51 @@ recovery snapshots by purpose, owner and review/disposal event. Never restore de
 must reapply completed erasures/retention restrictions before reopening the restored company. Do not edit a
 backup, lower restore history or delete a snapshot without the coordinator's reviewed recovery plan.
 
-## 5. Finish
+## 5. Verify fulfillment and reconcile the notice
+
+The deletion operator signs off each manifest item with a timestamp and a scoped readback. Check the
+inactive neutralized subject or removed row, credentials and recovery material, sessions, passkeys, calendar
+revocation, subject-linked Clocker PIN and device grants, provider tasks, retained work records and access restrictions.
+Verify the backup disposition and document how a restore reapplies completed erasures before access reopens.
+Keep the case processing while required changes, evidence or retention decisions are unresolved.
+
+Support prepares the notice using the authorized pre-removal contact source. After the operator's verification,
+send through the approved Support workflow if an address was on file. State that fulfillment is complete and
+describe anything retained and the applicable retention end date or hold condition. Record the message
+reference and outcome in the restricted case, or record the verified absence of an address on file. For an
+unknown send outcome, reconcile the existing Support message record before retrying. A missing trustworthy
+contact source or unresolved required notice goes to Jose and keeps the case processing.
+
+In a fictional rehearsal, record the verification and notice as rehearsal evidence using a simulated notice
+receipt. Keep mailbox, provider and backup actions local or simulated.
+
+## 6. Record completion
+
+After verification and notice disposition are recorded, bind the exact reference, workspace and request UUID
+captured when claiming the case. The UUID is stable if deleting the employee row clears its foreign key.
 
 ```sql
 UPDATE account_deletion_requests
    SET status = 'completed', completed_at = clock_timestamp(), updated_at = clock_timestamp(),
-       retained_note = $3  -- what was kept, why, and until when; no personal data; max 2000 chars
- WHERE reference = $1 AND workspace_id = $2 AND status = 'processing'
- RETURNING reference, workspace_id, status, completed_at;
+       retained_note = btrim($4)
+ WHERE reference = $1 AND workspace_id = $2 AND id = $3 AND status = 'processing'
+   AND length(btrim($4)) BETWEEN 1 AND 2000
+ RETURNING id, reference, workspace_id, status, completed_at, retained_note;
 ```
 
-First verify removal/restriction against the manifest, every credential/session/feed/device path, provider tasks
-and backup disposition. Keep a private completion communication prepared before removing contact data; send
-only through the approved support workflow with authorization for that actual person. Do not invent an address
-or test real mail here. A receipt/reference alone is not authority to contact a person.
+The retention note records what was kept, why, and through which date or hold condition using category names
+and no personal data. Use the stored completion timestamp to calculate the privacy case's 24-month disposal date.
+Exactly one returned row confirms closure. For zero rows or a lost acknowledgement, read the same request.
 
-Exactly one returned row confirms the state change. Zero rows or a lost acknowledgement requires a read of
-the exact reference/workspace; do not run a broader update. If already completed, reconcile that same private
-case and communication outcome without deleting/sending again. If provider removal or required completion
-communication is unresolved, document it and escalate; do not describe the whole fulfillment as complete.
+```sql
+SELECT id, reference, workspace_id, status, completed_at, retained_note
+  FROM account_deletion_requests
+ WHERE reference = $1 AND workspace_id = $2 AND id = $3;
+```
 
-Email the person (if an address was on file before removal) that deletion is complete and what, if anything, was
-kept and until when. Only mark a request completed when every step above is done.
+If the row is completed, record its timestamp and reconcile the existing notice outcome in the private case.
+Resume a processing row from the recorded checklist. Escalate a missing or conflicting row without widening
+the query or repeating data removal or a confirmed notice.
 
 ## Withdrawing
 

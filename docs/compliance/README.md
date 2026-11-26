@@ -95,10 +95,10 @@ tracking (none observed in code), retention rule, removal path. **Verify before 
 
 | Data class | Tables | Removal path (runbook) |
 |---|---|---|
-| Identity and contact | `employees` (name, phone, email, role, location; optional date of birth, hire and termination dates from 0068) | De-identify the row (name, phone, email and date of birth cleared) if work records must stay; else delete. Hire and termination dates follow the work records. |
+| Identity and contact | `employees` (name, phone, email, role, location; optional date of birth, hire and termination dates from 0068), `operational_subject_versions` | Use the approved inactive, neutralized row where work or protected ownership records must stay. Hire and termination dates follow the work records. Follow the runbook for a blocked hard deletion. |
 | Credentials and sessions | `employee_credentials`, `employee_sessions`, `password_recovery_proofs`, `password_recovery_limits`, `employee_clocker_pins`, `clocker_pin_sessions` | Delete. Sessions already gone at request. |
 | Notifications | `push_subscriptions`, `push_deliveries`, `notifications`, `employee_attention_receipts` | Delete subscriptions and the person’s inbox items. |
-| Calendar feeds | `calendar_subscriptions` (revoked at request), `calendar_operations` | Already revoked; delete after the retention decision. |
+| Calendar feeds | `calendar_subscriptions` (revoked at request), `calendar_operations` | Verify former links are refused. Record the approved retention and disposal disposition for protected history. |
 | Schedules and requests | `shifts`, `availability_*`, `weekly_availability_*`, `time_off_requests`, `shift_exchanges`, `shift_callouts`, `shift_change_*` | Employer work records: keep or de-identify per `RETENTION_SCHEDULE`. |
 | Time and attendance | `time_entries`, `break_entries`, `time_correction_*`, `timecard_revisions`, `clocker_*` events, `attendance_policy_observations` | Employer work records: keep or de-identify per `RETENTION_SCHEDULE`. |
 | Payroll | `payroll_*` (documents, runs, exceptions, notices) | Keep only what the retention schedule requires; restrict access. |

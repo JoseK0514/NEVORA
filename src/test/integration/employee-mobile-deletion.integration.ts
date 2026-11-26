@@ -1,5 +1,6 @@
 import {it,expect} from '@rstest/core';
 import {createRequire} from 'node:module';
+import {createHash,randomBytes} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {createDeletionBrowserApp} from './deletion-browser-app';
@@ -10,6 +11,85 @@ import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
 
 type BrowserRequest={url():string;headers():Record<string,string>;method():string};
 type Route={request():BrowserRequest;fetch():Promise<unknown>;abort(code?:string):Promise<void>;continue():Promise<void>;fallback():Promise<void>};
+
+it('shows a receipt during manual fulfillment and revokes only the requesting account sessions and calendar link',async()=>{
+ const evidence=process.env.NEVORA_EMPLOYEE_DELETION_EVIDENCE;
+ if(!evidence)throw Error('Select explicit external deletion evidence directory');
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
+ const app=await createOwnedNextApp(evidence);
+ const browser=await runtime.chromium.launch({headless:true}).catch(async(error:unknown)=>{await app.close();throw error;});
+ const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
+ const origin=new URL(app.url).origin;
+ const deletionPath='/app/account/delete';
+ try{
+  await seedOwnedApp(app.database.executor);
+  const {actors:[subject,peer]}=await seedOwnedScenario(app.database.executor,'DELRECEIPT',0);
+  await q("UPDATE employees SET role='EMPLOYEE' WHERE id=ANY($1)",[[subject,peer]]);
+  const feeds=[];
+  for(const employee of [subject,peer]){
+   const token=randomBytes(32).toString('base64url');
+   const digest=createHash('sha256').update(token).digest('hex');
+   await q("INSERT INTO calendar_subscriptions(id,workspace_id,employee_id,digest,generation,allowed_location_ids) VALUES(gen_random_uuid(),'workspace-fuel',$1,$2,gen_random_uuid(),ARRAY['loc-1','loc-2'])",[employee,digest]);
+   feeds.push(app.url+'/api/calendar/'+token+'/schedule.ics');
+  }
+  const errors:string[]=[];
+  const signIn=async(employee:string)=>{
+   const context=await browser.newContext({viewport:{width:390,height:844},locale:'en-US',serviceWorkers:'block'});
+   await context.route('**/*',async(route:Route)=>{
+    const target=new URL(route.request().url());
+    if(['http:','https:'].includes(target.protocol)&&target.origin!==origin)await route.abort();
+    else await route.continue();
+   });
+   const page=await context.newPage();
+   page.setDefaultNavigationTimeout(90000);
+   page.on('pageerror',(error:Error)=>errors.push(error.message));
+   await page.goto(app.url+'/login?returnTo='+encodeURIComponent(deletionPath));
+   await page.getByLabel(AUTH_COPY.en.employeeId,{exact:true}).fill(employee);
+   await page.getByLabel(AUTH_COPY.en.password,{exact:true}).fill(TEST_PASSWORD);
+   await page.getByRole('button',{name:AUTH_COPY.en.signIn,exact:true}).click();
+   await page.waitForURL(app.url+deletionPath);
+   return page;
+  };
+  const requestPage=await signIn(subject),secondDevice=await signIn(subject),peerPage=await signIn(peer);
+  for(const url of feeds){
+   const response=await fetch(url);
+   expect(response.status).toBe(200);
+   expect(await response.text()).toContain('BEGIN:VCALENDAR');
+  }
+  const password=requestPage.locator('#deletion-password'),confirm=requestPage.locator('.em-delete-confirm');
+  await password.fill('wrong-fictional-password');
+  await requestPage.locator('#deletion-understand').check();
+  await confirm.click();
+  await expect.poll(()=>requestPage.locator('#deletion-password-error').isVisible()).toBe(true);
+  expect(await q('SELECT id FROM account_deletion_requests WHERE employee_id=$1',[subject])).toEqual([]);
+  await password.fill(TEST_PASSWORD);
+  await confirm.click();
+  const receipt=requestPage.locator('#b-deletion-done-title:visible');
+  await receipt.waitFor();
+  expect(await receipt.innerText()).toBe('Your deletion request was received');
+  const [saved]=await q<{reference:string;status:string}>('SELECT reference,status FROM account_deletion_requests WHERE employee_id=$1',[subject]);
+  expect(saved.status).toBe('received');
+  expect(await requestPage.locator('.em-delete .eb-ref__v:visible').innerText()).toBe(saved.reference);
+  expect(await q('SELECT employee_id FROM employee_sessions WHERE employee_id=ANY($1)',[[subject,peer]])).toEqual([{employee_id:peer}]);
+  const revoked=await fetch(feeds[0]);
+  expect(revoked.status).toBe(404);
+  expect(await revoked.text()).not.toContain('BEGIN:VCALENDAR');
+  expect((await fetch(feeds[1])).status).toBe(200);
+  await secondDevice.goto(app.url+deletionPath);
+  expect(new URL(secondDevice.url()).pathname).toBe('/login');
+  await peerPage.goto(app.url+deletionPath);
+  expect(new URL(peerPage.url()).pathname).toBe(deletionPath);
+
+  await q("UPDATE account_deletion_requests SET status='processing' WHERE reference=$1 AND employee_id=$2 AND status='received'",[saved.reference,subject]);
+  expect(await receipt.innerText()).toBe('Your deletion request was received');
+  expect(await requestPage.locator('.em-delete .eb-ref__v:visible').innerText()).toBe(saved.reference);
+  await requestPage.screenshot({path:resolve(evidence,'chromium-receipt-processing.png')});
+  expect(errors).toEqual([]);
+ }finally{
+  try{await browser.close();}finally{await app.close();}
+ }
+});
+
 // Own account-deletion request on Employee/Lead phones, against the actual Next server and PostgreSQL.
 it('requests own account deletion with truthful unknown outcomes and a recoverable reference in three engines',async()=>{
  const evidence=process.env.NEVORA_EMPLOYEE_DELETION_EVIDENCE;if(!evidence)throw Error('Select explicit external deletion evidence directory');

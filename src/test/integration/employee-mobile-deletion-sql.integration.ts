@@ -180,15 +180,17 @@ it.each(['signed-out','expired','password-reset','inactive'] as const)('refuses 
  expect(await feeds()).toEqual(boundaryFeeds);
 });
 
-async function withdrawalStatement(){
+async function runbookStatements(heading:string){
  const runbook=await readFile('docs/compliance/account-deletion-runbook.md','utf8');
- const section=runbook.slice(runbook.indexOf('## Withdrawing'));
- const statement=section.match(/```sql\n([\s\S]*?)```/);
- expect(statement,'Runbook must supply the guarded withdrawal statement').not.toBeNull();
- return statement![1];
+ const start=runbook.indexOf(heading+'\n');
+ expect(start,'Runbook must include '+heading).toBeGreaterThanOrEqual(0);
+ const section=runbook.slice(start+heading.length).split(/\n## /,1)[0];
+ const statements=Array.from(section.matchAll(/```sql\n([\s\S]*?)```/g),match=>match[1]);
+ expect(statements,'Runbook must supply SQL for '+heading).not.toHaveLength(0);
+ return statements;
 }
 it('rehearses the runbook withdrawal only for the exact received request and never reuses revoked access',async()=>{
- const statement=await withdrawalStatement();as(await session('DEL-OWN','withdraw-own'));
+ const [statement]=await runbookStatements('## Withdrawing');as(await session('DEL-OWN','withdraw-own'));
  const accepted=await requestAccountDeletion(idle,form());expect(accepted.kind).toBe('received');if(accepted.kind!=='received')throw Error('Missing receipt');
  for(const values of [[accepted.reference,'foreign-workspace','DEL-OWN'],[accepted.reference,'workspace-fuel','DEL-PEER']])expect(await q(statement,values)).toEqual([]);
  expect(await q(statement,[accepted.reference,'workspace-fuel','DEL-OWN'])).toEqual([{reference:accepted.reference,employee_id:'DEL-OWN',workspace_id:'workspace-fuel',status:'withdrawn'}]);
@@ -197,11 +199,127 @@ it('rehearses the runbook withdrawal only for the exact received request and nev
  expect(await q("SELECT id FROM calendar_subscriptions WHERE employee_id='DEL-OWN' AND revoked_at IS NULL")).toEqual([]);
 });
 it('refuses the runbook withdrawal once processing started',async()=>{
- const statement=await withdrawalStatement();as(await session('DEL-OWN','processing-own'));
+ const [statement]=await runbookStatements('## Withdrawing');as(await session('DEL-OWN','processing-own'));
  const accepted=await requestAccountDeletion(idle,form());expect(accepted.kind).toBe('received');if(accepted.kind!=='received')throw Error('Missing receipt');
  await q("UPDATE account_deletion_requests SET status='processing' WHERE reference=$1",[accepted.reference]);
  expect(await q(statement,[accepted.reference,'workspace-fuel','DEL-OWN'])).toEqual([]);
  expect(await open()).toMatchObject([{reference:accepted.reference,status:'processing'}]);
+});
+
+it('rehearses manual verification, retained work evidence and a lost completion reply on the exact request',async()=>{
+ const [queue]=await runbookStatements('## 1. See open requests');
+ const [claim]=await runbookStatements('## 2. Start one');
+ const [finish,readback]=await runbookStatements('## 6. Record completion');
+ const workspace='workspace-fuel',subject='DEL-OWN';
+ const correction='60000000-0000-4000-8000-000000000001';
+ const payroll='60000000-0000-4000-8000-000000000003';
+ const retention='Employer work and payroll evidence through 2029-11-29. Revoked calendar/access history under a simulated security disposition. Privacy evidence 24 months from closure.';
+ await q(`
+  UPDATE employees SET email='deletion@example.invalid',birth_date='1990-01-01' WHERE id='DEL-OWN';
+  INSERT INTO clocker_devices(id,location_id,name) VALUES('deletion-device','loc-1','Fictional device');
+  INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,clock_out_at,status)
+    VALUES('deletion-time','DEL-OWN','loc-1','deletion-device','2026-11-26T12:00Z','2026-11-26T20:00Z','CLOCKED_OUT');
+  INSERT INTO time_correction_requests(id,workspace_id,employee_id,requested_by_employee_id,kind,location_id,source_revision,source_snapshot,proposal,reason,request_hash)
+    VALUES('${correction}','workspace-fuel','DEL-OWN','DEL-OWN','MISSING_ENTRY','loc-1',0,'{}',
+      '{"startAt":"2026-11-25T12:00:00Z","endAt":"2026-11-25T20:00:00Z"}','Fictional correction',repeat('a',64));
+  INSERT INTO time_correction_events(id,request_id,revision,event_kind,actor_employee_id,operation_hash,result)
+    VALUES(gen_random_uuid(),'${correction}',1,'REQUESTED','DEL-OWN',repeat('b',64),'{}');
+  INSERT INTO payroll_period_populations(workspace_id,start_date,end_date,revision,operation_id,actor_employee_id,command_hash,source_hash,payload)
+    VALUES('workspace-fuel','2026-11-23','2026-11-29',1,'${payroll}','QAOWNER','fictional-command','fictional-source','{"fixtureEmployee":"DEL-OWN"}');
+ `);
+ await q('INSERT INTO auth_passkey_users(employee_id,user_handle) VALUES($1,$2)',[subject,createHash('sha256').update(subject).digest('base64url')]);
+ await q("INSERT INTO employee_passkeys(id,employee_id,credential_id,public_key,sign_counter,rp_id,name) VALUES(gen_random_uuid(),$1,'fictional-key',decode('42','hex'),0,'localhost','Fictional key')",[subject]);
+ const phone=await session(subject,'manual-fulfillment-phone'),desk=await session(subject,'manual-fulfillment-desk');
+ const peer=await session('DEL-PEER','manual-fulfillment-peer');
+ as(phone);
+ expect(await requestAccountDeletion(idle,form({password:'wrong-fictional'}))).toEqual({kind:'wrong_password'});
+ expect(await q(queue,[workspace])).toEqual([]);
+ expect(await q("SELECT employee_id FROM employee_sessions WHERE token_hash=$1",[hash(phone)])).toEqual([{employee_id:subject}]);
+ const accepted=await requestAccountDeletion(idle,form());
+ if(accepted.kind!=='received')throw Error('Missing receipt');
+ const {reference}=accepted;
+ expect(await q(queue,[workspace])).toMatchObject([{reference,status:'received',workspace_id:workspace}]);
+ expect(await q("SELECT employee_id FROM employee_sessions WHERE token_hash=ANY($1)",[[phone,desk,peer].map(hash)])).toEqual([{employee_id:'DEL-PEER'}]);
+ expect(await q("SELECT employee_id,revocation_reason FROM calendar_subscriptions WHERE employee_id IN ($1,'DEL-PEER') ORDER BY employee_id",[subject]))
+  .toEqual([{employee_id:subject,revocation_reason:'account_loss'},{employee_id:'DEL-PEER',revocation_reason:null}]);
+ expect(await q('SELECT revocation_reason FROM employee_passkeys WHERE employee_id=$1',[subject])).toEqual([{revocation_reason:'account_deletion'}]);
+
+ expect(await q(claim,[reference,'foreign-workspace',subject])).toEqual([]);
+ expect(await q(claim,[reference,workspace,'DEL-PEER'])).toEqual([]);
+ const [claimed]=await q<{id:string}>(claim,[reference,workspace,subject]);
+ expect(claimed).toMatchObject({reference,status:'processing',policy_version:POLICY_VERSION,verified_at:expect.anything(),confirmed_at:expect.anything()});
+ const key=[reference,workspace,claimed.id];
+ expect(await q(claim,[reference,workspace,subject])).toEqual([]);
+ expect(await requestAccountDeletion({kind:'uncertain'},form({retry:'1'}))).toEqual(accepted);
+ const signIn=new FormData();signIn.set('employeeId',subject);signIn.set('password',TEST_PASSWORD);
+ await expect(login(signIn)).rejects.toMatchObject({destination:'/login?error=deleting'});
+
+ // The employer records the pending correction and payroll dependency before releasing the manifest.
+ const work=()=>q(`SELECT
+   (SELECT to_jsonb(t) FROM time_entries t WHERE t.id='deletion-time') AS attendance,
+   (SELECT to_jsonb(c) FROM time_correction_requests c WHERE c.id=$1) AS correction,
+   (SELECT array_agg(event_kind ORDER BY revision) FROM time_correction_events WHERE request_id=$1) AS decisions,
+   (SELECT to_jsonb(p) FROM payroll_period_populations p WHERE p.operation_id=$2) AS payroll`,[correction,payroll]);
+ expect(await work()).toMatchObject([{attendance:{status:'CLOCKED_OUT'},correction:{employee_id:subject},decisions:['REQUESTED'],payroll:{operation_id:payroll}}]);
+ expect(await q(readback,key)).toMatchObject([{status:'processing',completed_at:null}]);
+ await q("INSERT INTO time_correction_events(id,request_id,revision,event_kind,actor_employee_id,operation_hash,result,decision_note) VALUES(gen_random_uuid(),$1,2,'REJECTED','QAOWNER',repeat('c',64),'{}','Fictional employer disposition')",[correction]);
+ const retained=await work();
+ expect(retained).toMatchObject([{decisions:['REQUESTED','REJECTED']}]);
+ await expect(q('DELETE FROM calendar_subscriptions WHERE employee_id=$1',[subject])).rejects.toThrow('calendar_credential_history');
+ expect(await q(readback,key)).toMatchObject([{status:'processing',completed_at:null}]);
+
+ // Scoped fictional manifest. Work rows remain linked to the neutralized employee.
+ await db.executor.transaction([
+  {text:"UPDATE employees SET first_name='Former',last_name='team member',email=NULL,phone='',birth_date=NULL,active=false WHERE id=$1",values:[subject]},
+  {text:'DELETE FROM employee_credentials WHERE employee_id=$1',values:[subject]},
+  {text:'DELETE FROM auth_passkey_users WHERE employee_id=$1',values:[subject]},
+ ]);
+ expect(await q('SELECT first_name,last_name,email,phone,birth_date,active FROM employees WHERE id=$1',[subject]))
+  .toEqual([{first_name:'Former',last_name:'team member',email:null,phone:'',birth_date:null,active:false}]);
+ expect(await q(`SELECT
+  (SELECT count(*)::int FROM employee_credentials WHERE employee_id=$1) AS credentials,
+  (SELECT count(*)::int FROM employee_sessions WHERE employee_id=$1) AS sessions,
+  (SELECT count(*)::int FROM employee_passkeys WHERE employee_id=$1) AS passkeys,
+  (SELECT count(*)::int FROM calendar_subscriptions WHERE employee_id=$1 AND revoked_at IS NULL) AS feeds,
+  (SELECT count(*)::int FROM auth_passkey_audit WHERE employee_id=$1 AND reason='account_deletion') AS audit`,[subject]))
+  .toEqual([{credentials:0,sessions:0,passkeys:0,feeds:0,audit:1}]);
+ expect(await q("SELECT revocation_reason FROM calendar_subscriptions WHERE employee_id=$1",[subject])).toEqual([{revocation_reason:'account_loss'}]);
+ expect(await work()).toEqual(retained);
+
+ // Support notice and backup receipts are simulated in this rehearsal. The explicit close follows verification.
+ expect(await q(readback,key)).toMatchObject([{status:'processing',completed_at:null,retained_note:null}]);
+ expect(await q(finish,[reference,workspace,'60000000-0000-4000-8000-000000000099',retention])).toEqual([]);
+ expect(await q(finish,[reference,'foreign-workspace',claimed.id,retention])).toEqual([]);
+ expect(await q(finish,[...key,'  '])).toEqual([]);
+ await q(finish,[...key,retention]); // Discard the first result to model a lost acknowledgement.
+ const [completed]=await q(readback,key);
+ expect(completed).toMatchObject({id:claimed.id,reference,workspace_id:workspace,status:'completed',completed_at:expect.anything(),retained_note:retention});
+ expect(await q(finish,[...key,'Changed note on retry'])).toEqual([]);
+ expect(await q(readback,key)).toEqual([completed]);
+ expect(await q(queue,[workspace])).toEqual([]);
+ expect(await q('SELECT employee_id FROM employee_sessions WHERE token_hash=$1',[hash(peer)])).toEqual([{employee_id:'DEL-PEER'}]);
+ expect(await q("SELECT employee_id FROM calendar_subscriptions WHERE employee_id='DEL-PEER' AND revoked_at IS NULL")).toEqual([{employee_id:'DEL-PEER'}]);
+});
+
+it('leaves the request processing when protected ownership history blocks hard deletion',async()=>{
+ const [claim]=await runbookStatements('## 2. Start one');
+ const [,readback]=await runbookStatements('## 6. Record completion');
+ const subject='DEL-REMOVABLE',workspace='workspace-fuel';
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,'Fictional','Removable','','EMPLOYEE','loc-1')",[subject]);
+ await q('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) SELECT $1,password_hash,false FROM employee_credentials WHERE employee_id=$2',[subject,'DEL-OWN']);
+ as(await session(subject,'manual-fulfillment-remove'));
+ const accepted=await requestAccountDeletion(idle,form({account:subject}));
+ if(accepted.kind!=='received')throw Error('Missing receipt');
+ const {reference}=accepted;
+ const [claimed]=await q<{id:string}>(claim,[reference,workspace,subject]);
+ await expect(db.executor.transaction([
+  {text:'DELETE FROM employee_credentials WHERE employee_id=$1',values:[subject]},
+  {text:'DELETE FROM employees WHERE id=$1',values:[subject]},
+ ])).rejects.toThrow('operational_subject_versions_employee_id_fkey');
+ expect(await q('SELECT employee_id FROM employee_credentials WHERE employee_id=$1',[subject])).toEqual([{employee_id:subject}]);
+ expect(await q('SELECT employee_id FROM account_deletion_requests WHERE id=$1',[claimed.id])).toEqual([{employee_id:subject}]);
+ const key=[reference,workspace,claimed.id];
+ expect(await q(readback,key)).toMatchObject([{id:claimed.id,reference,status:'processing',completed_at:null,retained_note:null}]);
 });
 
 // A display-copy revision must not restart consent, replace acceptance evidence or strand an existing request.
