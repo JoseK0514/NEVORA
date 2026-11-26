@@ -7,6 +7,17 @@ export type PortalLang = 'en' | 'es';
 
 const PortalLangContext = createContext<PortalLang>('en');
 
+/* Nov 26, 2026 (QA R2): when the portal's own layout fails, the provider is gone and <html lang> is back to the root
+ * layout's signed-in default ("en"). The provider remembers the person's language here (memory for this page, and the
+ * tab's sessionStorage across reloads) so the portal's error screen can still speak it. Presentation only. */
+const REMEMBER_KEY = 'nv-portal-lang';
+let remembered: PortalLang | null = null;
+/** The signed-in person's language as the portal last rendered it in this tab, or null. */
+export function rememberedPortalLang(): PortalLang | null {
+  if (remembered) return remembered;
+  try { const saved = window.sessionStorage.getItem(REMEMBER_KEY); return saved === 'es' || saved === 'en' ? saved : null; } catch { return null; }
+}
+
 /** Signed-in Spanish (gap closure, Nov 23, 2026): rendered once in `src/app/app/layout.tsx` with the person's language
  * from `readPortalLanguage` (their Profile choice, then the sign-in `nv-lang` cookie, then the browser's, then English).
  * Client components read it with `usePortalLang()`; server components keep calling `readPortalLanguage`. */
@@ -17,6 +28,8 @@ export function PortalLangProvider({ lang, children }: { lang: PortalLang; child
   useEffect(() => {
     const root = document.documentElement, previous = root.lang;
     root.lang = value;
+    remembered = value;
+    try { window.sessionStorage.setItem(REMEMBER_KEY, value); } catch { /* Storage blocked: memory only. */ }
     return () => { root.lang = previous; };
   }, [value]);
   return <PortalLangContext.Provider value={value}>{children}</PortalLangContext.Provider>;

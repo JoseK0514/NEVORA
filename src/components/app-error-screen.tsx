@@ -8,6 +8,7 @@ import { CardBody, KitStack, Masthead } from '@/components/kit/kit';
 import { focusAfterRetry } from '@/components/kit/focus-after-retry';
 import { ERROR_SCREENS_COPY } from '@/components/error-screens-copy';
 import { AUTH_LANG_COOKIE, isAuthLang, preferredAuthLang } from '@/lib/auth-copy';
+import { rememberedPortalLang } from '@/lib/i18n/portal-lang';
 
 /* Inspection Nov 14, 2026 (RA-15): the error screens no longer always blame the connection. The browser's own online
  * flag decides: online, the fault is ours and the screen shows the short reference Next.js gives a server failure
@@ -21,13 +22,13 @@ export function useOnline(): boolean {
 }
 
 /* Nov 26, 2026 (QA on the Spanish integration): this screen draws when the portal's own layout failed, so the portal's
- * language provider isn't there. It reads the person's language from what is left: <html lang> (the signed-in app sets it
- * to their language), then the sign-in cookie, then the browser. The server render is English until it is read. */
+ * language provider isn't there. It reads the person's language from what is left: the language the portal last rendered
+ * in this tab (rememberedPortalLang), then the sign-in cookie, then the browser. Not <html lang>: after the layout fails it
+ * is the root layout's signed-in default, "en" (QA R2). The server render is English until it is read. */
 const subscribeLang = () => () => {};
 function browserLang(): 'en' | 'es' {
-  const html = document.documentElement.lang;
-  if (html.startsWith('es')) return 'es';
-  if (html.startsWith('en')) return 'en';
+  const portal = rememberedPortalLang();
+  if (portal) return portal;
   const saved = document.cookie.split('; ').find(part => part.startsWith(`${AUTH_LANG_COOKIE}=`))?.slice(AUTH_LANG_COOKIE.length + 1);
   return isAuthLang(saved) ? saved : preferredAuthLang((navigator.languages?.length ? navigator.languages : [navigator.language]).join(','));
 }
@@ -63,7 +64,7 @@ export function ErrorAdvice({digest, className, lang = 'en'}: {digest?: string; 
  * Same words as that boundary, drawn with the kit itself: the teal band with the wordmark, a white card, kit buttons. */
 export function AppErrorScreen({reset, digest}: {reset: () => void; digest?: string}) {
   // Nov 26, 2026 (Jose): Try again shows it is working ("Trying again…", the arrow turning) and keeps focus.
-  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('[data-nv-page] [data-nv-band] h1', '.app-error-screen .nv-btn[data-kind="primary"]'); });
+  const { busy, retry } = useRetry(() => { reset(); focusAfterRetry('main:not(.app-error-screen) h1, #main-content h1', '.app-error-screen .nv-btn[data-kind="primary"]'); });
   const lang = useErrorLang(), t = ERROR_SCREENS_COPY[lang];
   return <main className="nv-page app-error-screen" lang={lang}>
     <Masthead title={t.didntLoad} summary={t.nothingChanged} />

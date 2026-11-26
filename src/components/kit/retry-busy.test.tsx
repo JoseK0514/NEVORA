@@ -48,3 +48,18 @@ describe("the portal's top-level error screen in Spanish", () => {
     expect(portalErrorAdvice(false, "es")).toBe("Revisa tu conexión y vuelve a intentarlo.");
   });
 });
+
+// QA R1, Nov 26, 2026: the busy window is shared, so a screen remounted by a failed retry is still busy and a second
+// press inside the window is refused.
+import { claimRetryWindow, resetRetryWindow } from "./use-retry";
+describe("the shared retry window", () => {
+  it("refuses a second press until the minimum time has passed, then allows one", () => {
+    resetRetryWindow();
+    const t0 = Date.now();
+    expect(claimRetryWindow(t0)).toBe(true);
+    expect(claimRetryWindow(t0 + 80)).toBe(false);
+    expect(claimRetryWindow(t0 + RETRY_MIN_MS - 1)).toBe(false);
+    expect(claimRetryWindow(t0 + RETRY_MIN_MS + 1)).toBe(true);
+    resetRetryWindow();
+  });
+});
