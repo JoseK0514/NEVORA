@@ -573,7 +573,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     return <BInk label={c.timecards}>
       {/* Phase 9 (spec 3.1): "Open now" is the one state here that asks for something, so it keeps its chip; when approval
         * opens ("Tomorrow", "In 3 days") is a time fact, grey header text. */}
-      <div className="b-ink__top" data-timecard-review={lang === "es" || undefined}><span className="b-ink__k">{c.timecards}</span>{view.chip ? <span className={view.go ? "b-ink__due" : "b-ink__due b-ink__due--when"}>{view.chip}</span> : null}</div>
+      <div className="b-ink__top" data-timecard-review=""><span className="b-ink__k">{c.timecards}</span>{view.chip ? <span className={view.go ? "b-ink__due" : "b-ink__due b-ink__due--when"}>{view.chip}</span> : null}</div>
       <div className="b-ink__big">{view.big}</div>
       <div className="b-ink__r2"><span>{view.detail}</span><span>{paydayLine}</span></div>
       {routed}
