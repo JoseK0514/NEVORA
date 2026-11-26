@@ -117,3 +117,15 @@ it("shows the optional employment dates only when they were read for this editor
   const status = renderToStaticMarkup(<EmployeeStatusForm employee={{ ...employee, active: true }} locations={locations} actorId="OWNER1" actorRole="OWNER" action={rs.fn()} />);
   expect(status).not.toMatch(/hireDate|terminationDate|birthDate/);
 });
+
+it("can deactivate with the retired primary site and requires an active replacement before reactivation", () => {
+  const status = (active: boolean) => renderToStaticMarkup(<EmployeeStatusForm employee={{...employee,active}} locations={locations}
+    actorId="OWNER1" actorRole="OWNER" action={rs.fn()} />);
+  expect(status(true)).toContain('name="primaryLocationId" value="old"');
+  expect(status(true)).toContain("future shifts, open time and final pay");
+  const reactivation = status(false);
+  expect(reactivation).toMatch(/<select[^>]*id="reactivate-primary"[^>]*required=""/);
+  expect(reactivation).toContain('<option value="active">Active</option>');
+  expect(reactivation).not.toContain('value="old"');
+  expect(reactivation).not.toContain('value="other-old"');
+});

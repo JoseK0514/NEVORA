@@ -1,0 +1,22 @@
+.location-retirement-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: var(--b-space-4);
+  min-width: 0;
+}
+:is(#c-root, html) .location-retirement-links .c-link {
+  max-width: 100%;
+  font-size: var(--b-fs-body-sm);
+  line-height: var(--b-lh-body-sm);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.location-review-values {
+  display: grid;
+  gap: var(--b-space-4);
+  margin-top: var(--b-space-8);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}

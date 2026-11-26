@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { EditLocationForm } from "@/components/edit-location-form";
 import { requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/locations";
+import { readEditedLocation } from "./read-current";
 import { updateLocationAction } from "../../actions";
 import { SettingsPageB } from "../../settings-b";
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
@@ -37,7 +38,7 @@ export default async function EditLocationPage({
     // once something changed); tablets and desktop save from the form card's footer.
     <SettingsPageB title={location.shortName} titleId="edit-location-title" lang={lang === "es" ? "es" : undefined} back={{ href: "/app/settings/locations", label: words.locations }}
       phoneRight={<button type="submit" form="edit-location-form" className="c-setb-save">{t.save}</button>}>
-      <EditLocationForm key={location.id} location={location} action={updateLocationAction} words={{ location: words.location, locations: words.locations }}
+      <EditLocationForm key={location.id} location={location} action={updateLocationAction} readCurrent={readEditedLocation.bind(null, location.id)} words={{ location: words.location, locations: words.locations }}
         wordPresetId={preset.id} staffing={minimum === null ? undefined : t.perShift(minimum)} eligible={eligible} />
     </SettingsPageB>
   );
