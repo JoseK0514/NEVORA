@@ -253,3 +253,37 @@
     :is(#c-root, html) body .app-shell[data-nv-b][data-employee-mobile] .b-screen section.b-card[aria-labelledby="b-calendar-heading"] .eb-body > .b-btn--full { display: flex !important; width: fit-content !important; min-width: 96px !important; margin-left: auto !important; min-height: var(--b-btn-h) !important; height: var(--b-btn-h) !important; padding: 0 18px !important; font-size: var(--b-fs-body-sm) !important; line-height: var(--b-lh-body-sm) !important; font-weight: 600 !important; }
   }
 }
+
+/* At large text sizes the event description can use the line beside its icon and below the chevron. */
+@layer nv-b {
+  html:lang(es) .b-screen li:has(> .eb-notif) { container: notification-event / inline-size; }
+  @container notification-event (max-width: 12rem) {
+    html:lang(es) .app-shell[data-employee-mobile] .b-screen .eb-notif:not(#n1):not(#n2):not(#n3):not(#n4):not(#n5):not(#n6):not(#n7) {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto !important;
+      grid-template-areas: "icon title time" ". detail arrow" !important;
+      row-gap: var(--b-space-4) !important;
+      & > .b-ico { grid-area: icon !important; }
+      & > .b-row__tx { display: contents !important; }
+      & .b-row__t { grid-area: title !important; }
+      & .eb-notif__s { grid-area: detail !important; min-inline-size: 0 !important; }
+      & > .eb-when { grid-area: time !important; }
+      & > .b-chev { grid-area: arrow !important; }
+      & :is(.b-row__tt, .eb-dots__p) { hyphens: none !important; overflow-wrap: normal !important; }
+    }
+  }
+}
+
+@layer nv-b {
+  html:lang(es) .b-title__text:has(> #b-notifications-title),
+  html:lang(es) #b-notifications-title { min-inline-size: 0 !important; max-inline-size: 100% !important; }
+}
+@layer nv-b {
+  @media (max-width: 767px) {
+    html:lang(es):is([data-text-step="150"], [data-text-step="200"]) .c-more .eb-id .eb-id__link {
+      height: auto !important;
+      min-height: 48px;
+      padding-block: var(--b-space-8);
+    }
+  }
+}

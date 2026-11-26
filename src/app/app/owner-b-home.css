@@ -40,7 +40,21 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-home-col > *:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-column: 1 / -1 !important; grid-row: auto !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) {
       display: grid !important; grid-template-columns: minmax(0, 1fr) auto auto !important; grid-template-areas: "k due btn" "big r2 btn" "m r2 btn" !important;
-      align-items: center !important; column-gap: var(--b-space-32) !important; row-gap: var(--b-space-2) !important; padding: var(--b-space-16) var(--b-inset-wide) !important; }
+      align-items: center !important; column-gap: var(--b-space-32) !important; row-gap: var(--b-space-2) !important; padding: var(--b-space-16) var(--b-inset-wide) !important;
+      /* On a constrained Spanish tablet, let the details wrap before a payday breaks apart. */
+      &:lang(es):has(> [data-scheduled-payday]) { grid-template-columns: minmax(min-content, 1fr) minmax(0, max-content) auto !important; }
+      /* Keep the approval count and its explanation together. The action gets its own row
+       * when the enlarged text leaves too little width for three tablet columns. */
+      @container not style(--nv-rem: 16px) {
+        &:has(> [data-timecard-review]) {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: var(--b-space-12) !important;
+        }
+        & > [data-timecard-review].b-ink__top { display: flex !important; }
+      }
+    }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink > .b-ink__top:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { display: contents !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink .b-ink__k:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: k !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-ink .b-ink__due:not(#p3a):not(#p3a2):not(#p3a3):not(#p3a4):not(#p3a5) { grid-area: due !important; justify-self: start !important; }
@@ -425,4 +439,112 @@
  * own: 36 + 2 × 4 = 44 for both rows. Nothing drawn moves. */
 @layer nv-b {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team .b-filters:has(> :nth-child(4)) > button:nth-child(-n+2):not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6):not(#ds2) { position: relative !important; z-index: 1 !important; }
+}
+
+/* Let the setup count follow the heading when the two cannot share a line at the reader's text size. */
+@layer nv-b {
+  html:lang(es) #fw-setup .b-card__h { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
+  html:lang(es) #fw-setup .b-card__h h2 { flex: 1 1 max-content !important; min-inline-size: 0; max-inline-size: 100%; white-space: normal !important; hyphens: none !important; }
+  html:lang(es) #fw-setup .b-card__meta { max-inline-size: 100%; margin-inline-start: auto; white-space: normal !important; }
+  html:lang(es) #fw-setup .fw-count { white-space: normal !important; }
+  html:lang(es) #fw-setup .b-row__tt { hyphens: none !important; }
+}
+
+@layer nv-b {
+  html:lang(es) #b-home-needs { container: home-needs / inline-size; }
+  @container home-needs (max-width: 10rem) {
+    html:lang(es) #b-home-needs .b-row[href$="#todo-corrections"] {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto !important;
+      grid-template-areas: "icon title title" "icon detail arrow";
+      row-gap: var(--b-space-2) !important;
+      & > .b-ico { grid-area: icon; }
+      & > .b-row__tx { display: contents !important; }
+      & .b-row__t { grid-area: title; }
+      & .b-row__tt { hyphens: none !important; }
+      & .b-row__s { grid-area: detail; }
+      & > .b-chev { grid-area: arrow; }
+    }
+  }
+}
+
+@layer nv-b {
+  html:lang(es) .c-home .b-title__text { min-inline-size: 0 !important; max-inline-size: 100%; }
+}
+
+@layer nv-b {
+  html:lang(es) .b-home-open-label { hyphens: none !important; }
+  html:lang(es) .b-tdy-l > [data-collides-with-now] { visibility: hidden; }
+  /* Leave room for the longest whole word in the attendance figure. */
+  html:lang(es) .b-home-strip .b-live:has(.b-home-attendance-label) {
+    grid-template-columns: minmax(0, 1fr) minmax(min-content, 1fr) minmax(0, 1fr);
+  }
+  html:lang(es) .b-home-strip .b-live:has(.b-home-attendance-label[data-wrap]) .b-live__a { height: 100%; }
+  html:lang(es) .b-home-strip .b-live:has(.b-home-attendance-label[data-wrap]) .b-live__v { margin-block-start: auto; }
+  html:lang(es) .b-home-attendance-label {
+    min-inline-size: 0;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+    hyphens: none;
+  }
+}
+
+@layer nv-b {
+  @container home-needs (max-width: 12rem) {
+    html:lang(es) #b-home-needs .b-row__s {
+      display: block !important;
+      overflow: visible !important;
+      -webkit-line-clamp: unset !important;
+      line-clamp: unset !important;
+    }
+    html:lang(es) #b-home-needs .b-card__h { flex-wrap: wrap !important; row-gap: var(--b-space-2) !important; }
+    html:lang(es) #b-home-needs .b-card__a { margin-inline-start: auto !important; }
+  }
+  html:lang(es) #b-home-week .b-kv { flex-wrap: wrap !important; row-gap: var(--b-space-8) !important; }
+}
+
+@layer nv-b {
+  html:lang(es) body .app-shell[data-nv-b] .c-home .b-screen .b-ink__r2 > span:last-child:not(:first-child) {
+    max-inline-size: 100%;
+    white-space: normal !important;
+  }
+}
+
+@layer nv-b {
+  html:lang(es) #b-home-week .b-wk__b { container: home-week-plot / inline-size; }
+  html:lang(es) #b-home-week .b-days-l > span {
+    min-inline-size: 0;
+    display: flex;
+    justify-content: center;
+  }
+  /* Keep each full weekday centred on its bar. In a narrow plot, adjacent labels
+   * use alternating baselines so all seven labels remain visible. */
+  @container home-week-plot (max-width: 12.5rem) {
+    html:lang(es) #b-home-week .b-days-l > span:nth-child(even) {
+      padding-block-start: var(--b-lh-caption);
+    }
+  }
+}
+
+@layer nv-b {
+  @media (min-width: 768px) {
+    /* An attendance exception can move to the next line before it squeezes a clock time. */
+    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) {
+      flex-wrap: wrap;
+      row-gap: var(--b-space-4);
+    }
+    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) > .b-row__tx {
+      flex-basis: min-content;
+      min-inline-size: min-content;
+    }
+    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) .b-row__s {
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+    #b-home-on:lang(es) .b-row:has(> .b-row__end > .b-chip) > .b-row__end {
+      margin-inline-start: auto;
+      max-inline-size: 100%;
+    }
+  }
 }

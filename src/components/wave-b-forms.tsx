@@ -1,5 +1,7 @@
 "use client";
 
+import { copy } from "./wave-b-forms-copy";
+import { usePortalLang, type PortalLang } from "@/lib/i18n/portal-lang";
 import { FormDiscardGuard } from "./kit/discard-dialog";
 import { createContext, useContext, useEffect, useId, useRef, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { unstable_rethrow, useRouter } from "next/navigation";
@@ -36,18 +38,21 @@ function preservePendingFields(form: HTMLFormElement) {
  * (a dropped connection no longer replaces the page with the error screen). */
 
 /** TC-B-14: the scheduling server actions' messages, said the way these pages say things. Unknown text passes through. */
-const plainMessages: Record<string, string> = {
-  "Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location.": "Minimum staff must be a whole number from 1 to 100, and each new location needs a designated lead choice.",
-  "Targets and maximums must be between 0 and 168 hours.": "Targets and maximums must be from 0 to 168 hours.",
-  "Enter a valid day, time range, and optional staffing override.": "Enter a day, a start and end time, and staff numbers if you need them.",
-  "Coverage window could not be saved. Check duplicate periods, active positions, and whole-number quantities from 1 to 100.": "Couldn’t add this period. It may already exist, or a quantity isn’t a whole number from 1 to 100.",
-  "Settings could not be saved. Your entries are preserved.": "Couldn’t save your changes. They’re still here; try again.",
-  "Coverage window could not be saved. Your entries are preserved.": "Couldn’t add this period. Your entries are still here; try again.",
-  "Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.": "Use whole numbers from 1 to 100, and clear quantities for inactive positions.",
-  "Review approval mode and whole-number deadlines. Blank is unknown; completion advance must not exceed submission advance.": "Check how requests are approved, and use whole minutes. Finishing time can’t be more minutes ahead than the time to ask.",
-  "Only an active Owner can save this policy.": "Only an owner can save this policy.",
+const plainMessages: Record<string, keyof typeof copy.en> = {
+  "Staffing requirements must be whole numbers between 1 and 100. Choose whether a designated Lead is required for each unconfigured location.": "minimumStaffMustBeWholeNumber",
+  "Targets and maximums must be between 0 and 168 hours.": "targetsMaximumsMustBeFromHours",
+  "Enter a valid day, time range, and optional staffing override.": "enterDayStartEndTimeStaff",
+  "Coverage window could not be saved. Check duplicate periods, active positions, and whole-number quantities from 1 to 100.": "couldnAddPeriodMayAlreadyExist",
+  "Settings could not be saved. Your entries are preserved.": "couldnSaveChangesTheyStillHere",
+  "Coverage window could not be saved. Your entries are preserved.": "couldnAddPeriodEntriesAreStill",
+  "Choose active positions and whole-number quantities from 1 to 100. Clear inactive quotas or reactivate their positions.": "useWholeNumbersFromClearQuantities",
+  "Review approval mode and whole-number deadlines. Blank is unknown; completion advance must not exceed submission advance.": "checkHowRequestsAreApprovedUse",
+  "Only an active Owner can save this policy.": "onlyOwnerCanSavePolicy",
 };
-const plain = (message: string) => plainMessages[message] ?? message;
+function plain(message: string, lang: PortalLang) {
+  const key = plainMessages[message];
+  return key ? copy[lang][key] : message;
+}
 
 /** A saved line carries the app's one done mark (BDoneMark at its 36px row size; the line's layout is in
  * premium-wave-a.css, "Saved lines"). Decorative; the words say what was saved. */
@@ -104,11 +109,13 @@ export function ActionForm({ action, submit, failure, confirm, className, childr
 }
 
 /** Scheduling rules' long staffing and hours form: its status lives in the save bar beside the button. */
-export function RulesSaveForm({ action, children, bar }: {
+export function RulesSaveForm({ action, children, bar, lang = "en" }: {
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
   bar: boolean;
+  lang?: PortalLang;
 }) {
+  const t = copy[lang];
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<"saved" | string | null>(null);
   const busy = useRef(false), button = useRef<HTMLButtonElement>(null);
@@ -122,36 +129,37 @@ export function RulesSaveForm({ action, children, bar }: {
     setPending(true); setResult(null);
     try {
       const saved = await action(data);
-      setResult(saved.error ? plain(saved.error) : "saved");
+      setResult(saved.error ? plain(saved.error, lang) : "saved");
       if (!saved.error) setSavedCount(count => count + 1);
     } catch {
-      setResult("Couldn’t save your changes. They’re still here; try again.");
+      setResult(copy[lang].couldnSaveChangesTheyStillHere);
     } finally {
       busy.current = false; setPending(false); restoreFocus();
     }
   }
   return <form onSubmit={submit} className="c-rf" aria-busy={pending || undefined}>
     {/* Leaving Scheduling rules with entries that are not saved asks first (Nov 21, 2026); a save starts clean. */}
-    <FormDiscardGuard resetKey={savedCount} />
+    <FormDiscardGuard resetKey={savedCount} lang={lang} />
     <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
-    {bar ? <div className="c-rf-savebar" role="group" aria-label="Staffing and weekly hours">
+    {bar ? <div className="c-rf-savebar" role="group" aria-label={t.staffingWeeklyHours}>
       {result === "saved"
-        ? <p className="c-rf-saved" role="status"><SavedMark /><span>Scheduling rules saved.</span></p>
+        ? <p className="c-rf-saved" role="status"><SavedMark /><span>{t.schedulingRulesSaved}</span></p>
         : result
           ? <p className="c-rf-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{result}</span></p>
           : null}
-      <button ref={button} className="c-btn" type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : "Save staffing and hours"}</button>
+      <button ref={button} className="c-btn" type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? t.saving : t.saveStaffingHours}</button>
     </div> : null}
   </form>;
 }
 
 /** A smaller settings form (add a coverage period, position quantities): pending label and status beside its button. */
-export function InlineConfigForm({ action, children, submit, successText, className }: {
+export function InlineConfigForm({ action, children, submit, successText, className, lang = "en" }: {
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
   submit: { label: string; pendingLabel: string; kind: "primary" | "secondary" };
   successText: string;
   className?: string;
+  lang?: PortalLang;
 }) {
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<"saved" | string | null>(null);
@@ -164,13 +172,13 @@ export function InlineConfigForm({ action, children, submit, successText, classN
     busy.current = true;
     const restoreFocus = preservePendingFields(event.currentTarget);
     setPending(true); setResult(null);
-    try { const saved = await action(data); setResult(saved.error ? plain(saved.error) : "saved"); if (!saved.error) setSavedCount(count => count + 1); }
-    catch { setResult("Couldn’t save your changes. They’re still here; try again."); }
+    try { const saved = await action(data); setResult(saved.error ? plain(saved.error, lang) : "saved"); if (!saved.error) setSavedCount(count => count + 1); }
+    catch { setResult(copy[lang].couldnSaveChangesTheyStillHere); }
     finally { busy.current = false; setPending(false); restoreFocus(); }
   }
   return <form onSubmit={send} className={className ? `c-rf ${className}` : "c-rf"} aria-busy={pending || undefined}>
     {/* Leaving Scheduling rules with entries that are not saved asks first (Nov 21, 2026); a save starts clean. */}
-    <FormDiscardGuard resetKey={savedCount} />
+    <FormDiscardGuard resetKey={savedCount} lang={lang} />
     <fieldset aria-disabled={pending || undefined} className="configuration-fields">{children}</fieldset>
     <div className="c-rf-actions"><button className={submit.kind === "secondary" ? "c-btn c-btn--secondary" : "c-btn"} type="submit" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? submit.pendingLabel : submit.label}</button></div>
     {result === "saved" ? <p className="c-rf-saved" role="status"><SavedMark /><span>{successText}</span></p>
@@ -183,7 +191,8 @@ const PolicyOrder = createContext<{ error: boolean; id: string }>({ error: false
 /** IS-B28: the trade policy's order message, placed under the finishing-time field it describes. */
 export function PolicyOrderError() {
   const { error, id } = useContext(PolicyOrder);
-  return error ? <span className="c-rf-error" id={id} role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>Finishing time can’t be more minutes ahead than the time to ask.</span></span> : null;
+  const t = copy[usePortalLang()];
+  return error ? <span className="c-rf-error" id={id} role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{t.finishingTimeCanBeMoreMinutes}</span></span> : null;
 }
 
 /** Trade or coverage policy for one workflow (Owner). Same request as the shared PolicySaveForm (expected
@@ -196,6 +205,8 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
   children: ReactNode;
 }) {
   const router = useRouter();
+  const lang = usePortalLang();
+  const t = copy[lang];
   const [currentRevision, setRevision] = useState(revision);
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<{ tone: "saved" | "error" | "conflict"; text: string } | null>(null);
@@ -224,19 +235,19 @@ export function PolicyForm({ revision, action, saveLabel, children }: {
     setPending(true); setMessage(null);
     try {
       const next = await action(data);
-      if (next.status === "saved") { setRevision(next.revision); setMessage({ tone: "saved", text: "Policy saved." }); router.refresh(); }
-      else if (next.status === "invalid") setMessage({ tone: "error", text: next.fieldErrors.map(item => plain(item.message)).join(" ") });
-      else setMessage({ tone: "conflict", text: "This policy changed. Reload to see the current values, then enter your changes again." });
+      if (next.status === "saved") { setRevision(next.revision); setMessage({ tone: "saved", text: t.policySaved }); router.refresh(); }
+      else if (next.status === "invalid") setMessage({ tone: "error", text: next.fieldErrors.map(item => plain(item.message, lang)).join(" ") });
+      else setMessage({ tone: "conflict", text: t.policyChangedReloadSeeCurrentValues });
     } catch {
-      setMessage({ tone: "conflict", text: "Couldn’t save the policy. Reload to see the current values, then enter your changes again if they’re missing." });
+      setMessage({ tone: "conflict", text: t.couldnSavePolicyReloadSeeCurrent });
     } finally { busy.current = false; setPending(false); restoreFocus(); }
   }
   return <form onSubmit={send} className="c-rf" aria-busy={pending || undefined} data-order-error={orderError || undefined}>
     <input type="hidden" name="expectedRevision" value={currentRevision} />
     <PolicyOrder.Provider value={{ error: orderError, id: orderId }}><fieldset className="configuration-fields c-rf__fields" aria-disabled={pending || undefined}>{children}</fieldset></PolicyOrder.Provider>
-    <div className="c-rf-actions"><button type="submit" className="c-btn c-btn--secondary" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? "Saving…" : saveLabel}</button></div>
+    <div className="c-rf-actions"><button type="submit" className="c-btn c-btn--secondary" aria-disabled={pending || undefined} aria-busy={pending || undefined}>{pending ? t.saving : saveLabel}</button></div>
     {message?.tone === "saved" ? <p className="c-rf-saved" role="status"><SavedMark /><span>{message.text}</span></p>
-      : message ? <><p className="c-rf-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="c-rf-actions"><button type="button" className="c-btn c-btn--secondary" onClick={() => window.location.reload()}>Reload current policy</button></div> : null}</> : null}
+      : message ? <><p className="c-rf-error" role="alert"><WarningCircleIcon size={18} weight="bold" aria-hidden="true" /><span>{message.text}</span></p>{message.tone === "conflict" ? <div className="c-rf-actions"><button type="button" className="c-btn c-btn--secondary" onClick={() => window.location.reload()}>{t.reloadCurrentPolicy}</button></div> : null}</> : null}
   </form>;
 }
 

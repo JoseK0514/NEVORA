@@ -225,12 +225,12 @@
   @media (max-width: 359px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows > li > .c-row:has(> .c-row__value .c-pay__amt):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows > li > .c-row:has(> .c-row__value .c-pay__amt) > .c-row__main:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { flex: 1 1 0 !important; min-width: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows > li > .c-row:has(> .c-row__value .c-pay__amt) > .c-row__value:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { order: 3 !important; flex: 1 0 100% !important; max-width: none !important; width: 100% !important; padding-left: var(--b-space-48) !important; text-align: left !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows > li > .c-row:has(> .c-row__value .c-pay__amt) > .c-row__value:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { order: 3 !important; flex: 1 0 100% !important; max-width: none !important; width: 100% !important; padding-left: var(--c-pay-amount-inset, var(--b-space-48)) !important; text-align: left !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows > li > .c-row > .c-row__value .c-pay__amt:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { display: inline-flex !important; flex-direction: row !important; align-items: baseline !important; gap: var(--b-space-8) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__rowpill:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { display: none !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen .b-row:has(> .b-row__end):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { flex-wrap: wrap !important; row-gap: var(--b-space-4) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen .b-row:has(> .b-row__end) > .b-row__tx:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { flex: 1 1 0 !important; min-width: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen .b-row > .b-row__end:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { order: 3 !important; flex: 1 0 100% !important; flex-direction: row !important; align-items: baseline !important; justify-content: flex-start !important; gap: var(--b-space-8) !important; padding-left: var(--b-space-48) !important; text-align: left !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .b-screen .b-row > .b-row__end:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { order: 3 !important; flex: 1 0 100% !important; flex-direction: row !important; align-items: baseline !important; justify-content: flex-start !important; gap: var(--b-space-8) !important; padding-left: var(--c-pay-amount-inset, var(--b-space-48)) !important; text-align: left !important; }
   }
   /* a.md #21: a pay statement leads with its person's face in the row's one 36px lead slot, beside the name and its line;
    * View and Download stay at the right edge (on phones they sit under the text, on the text's edge). */
@@ -241,7 +241,7 @@
   }
   /* a.md #4: a replaced payroll's row is indented under its correction, so its amount starts on that row's own text edge. */
   @media (max-width: 359px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows > li.c-pay__replaced > .c-row:has(> .c-row__value .c-pay__amt) > .c-row__value:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { padding-left: calc(var(--b-space-48) + var(--b-space-32)) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-rows > li.c-pay__replaced > .c-row:has(> .c-row__value .c-pay__amt) > .c-row__value:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { padding-left: var(--c-pay-amount-inset, calc(var(--b-space-48) + var(--b-space-32))) !important; }
   }
 
   /* ---------- Premium pass FA (Nov 18, 2026): final verification A #4, #6, #8, #17, #18 (the Payroll family) ---------- */
@@ -612,4 +612,135 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-close .c-field__label:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; white-space: normal !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-close .c-in:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 1rem !important; line-height: 1.4 !important; padding-block: 0.5rem !important; height: auto !important; min-height: var(--b-target, 44px) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tc-close > .c-link:not(#gq1):not(#gq2):not(#gq3):not(#gq4):not(#gq5):not(#gq6) { font-size: 0.8125rem !important; line-height: 1.125rem !important; min-height: var(--b-target, 44px) !important; }
+}
+
+@layer nv-b {
+  @media (width < 360px) {
+    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] .c-exp--time > .c-nav--phone {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+    }
+    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] .c-exp--time > .c-nav--phone .c-nav__back {
+      white-space: normal !important;
+      max-width: 100% !important;
+    }
+  }
+}
+
+@media (width >= 768px) {
+  :is(html, #c-root):lang(es)[data-text-step="200"] .c-exp__paid .c-row__detail > span:first-child {
+    white-space: normal;
+  }
+}
+
+/* Size both receipt actions for the longer label, including at enlarged text sizes. */
+html:lang(es) .c-exp .b-row__tx > .c-exp__dls {
+  --receipt-action-width: calc(7rem + 40px);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--receipt-action-width)), 1fr));
+  inline-size: calc(2 * var(--receipt-action-width) + var(--b-space-12));
+  max-inline-size: 100%;
+  margin-block-start: var(--b-space-8);
+  gap: var(--b-space-8) var(--b-space-12);
+}
+
+:is(#c-root, html):lang(es) .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
+  min-height: var(--b-target);
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) and (pointer: coarse) {
+  :is(#c-root, html):lang(es) .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
+    height: var(--b-target-touch) !important;
+  }
+}
+
+@media (width < 360px) {
+  :is(#c-root, html):lang(es)[data-text-step="200"] .app-shell[data-nv-b] .c-exp .b-row__tx > .c-exp__dls > .b-btn {
+    padding-inline: var(--b-space-8);
+  }
+}
+
+@layer nv-b {
+  @media (max-width: 359px) {
+    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] :is(#tcx-nav-title, .ck-recovery > .q-nav > .q-nav__t) {
+      font-size: var(--b-fs-title) !important;
+      line-height: var(--b-lh-title) !important;
+    }
+    html:lang(es)[data-text-step="200"] body .app-shell[data-nv-b] .b-hero:has(#b-tc-title) .b-seg {
+      grid-auto-columns: minmax(min-content, 1fr);
+    }
+  }
+  html:lang(es)[data-text-step="200"] .c-pay__amt-k { white-space: nowrap; }
+}
+
+@layer nv-b {
+  @media (max-width: 767px) {
+    /* Align both tools with the compact inset used for the longer corrections label. */
+    html:lang(es)[data-text-step="200"] .c-tc .b-list:has(a[href="/app/timecards/corrections"]) .b-row,
+    html:lang(es)[data-text-step="200"] .b-row[href="/app/timecards/corrections"] {
+      padding-inline: var(--b-space-8) !important;
+      column-gap: var(--b-space-4) !important;
+    }
+    html:lang(es)[data-text-step="200"] #payroll-all .c-row:has(.c-pay__amt) {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) !important;
+      & > .c-row__main { grid-column: 2 !important; }
+      & .c-pay__amt { flex-wrap: wrap !important; max-width: 100%; }
+      & > .c-row__value { --c-pay-amount-inset: 0px; grid-column: 2 !important; grid-row: 2 !important; justify-self: start !important; max-width: 100% !important; text-align: start !important; }
+    }
+    html:lang(es)[data-text-step="200"] #b-hours-weeks .b-row {
+      display: grid !important;
+      grid-template-columns: auto minmax(0, 1fr) auto !important;
+      gap: var(--b-space-4) var(--b-space-8) !important;
+      & > .b-row__tx { grid-column: 2 !important; grid-row: 1 !important; }
+      & > .b-row__end { grid-column: 2 !important; grid-row: 2 !important; justify-self: start; }
+      & > .b-chev { grid-column: 3 !important; grid-row: 1 / 3 !important; }
+    }
+    html:lang(es)[data-text-step="200"] .b-screen:has(#b-hours-title) .b-status {
+      white-space: normal !important;
+      max-width: 100%;
+      min-width: 0;
+    }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    html:lang(es)[data-text-step="200"] .b-title:has(#b-pay-title) {
+      flex-wrap: wrap !important;
+      & > .b-title__text { flex: 1 0 min-content !important; min-width: min-content; }
+    }
+  }
+}
+
+@layer nv-b {
+  @media (max-width: 359px) {
+    @container not style(--nv-rem: 16px) {
+      html:lang(es) .b-hero:has(#b-tc-title) .b-seg {
+        display: flex !important;
+        flex-wrap: wrap;
+        height: auto !important;
+      }
+      html:lang(es) .b-hero:has(#b-tc-title) .b-seg > button {
+        flex: 1 1 max-content;
+        white-space: nowrap;
+      }
+      /* These controls are already 48px high; an expanded pseudo-element
+       * on the second row would intercept the first row's lower tap point. */
+      html:lang(es) .b-hero:has(#b-tc-title) .b-seg > button::after {
+        inset-block: 0 !important;
+      }
+    }
+  }
+}
+
+/* Extend the hit box inside the cell padding, including at a fractional row boundary. */
+@layer nv-b {
+  html:lang(es) .c-tc-table .c-tc-person {
+    position: relative;
+  }
+
+  html:lang(es) .c-tc-table .c-tc-person::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block: calc(-1 * var(--b-space-2));
+  }
 }

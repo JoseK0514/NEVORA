@@ -1,3 +1,4 @@
+import {copy as noticeCopy} from './notice-settings-copy';
 import type {PhotoCompanyNoticeSettings,PhotoNoticeProfileUpdate} from '../photo-server/contracts';
 import {parsePhotoNotice,parsePhotoNoticeProfileUpdate,publicPhotoNoticeProfile,unconfiguredPhotoNoticeProfile} from '../photo-server/validation';
 import {readPhotoPolicy} from './session';
@@ -6,9 +7,9 @@ export type NoticeSettingsDraft={assistanceContact:string;assistanceInstructions
 export function noticeSettingsDraft(settings:Pick<PhotoCompanyNoticeSettings,'profile'>):NoticeSettingsDraft{
  return {assistanceContact:settings.profile.assistanceContact??'',assistanceInstructions:settings.profile.assistanceInstructions??''};
 }
-export function noticeSettingsUpdate(draft:NoticeSettingsDraft,expectedVersion:number):PhotoNoticeProfileUpdate{
+export function noticeSettingsUpdate(draft:NoticeSettingsDraft,expectedVersion:number,lang:'en'|'es'='en'):PhotoNoticeProfileUpdate{
  try{return parsePhotoNoticeProfileUpdate({expectedVersion,assistanceContact:draft.assistanceContact.trim(),assistanceInstructions:draft.assistanceInstructions.replace(/\r?\n/g,' ').trim()});}
- catch{throw Error('Enter your actual assistance contact (up to 200 characters) and instructions (up to 1,000 characters), without placeholders.');}
+ catch{throw Error(noticeCopy[lang].enterYourActualAssistanceContactUpTo200Characters);}
 }
 export function readCompanyNoticeSettings(value:unknown):PhotoCompanyNoticeSettings{
  if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Company photo notice settings could not be verified.');

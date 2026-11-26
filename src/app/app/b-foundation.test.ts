@@ -52,6 +52,10 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
     expect(text).toMatch(/\.nv-btn\[data-kind="primary"\] \{ background: var\(--b-teal\) !important; color: #FFFFFF !important; \}/);
     expect(text).toMatch(/:is\(\.c-btn, \.q-btn, \.q-bs, \.wc-btn\) \{ border-radius: var\(--b-radius-pill\) !important; \}/);
   });
+  it('paints the Spanish sidebar keyboard outline on the link itself, inside the clipped rail', () => {
+    const foundation = css('app/app/b-foundation.css');
+    expect(foundation).toMatch(/html:lang\(es\) body \.app-shell\[data-nv-b\] aside\.sidebar \.nav-link:focus-visible \{\s*outline: var\(--b-focus-width\) solid var\(--b-focus\) !important;\s*outline-offset: calc\(-1 \* var\(--b-focus-width\)\) !important;/);
+  });
   it('keeps a paintable outline beside each shadow-only focus ring (RA-17)', () => {
     const foundation = css('app/app/b-foundation.css');
     expect(foundation).toMatch(/\.b-live__a:focus-visible \{ outline: var\(--b-focus-width\) solid transparent;/);
@@ -103,4 +107,49 @@ describe('Direction B foundation (Nov 14 inspection)', () => {
     // Four id steps: over the desktop layer's search field rule (three :is() ids and :not(#nvd-none)).
     expect(css('app/app/owner-b-desktop.css')).toContain('form.c-team-search .c-team-search__field:not(#nvd-none) {');
   });
+});
+
+it('gives Spanish attendance details enough room for a whole time beside a status', () => {
+  const home = css('app/app/owner-b-home.css');
+  expect(home).toMatch(/#b-home-on:lang\(es\) \.b-row:has\([^)]+\.b-chip\) \{[^}]*flex-wrap: wrap/);
+  expect(home).toMatch(/#b-home-on:lang\(es\)[^{]*> \.b-row__tx \{[^}]*flex-basis: min-content/);
+});
+
+it('keeps the enlarged two-row Spanish Pendientes filters inside their own bounds', () => {
+  expect(css('components/owner-b/owner-b.css')).toMatch(/#b-todo-title\) \.b-seg:has\(> :nth-child\(4\)\) > button::after \{[^}]*inset: 0/);
+});
+
+it('lets the Spanish request counts keep each caption in its own column', () => {
+  expect(css('components/employee-b/requests.css')).toMatch(/html:lang\(es\) \.b-screen:has\(#b-requests-title\) \.b-live__m \{[^}]*white-space: normal !important;/);
+});
+
+it('wraps the Spanish no-shift notice inside the update composer', () => {
+  const work = css('app/app/employee-b-work.css');
+  expect(work).toMatch(/\.eb-compose:lang\(es\) \.em-request-notice\[aria-labelledby="compose-unavailable-title"\] > p \{[^}]*white-space: normal/);
+});
+
+it('keeps the Spanish partial updates notice legible where the list rises over the teal header', () => {
+  const work = css('app/app/employee-b-work.css');
+  const notice = '.b-screen:lang(es):has(#b-updates-title) .b-stack > .b-note[role="status"]:first-child';
+  expect(contexts(work, notice).some(stack => stack.every(atRule => !atRule.startsWith('@media')))).toBe(true);
+  expect(work).toMatch(/#b-updates-title\) \.b-stack > \.b-note\[role="status"\]:first-child \{[^}]*background-color: var\(--b-canvas\)/);
+});
+
+it('gives the Spanish update form fields the kit keyboard outline on phones', () => {
+  const work = css('app/app/employee-b-work.css');
+  const fields = '.eb-compose:lang(es) .em-message-field > :is(input, select, textarea):focus-visible';
+  const rule = work.slice(work.indexOf(fields)).split('}')[0];
+  expect(rule).toContain('outline: var(--b-focus-width) solid var(--b-focus) !important');
+  expect(rule).toContain('outline-offset: var(--b-focus-offset)');
+});
+
+
+it('keeps the bottom edge of the Spanish directory link above the first person', () => {
+  expect(css('components/employee-directory-corp.css')).toMatch(/#team-people:lang\(es\) > \.c-section__head \.c-link \{[^}]*position: relative;[^}]*z-index: 2;/);
+});
+
+
+it('centers the Spanish Payroll tabs’ hit areas without relying on motion transforms', () => {
+  const shell = css('app/app/owner-b-shell.css');
+  expect(shell).toMatch(/nav\.c-pay-tabs:lang\(es\) > a\.c-pay-tabs__tab::after \{[^}]*top: min\(0px, calc\(50% - 22px\)\)[^}]*translate: none/);
 });

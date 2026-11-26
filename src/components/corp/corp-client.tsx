@@ -3,14 +3,18 @@
 import "./corp.css";
 import { NavigationLink } from "../navigation-link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
 import { BLoadingScreen, BState } from "../owner-b/b-kit";
-import { BRouteLoading, loadingShape } from "../owner-b/b-loading";
+import { BRouteLoading, loadingShape, loadingTitle } from "../owner-b/b-loading";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
 
 /* Owner premium (Oct 31, 2026): the kit's client pieces. Presentation and navigation only; no data is read or written. */
 
 const PREV = "nv:nav:prev";
 const CUR = "nv:nav:cur";
+
+/** A directory may know which row opened a profile, including a filtered history entry. */
+export const BackLinkHistoryMatch = createContext<((href: string) => boolean) | null>(null);
 
 /** The shell records each in-app location, so a back link can tell whether the page it names is the one just before
  * this one (P6). Session storage only; a private window without it simply falls back to an ordinary link. */
@@ -33,11 +37,12 @@ function samePlace(a: string, b: string) {
 /** A back link that behaves like Back (P6): when the page it names is the previous entry, it goes back in history, so no
  * new entry is added (no swipe-back loop) and the browser restores that page's scroll. Otherwise it is an ordinary link. */
 export function CorpBackLink({ href, className, children, label }: { href: string; className?: string; children: ReactNode; label?: string }) {
+  const matchesVisit = useContext(BackLinkHistoryMatch);
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     let previous: string | null = null;
     try { previous = sessionStorage.getItem(PREV); } catch { previous = null; }
-    if (!previous || window.history.length < 2 || !samePlace(previous, href)) return;
+    if (window.history.length < 2 || (!matchesVisit?.(href) && (!previous || !samePlace(previous, href)))) return;
     event.preventDefault();
     window.history.back();
   };
@@ -185,12 +190,13 @@ function SkelShape({ shape, title, variant }: { shape: Shape; title: string | nu
  * older white card, which dropped the band). Offline is the amber card; slow is the grey one, still loading. It is drawn
  * only after the timer, so the shell is there to ask whose it is. */
 function CorpSkeletonSlow({ pathname, title, offline }: { pathname: string; title: string | null; offline: boolean }) {
-  const router = useRouter();
+  const router = useRouter(), lang = usePortalLang(), es = lang === "es";
   const shape = loadingShape(pathname, document.querySelector(".app-shell[data-employee-mobile]") !== null);
   return <div className="c-page c-embed c-skel c-skel--slow c-route-state--checking" data-corp="">
-    <BLoadingScreen {...shape} title={title ?? shape.title} state={<BState alert kind={offline ? "offline" : "loading"}
-      title={offline ? "You’re offline" : "This is taking longer than usual"} line={offline ? "Reconnect, then try again." : "Check your connection, then try again."}
-      action={{ label: "Try again", onClick: () => router.refresh() }} />} />
+    <BLoadingScreen {...shape} title={title ?? (typeof shape.title === "string" ? loadingTitle(shape.title, lang) : shape.title)} loadingText={es ? "Cargando…" : "Loading…"} state={<BState alert kind={offline ? "offline" : "loading"}
+      title={es ? offline ? "Estás sin conexión" : "Esto está tardando más de lo normal" : offline ? "You’re offline" : "This is taking longer than usual"}
+      line={es ? offline ? "Vuelve a conectarte y vuelve a intentarlo." : "Revisa tu conexión y vuelve a intentarlo." : offline ? "Reconnect, then try again." : "Check your connection, then try again."}
+      action={{ label: es ? "Intentar de nuevo" : "Try again", onClick: () => router.refresh() }} />} />
   </div>;
 }
 

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, rs } from '@rstest/core';
+import { PortalLangProvider } from "@/lib/i18n/portal-lang";
 import { AppShell } from "./app-shell";
 import { NavIcon } from "./nav-icon";
 
@@ -42,6 +43,18 @@ function render(role: "EMPLOYEE" | "LEAD" | "MANAGER" | "OWNER", pathname = "/ap
   );
   return { html, mobile: html.split('aria-label="Mobile navigation"')[1].split("</nav>")[0] };
 }
+
+it.each([['en', 'NEVORA Workforce home'], ['es', 'Inicio de NEVORA Workforce']] as const)(
+  'names the desktop and mobile logo links in %s', (lang, label) => {
+    navigationMock.pathname = '/app/schedule';
+    const html = renderToStaticMarkup(<PortalLangProvider lang={lang}>
+      <AppShell workspaceName="Northside Services" operationalAuthority={company} user={{id: 'actor', firstName: 'Sam', lastName: 'Cruz', role: 'OWNER'}}>
+        <h1>Schedule</h1>
+      </AppShell>
+    </PortalLangProvider>);
+    expect(html.match(new RegExp('aria-label="' + label + '"', 'g'))).toHaveLength(2);
+  },
+);
 
 // P3-WR-09 (Oct 19): Leads use the Employee app, so they get the same My time and Timecards presentation.
 it.each(['/app/my-time', '/app/timecards'])('enables the approved employee presentation on %s for Employees and Leads', pathname => {

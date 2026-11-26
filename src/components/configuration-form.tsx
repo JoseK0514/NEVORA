@@ -4,6 +4,7 @@ import { BCallout } from '@/components/owner-b/b-kit';
 import { unstable_rethrow } from "next/navigation";
 import { useRef, useState, type ReactNode, type FormEvent } from "react";
 import { ShiftReviewRecovery, shiftDraftText } from "./shift-review-recovery";
+import { SMALL_PARTS_COPY } from "./small-parts-copy";
 import { serverActionStarted } from "@/lib/server-action-flight";
 export type ConfigurationResult = { error?: string; success?: string; updatedAt?: string; issueCode?: string };
 
@@ -38,6 +39,7 @@ export function ConfigurationForm({
   id,
   holdAfterUnconfirmed = false,
   unconfirmedCheck,
+  pendingFeedback,
 }: {
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
@@ -51,8 +53,10 @@ export function ConfigurationForm({
   holdAfterUnconfirmed?: boolean;
   /** A form that knows a better place to check after an unconfirmed outcome (G58: Review replacement checks Find cover):
    * its note and its check link replace the generic ones. */
+  pendingFeedback?: { label: string; onChange: (pending: boolean) => void };
   unconfirmedCheck?: { title: string; label: string; href: string };
 }) {
+  const recovery = SMALL_PARTS_COPY[pendingFeedback ? "es" : "en"].configuration;
   const [result, setResult] = useState<ConfigurationResult>({});
   const [pending, setPending] = useState(false);
   // Double tap (Wave A ST, Oct 19): a second submit can arrive before the disabled fieldset renders; only one save runs.
@@ -74,13 +78,14 @@ export function ConfigurationForm({
     if (shiftVersion !== undefined) setSubmittedShift(shiftDraftText(data));
     const checkHref = shiftCheckHref(data);
     setPending(true);
+    pendingFeedback?.onChange(true);
     setResult({});
     // G58: the scoped read frame queues its refresh behind this action instead of discarding the action's redirect.
     const settled = serverActionStarted();
     try {
       const saved = await action(data);
       // An overlap right after an unconfirmed save may be the person's own shift: say so instead of implying someone else's.
-      setResult(unconfirmed && saved.issueCode === "SHIFT_OVERLAP" ? { ...saved, error: UNCONFIRMED_OVERLAP } : saved);
+      setResult(unconfirmed && saved.issueCode === "SHIFT_OVERLAP" ? { ...saved, error: recovery.unconfirmedOverlap } : saved);
       if (saved.success && !saved.error) setUnconfirmed(null);
       if (saved.success && !saved.error && saved.updatedAt && draftUpdatedAt !== undefined) setDraftUpdatedAt(saved.updatedAt);
     } catch (error) {
@@ -88,11 +93,12 @@ export function ConfigurationForm({
       // and not ours to rethrow from this event handler (nothing awaits it, so it would be an unhandled rejection).
       if (isNavigation(error)) return;
       setUnconfirmed({ href: unconfirmedCheck?.href ?? checkHref });
-      setResult({ error: unconfirmedCheck?.title ?? (checkHref ? UNCONFIRMED_SHIFT : UNCONFIRMED_CHANGE) });
+      setResult({ error: unconfirmedCheck?.title ?? (checkHref ? recovery.unconfirmedShift : recovery.unconfirmedChange) });
     } finally {
       settled();
       inFlight.current = false;
       setPending(false);
+      pendingFeedback?.onChange(false);
     }
   }
   return (
@@ -102,12 +108,12 @@ export function ConfigurationForm({
         {shiftVersion !== undefined ? <input type="hidden" name="expectedReviewVersion" value={shiftVersion} /> : null}
         {children}
       </fieldset>
-      {pending ? <p role="status">Saving…</p> : null}
+      {pending ? <p role="status" className={pendingFeedback ? "b-sr" : undefined}>{pendingFeedback?.label ?? "Saving…"}</p> : null}
       {/* Refinement (Nov 20, 2026; Jose: red words on a pink bar look cheap): a refusal is the kit's note (white panel, a
         * red mark, the reason as its title), announced once. */}
       {result.error ? <div className="form-result">{unconfirmed
         // Unknown outcome: amber means "wait or check" (DESIGN.MD status colours); the action opens the shift's own day.
-        ? <BCallout tone="amber" role="alert" title={result.error} action={unconfirmed.href ? { label: unconfirmedCheck?.label ?? "Check the schedule", href: unconfirmed.href } : undefined} />
+        ? <BCallout tone="amber" role="alert" title={result.error} action={unconfirmed.href ? { label: unconfirmedCheck?.label ?? recovery.checkSchedule, href: unconfirmed.href } : undefined} />
         : <BCallout tone="red" role="alert" title={result.error} />}</div> : null}
       {shiftVersion !== undefined && (result.issueCode === 'SHIFT_REVIEW_CONFLICT' || result.issueCode === 'ACCESS_DENIED') ? <ShiftReviewRecovery draft={submittedShift} /> : null}
       {result.success ? <div className="form-result"><BCallout tone="green" role="status" title={result.success} /></div> : null}

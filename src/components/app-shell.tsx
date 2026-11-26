@@ -33,6 +33,7 @@ import { PresentationProvider } from "./presentation-context";
 import { BOfflineContext } from "./owner-b/b-offline";
 import { NUVORA_BRAND } from "../lib/brand";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { SettingsSidebarLabel } from "./settings-sidebar-label";
 import { SHELL_WORDS, navLabel, localClock } from "./shell-copy";
 import { handleRowNavigation } from "../lib/row-navigation";
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
@@ -534,7 +535,7 @@ function AppShellView({
       <a className="portal-skip-link" href="#main-content">{W.skipToContent}</a>
       <aside className="sidebar" data-collapsed={railed} ref={sidebarRef}>
         <div className="sidebar-heading">
-        <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
+        <Link href="/app" className="brand sidebar-brand" aria-label={W.homeLinkName}>
           <AuthBrand />
         </Link>
         {companyLogo}
@@ -551,6 +552,7 @@ function AppShellView({
           {group.label ? <h2 className="sidebar-group-label">{L(group.label)}</h2> : null}
           {group.items.map((item) => {
             const active = item.href === sidebarActive;
+            const spanishSettings = lang === "es" && item.href === "/app/settings";
             // G6 (Nov 23, 2026): the name starts with what the entry shows, the label and then the count as drawn ("99+").
             const count = item.href === "/app/inbox" && inboxCount ? countText(inboxCount) : null;
 
@@ -562,14 +564,14 @@ function AppShellView({
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
                 aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
-                aria-label={count ? W.withCount(L(item.label), count) : L(item.label)}
+                aria-label={spanishSettings ? undefined : count ? W.withCount(L(item.label), count) : L(item.label)}
               >
                 <span className="nav-icon">
                   {/* Phase 3 (TB-001, TB-009): the current entry's glyph is filled, in the sidebar and the rail, as the phone's current tab is.
                     * Phase 9: one glyph per concept, the tab bar's own (a pay statement is the receipt for every role). */}
                   <NavIcon name={item.icon} employee={employee} size={20} weight={active ? "fill" : "bold"} />
                 </span>
-                <span className="nav-label">{L(item.label)}</span>
+                {spanishSettings ? <SettingsSidebarLabel full={L(item.label)} short={W.compactSettings} /> : <span className="nav-label">{L(item.label)}</span>}
                 <NavPending />
                 {/* The space keeps the label and the count two words for tools that read the drawn text (the flex row
                   * draws no gap for it). */}
@@ -620,7 +622,7 @@ function AppShellView({
               {pageItem ? <li>{!homeView && pathname !== pageItem.href ? <Link href={pageItem.href}>{L(pageItem.label)}</Link> : <span aria-current="page">{L(pageItem.label)}</span>}</li> : null}
             </ol>
           </nav> : null}
-          <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}>
+          <Link href="/app" className="brand compact" aria-label={W.homeLinkName}>
             <AuthBrand />
           </Link>
           {companyLogo}

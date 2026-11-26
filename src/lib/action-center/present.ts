@@ -1,3 +1,4 @@
+import { esDate } from "@/components/employee-b/es-format";
 import type {ActionItem} from './project';
 import {isStaffingRepair,repairPerson,repairTitle,repairWhen} from '../time-off-staffing/present';
 import {concernsActor} from './review-routing';
@@ -40,13 +41,29 @@ export function readableDates(text: string) {
 
 const requestKind: Partial<Record<ActionItem['type'], string>> = {TIME_OFF: 'Time off', EXCHANGE: 'Shift request', CALLOUT: 'Can’t work'};
 
-const sentDate = (iso: string | undefined, timeZone: string) => {
+/** Signed-in Spanish: the words presentItem writes itself, in Puerto Rico Spanish with tú. The server's own sentences and
+ * the dates readableDates writes stay as they are. */
+export type PresentLang = 'en' | 'es';
+const ES = {
+  kinds: {TIME_OFF: 'Días libres', EXCHANGE: 'Cambio de turno', CALLOUT: 'No puedo trabajar'} as Partial<Record<ActionItem['type'], string>>,
+  swap: 'Intercambio de turno', cover: 'Solicitud de cobertura', approvedTimeOff: 'Días libres aprobados',
+  noTarget: 'Sin meta de horas semanal', noTargetFor: (p: string) => `${p} todavía no tiene meta de horas semanal.`, setTarget: 'Fija una meta de horas semanal.',
+  notConfirmed: 'Horario no confirmado', notConfirmedBy: (p: string) => `${p} no ha confirmado su horario publicado.`,
+  notSent: 'Disponibilidad no enviada', notSentBy: (p: string) => `${p} todavía no ha enviado su disponibilidad.`, notSentYet: 'Todavía no se ha enviado.',
+  positionAt: 'Puesto sin cubrir en ', leadAt: 'Sin líder programado en ',
+  addUnrecorded: 'Añadir tiempo no registrado', correction: 'Corrección de tiempo', setWeekly: 'Fijar meta de horas semanal',
+};
+
+const sentDate = (iso: string | undefined, timeZone: string, lang: PresentLang = 'en') => {
   if (!iso) return '';
   const dateOnly = iso.length === 10;
   const date = new Date(dateOnly ? `${iso}T12:00:00Z` : iso);
   if (!Number.isFinite(date.getTime())) return '';
   // A timestamp is shown on the workspace's calendar day (IS-32); a plain date stays as written.
-  try { return `sent ${new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', timeZone: dateOnly ? 'UTC' : timeZone}).format(date).replace(' ', NBSP)}`; }
+  try {
+    if (lang === 'es') return `enviada el ${new Intl.DateTimeFormat('es-PR', {month: 'short', day: 'numeric', timeZone: dateOnly ? 'UTC' : timeZone}).format(date).replace(/\./g, '').replace(' ', NBSP)}`;
+    return `sent ${new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', timeZone: dateOnly ? 'UTC' : timeZone}).format(date).replace(' ', NBSP)}`;
+  }
   catch { return ''; }
 };
 
@@ -60,7 +77,7 @@ const lengthText = (minutes: number) => {
  * (either end may be missing) and the requested one. The line says what changes, in the workplace's clock:
  * "Wed, Nov 11 · 8:30 AM – 5:00 PM, was 9:00 AM – 5:00 PM · +30 min". The length difference is only given when both
  * intervals are complete; nothing recorded reads "Add …", never a zero-minute entry. Null when the facts can't be read. */
-export function correctionLine(correction: NonNullable<ActionItem['correction']>): string | null {
+export function correctionLine(correction: NonNullable<ActionItem['correction']>, lang: PresentLang = 'en'): string | null {
   const at = (iso: string | null) => { if (!iso) return null; const value = Date.parse(iso); return Number.isFinite(value) ? value : null; };
   const askedStart = at(correction.requestedStartAt), askedEnd = at(correction.requestedEndAt);
   const wasStart = at(correction.recordedStartAt), wasEnd = at(correction.recordedEndAt);
@@ -69,16 +86,17 @@ export function correctionLine(correction: NonNullable<ActionItem['correction']>
   try { clock = new Intl.DateTimeFormat('en-US', {timeZone: correction.timeZone, hour: 'numeric', minute: '2-digit'}); } catch { return null; }
   // Each time stays whole on a narrow phone ("10:55 AM" never breaks before AM): a narrow no-break space, which the row
   // keeps (Things to do turns ordinary no-break spaces back into spaces).
-  const time = (value: number) => clock.format(new Date(value)).replace(/[ \u00a0\u202f]([AP]M)$/, '\u202f$1');
-  const day = new Intl.DateTimeFormat('en-US', {weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'}).format(new Date(`${correction.workDate}T12:00:00Z`)).replace(/ (\d+)$/, `${NBSP}$1`);
+  const time = (value: number) => clock.format(new Date(value)).replace(/[ \u00a0\u202f]([AP]M)$/, (_, suffix: string) =>
+    lang === 'es' ? suffix === 'AM' ? '\u202fa.\u00a0m.' : '\u202fp.\u00a0m.' : '\u202f' + suffix);
+  const day = new Intl.DateTimeFormat(lang === 'es' ? 'es-PR' : 'en-US', {weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC'}).format(new Date(`${correction.workDate}T12:00:00Z`)).replace(/ (\d+)$/, `${NBSP}$1`);
   const asked = `${time(askedStart)} – ${time(askedEnd)}`;
-  if (wasStart === null && wasEnd === null) return `${day} · Add ${asked}`;
+  if (wasStart === null && wasEnd === null) return `${day} · ${lang === 'es' ? 'Añadir' : 'Add'} ${asked}`;
   // Only a start recorded: an open entry. A recorded end with no start, or an end not after the start, can't be described
   // truthfully, so the line gives the requested time alone.
-  if (wasStart !== null && wasEnd === null) return `${day} · ${asked}, was ${time(wasStart)} with no clock-out`;
+  if (wasStart !== null && wasEnd === null) return `${day} · ${asked}, ${lang === 'es' ? 'antes' : 'was'} ${time(wasStart)} ${lang === 'es' ? 'sin marcar salida' : 'with no clock-out'}`;
   if (wasStart === null || wasEnd === null || wasEnd <= wasStart) return `${day} · ${asked}`;
   const change = Math.round(((askedEnd - askedStart) - (wasEnd - wasStart)) / 60_000);
-  return `${day} · ${asked}, was ${time(wasStart)} – ${time(wasEnd)} · ${change === 0 ? 'same length' : `${change > 0 ? '+' : '−'}${lengthText(Math.abs(change))}`}`;
+  return `${day} · ${asked}, ${lang === 'es' ? 'antes' : 'was'} ${time(wasStart)} – ${time(wasEnd)} · ${change === 0 ? lang === 'es' ? 'misma duración' : 'same length' : `${change > 0 ? '+' : '−'}${lengthText(Math.abs(change))}`}`;
 }
 
 /** The person an item is about, when its text names one. */
@@ -91,51 +109,57 @@ export function itemPerson(item: ActionItem) {
 
 export type PresentedItem = {title: string; detail: string; person: string | null; action: string};
 
-export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'UTC'): PresentedItem {
-  const person = itemPerson(item);
+export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'UTC', lang: PresentLang = 'en'): PresentedItem {
+  const person = itemPerson(item), es = lang === 'es';
   let title = item.title, detail = item.detail;
   // Approved leave over a published shift (Nov 9, 2026): scheduling work named for the person, never a request to decide.
-  if (isStaffingRepair(item)) return {title: repairTitle(item), detail: spacedRanges(['Approved time off', repairWhen(item)].filter(Boolean).join(' · ')), person, action: actionLabel};
+  if (isStaffingRepair(item)) return {title: repairTitle(item, lang), detail: spacedRanges([es ? ES.approvedTimeOff : 'Approved time off', repairWhen(item, lang)].filter(Boolean).join(' · ')), person, action: actionLabel};
   switch (item.type) {
     case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT': {
       title = person ?? title;
       // Backend (Nov 15, 2026): a shift request says whether it is a swap or a cover; without it, "Shift request".
-      const kind = item.type === 'EXCHANGE' && item.request?.exchangeKind ? (item.request.exchangeKind === 'SWAP' ? 'Shift swap' : 'Cover request') : requestKind[item.type];
-      detail = [kind, sentDate(item.dateTime, timeZone)].filter(Boolean).join(' · ');
+      const kind = item.type === 'EXCHANGE' && item.request?.exchangeKind ? (item.request.exchangeKind === 'SWAP' ? es ? ES.swap : 'Shift swap' : es ? ES.cover : 'Cover request') : (es ? ES.kinds : requestKind)[item.type];
+      detail = [kind, sentDate(item.dateTime, timeZone, lang)].filter(Boolean).join(' · ');
       break;
     }
     case 'TARGET_MISSING':
-      title = 'No weekly hour target';
-      detail = person ? `${person} has no weekly hour target yet.` : 'Set a weekly hour target.';
+      title = es ? ES.noTarget : 'No weekly hour target';
+      detail = person ? es ? ES.noTargetFor(person) : `${person} has no weekly hour target yet.` : es ? ES.setTarget : 'Set a weekly hour target.';
       break;
     case 'ACKNOWLEDGEMENT_MISSING':
-      title = 'Schedule not confirmed';
-      detail = person ? `${person} hasn’t confirmed their published schedule.` : detail;
+      title = es ? ES.notConfirmed : 'Schedule not confirmed';
+      detail = person ? es ? ES.notConfirmedBy(person) : `${person} hasn’t confirmed their published schedule.` : detail;
+      break;
+    case 'DEADLINE_MISSING':
+      // Signed-in Spanish: the server's one sentence for a missing deadline (assistance/manager-actions.ts).
+      if (es) { title = 'Fecha límite de disponibilidad'; if (/^Set the availability deadline/.test(detail)) detail = 'Fija la fecha límite de disponibilidad antes de que el equipo termine de enviar su disponibilidad.'; }
       break;
     case 'AVAILABILITY_MISSING':
-      title = 'Availability not sent';
-      detail = person ? `${person} hasn’t sent availability yet.` : 'Not sent yet.';
+      title = es ? ES.notSent : 'Availability not sent';
+      detail = person ? es ? ES.notSentBy(person) : `${person} hasn’t sent availability yet.` : es ? ES.notSentYet : 'Not sent yet.';
       break;
     case 'COVERAGE_GAP':
-      title = title.replace(/^Position coverage missing at /, 'Position not covered at ').replace(/^Lead coverage missing at /, 'No lead scheduled at ');
-      detail = detail.replace(/: (\d+) missing/g, ': $1 open');
+      title = title.replace(/^Position coverage missing at /, es ? ES.positionAt : 'Position not covered at ').replace(/^Lead coverage missing at /, es ? ES.leadAt : 'No lead scheduled at ');
+      detail = es
+        ? esDate(detail.replace(/: (\d+) missing/g, ': $1 sin cubrir').replace(/\ball day\b/g, 'todo el día'))
+        : detail.replace(/: (\d+) missing/g, ': $1 open');
       break;
     case 'TIME_CORRECTION': {
       // Phase 3 (OW-002): the title is the person, the line under it what they asked for.
-      const who = detail.split(' · ')[0]?.trim(), sent = sentDate(item.dateTime, timeZone);
+      const who = detail.split(' · ')[0]?.trim(), sent = sentDate(item.dateTime, timeZone, lang);
       // Phase 4 (U03): "yours" is the server's typed concernsActor, never the title's wording. A correction someone
       // sent for another person (a delegated requester) keeps that person's name.
-      if (concernsActor(item)) title = reviewCopy().yourCorrection;
+      if (concernsActor(item)) title = reviewCopy(lang).yourCorrection;
       else if (who) title = who;
       // Backend (Nov 15): with the correction's facts the line says what changes; without them, the kind and the day sent.
-      detail = (item.correction ? correctionLine(item.correction) : null)
-        ?? [/Recorded entry not sent yet/.test(detail) ? 'Add unrecorded time' : 'Time correction', sent].filter(Boolean).join(' · ');
+      detail = (item.correction ? correctionLine(item.correction, lang) : null)
+        ?? [/Recorded entry not sent yet/.test(detail) ? es ? ES.addUnrecorded : 'Add unrecorded time' : es ? ES.correction : 'Time correction', sent].filter(Boolean).join(' · ');
       break;
     }
   }
   // Review B7 (NV-262): a detail that ends in a bare date range ("Casey · Nov 2–8.") is a label, not a sentence.
   if (item.type === 'TIMECARD') detail = detail.replace(/(\d)\.$/, '$1');
-  const action = actionLabel === 'Set hour target' ? 'Set weekly hour target' : actionLabel;
+  const action = actionLabel === 'Set hour target' ? 'Set weekly hour target' : es && actionLabel === 'Fijar meta de horas' ? ES.setWeekly : actionLabel;
   return {title, detail: spacedRanges(readableDates(detail)), person, action};
 }
 
@@ -157,6 +181,9 @@ export function groupHeading(type: ActionItem['type'], count: number, title: str
  * ended with no punch. "Clocked in late": the person arrived after the start. Today's read tells the first two apart by
  * the shift's status, so a shift still in progress is never called missed. */
 export const ATTENDANCE_WORDS = {notClockedIn: 'Not clocked in', late: 'Clocked in late', missed: 'Missed'} as const;
+/** Signed-in Spanish (es-rest R2): the same words in Puerto Rico Spanish (Team and Home already say these). */
+export const ATTENDANCE_WORDS_ES: Record<keyof typeof ATTENDANCE_WORDS, string> = {notClockedIn: 'Sin marcar entrada', late: 'Marcó entrada tarde', missed: 'Sin marcar'};
+export const attendanceWords = (lang: 'en' | 'es' = 'en'): Record<keyof typeof ATTENDANCE_WORDS, string> => lang === 'es' ? ATTENDANCE_WORDS_ES : ATTENDANCE_WORDS;
 export function splitNoClockIn<T extends {status: string}>(shifts: readonly T[]): {running: T[]; ended: T[]} {
   return {running: shifts.filter(shift => shift.status !== 'no_punches'), ended: shifts.filter(shift => shift.status === 'no_punches')};
 }

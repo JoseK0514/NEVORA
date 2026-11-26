@@ -1,5 +1,6 @@
 import type {EmployeeNotificationItem} from './employee-view';
 import {notificationKind,type NotificationKind} from './notification-labels';
+import {NOTIFICATION_TEXT_COPY,type NotificationLang} from './notification-text-copy';
 
 /* Backend contract (Nov 15, 2026): an authorized list item may carry its event type, the request's current status
  * (`outcome`), the names it may show and a count. These helpers turn only what is present into words; nothing is
@@ -22,23 +23,24 @@ export function notificationKindFor(item:Pick<Facts,'label'|'eventType'>):Notifi
  return notificationKind(item.label);
 }
 
-const STATUS_WORDS:Readonly<Record<string,string>>={PENDING:'waiting',OPEN:'open',EMPLOYEE_PENDING:'waiting on a coworker',MANAGER_PENDING:'waiting on a manager',APPROVED:'approved',DENIED:'declined',CANCELLED:'cancelled'};
+const STATUS_WORDS:Readonly<Record<string,string>>=NOTIFICATION_TEXT_COPY.en.status;
 
 /** "Now cancelled": only for a decision notice (…_APPROVED or …_DENIED) whose request has since moved to another known
  * status. The notice itself stays true to what happened; an unknown status says nothing. */
-export function notificationOutcomeNote(item:Pick<Facts,'eventType'|'outcome'>):string|null{
+export function notificationOutcomeNote(item:Pick<Facts,'eventType'|'outcome'>,lang:NotificationLang='en'):string|null{
  const decided=/_(APPROVED|DENIED)$/.exec(item.eventType??'')?.[1];
  if(!decided||!item.outcome||item.outcome===decided||!Object.hasOwn(STATUS_WORDS,item.outcome))return null;
- return `Now ${STATUS_WORDS[item.outcome]}`;
+ const t=NOTIFICATION_TEXT_COPY[lang];
+ return t.now(t.status[item.outcome]);
 }
 
 /** The count, where the list sends one: a schedule notice counts the reader's own shifts in it, a manager summary the
  * items it gathers. Null when there is none (never "0 items" invented from a missing count). */
-export function notificationCountNote(item:Pick<Facts,'eventType'|'count'>):string|null{
+export function notificationCountNote(item:Pick<Facts,'eventType'|'count'>,lang:NotificationLang='en'):string|null{
  if(item.count===null||item.count===undefined||!Number.isSafeInteger(item.count)||item.count<0)return null;
- const n=item.count;
- if(/^SCHEDULE_/.test(item.eventType??''))return n===0?'No shifts for you':`${n} ${n===1?'shift':'shifts'}`;
- if(item.eventType==='MANAGER_REVIEW'||item.eventType==='COVERAGE_ATTENTION')return `${n} waiting`;
+ const n=item.count,t=NOTIFICATION_TEXT_COPY[lang];
+ if(/^SCHEDULE_/.test(item.eventType??''))return n===0?t.noShifts:t.shifts(n);
+ if(item.eventType==='MANAGER_REVIEW'||item.eventType==='COVERAGE_ATTENTION')return t.waiting(n);
  return null;
 }
 

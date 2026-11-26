@@ -1,3 +1,4 @@
+import {passkeysFeedbackCopy} from './management-copy';
 import {creationOptions,credentialJSON,deviceName,type Passkey} from './client';
 
 type Phase='loading'|'ready'|'paused'|'unavailable'|'denied'|'disabled'|'ended';
@@ -19,17 +20,17 @@ export function parsePasskeySnapshot(value:unknown,authority:string):Snapshot {
 class Denied extends Error {}
 class Disabled extends Error {}
 class Refused extends Error {}
-const uncertain='We could not confirm the result. Refresh your saved passkeys before trying again.';
 
 /** A mounted own-account owner. Native credentials never enter state/storage;
  * every command uses the original session binding and canonical server guards. */
-export function createPasskeyManager(authority:string,changed:()=>void){
+export function createPasskeyManager(authority:string,changed:()=>void,lang:'en'|'es'='en'){
+ const t=passkeysFeedbackCopy[lang],uncertain=t.uncertain;
  let state:PasskeyState={phase:'loading',busy:null,passkeys:null,notice:'',needsRefresh:false};
  let version=0,ended=false,deadline=0,expiry:ReturnType<typeof setTimeout>|undefined;
  let active:AbortController|undefined,reading=false;
  const publish=(next:Partial<PasskeyState>)=>{state={...state,...next};changed();};
  const clearLease=()=>{clearTimeout(expiry);deadline=0;};
- const expire=()=>{clearLease();publish({phase:'unavailable',passkeys:null,notice:'Refresh to check your current passkeys.'});};
+ const expire=()=>{clearLease();publish({phase:'unavailable',passkeys:null,notice:t.expired});};
  const valid=()=>{if(deadline<=performance.now()){expire();return false;}return state.phase==='ready'&&!state.busy&&!state.needsRefresh;};
  const isLive=(v:number)=>!ended&&v===version;
  function invalidate(){version++;active?.abort();active=undefined;reading=false;clearLease();}
@@ -85,7 +86,7 @@ export function createPasskeyManager(authority:string,changed:()=>void){
     new Promise<never>((_,reject)=>{controller.signal.addEventListener('abort',()=>reject(new DOMException('Cancelled','AbortError')),{once:true});nativeTimer=setTimeout(()=>{controller.abort();reject(new DOMException('Cancelled','AbortError'));},300000);}),
    ]).finally(()=>clearTimeout(nativeTimer));
    if(!isLive(v))return;
-   if(!credential){publish({busy:null});await read(v,controller.signal);if(isLive(v))publish({notice:'Setup cancelled. No passkey was added to your account.'});return;}
+   if(!credential){publish({busy:null});await read(v,controller.signal);if(isLive(v))publish({notice:t.cancelled});return;}
    publish({busy:'verifying'});
    if(!await read(v,controller.signal)||!isLive(v))return;
    if(deadline<=performance.now()){expire();publish({busy:null});return;}
@@ -93,13 +94,13 @@ export function createPasskeyManager(authority:string,changed:()=>void){
    const receipt=await request('/api/auth/passkey/register/verify','POST',controller.signal,{response:credentialJSON(credential as PublicKeyCredential),name:deviceName()});
    if(!isLive(v))return;
    if(!record(receipt)||!exact(receipt,['passkey']))throw Error('Invalid receipt');const key=parseKey(receipt.passkey);
-   await afterMutation(v,controller.signal,keys=>keys.some(saved=>saved.id===key.id),'Passkey added. You can use it the next time you sign in.');
+   await afterMutation(v,controller.signal,keys=>keys.some(saved=>saved.id===key.id),t.added);
   }catch(error){
    if(!isLive(v))return;
    if(error instanceof Denied||error instanceof Disabled){failure(error);return;}
    if(sent){clearLease();publish({phase:'unavailable',passkeys:null,busy:null,needsRefresh:true,notice:uncertain});return;}
    publish({busy:null});await read(v,controller.signal.aborted?(active=new AbortController()).signal:controller.signal);
-   if(isLive(v))publish({notice:error instanceof DOMException&&['AbortError','NotAllowedError'].includes(error.name)?'Setup cancelled. No passkey was added to your account.':'Setup did not finish. Check your connection and try again.'});
+   if(isLive(v))publish({notice:error instanceof DOMException&&['AbortError','NotAllowedError'].includes(error.name)?t.cancelled:t.setupFailed});
   }finally{if(isLive(v)&&state.busy)publish({busy:null});}
  }
  async function remove(id:string){
@@ -107,7 +108,7 @@ export function createPasskeyManager(authority:string,changed:()=>void){
   const v=version,controller=active=new AbortController();publish({busy:'removing',notice:''});
   try{
    await request('/api/auth/passkeys/'+encodeURIComponent(id),'DELETE',controller.signal);
-   if(isLive(v))await afterMutation(v,controller.signal,keys=>!keys.some(key=>key.id===id),'Passkey removed.');
+   if(isLive(v))await afterMutation(v,controller.signal,keys=>!keys.some(key=>key.id===id),t.removed);
   }catch(error){if(isLive(v)){if(error instanceof Denied||error instanceof Disabled)failure(error);else{clearLease();publish({phase:'unavailable',passkeys:null,busy:null,needsRefresh:true,notice:uncertain});}}}
   finally{if(isLive(v)&&state.busy)publish({busy:null});}
  }
@@ -117,7 +118,7 @@ export function createPasskeyManager(authority:string,changed:()=>void){
   const unknown=state.busy==='verifying'||state.busy==='removing';invalidate();publish({phase:'paused',passkeys:null,busy:null,needsRefresh:state.needsRefresh||unknown,notice:unknown?uncertain:state.notice});
  }
  async function resume(){if(!ended&&state.busy!=='device')await refresh();}
- function cancel(){if(state.busy!=='device'&&state.busy!=='options')return;pause();publish({notice:'Setup cancelled. No passkey was added to your account.'});void refresh();}
+ function cancel(){if(state.busy!=='device'&&state.busy!=='options')return;pause();publish({notice:t.cancelled});void refresh();}
  function end(){if(ended)return;ended=true;invalidate();publish({phase:'ended',passkeys:null,busy:null,notice:'',needsRefresh:false});}
  return {get state(){return state;},refresh,add,remove,pause,resume,cancel,end};
 }

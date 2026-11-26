@@ -16,15 +16,16 @@ const rows = [
 
 /** Profile, every role: the policies, support and Delete my account. Hidden while the policies are unpublished.
  * `settings` draws it like the employee Profile's Settings list (Signature); the default is the kit card. */
-export function AccountPrivacyLinks({ variant = "card", sectionClassName = "", headingClassName = "" }: {
+export function AccountPrivacyLinks({ variant = "card", sectionClassName = "", headingClassName = "", quietCopy }: {
   variant?: "card" | "settings" | "quiet"; sectionClassName?: string; headingClassName?: string;
+  quietCopy?: {heading:string;links:Partial<Record<(typeof rows)[number]["href"],string>>};
 }) {
   if (!policiesVisible()) return null;
   // Quiet (v4): one "Privacy and terms" row that opens to the policies, Support and Delete my account.
   if (variant === "quiet") return (
-    <li><details className="q-details account-privacy" id="profile-privacy"><summary className="q-row q-row--one"><span className="q-rt"><b>Privacy and terms</b></span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
+    <li><details className="q-details account-privacy" id="profile-privacy"><summary className="q-row q-row--one"><span className="q-rt"><b>{quietCopy?.heading ?? "Privacy and terms"}</b></span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
       <ul className="q-list">{rows.map(row => <li key={row.href}><Link className="q-row q-row--one" href={row.href} prefetch={false} style={{ paddingLeft: 36 }}>
-        <span className="q-rt"><b>{row.title}</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>)}</ul>
+        <span className="q-rt"><b>{quietCopy?.links[row.href] ?? row.title}</b></span><CaretRightIcon weight="bold" className="q-chev" aria-hidden="true" /></Link></li>)}</ul>
     </details></li>
   );
   if (variant === "settings") return (

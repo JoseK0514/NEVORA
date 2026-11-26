@@ -137,3 +137,7 @@ describe('Select and review on the Direction B kit (Nov 23, 2026)', () => {
     expect(css).toMatch(/\.b-tc-pick:not\(#gq1\)[^{]*\{ display: flex !important; align-items: center !important; gap: var\(--b-space-12\) !important;/);
   });
 });
+
+it('uses the same enlarged Spanish inset for both time tools', () => {
+  expect(css).toContain('.c-tc .b-list:has(a[href="/app/timecards/corrections"]) .b-row,');
+});

@@ -15,11 +15,11 @@ export type SetupLang = "en" | "es";
 type Load = { state: "loading" } | { state: "ready"; progress: FirstWeekProgress } | { state: "unavailable" | "signed_out" | "hidden" };
 
 const words = {
-  en: { count: (done: number, total: number) => `${done} of ${total} complete`, next: "Next step", busy: "Loading setup progress", unavailableTitle: "Setup progress is unavailable right now",
-    tryAgain: "Try again", checking: "Checking…", signedOut: "Your session ended. Sign in again to see your setup progress.", signIn: "Sign in", stepLabel: (title: string, state: string) => `${title}, ${state}` },
-  es: { count: (done: number, total: number) => `${done} de ${total} ${total === 1 ? "paso" : "pasos"} ${done === 1 ? "completado" : "completados"}`, next: "Próximo paso",
+  en: { count: (done: number, total: number) => `${done} of ${total} complete`, next: "Next step", locationAndRules: activationCopy.en.steps.LOCATION_AND_RULES, busy: "Loading setup progress", unavailableTitle: "Setup progress is unavailable right now",
+    tryAgain: "Try again", checking: "Checking…", signedOut: "Your session ended. Sign in again to see your setup progress.", signIn: "Sign in" },
+  es: { count: (done: number, total: number) => `${done} de ${total} ${total === 1 ? "paso" : "pasos"} ${done === 1 ? "completado" : "completados"}`, next: "Próximo paso", locationAndRules: "Configura localidades y reglas de personal",
     busy: "Cargando el progreso de la configuración", unavailableTitle: "El progreso no está disponible ahora", tryAgain: "Intentar de nuevo", checking: "Verificando…",
-    signedOut: "Tu sesión terminó. Inicia sesión de nuevo para ver el progreso de la configuración.", signIn: "Iniciar sesión", stepLabel: (title: string, state: string) => `${title}, ${state}` },
+    signedOut: "Tu sesión terminó. Inicia sesión de nuevo para ver el progreso de la configuración.", signIn: "Iniciar sesión" },
 };
 
 const STEP_IDS: FirstWeekStepId[] = ["ROSTER", "LOCATION_AND_RULES", "FIRST_SCHEDULE_PUBLISHED", "TABLET_SETUP", "FIRST_TIMECARD_REVIEW"];
@@ -112,12 +112,12 @@ export function FirstWeekSetupCard({ lang = "en", initial }: { lang?: SetupLang;
     </div>
     <BList label={t.checklist}>
       {progress.steps.map(step => {
-        const done = step.status === "complete", next = step.id === progress.nextStep, title = t.steps[step.id];
+        const done = step.status === "complete", next = step.id === progress.nextStep;
+        const title = step.id === "LOCATION_AND_RULES" ? w.locationAndRules : t.steps[step.id];
         return <BRow key={step.id} href={step.href}
           lead={done ? <BDoneMark still /> : <span className="fw-mark" data-next={next || undefined} aria-hidden="true"><CircleIcon weight="bold" /></span>}
           title={title} sub={next ? w.next : undefined}
-          chip={done ? <BChip tone="green">{t.complete}</BChip> : next ? null : <BChip tone="grey">{t.pending}</BChip>}
-          label={w.stepLabel(title, done ? t.complete : t.pending)} />;
+          chip={done ? <BChip tone="green">{t.complete}</BChip> : next ? null : <BChip tone="grey">{t.pending}</BChip>} />;
       })}
     </BList>
   </BCard>;

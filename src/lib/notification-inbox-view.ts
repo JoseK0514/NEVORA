@@ -1,5 +1,6 @@
 import type {EmployeeNotificationItem} from './employee-view';
-import {dateRangeText} from './duration-format';
+import {dateRange} from './duration-format';
+import {localizeNotificationLabel,NOTIFICATION_TEXT_COPY,type NotificationLang} from './notification-text-copy';
 import {notificationCountNote,notificationName,notificationOutcomeNote} from './notification-facts';
 
 export type NotificationFilter='all'|'unread'|'required';
@@ -8,9 +9,6 @@ export type NotificationFilter='all'|'unread'|'required';
  * the most specific true sentence for the kind and the dates follow it when the row has them.
  * A manager summary ("Operations need review") gathers what waits in Things to do: open shifts ahead, time-off, shift
  * and can't-work requests, and availability not sent in; the row can't say which, so it names all three. */
-const ROW_TITLES:Readonly<Record<string,{title:string;detail:string}>>={
- 'Operations need review':{title:'Things to do are waiting for you',detail:'Open shifts, requests or missing availability'},
-};
 /** Backend (Nov 15, 2026): labels now name the event ("Items need review", "Time off approved") and the item carries
  * its eventType. The row's kind (its icon, destination and fixed title) follows the event type; the old labels still work. */
 const EVENT_LABELS:Readonly<Record<string,string>>={MANAGER_REVIEW:'Operations need review',COVERAGE_ATTENTION:'Operations need review',PAYROLL_PREPARATION:'Payroll preparation update',PAYROLL_STATEMENT:'Pay statement update',COMMUNICATION:'Team update'};
@@ -24,19 +22,19 @@ export function canonicalNotificationLabel(item:Pick<EmployeeNotificationItem,'l
  if(/^AVAILABILITY_/.test(event))return 'Availability update';
  return item.label;
 }
-export function notificationTitle(item:Pick<EmployeeNotificationItem,'label'|'subject'|'eventType'|'outcome'|'names'|'count'>):{title:string;detail:string|null}{
- const label=canonicalNotificationLabel(item),known=Object.hasOwn(ROW_TITLES,label)?ROW_TITLES[label]:null,subject=item.subject??null;
- const dates=subject?`${subject.kind==='scheduleWeek'?'Week of ':''}${dateRangeText(subject.startDate,subject.endDate)}`:null;
+export function notificationTitle(item:Pick<EmployeeNotificationItem,'label'|'subject'|'eventType'|'outcome'|'names'|'count'>,lang:NotificationLang='en'):{title:string;detail:string|null}{
+ const t=NOTIFICATION_TEXT_COPY[lang],label=canonicalNotificationLabel(item),known=Object.hasOwn(t.rowTitles,label)?t.rowTitles[label]:null,subject=item.subject??null;
+ const dates=subject?`${subject.kind==='scheduleWeek'?t.weekOf:''}${dateRange(subject.startDate,subject.endDate,{locale:t.dateLocale})}`:null;
  // The facts the list sends, and only those: the person it is about, a later status, a count ("5 waiting").
- const facts=[notificationName(item),notificationOutcomeNote(item),notificationCountNote(item)].filter((fact):fact is string=>!!fact);
+ const facts=[notificationName(item),notificationOutcomeNote(item,lang),notificationCountNote(item,lang)].filter((fact):fact is string=>!!fact);
  const detail=[dates,...facts].filter(Boolean).join(' · ')||known?.detail||null;
- return {title:known?.title??item.label,detail};
+ return {title:known?.title??localizeNotificationLabel(item.label,lang),detail};
 }
 
-export function filterNotifications(items:EmployeeNotificationItem[],filter:NotificationFilter,search:string){
- const query=search.trim().toLocaleLowerCase('en-US');
+export function filterNotifications(items:EmployeeNotificationItem[],filter:NotificationFilter,search:string,lang:NotificationLang='en'){
+ const locale=NOTIFICATION_TEXT_COPY[lang].dateLocale,query=search.trim().toLocaleLowerCase(locale);
  // Search reads the words on the row: the kind's label and the title written from it.
- const matches=(item:EmployeeNotificationItem)=>[item.label,notificationTitle(item).title].some(text=>text.toLocaleLowerCase('en-US').includes(query));
+ const matches=(item:EmployeeNotificationItem)=>[item.label,notificationTitle(item,lang).title].some(text=>text.toLocaleLowerCase(locale).includes(query));
  return items.filter(item=>(filter==='all'||filter==='unread'&&item.reviewState==='unread'||filter==='required'&&item.actionState==='required')&&(!query||matches(item)));
 }
 
@@ -57,9 +55,9 @@ export function collapseNotifications(items:EmployeeNotificationItem[]):Notifica
  return rows;
 }
 
-export function groupNotifications(items:EmployeeNotificationItem[],timeZone?:string){
+export function groupNotifications(items:EmployeeNotificationItem[],timeZone?:string,lang:NotificationLang='en'){
  const groups=new Map<string,{key:string;label:string;items:EmployeeNotificationItem[]}>();
- const format=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric',...(timeZone?{timeZone}:{})});
+ const format=new Intl.DateTimeFormat(NOTIFICATION_TEXT_COPY[lang].dateLocale,{weekday:'long',month:'long',day:'numeric',year:'numeric',...(timeZone?{timeZone}:{})});
  for(const item of [...items].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at))){
   const date=new Date(item.at),key=format.format(date);
   if(!groups.has(key))groups.set(key,{key,label:key,items:[]});
@@ -69,21 +67,22 @@ export function groupNotifications(items:EmployeeNotificationItem[],timeZone?:st
 }
 
 /** Each row names its destination's action (Codex mobile review M6), not a generic "Open record". */
-export function notificationPresentation(label:string,eventType?:string){
+export function notificationPresentation(label:string,eventType?:string,lang:NotificationLang='en'){
+ const p=NOTIFICATION_TEXT_COPY[lang].presentation;
  switch(canonicalNotificationLabel({label,eventType})){
-  case 'Schedule update':return {icon:'schedule' as const,destination:'Review your current schedule',action:'Review schedule'};
+  case 'Schedule update':return {icon:'schedule' as const,...p.schedule};
   case 'Time-off update':
-  case 'Time off update':return {icon:'timeOff' as const,destination:'Review your time-off request',action:'View request'};
-  case 'Shift request update':return {icon:'exchange' as const,destination:'Review your shift request',action:'View request'};
-  case 'Team update':return {icon:'update' as const,destination:'Read the current team update',action:'Read update'};
-  case 'Availability update':return {icon:'availability' as const,destination:'Review your availability',action:'View availability'};
+  case 'Time off update':return {icon:'timeOff' as const,...p.timeOff};
+  case 'Shift request update':return {icon:'exchange' as const,...p.exchange};
+  case 'Team update':return {icon:'update' as const,...p.update};
+  case 'Availability update':return {icon:'availability' as const,...p.availability};
   case 'Can’t-work update':
   case 'Callout update':
-  case 'Unable to work update':return {icon:'callout' as const,destination:'Review your can’t-work request',action:'View can’t-work request'};
-  case 'Operations need review':return {icon:'operations' as const,destination:'Review current operational actions',action:'Review actions'};
-  case 'Payroll preparation update':return {icon:'payroll' as const,destination:'Review the current payroll period',action:'Review payroll'};
-  case 'Pay statement update':return {icon:'statement' as const,destination:'Open your current pay statement',action:'View statement'};
-  case 'Device notification test':return {icon:'device' as const,destination:'Review this device notification test',action:'View test'};
-  default:return {icon:'device' as const,destination:'Open the current record',action:'Open'};
+  case 'Unable to work update':return {icon:'callout' as const,...p.callout};
+  case 'Operations need review':return {icon:'operations' as const,...p.operations};
+  case 'Payroll preparation update':return {icon:'payroll' as const,...p.payroll};
+  case 'Pay statement update':return {icon:'statement' as const,...p.statement};
+  case 'Device notification test':return {icon:'device' as const,...p.test};
+  default:return {icon:'device' as const,...p.other};
  }
 }

@@ -35,6 +35,7 @@ describe('FirstWeekSetupCard', () => {
     const html = renderToStaticMarkup(<FirstWeekSetupCard lang="es" initial={{ state: 'ready', progress: facts(['ROSTER', 'TABLET_SETUP']) }} />);
     expect(html).toContain('2 de 5 pasos completados');
     expect(html).toContain('Configuración de la primera semana');
+    expect(html).toContain('Configura localidades y reglas de personal');
     expect(html).toContain('Próximo paso');
   });
   it('says temporarily unavailable with Try again, never nothing to do', () => {

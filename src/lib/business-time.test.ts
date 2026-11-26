@@ -17,6 +17,7 @@ describe('workspace business time', () => {
   expect(formatBusinessDateTimeInput(iso, 'America/New_York')).toBe('2026-10-03T09:00');
   expect(formatBusinessDateTimeInput(undefined, 'Asia/Tokyo')).toBe('');
   expect(formatBusinessDateTime(iso, 'America/New_York')).toBe('Oct 3, 9:00 AM');
+  expect(formatBusinessDateTime(iso, 'America/New_York', 'es')).toBe('3 oct, 9:00\u00a0a.\u00a0m.');
  });
  it.each(['2026-03-08T02:30', '2026-11-01T01:30', '2026-02-30T09:00', '2026-10-03T24:00', '2026-10-03T09:00Z', '', '2026-10-03T09:00:00'])('rejects invalid or ambiguous deadline %s', local => {
   expect(() => localDateTimeToInstant(local, 'America/New_York')).toThrow(InvalidBusinessLocalTimeError);

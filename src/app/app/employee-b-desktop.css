@@ -816,3 +816,16 @@
   html body .app-shell[data-nv-b][data-employee-mobile][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link[href="/app/schedule"][aria-current="page"]) { --b-ph-band: 208px; }
   html body .app-shell[data-nv-b][data-employee-mobile][data-employee-mobile]:has(#desktop-primary-navigation a.nav-link:is([href="/app/my-time"], [href="/app/my-pay"], [href="/app/requests/hub"])[aria-current="page"]) { --b-ph-band: calc(var(--b-band-figures) - var(--b-title-top)); }
 }
+
+/* Give the enlarged Spanish availability actions their own row when they meet the title. */
+@layer nv-b {
+  @media (min-width: 768px) and (max-width: 1279px) {
+    @container not style(--nv-rem: 16px) {
+      html body .app-shell[data-nv-b][data-employee-mobile] .tof-frame > .b-screen--back .b-hero:lang(es):has(#b-avail-title) > .b-hrow {
+        position: static !important;
+        flex-wrap: wrap !important;
+        margin-block-start: var(--b-space-12) !important;
+      }
+    }
+  }
+}

@@ -62,7 +62,7 @@ const es: typeof en = {
 export const RECEIPT_WORDS: Record<ReceiptLang, typeof en> = {en, es};
 /** Spanish weekday and time forms (voice.md "Dates, times and numbers"): "lun", "6:00 a. m. – 2:00 p. m.", "7–13 dic". */
 export const esWeekday = (iso: string) => new Intl.DateTimeFormat('es-PR', {weekday: 'short', timeZone: 'UTC'}).format(new Date(`${iso}T12:00:00Z`)).replace('.', '');
-export const esTimes = (text: string) => text.replace(/\bAM\b/g, 'a. m.').replace(/\bPM\b/g, 'p. m.');
+export const esTimes = (text: string) => text.replace(/[ \u00a0\u202f]*\bAM\b/g, ' a. m.').replace(/[ \u00a0\u202f]*\bPM\b/g, ' p. m.');
 export const esWeekRange = (weekStart: string) => {
   const a = new Date(`${weekStart}T12:00:00Z`), b = new Date(a); b.setUTCDate(a.getUTCDate() + 6);
   const m = (d: Date) => new Intl.DateTimeFormat('es-PR', {month: 'short', timeZone: 'UTC'}).format(d).replace('.', '');

@@ -1,13 +1,14 @@
+import {calendarFeedbackCopy} from './client-copy';
 import type {CalendarCommand,CalendarManagementResult,CalendarSubscriptionStatus} from './types';
 
 type Ready=Extract<CalendarSubscriptionStatus,{authority:string}>;
 export type CalendarClientState={status:CalendarSubscriptionStatus|null;url:string|null;paused:boolean;busy:boolean;notice:string;pendingKind:CalendarCommand['kind']|null};
 import {parseCalendarStatus,parseCalendarResult} from './contract';
-const unknown='The result is unknown. Retry the original request to finish checking it. No new request will be created.';
 const failure:CalendarSubscriptionStatus={state:'unavailable',reason:'read_failed'};
 class AccessDenied extends Error{}
 /** One mounted link owner. No credential or pending intent is persisted. */
-export function createCalendarClient(authority:string,changed:(state:CalendarClientState)=>void){
+export function createCalendarClient(authority:string,changed:(state:CalendarClientState)=>void,lang:'en'|'es'='en'){
+ const t=calendarFeedbackCopy[lang],unknown=t.unknown;
  let state:CalendarClientState={status:null,url:null,paused:true,busy:false,notice:'',pendingKind:null};
  let stopped=false,ended=false,sequence=0,pending:CalendarCommand|null=null,active:AbortController|undefined;
  let poll:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
@@ -39,7 +40,7 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
    const deadline=started+result.validForMs,remaining=deadline-performance.now(),observed=Date.parse(result.observedAt);
    if(remaining<=0||observed<lastObserved)throw Error('Expired calendar read');lastObserved=observed;validUntil=deadline;
    const url=reveal&&result.state==='active'&&result.id===reveal.id&&result.generation===reveal.generation?reveal.url:null;
-   publish({status:result,url,...(reveal?{notice:url?'Link created. Copy it now to use it in your calendar app.':'The link changed before it could be shown. Review its current status.'}:{})});
+   publish({status:result,url,...(reveal?{notice:url?t.created:t.changedBeforeShown}:{})});
    expiry=setTimeout(()=>{if(current(at))expire();},remaining);
    schedule();
   }catch(error){if(!current(at))return;publish({status:error instanceof AccessDenied?{state:'unauthorized',reason:'access_denied'}:failure,url:null});schedule();}
@@ -58,9 +59,9 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
    else{
     pending=null;
     if(result.status==='created')created=result;
-    publish({notice:result.status==='created'?'Checking the new link…':result.status==='revoked'?'Link turned off. Calendar apps can’t get your shifts through it anymore.':result.status==='active_url_unavailable'?'Your earlier request went through, but the private link can’t be shown again. Get a new link if you still need to copy it.':'The link or your access changed. Review the current status before continuing.'});
+    publish({notice:result.status==='created'?t.checking:result.status==='revoked'?t.turnedOff:result.status==='active_url_unavailable'?t.earlier:t.changed});
    }
-  }catch(error){if(!current(at))return;if(error instanceof AccessDenied){publish({status:{state:'unauthorized',reason:'access_denied'},notice:'Your access could not be confirmed. Sign in again to check your calendar settings.',busy:false});return;}publish({notice:unknown});}
+  }catch(error){if(!current(at))return;if(error instanceof AccessDenied){publish({status:{state:'unauthorized',reason:'access_denied'},notice:t.denied,busy:false});return;}publish({notice:unknown});}
   if(!current(at))return;publish({busy:false});await refresh(created);
  }
  return {
@@ -68,7 +69,7 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
   refresh:()=>void refresh(),
   command:(kind:CalendarCommand['kind'])=>void submit(kind),
   retry:()=>{if(pending&&state.status&&'authority'in state.status)void submit(pending.kind,true);else void refresh();},
-  async copy(){const url=state.url,at=sequence;if(!url||state.paused||ended||!hasCurrentLease())return;try{await navigator.clipboard.writeText(url);if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Link copied.'});}catch{if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:'Copy was unavailable. Select the link above, then copy it manually.'});}},
+  async copy(){const url=state.url,at=sequence;if(!url||state.paused||ended||!hasCurrentLease())return;try{await navigator.clipboard.writeText(url);if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:t.copied});}catch{if(current(at)&&state.url===url&&hasCurrentLease())publish({notice:t.copyFailed});}},
   pause(){if(stopped)return;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
   end(){ended=true;pending=null;cancel();publish({status:null,url:null,paused:true,busy:false,notice:''});},
   stop(){stopped=true;pending=null;cancel();state={...state,status:null,url:null,paused:true,busy:false};},

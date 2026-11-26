@@ -18,8 +18,11 @@ export function isStaffingRepair(item:Pick<ActionItem,'type'|'id'>&{purpose?:str
 /** "7:00 AM", kept whole; an end at midnight is "12:00 AM" like every other time (the one time format, Nov 23, 2026). */
 // `end` is kept for callers; midnight no longer reads as a word at either end.
 export const clockText=(hhmm:string,_end=false)=>formatTime(hhmm).replace(' ',NBSP);
-export const dayText=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
-export const rangeText=(start:string,end:string)=>start==='00:00'&&(end==='00:00'||end==='24:00')?'All day':`${clockText(start)}${NBSP}– ${clockText(end,true)}`;
+/** Signed-in Spanish: the repair's words take the portal language; English is unchanged. */
+export type RepairLang='en'|'es';
+export const dayText=(date:string,lang:RepairLang='en')=>new Intl.DateTimeFormat(lang==='es'?'es-PR':'en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(`${date}T12:00:00Z`));
+const esClock=(text:string,lang:RepairLang)=>lang==='es'?text.replace(/[\s\u00a0]?\bAM\b/g,`${NBSP}a.${NBSP}m.`).replace(/[\s\u00a0]?\bPM\b/g,`${NBSP}p.${NBSP}m.`):text;
+export const rangeText=(start:string,end:string,lang:RepairLang='en')=>start==='00:00'&&(end==='00:00'||end==='24:00')?(lang==='es'?'Todo el día':'All day'):esClock(`${clockText(start)}${NBSP}– ${clockText(end,true)}`,lang);
 const possessive=(name:string)=>`${name}’${/s$/i.test(name)?'':'s'}`;
 
 /** "1 h 30 min", "4 h", "45 min". */
@@ -30,12 +33,13 @@ export function minutesText(minutes:number){
 /** The person a repair is about: the read's detail starts with their name ("Maria Rivera · Main Office · …"). */
 export const repairPerson=(item:ActionItem)=>item.detail.split(' · ')[0]?.trim()||null;
 /** "Fill Maria Rivera’s shift". */
-export const repairTitle=(item:ActionItem)=>{const person=repairPerson(item);return person?`Fill ${possessive(person)} shift`:'Fill a shift for approved time off';};
+export const repairTitle=(item:ActionItem,lang:RepairLang='en')=>{const person=repairPerson(item);
+ return lang==='es'?person?`Asignar el turno de ${person}`:'Asignar un turno por días libres aprobados':person?`Fill ${possessive(person)} shift`:'Fill a shift for approved time off';};
 /** "Thu, Nov 12 · 7:00 AM – 3:00 PM · Main Office". */
-export function repairWhen(item:ActionItem){
+export function repairWhen(item:ActionItem,lang:RepairLang='en'){
  const place=item.detail.split(' · ')[1]?.trim();
  const start=item.dateTime?.slice(0,10),from=item.dateTime?.slice(11,16),to=item.endDateTime?.slice(11,16);
- return [start?dayText(start):null,from&&to?rangeText(from,to):null,place||null].filter(Boolean).join(' · ');
+ return [start?dayText(start,lang):null,from&&to?rangeText(from,to,lang):null,place||null].filter(Boolean).join(' · ');
 }
 /** Who fixes it: the reviewer who approved the leave, or (older approvals with no reviewer) an Owner. */
 export function repairOwnerLine(item:ActionItem&{ownerEmployeeId?:string|null},actorId?:string){

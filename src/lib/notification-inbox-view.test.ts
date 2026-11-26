@@ -61,3 +61,10 @@ it('never folds rows that carry their own dates or are of different kinds',()=>{
  expect(collapseNotifications([dated('a'),dated('b')]).map(row=>row.count)).toEqual([1,1]);
  expect(collapseNotifications(rows).map(row=>row.count)).toEqual([1,1,1]);
 });
+
+it('finds the translated title in a Spanish notification search',()=>{
+ const item={id:'summary',label:'Operations need review',at:'2026-11-14T12:00:00Z',href:'/app/notifications/open?notificationId=summary'};
+ expect(filterNotifications([item],'all','Pendientes','es')).toEqual([item]);
+ expect(filterNotifications([item],'unread','Pendientes','es')).toEqual([]);
+ expect(filterNotifications([item],'all','Pendientes')).toEqual([]);
+});

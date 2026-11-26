@@ -105,3 +105,12 @@ describe('Spanish', () => {
     expect(lines[0]).toBe('Turno de Marco: Mon, Oct 7 · 10:00 PM – 6:00 AM, termina el Tue, Oct 8 · Condado');
   });
 });
+
+it('localizes the dates on both ends of an overnight shift and preserves the workplace name', () => {
+  const shift = {date: '2026-12-01', endDate: '2026-12-02', startTime: '22:00', endTime: '06:00', locationName: 'May Office'};
+  const localized = shiftText(shift, es, '2026', 'es');
+  expect(localized).toMatch(/mar,? 1 dic/);
+  expect(localized).toMatch(/mié,? 2 dic/);
+  expect(localized).toContain('May Office');
+  expect(shiftText(shift, en, '2026')).toContain('Tue, Dec 1');
+});

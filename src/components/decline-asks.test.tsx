@@ -1,3 +1,4 @@
+rs.mock('@/lib/i18n/portal-lang', () => ({ usePortalLang: () => 'en' }));
 import * as actualReact from "react" with { rstest: 'importActual' };
 import type {ReactElement,ReactNode} from 'react';
 import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
@@ -21,7 +22,10 @@ rs.mock('react',()=>({...actualReact,
  useTransition:()=>[false,(run:()=>void)=>run()],
  useEffect:(run:()=>void|(()=>void),deps?:unknown[])=>{const s=slot<Effect>(()=>({}));const changed=!deps||!s.deps||deps.some((d,i)=>d!==s.deps![i]);if(changed){s.deps=deps;host.pending.push(()=>{s.cleanup?.();s.cleanup=run();});}},
 }));
+// This custom hook renderer has no React context dispatcher; its established scenario is English.
+rs.mock('@/lib/i18n/portal-lang',()=>({usePortalLang:()=> 'en'}));
 const sends=rs.hoisted(()=>({shift:[] as Record<string,string>[],leave:[] as Record<string,string>[]}));
+rs.mock('@/lib/i18n/portal-lang',()=>({usePortalLang:()=> 'en'}));
 rs.mock('react-dom',()=>({useFormStatus:()=>({pending:false,data:null})}));
 rs.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},push:()=>{}})}));
 rs.mock('next/dist/client/components/is-next-router-error',()=>({isNextRouterError:()=>false}));

@@ -244,9 +244,9 @@ export function CorpNote({ children, center, icon, announce }: { children: React
 
 /** A pushed page's white header: "‹ Back" left, the title centred, an optional action right. */
 /** `phoneOnly`: shown on a phone only (tablets and desktop have the sidebar, so the page keeps its CorpTitle there). */
-export function CorpNav({ back, title, right, titleId, phoneOnly }: { back?: { href: string; label: string }; title?: ReactNode; right?: ReactNode; titleId?: string; phoneOnly?: boolean }) {
+export function CorpNav({ back, title, right, titleId, phoneOnly }: { back?: { href: string; label: ReactNode; ariaLabel?: string }; title?: ReactNode; right?: ReactNode; titleId?: string; phoneOnly?: boolean }) {
   return <div className={phoneOnly ? "c-nav c-nav--phone" : "c-nav"}>
-    {back ? <CorpBackLink className="c-nav__back" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</CorpBackLink> : <span />}
+    {back ? <CorpBackLink className="c-nav__back" href={back.href} label={back.ariaLabel}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</CorpBackLink> : <span />}
     {title ? <h1 className="c-nav__title" id={titleId}>{title}</h1> : <span />}
     <span className="c-nav__right">{right ?? null}</span>
   </div>;
@@ -303,7 +303,7 @@ export function CorpFormFooter({ children, danger }: { children: ReactNode; dang
 
 // No lookbehind: Safari before 16.4 cannot parse it, and this module loads on every page.
 const DASH_PATTERN = /\s+[–—-]\s+|([0-9apmAPM.])[–—](?=[0-9])/g;
-const AMPM = /(\d)(\s?)(AM|PM|am|pm|a\.m\.|p\.m\.|a|p)(?![A-Za-z])/g;
+const AMPM = /(\d)(\s?)(AM|PM|am|pm|[ap]\.[\s\u00a0\u202f]m\.|a\.m\.|p\.m\.|a|p)(?![A-Za-z])/g;
 const THIN = "\u2009", NARROW = "\u202F", JOIN = "\u2060";
 
 /** R2: "8:00 AM – 4:00 PM" as text, with thin spaces round the en dash (for aria-labels, titles and plain strings). */
@@ -314,7 +314,8 @@ export function timeRangeText(start: string, end: string) {
 /** R2: splits an already formatted time or range into kit spans: AM/PM (and the short "a"/"p" of "12a – 6a") at 0.8em 500
  * #4A4F54 joined to its digits by a narrow no-break space, and thin spaces round the en dash. The words never change; only
  * spacing and size do, so a page passes the string it already shows. */
-export function timeParts(text: string): ReactNode[] {
+/** `lang`: signed-in Spanish writes the half of the day "a.\u00a0m." / "p.\u00a0m."; English keeps the words it is given. */
+export function timeParts(text: string, lang: "en" | "es" = "en"): ReactNode[] {
   // Nov 23, 2026: word joiners hold the thin space before the dash to the first time, so a range that does not fit breaks
   // only after its dash ("7:00 AM –" over "3:00 PM"), never before it.
   const spaced = text.replace(DASH_PATTERN, (_match, before?: string) => `${before ?? ""}${JOIN}${THIN}${JOIN}–${THIN}`);
@@ -322,8 +323,9 @@ export function timeParts(text: string): ReactNode[] {
   let last = 0, key = 0;
   for (const match of spaced.matchAll(AMPM)) {
     const at = match.index ?? 0;
-    parts.push(spaced.slice(last, at) + match[1] + (match[2] ? NARROW : ""));
-    parts.push(<span key={key++} className="c-ampm">{match[3]}</span>);
+    const separator = lang === "es" ? " " : match[2] ? NARROW : "";
+    parts.push(spaced.slice(last, at) + match[1] + separator);
+    parts.push(<span key={key++} className="c-ampm">{lang === "es" ? `${match[3][0].toLowerCase()}.\u00a0m.` : match[3]}</span>);
     last = at + match[0].length;
   }
   parts.push(spaced.slice(last));
@@ -332,9 +334,10 @@ export function timeParts(text: string): ReactNode[] {
 
 /** R2, the shift-time signature: a time, a range or a date set with tabular, case-sensitive figures. Pass the formatted
  * string as children ("8:00 AM – 4:00 PM", "12a – 6a", "Mon, Nov 2"), or `start` and `end` for a range. */
-export function CorpTime({ children, start, end, className, label }: { children?: string; start?: string; end?: string; className?: string; label?: string }) {
+export function CorpTime({ children, start, end, className, label, lang = "en" }: { children?: string; start?: string; end?: string; className?: string; label?: string;
+  /** Signed-in Spanish: "7:00 a.\u00a0m. – 3:00 p.\u00a0m.". */ lang?: "en" | "es" }) {
   const text = start !== undefined && end !== undefined ? timeRangeText(start, end) : children ?? start ?? "";
-  return <span className={className ? `c-time ${className}` : "c-time"} aria-label={label}>{timeParts(text)}</span>;
+  return <span className={className ? `c-time ${className}` : "c-time"} aria-label={label}>{timeParts(text, lang)}</span>;
 }
 
 /** R2: a duration ("8 h 2 min", "151 h") with its units at 0.85em grey and tabular figures. Children is the formatted text. */

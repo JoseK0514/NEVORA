@@ -3,6 +3,9 @@
 export const PASSKEY_COPY = {
   en: {
     sectionTitle: "Face ID and passkeys",
+    passkeys: "Passkeys",
+    noneSetUp: "Not set up",
+    setUpCount: (count: number) => `${count} set up`,
     empty: "Sign in with Face ID or your device’s passkey instead of typing your password.",
     setUpPhone: "Set up Face ID",
     setUpDesktop: "Add a passkey",
@@ -32,6 +35,9 @@ export const PASSKEY_COPY = {
   },
   es: {
     sectionTitle: "Face ID y llaves de acceso",
+    passkeys: "Llaves de acceso",
+    noneSetUp: "Sin configurar",
+    setUpCount: (count: number) => `${count} ${count === 1 ? "configurada" : "configuradas"}`,
     empty: "Inicia sesión con Face ID o con la llave de acceso de tu dispositivo en vez de escribir tu contraseña.",
     setUpPhone: "Configurar Face ID",
     setUpDesktop: "Agregar una llave de acceso",

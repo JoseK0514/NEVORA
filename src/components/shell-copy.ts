@@ -2,6 +2,7 @@
  * glossary). English is exactly what the shell said before; Spanish follows the glossary (Pendientes, Días libres,
  * Horario, Turno disponible, Cambios de turno, Aviso, Nómina, Tarjeta de tiempo, Iniciar/Cerrar sesión, Dueño) and the
  * app's existing Spanish ("Exportar horas", "Añadir", "Configuración"). */
+import { NUVORA_BRAND } from '@/lib/brand';
 import type { PortalLang } from '@/lib/i18n/portal-lang';
 
 /** Navigation labels from `src/lib/navigation.ts` and `src/lib/finder.ts`, keyed by their English text so the navigation
@@ -118,12 +119,14 @@ type ShellWords = {
   collapseSidebar: string;
   primaryNavigation: string;
   mobileNavigation: string;
+  homeLinkName: string;
   youAreHere: string;
   yourProfile: string;
   profileAndDevice: string;
   addToCalendar: string;
   myPay: string;
   alertsOnDevice: string;
+  compactSettings: string;
   deviceSettings: string;
   help: string;
   privacyAndTerms: string;
@@ -180,12 +183,15 @@ const en: ShellWords = {
   collapseSidebar: 'Collapse sidebar',
   primaryNavigation: 'Primary navigation',
   mobileNavigation: 'Mobile navigation',
+  // src/components/app-shell.tsx:537 and 623, linked wordmarks.
+  homeLinkName: NUVORA_BRAND.homeAriaLabel,
   youAreHere: 'You are here',
   yourProfile: 'Your profile',
   profileAndDevice: 'Profile and device settings',
   addToCalendar: 'Add shifts to your calendar',
   myPay: 'My pay',
   alertsOnDevice: 'Alerts on this device',
+  compactSettings: 'Settings',
   deviceSettings: 'Device settings',
   help: 'Help',
   privacyAndTerms: 'Privacy and terms',
@@ -236,12 +242,15 @@ const es: ShellWords = {
   collapseSidebar: 'Cerrar el menú lateral',
   primaryNavigation: 'Navegación principal',
   mobileNavigation: 'Navegación',
+  // src/components/app-shell.tsx:537 and 623, linked wordmarks.
+  homeLinkName: 'Inicio de NEVORA Workforce',
   youAreHere: 'Estás aquí',
   yourProfile: 'Tu perfil',
   profileAndDevice: 'Perfil y configuración del dispositivo',
   addToCalendar: 'Añadir turnos a tu calendario',
   myPay: 'Mi pago',
   alertsOnDevice: 'Alertas en este dispositivo',
+  compactSettings: 'Ajustes',
   deviceSettings: 'Configuración del dispositivo',
   help: 'Ayuda',
   privacyAndTerms: 'Privacidad y términos',
@@ -391,7 +400,7 @@ export const DEVICE_WORDS: Record<PortalLang, DeviceWords> = {
 /** What the loading frames say is loading (route-skeleton.tsx, root-loading.tsx and each route's loading.tsx pass the
  * English); Spanish keyed by that English, lower-cased. A label without an entry reads "Cargando la página…". */
 const LOADING_ES: Record<string, string> = {
-  'add location': 'el formulario de localidad', 'branding': 'la marca', 'break types': 'los tipos de descanso', 'christmas bonus hours': 'las horas del bono de Navidad',
+  'add location': 'el formulario de localidad', 'branding': 'la marca', 'break types': 'los tipos de descanso', 'christmas bonus hours': 'las horas para el bono de Navidad',
   'clocker pins': 'los PIN del Clocker', 'clocker recovery': 'la recuperación del Clocker', 'clocker tablets': 'las tabletas Clocker', 'company policies': 'las políticas de la empresa',
   'company profile': 'el perfil de la empresa', 'features and team terms': 'las funciones y términos', 'help someone sign in': 'la ayuda para iniciar sesión', 'location': 'la localidad',
   'locations': 'las localidades', 'positions': 'las posiciones', 'settings': 'la configuración', 'time off policies': 'las políticas de días libres', 'availability': 'la disponibilidad',

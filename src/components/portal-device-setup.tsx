@@ -2,6 +2,7 @@
 import {NativeDeviceSettings} from './native-shell/device-settings';
 import { usePortalLang } from '@/lib/i18n/portal-lang';
 import { DEVICE_WORDS, SHELL_WORDS } from './shell-copy';
+import { deviceFeedback } from './employee-mobile/device-feedback-copy';
 import {isPopoverOpen} from "./kit/popover-open";
 import './portal-device-setup.css';
 
@@ -17,7 +18,7 @@ type ContentProps = {
   onEnable(): void; onDismiss(): void; onInstructions(): void; onInstall(): void; onTurnOff(): void; onTest(): void; onRetry(): void;
 };
 export function DeviceSetupContent(props: ContentProps) {
-  const D = DEVICE_WORDS[usePortalLang()];
+  const lang = usePortalLang(), D = DEVICE_WORDS[lang];
   const pending = props.state === 'loading' || props.state === 'pending';
   return <div className="portal-device-content" aria-busy={pending}>
     <AuthBrand />
@@ -44,7 +45,7 @@ export function DeviceSetupContent(props: ContentProps) {
       {pending ? <button type="button" className="portal-device-button primary" disabled>{props.state === 'loading' ? D.checking : D.updating}</button> : null}
       {!pending && ['ready', 'install', 'dismissed'].includes(props.state) ? <button type="button" className="portal-device-button secondary" onClick={props.onDismiss}>{D.notNow}</button> : null}
     </div>
-    {props.message ? <p className="portal-device-message" role={props.state === 'error' ? 'alert' : 'status'}>{props.message}</p> : null}
+    {props.message ? <p className="portal-device-message" role={props.state === 'error' ? 'alert' : 'status'}>{deviceFeedback(props.message, lang)}</p> : null}
   </div>;
 }
 export function NativePortalDeviceSetup({role}:{role:UserRole}) {

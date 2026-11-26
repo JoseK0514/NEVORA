@@ -1883,6 +1883,12 @@ html[data-text-step="150"] body .app-shell.nevora-portal .page-frame [data-nv-pa
 html[data-text-step="200"] body .app-shell.nevora-portal .page-frame [data-nv-page],
 html[data-text-step="150"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation),
 html[data-text-step="200"] body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation) { hyphens: auto; -webkit-hyphens: auto; hyphenate-limit-chars: 10 4 4; -webkit-hyphenate-limit-before: 4; -webkit-hyphenate-limit-after: 4; }
+/* Keep Spanish words together when a line can fit them at the requested text size. */
+html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame [data-nv-page]:lang(es),
+html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal :is(#manager-more-navigation, #employee-more-navigation):lang(es) {
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
 @media (max-width: 760px) {
   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame .premium-employee-profile .employee-profile-details > div:not(#nv-kit) { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   html:is([data-text-step="150"], [data-text-step="200"]) body .app-shell.nevora-portal .page-frame [data-nv-page] .employee-time-footer:not(#nv-kit) { flex-direction: column; align-items: stretch; }

@@ -3,6 +3,7 @@
  * IANA zone. Scheduling periods use nominal wall minutes; clock and calendar
  * events use instants, so converting either model with the host zone is unsafe.
  */
+import { wholeSpanishTimes } from './i18n/whole-spanish-times';
 import { Temporal } from '@js-temporal/polyfill';
 import { shiftPeriod, type ShiftPeriodInput } from './scheduling/periods';
 
@@ -45,7 +46,15 @@ export function policyEffectiveInstant(local: string, original: string | undefin
   if (original && local === formatBusinessDateTimeInput(original, timeZone)) return original;
   return localDateTimeToInstant(local, timeZone);
 }
-export function formatBusinessDateTime(iso: string, timeZone: string): string {
+const ES_MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+/** `lang` (signed-in Spanish, es-rest R2): "Dec 7, 6:00 AM" in Spanish is "7 dic, 6:00 a. m." (docs/design/voice.md). */
+export function formatBusinessDateTime(iso: string, timeZone: string, lang: 'en' | 'es' = 'en'): string {
+  if (lang === 'es') {
+    const es = new Intl.DateTimeFormat('en-US', { timeZone, month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' }).formatToParts(new Date(iso));
+    const part = (type: Intl.DateTimeFormatPartTypes) => es.find(item => item.type === type)?.value ?? '';
+    return wholeSpanishTimes(`${part('day')} ${ES_MONTHS[Number(part('month')) - 1]}, ${part('hour')}:${part('minute')} ${part('dayPeriod') === 'AM' ? 'a. m.' : 'p. m.'}`);
+  }
   // Browser ICU versions differ in their literal punctuation ("," vs "at").
   // Compose the same readable timestamp during server rendering and hydration.
   const parts = new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).formatToParts(new Date(iso));
@@ -53,6 +62,6 @@ export function formatBusinessDateTime(iso: string, timeZone: string): string {
   return `${value('month')} ${value('day')}, ${value('hour')}:${value('minute')} ${value('dayPeriod')}`;
 }
 
-export function formatBusinessTimestamp(iso: string, timeZone: string): string {
-  return formatBusinessDateTime(iso, timeZone);
+export function formatBusinessTimestamp(iso: string, timeZone: string, lang: 'en' | 'es' = 'en'): string {
+  return formatBusinessDateTime(iso, timeZone, lang);
 }

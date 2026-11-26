@@ -335,3 +335,31 @@
     }
   }
 }
+
+/* Phase 3 Spanish: Add employee retains its default header. At enlarged text on
+ * phones, the title and step have their own centered row above the actions. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-addemp:lang(es) > .c-formhead:not(#t30a):not(#t30b):not(#t30c):not(#t30d):not(#t30e) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-rows: auto auto !important; row-gap: var(--b-space-4) !important; height: auto !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-addemp:lang(es) > .c-formhead > .c-formhead__t { grid-column: 1 / -1 !important; grid-row: 1 !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-addemp:lang(es) > .c-formhead > .c-formhead__l { grid-column: 1 !important; grid-row: 2 !important; justify-self: start !important; }
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-addemp:lang(es) > .c-formhead > .c-nav__right { grid-column: 2 !important; grid-row: 2 !important; justify-self: end !important; }
+    }
+  }
+}
+
+/* Keep the visible control in place and give its centre a full touch target. */
+@layer nv-b {
+  .c-addemp:lang(es) .c-formhead__up { position: relative !important; }
+  .c-addemp:lang(es) .c-formhead__up::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, var(--b-target));
+    height: var(--b-target);
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+  }
+}

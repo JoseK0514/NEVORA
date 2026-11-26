@@ -36,5 +36,6 @@ it('writes Spanish dates and times the voice guide way', () => {
   expect(esWeekday('2026-12-07')).toBe('lun');
   expect(esWeekRange('2026-11-30')).toBe('30 nov – 6 dic');
   expect(esTimes('6:00 AM – 2:00 PM')).toBe('6:00 a. m. – 2:00 p. m.');
+  expect(esTimes('6:00\u00a0AM – 2:00\u00a0PM')).toBe('6:00 a. m. – 2:00 p. m.');
   expect(text(renderToStaticMarkup(<CopyNotFound lang="es" />))).toContain('No encontramos la copia');
 });

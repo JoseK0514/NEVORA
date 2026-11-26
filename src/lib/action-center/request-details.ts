@@ -1,7 +1,7 @@
 import {formatTimeRange} from '../date-utils';
 import {durationSentence} from '../duration-format';
 import type {ActionRequestFacts, RequestShift} from './request-facts';
-import type {ReviewCopy} from '@/components/review-details/copy';
+import type {ReviewCopy, ReviewLang} from '@/components/review-details/copy';
 
 /* Phase 4 (U09): what a request's detail says, from the typed facts only. A swap shows both shifts when the server
  * discloses the second one; "details unavailable" and a missing fact are said as such and never read as "no second
@@ -11,21 +11,21 @@ import type {ReviewCopy} from '@/components/review-details/copy';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 /** "Fri, Nov 20"; the year only when it differs from `year` (the workplace's current year), or always when unknown. */
-export function shiftDayText(date: string, year?: string) {
+export function shiftDayText(date: string, year?: string, lang: ReviewLang = 'en') {
   if (!ISO.test(date)) return date;
-  return new Intl.DateTimeFormat('en-US', {weekday: 'short', month: 'short', day: 'numeric', ...(year && date.slice(0, 4) === year ? {} : year ? {year: 'numeric' as const} : {}), timeZone: 'UTC'})
+  return new Intl.DateTimeFormat(lang === 'es' ? 'es-PR' : 'en-US', {weekday: 'short', month: 'short', day: 'numeric', ...(year && date.slice(0, 4) === year ? {} : year ? {year: 'numeric' as const} : {}), timeZone: 'UTC'})
     .format(new Date(`${date}T12:00:00Z`));
 }
 
 type ShiftLike = Pick<RequestShift, 'date' | 'startTime' | 'endTime' | 'locationName'> & {endDate?: string};
 /** "Fri, Nov 20 · 10:00 PM – 6:00 AM, ends Sat, Nov 21 · Office". */
-export function shiftText(shift: ShiftLike, copy: ReviewCopy, year?: string) {
+export function shiftText(shift: ShiftLike, copy: ReviewCopy, year?: string, lang: ReviewLang = 'en') {
   const start = shift.startTime.slice(0, 5), end = shift.endTime.slice(0, 5);
   // A 24:00 end is the next calendar date but occupies no minutes after midnight: it is not an overnight shift.
   const overnight = end !== '24:00' && end < start;
   const next = shift.endDate && shift.endDate !== shift.date ? shift.endDate : null;
-  const hours = `${formatTimeRange(start, end)}${overnight && next ? `, ${copy.endsOn(shiftDayText(next, year))}` : ''}`;
-  return [shiftDayText(shift.date, year), hours, shift.locationName].filter(Boolean).join(' · ');
+  const hours = `${formatTimeRange(start, end)}${overnight && next ? `, ${copy.endsOn(shiftDayText(next, year, lang))}` : ''}`;
+  return [shiftDayText(shift.date, year, lang), hours, shift.locationName].filter(Boolean).join(' · ');
 }
 
 export type SwapShifts = {
@@ -34,10 +34,10 @@ export type SwapShifts = {
   /** The other person's shift: shown, withheld by the server ("details unavailable"), or not in the read at all. */
   other: {state: 'ready'; text: string} | {state: 'unavailable'} | {state: 'missing'};
 };
-export function swapShifts(facts: ActionRequestFacts, copy: ReviewCopy, year?: string): SwapShifts {
+export function swapShifts(facts: ActionRequestFacts, copy: ReviewCopy, year?: string, lang: ReviewLang = 'en'): SwapShifts {
   const other = facts.counterpartShift;
-  return {offered: facts.shift ? shiftText(facts.shift, copy, year) : null,
-    other: !other ? {state: 'missing'} : other.state === 'ready' ? {state: 'ready', text: shiftText(other, copy, year)} : {state: 'unavailable'}};
+  return {offered: facts.shift ? shiftText(facts.shift, copy, year, lang) : null,
+    other: !other ? {state: 'missing'} : other.state === 'ready' ? {state: 'ready', text: shiftText(other, copy, year, lang)} : {state: 'unavailable'}};
 }
 /** The line for the other shift of a swap, with the other person's name when the server gave it. */
 export function otherShiftLine(shifts: SwapShifts, counterpartName: string | undefined, copy: ReviewCopy) {

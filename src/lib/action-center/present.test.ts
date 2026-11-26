@@ -114,3 +114,11 @@ it('a recorded end that is not after its start is not described; the line gives 
   expect(line.replace(/[\u00a0\u202f]/g, ' ')).toBe('Wed, Nov 11 · 9:00 AM – 5:00 PM');
   expect(correctionLine({workDate: '2026-11-11', timeZone: 'UTC', recordedStartAt: null, recordedEndAt: '2026-11-11T17:00:00Z', requestedStartAt: '2026-11-11T09:00:00Z', requestedEndAt: '2026-11-11T17:00:00Z'})!.replace(/[\u00a0\u202f]/g, ' ')).toBe('Wed, Nov 11 · 9:00 AM – 5:00 PM');
 });
+
+it('writes its own words in Spanish when asked, and English as before (signed-in Spanish)', () => {
+  const item = {id: 'TIME_OFF:r9', type: 'TIME_OFF', category: 'requests', priority: 'REVIEW', title: 'Time off', detail: 'Ana Ruiz is waiting for review.', href: '/app/requests', dateTime: '2026-11-12'} as Parameters<typeof presentItem>[0];
+  expect(presentItem(item, 'Review', 'UTC').detail).toBe('Time off · sent Nov 12');
+  expect(presentItem(item, 'Revisar', 'UTC', 'es').detail).toBe('Días libres · enviada el 12 nov');
+  const target = {...item, id: 'TARGET_MISSING:e1', type: 'TARGET_MISSING', category: 'scheduling', title: 'Target missing', detail: 'Ana Ruiz has no weekly hour target'} as Parameters<typeof presentItem>[0];
+  expect(presentItem(target, 'Fijar meta de horas', 'UTC', 'es')).toMatchObject({title: 'Sin meta de horas semanal', detail: 'Ana Ruiz todavía no tiene meta de horas semanal.', action: 'Fijar meta de horas semanal'});
+});

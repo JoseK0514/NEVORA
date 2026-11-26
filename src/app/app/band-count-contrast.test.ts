@@ -39,3 +39,13 @@ it('G87: white on the band teal itself passes, so a full-strength count does', (
   expect(contrast(WHITE, BAND)).toBeGreaterThanOrEqual(4.5);
   expect(contrast(blend(0.62), BAND)).toBeLessThan(4.5); // the old value, for the record
 });
+
+it('keeps Spanish PIN and recovery back links readable on the desktop hover fill', () => {
+  const rule = /html:lang\(es\) body \.app-shell\[data-nv-b\] \.q-page:is\(\.ck-pin, \.wc-recovery\) > \.q-nav \.q-nav__l:hover\s*\{([^}]+)\}/;
+  expect(read('owner-b-desktop.css').match(rule)?.[1]).toContain('color: var(--b-on-band) !important');
+  const token = read('../b-tokens.css').match(/--b-on-band:\s*#([0-9a-f]{6});/i);
+  expect(token).toBeTruthy();
+  const ink = token![1].match(/../g)!.map(channel => parseInt(channel, 16));
+  const hoverFill = [37, 128, 123]; // Rendered glass over the teal header at 1024 px.
+  expect(contrast(ink, hoverFill)).toBeGreaterThanOrEqual(4.5);
+});

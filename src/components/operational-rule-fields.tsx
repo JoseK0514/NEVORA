@@ -9,30 +9,23 @@ import type {
 import { PolicySaveForm } from "./policy-save-form";
 import { PendingButton } from "./wave-a/pending-button";
 import { saveOperationalRulesAction } from "../app/app/employees/actions";
+import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { OPERATIONAL_RULE_FIELDS_COPY } from "./operational-rule-fields-copy";
 
-const rules = [
-  ["minimumRest", "Minimum rest"],
-  ["maximumShift", "Maximum shift duration"],
-  ["maximumDaily", "Maximum daily duration"],
-  ["breaks", "Scheduled breaks"],
-  ["projectedOvertime", "Projected overtime routing"],
-] as const;
-
-const reviewStatusOptions = [
-  { value: "UNKNOWN", label: "Unknown — needs review" },
-  { value: "NOT_APPLICABLE", label: "Reviewed not applicable" },
-  { value: "CONFIGURED", label: "Configured" },
-] as const;
+const rules = ["minimumRest", "maximumShift", "maximumDaily", "breaks", "projectedOvertime"] as const;
+type Words = (typeof OPERATIONAL_RULE_FIELDS_COPY)["en"];
+const reviewStatusOptions = (t: Words) => (["UNKNOWN", "NOT_APPLICABLE", "CONFIGURED"] as const).map(value => ({ value, label: t.status[value] }));
 
 function RuleFields({
   rule,
   title,
   setting,
 }: {
-  rule: (typeof rules)[number][0];
+  rule: (typeof rules)[number];
   title: string;
   setting: RuleSetting<unknown>;
 }) {
+  const lang = usePortalLang(), t = OPERATIONAL_RULE_FIELDS_COPY[lang];
   const [status, setStatus] = useState(setting.status);
   const value = (setting.status === "CONFIGURED"
     ? setting.value
@@ -59,76 +52,76 @@ function RuleFields({
       <SelectField
         className="wa-select"
         name={`${rule}.status`}
-        label="Review status"
+        label={t.reviewStatus}
         value={status}
         onChange={(event) =>
           setStatus(event.target.value as typeof status)
         }
-        options={reviewStatusOptions}
+        options={reviewStatusOptions(t)}
       />
       {status === "CONFIGURED" ? (
         <div className="wa-rule__values">
           {rule === "breaks" ? (
             <>
-              {numeric("afterMinutes", "Break required after (minutes)")}
-              {numeric("minimumMinutes", "Minimum break (minutes)")}
+              {numeric("afterMinutes", t.breakAfter)}
+              {numeric("minimumMinutes", t.minimumBreak)}
               <SelectField
                 className="wa-select"
                 name={`${rule}.paid`}
-                label="Break payment"
+                label={t.breakPayment}
                 required
                 defaultValue={
                   typeof value.paid === "boolean" ? String(value.paid) : ""
                 }
                 options={[
-                  { value: "", label: "Choose explicitly" },
-                  { value: "true", label: "Paid" },
-                  { value: "false", label: "Unpaid" },
+                  { value: "", label: t.chooseExplicitly },
+                  { value: "true", label: t.paid },
+                  { value: "false", label: t.unpaid },
                 ]}
               />
             </>
           ) : rule === "projectedOvertime" ? (
             <>
-              {numeric("weeklyMinutes", "Weekly threshold (minutes)")}
+              {numeric("weeklyMinutes", t.weeklyThreshold)}
               <SelectField
                 className="wa-select"
                 name={`${rule}.routing`}
-                label="Routing"
+                label={t.routing}
                 required
                 defaultValue={(value.routing as string) ?? ""}
                 options={[
-                  { value: "", label: "Choose routing" },
-                  { value: "MANAGER_REVIEW", label: "Manager review" },
-                  { value: "ALLOW", label: "Allow when otherwise valid" },
+                  { value: "", label: t.chooseRouting },
+                  { value: "MANAGER_REVIEW", label: t.managerReview },
+                  { value: "ALLOW", label: t.allow },
                 ]}
               />
             </>
           ) : (
-            numeric("minutes", "Duration (minutes)")
+            numeric("minutes", t.duration)
           )}
           <SelectField
             className="wa-select"
             name={`${rule}.timeBasis`}
-            label="Time basis"
+            label={t.timeBasis}
             required
             defaultValue={(value.timeBasis as string) ?? ""}
             options={[
-              { value: "", label: "Choose time basis" },
-              { value: "ELAPSED", label: "Elapsed time" },
-              { value: "WALL_CLOCK", label: "Wall clock time" },
+              { value: "", label: t.chooseTimeBasis },
+              { value: "ELAPSED", label: t.elapsed },
+              { value: "WALL_CLOCK", label: t.wallClock },
             ]}
           />
           {rule === "maximumDaily" ? (
             <SelectField
               className="wa-select"
               name={`${rule}.window`}
-              label="Daily window"
+              label={t.dailyWindow}
               required
               defaultValue={(value.window as string) ?? ""}
               options={[
-                { value: "", label: "Choose window" },
-                { value: "BUSINESS_CALENDAR_DAY", label: "Business calendar day" },
-                { value: "ROLLING_24_HOURS", label: "Rolling 24 hours" },
+                { value: "", label: t.chooseWindow },
+                { value: "BUSINESS_CALENDAR_DAY", label: t.businessDay },
+                { value: "ROLLING_24_HOURS", label: t.rolling },
               ]}
             />
           ) : null}
@@ -147,42 +140,39 @@ export function OperationalRuleFields({
   profile: OperationalRuleProfile;
   canEdit: boolean;
 }) {
+  const lang = usePortalLang(), t = OPERATIONAL_RULE_FIELDS_COPY[lang];
   // Wave A: the Owner review sits behind one disclosure in its own card. The words are unchanged (legal wording: Jose approves).
   return (
     <details className="wa-disclosure" data-tone="neutral">
-      <summary className="wa-disclosure__summary">Owner-reviewed operational rules</summary>
+      <summary className="wa-disclosure__summary">{t.summary}</summary>
       <div className="wa-card-body">
-      <p className="wa-field__help">
-        Scheduled projections are not worked time, proof of breaks taken, final
-        overtime pay or legal certification. Review applicability explicitly;
-        no values are inferred from the employee’s role.
-      </p>
+      <p className="wa-field__help" lang={lang}>{t.disclaimer}</p>
       {canEdit ? (
         <PolicySaveForm
           revision={profile.revision}
           action={saveOperationalRulesAction}
         >
           <input type="hidden" name="employeeId" value={employeeId} />
-          {rules.map(([rule, title]) => (
+          {rules.map(rule => (
             <RuleFields
               key={rule}
               rule={rule}
-              title={title}
+              title={t.rules[rule]}
               setting={profile[rule]}
             />
           ))}
-          <PendingButton pending="Saving…" block>Save operational review</PendingButton>
+          <PendingButton pending={t.saving} block>{t.save}</PendingButton>
         </PolicySaveForm>
       ) : (
         <dl className="wa-facts wa-facts--flush">
-          {rules.map(([rule, title]) => (
+          {rules.map(rule => (
             <div className="wa-fact" key={rule}>
-              <dt>{title}</dt>
+              <dt>{t.rules[rule]}</dt>
               <dd>
                 {profile[rule].status === "UNKNOWN"
-                  ? "Unknown"
+                  ? t.unknown
                   : profile[rule].status === "NOT_APPLICABLE"
-                    ? "Reviewed not applicable"
+                    ? t.notApplicable
                     : Object.entries(profile[rule].value)
                         .map(([key, value]) => `${key}: ${value}`)
                         .join(" · ")}
@@ -191,7 +181,7 @@ export function OperationalRuleFields({
           ))}
         </dl>
       )}
-      {profile.reviewedAt ? <p className="wa-field__help">Last Owner review: {profile.reviewedAt}</p> : null}
+      {profile.reviewedAt ? <p className="wa-field__help">{t.lastReview(profile.reviewedAt)}</p> : null}
       </div>
     </details>
   );

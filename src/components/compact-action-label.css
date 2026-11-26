@@ -1,0 +1,13 @@
+.nv-compact-action {
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  white-space: nowrap;
+}
+
+.nv-compact-action > span { grid-area: 1 / 1; }
+.nv-compact-action__probe { min-inline-size: 0; overflow: clip; visibility: hidden; }
+.nv-compact-action__measure { display: block; inline-size: max-content; }
+
+.em-delete-confirm .nv-compact-action > :last-child { justify-self: center; }
