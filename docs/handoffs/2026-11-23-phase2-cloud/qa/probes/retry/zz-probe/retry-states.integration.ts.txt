@@ -11,7 +11,7 @@ import { startOwnedTlsProxy } from '../src/test/integration/owned-tls-proxy';
 import { seedOwnedApp, TEST_PASSWORD } from '../src/test/integration/owned-app-fixture';
 
 const SCREENS: Record<string, { button: string; container: string; candidates: [string, string][] }> = {
-  route: { button: '[data-b-route-error] .b-btn--teal', container: '[data-b-route-error]', candidates: [['/app/updates', 'communications'], ['/app/inbox', 'conversations'], ['/app/notifications', 'communication_recipients'], ['/app/availability', 'availability_windows'], ['/app/requests', 'availability_exceptions'], ['/app/profile/calendar', 'calendar_subscriptions'], ['/app/settings/clocker', 'clocker_devices'], ['/app/account/delete', 'account_deletion_requests'], ['/app/payroll', 'native_payroll_ledger'], ['/app/my-pay', 'native_payroll_document_manifests'], ['/app/schedule', 'location_coverage_windows'], ['/app/employees/QAOWNER', 'employee_positions'], ['/app/reports', 'break_entries'], ['/app/timecards', 'break_entries'], ['/app/settings/locations', 'location_staffing_settings'], ['/app/schedule', 'shifts'], ['/app/timecards', 'time_entries']] },
+  route: { button: '[data-b-route-error] .b-btn--teal', container: '[data-b-route-error]', candidates: [['/app/settings/locations', 'location_staffing_settings'], ['/app/employees/QAOWNER', 'positions'], ['/app/employees/QAOWNER', 'employee_location_eligibility'], ['/app/schedule/new', 'shift_templates'], ['/app/schedule/new', 'positions'], ['/app/schedule/coverage', 'location_coverage_windows'], ['/app/schedule/coverage', 'coverage_window_position_requirements'], ['/app/reports/christmas-bonus', 'native_payroll_ledger'], ['/app/reports/christmas-bonus', 'time_entries'], ['/app/updates', 'communications'], ['/app/inbox', 'conversations'], ['/app/notifications', 'communication_recipients'], ['/app/availability', 'availability_windows'], ['/app/requests', 'availability_exceptions'], ['/app/profile/calendar', 'calendar_subscriptions'], ['/app/settings/clocker', 'clocker_devices'], ['/app/account/delete', 'account_deletion_requests'], ['/app/payroll', 'native_payroll_ledger'], ['/app/my-pay', 'native_payroll_document_manifests'], ['/app/schedule', 'location_coverage_windows'], ['/app/employees/QAOWNER', 'employee_positions'], ['/app/reports', 'break_entries'], ['/app/timecards', 'break_entries'], ['/app/settings/locations', 'location_staffing_settings'], ['/app/schedule', 'shifts'], ['/app/timecards', 'time_entries']] },
   appRoot: { button: '.app-error-screen .nv-btn[data-kind="primary"]', container: '.app-error-screen', candidates: [['/app', 'nevora_workspace_presentation_revisions'], ['/app', 'nevora_workspace_presentation_assets'], ['/app', 'workspaces'], ['/app/schedule', 'workspaces'], ['/app', 'locations'], ['/app', 'onboarding_workspace_identity']] },
   public: { button: '.pe-retry', container: '.pe-retry', candidates: [['/account-deletion', 'account_deletion_requests'], ['/forgot-access', 'auth_login_limits'], ['/clocker/qa-kiosk', 'clocker_devices'], ['/activate?token=qa-not-real', 'company_invitation_claim_counters'], ['/reset-access?token=qa-not-real', 'employee_credentials'], ['/activate?token=qa-not-real', 'company_invitations'], ['/login', 'nevora_workspace_presentation_revisions'], ['/welcome', 'workspaces'], ['/clocker/qa-kiosk', 'locations'], ['/activate?token=qa-not-real', 'workspaces'], ['/reset-access?token=qa-not-real', 'employees'], ['/login', 'workspaces']] },
 };
@@ -23,7 +23,7 @@ it('try again states', async () => {
   const tls = await startOwnedTlsProxy({ [OWNED_COLLAB_ORIGIN]: app.url });
   const base = OWNED_COLLAB_ORIGIN, net = { proxy: { server: tls.server }, ignoreHTTPSErrors: true };
   const q = (text: string) => app.database.executor.query({ text, values: [] });
-  const off = (t: string) => q(`ALTER TABLE ${t} RENAME TO ${t}_qa_off`), on = (t: string) => q(`ALTER TABLE ${t}_qa_off RENAME TO ${t}`);
+  const off = (t: string, _s?: unknown) => q(`ALTER TABLE ${t} RENAME TO ${t}_qa_off`), on = (t: string, _s?: unknown) => q(`ALTER TABLE ${t}_qa_off RENAME TO ${t}`);
   const out: any = { found: {}, runs: [], log: [] };
   try {
     await seedOwnedApp(app.database.executor);
@@ -89,6 +89,16 @@ it('try again states', async () => {
           await s.page.screenshot({ path: join(shots, tag + '-recovered.png') });
         } catch (e) { r.error = String((e as Error).message).slice(0, 240); await on(f.table).catch(() => {}); }
         r.pageErrors = [...s.errors]; out.runs.push(r); await s.ctx.close();
+      }
+      // O2: one press only (no second press), count the RSC requests for the page itself.
+      for (const engine of ['chromium', 'webkit']) {
+        const s = await open(engine, { lang: 'en', width: 1440, signedIn: name !== 'public', motion: 'reduce' }); const r: any = { name, engine, singlePress: true };
+        const seen: string[] = []; s.page.on('request', (rq: any) => { const h = rq.headers(); if (rq.method() === 'GET' && h.rsc === '1') seen.push(new URL(rq.url()).pathname + (h['next-router-prefetch'] ? ' (prefetch)' : '')); });
+        try { await off(f.table, s); await s.page.goto(base + f.path, { waitUntil: 'load' }).catch(() => {}); await s.page.waitForTimeout(2500); seen.length = 0;
+          await s.page.locator(sc.button).first().click(); await s.page.waitForTimeout(3000);
+          r.all = [...seen]; r.pagePath = f.path.split('?')[0]; r.pageCount = seen.filter(x => x === r.pagePath).length; r.prefetchCount = seen.filter(x => x.endsWith('(prefetch)')).length;
+        } catch (e) { r.error = String((e as Error).message).slice(0, 200); } finally { await on(f.table, s).catch(() => {}); }
+        out.runs.push(r); await s.ctx.close();
       }
       // Reduced motion (Chromium and WebKit, EN): the spinner must not turn.
       for (const engine of ['chromium', 'webkit']) {

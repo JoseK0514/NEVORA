@@ -1,0 +1,1993 @@
+{
+ "found": {
+  "route": {
+   "path": "/app/settings/locations",
+   "table": "location_staffing_settings"
+  },
+  "appRoot": {
+   "path": "/app",
+   "table": "workspaces"
+  }
+ },
+ "runs": [
+  {
+   "name": "route",
+   "engine": "chromium",
+   "lang": "en",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "Locations Couldn’t load your workplaces. Try again to see the latest setup and Clocker links. Couldn’t load your workpla",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 162,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 162,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 162,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(9, 94, 90)",
+    "w": 162,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/help",
+    "rsc /app/notifications"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Locations",
+    "focus": "h1 Locations"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "chromium",
+   "lang": "en",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "Locations Couldn’t load your workplaces. Try again to see the latest setup and Clocker links. Couldn’t load your workpla",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 246,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 246,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 246,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 246,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app",
+    "rsc /app/notifications",
+    "rsc /app/more",
+    "rsc /app/settings"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Locations",
+    "focus": "h1 Locations"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "chromium",
+   "lang": "es",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "Localidades No pudimos cargar tus lugares de trabajo. Inténtalo de nuevo para ver la configuración y los enlaces del Clo",
+     "lang": "es"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 221,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busy": {
+    "text": "Intentar de nuevoIntentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "",
+    "w": 0,
+    "h": 0,
+    "spinAnim": " ",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 221,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(9, 94, 90)",
+    "w": 221,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/help",
+    "rsc /app/notifications"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Localidades",
+    "focus": "h1 Localidades"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "chromium",
+   "lang": "es",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "Localidades No pudimos cargar tus lugares de trabajo. Inténtalo de nuevo para ver la configuración y los enlaces del Clo",
+     "lang": "es"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busy": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/notifications",
+    "rsc /app/more"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Localidades",
+    "focus": "h1 Localidades"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "webkit",
+   "lang": "en",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": null,
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 161,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 161,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 161,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(9, 94, 90)",
+    "w": 161,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/help",
+    "rsc /app/notifications",
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/help",
+    "rsc /app/notifications"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Locations",
+    "focus": "h1 Locations"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "webkit",
+   "lang": "en",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": null,
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [
+     "anim"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Locations",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app",
+    "rsc /app/notifications",
+    "rsc /app/more",
+    "rsc /app/settings"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Locations",
+    "focus": "h1 Locations"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "webkit",
+   "lang": "es",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": null,
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 218,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busy": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 218,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 218,
+    "h": 44,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(9, 94, 90)",
+    "w": 218,
+    "h": 44,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/help",
+    "rsc /app/notifications",
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/help",
+    "rsc /app/notifications"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Localidades",
+    "focus": "h1 Localidades"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "webkit",
+   "lang": "es",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": null,
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busy": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "b-spin 0.8s",
+    "running": [
+     "b-spin"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(11, 110, 105)",
+    "w": 262,
+    "h": 80,
+    "spinAnim": "none 0s",
+    "running": [],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Localidades",
+    "lang": "es"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app/settings/locations",
+    "rsc /app",
+    "rsc /app/notifications",
+    "rsc /app/more",
+    "rsc /app/settings",
+    "rsc /app/settings/locations",
+    "rsc /app/settings",
+    "rsc /app",
+    "rsc /app/notifications",
+    "rsc /app/more"
+   ],
+   "focusAfterFail": "button.b-btn b-btn--teal Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app/settings/locations",
+    "errorGone": true,
+    "h1": "Localidades",
+    "focus": "h1 Localidades"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "route",
+   "engine": "chromium",
+   "singlePress": true,
+   "all": [
+    "/app/settings/locations",
+    "/app/settings (prefetch)",
+    "/app (prefetch)",
+    "/app/help (prefetch)",
+    "/app/notifications (prefetch)"
+   ],
+   "pagePath": "/app/settings/locations",
+   "pageCount": 1,
+   "prefetchCount": 4
+  },
+  {
+   "name": "route",
+   "engine": "webkit",
+   "singlePress": true,
+   "all": [
+    "/app/settings/locations",
+    "/app/settings (prefetch)",
+    "/app (prefetch)",
+    "/app/help (prefetch)",
+    "/app/notifications (prefetch)"
+   ],
+   "pagePath": "/app/settings/locations",
+   "pageCount": 1,
+   "prefetchCount": 4
+  },
+  {
+   "name": "route",
+   "engine": "chromium",
+   "reduced": true,
+   "busy": {
+    "text": "Trying again…",
+    "spin": "none 0s none",
+    "running": 0
+   }
+  },
+  {
+   "name": "route",
+   "engine": "webkit",
+   "reduced": true,
+   "busy": {
+    "text": "Trying again…",
+    "spin": "none 0s none",
+    "running": 0
+   }
+  },
+  {
+   "name": "appRoot",
+   "engine": "chromium",
+   "lang": "en",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": "This page didn’t load Nothing was changed. This page didn’t load. Nothing was changed. Something went wrong on our side.",
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "This page didn’t load Nothing was changed. This page didn’t load. Nothing was changed. Something went wrong on our side.",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 176,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 176,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 176,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 176,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 things need you",
+    "focus": "h1 2 things need you"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "chromium",
+   "lang": "en",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 800,
+     "text": "This page didn’t load Nothing was changed. This page didn’t load. Nothing was changed. Something went wrong on our side.",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 276,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 276,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 276,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 276,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 things need you",
+    "focus": "h1 2 things need you"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "chromium",
+   "lang": "es",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": "Esta página no cargó No se cambió nada. Esta página no cargó. No se cambió nada. Algo falló de nuestro lado. Inténtalo d",
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "Esta página no cargó No se cambió nada. Esta página no cargó. No se cambió nada. Algo falló de nuestro lado. Inténtalo d",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 asuntos pendientes",
+    "focus": "h1 2 asuntos pendientes"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "chromium",
+   "lang": "es",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 800,
+     "text": "Esta página no cargó No se cambió nada. Esta página no cargó. No se cambió nada. Algo falló de nuestro lado. Inténtalo d",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 asuntos pendientes",
+    "focus": "h1 2 asuntos pendientes"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "webkit",
+   "lang": "en",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": "This page didn’t load Nothing was changed. This page didn’t load. Nothing was changed. Something went wrong on our side.",
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "This page didn’t load Nothing was changed. This page didn’t load. Nothing was changed. Something went wrong on our side.",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 177,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 177,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 177,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 177,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 things need you",
+    "focus": "h1 2 things need you"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "webkit",
+   "lang": "en",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": "This page didn’t load Nothing was changed. This page didn’t load. Nothing was changed. Something went wrong on our side.",
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "This page didn’t load Nothing was changed. This page didn’t load. Nothing was changed. Something went wrong on our side.",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 303,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 303,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Trying again…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 303,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Try again",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 303,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "This page didn’t load",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Try again",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 things need you",
+    "focus": "h1 2 things need you"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "webkit",
+   "lang": "es",
+   "width": 1440,
+   "big": false,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": "Esta página no cargó No se cambió nada. Esta página no cargó. No se cambió nada. Algo falló de nuestro lado. Inténtalo d",
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "Esta página no cargó No se cambió nada. Esta página no cargó. No se cambió nada. Algo falló de nuestro lado. Inténtalo d",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 240,
+    "h": 52,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 asuntos pendientes",
+    "focus": "h1 2 asuntos pendientes"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "webkit",
+   "lang": "es",
+   "width": 390,
+   "big": true,
+   "firstPaint": [
+    {
+     "at": 0,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 100,
+     "text": null,
+     "lang": ""
+    },
+    {
+     "at": 300,
+     "text": "Esta página no cargó No se cambió nada. Esta página no cargó. No se cambió nada. Algo falló de nuestro lado. Inténtalo d",
+     "lang": "en"
+    },
+    {
+     "at": 800,
+     "text": "Esta página no cargó No se cambió nada. Esta página no cargó. No se cambió nada. Algo falló de nuestro lado. Inténtalo d",
+     "lang": "en"
+    }
+   ],
+   "idle": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busy": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "busyAfterSecondPress": {
+    "text": "Intentando de nuevo…",
+    "busy": "true",
+    "ariaDisabled": "true",
+    "disabled": false,
+    "bg": "rgb(7, 117, 114)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "failedAgain": {
+    "text": "Intentar de nuevo",
+    "busy": null,
+    "ariaDisabled": null,
+    "disabled": false,
+    "bg": "rgb(5, 92, 90)",
+    "w": 318,
+    "h": 88,
+    "spinAnim": "nv-retry-turn 0.9s",
+    "running": [
+     "nv-retry-turn"
+    ],
+    "over": 0,
+    "clipped": false,
+    "pageH1": "Esta página no cargó",
+    "lang": "en"
+   },
+   "refreshesDuringRetry": [
+    "rsc /app"
+   ],
+   "focusAfterFail": "button.nv-btn Intentar de nuevo",
+   "focusOnButton": true,
+   "recovered": {
+    "url": "/app",
+    "errorGone": true,
+    "h1": "2 asuntos pendientes",
+    "focus": "h1 2 asuntos pendientes"
+   },
+   "pageErrors": []
+  },
+  {
+   "name": "appRoot",
+   "engine": "chromium",
+   "singlePress": true,
+   "all": [
+    "/app"
+   ],
+   "pagePath": "/app",
+   "pageCount": 1,
+   "prefetchCount": 0
+  },
+  {
+   "name": "appRoot",
+   "engine": "webkit",
+   "singlePress": true,
+   "all": [
+    "/app"
+   ],
+   "pagePath": "/app",
+   "pageCount": 1,
+   "prefetchCount": 0
+  },
+  {
+   "name": "appRoot",
+   "engine": "chromium",
+   "reduced": true,
+   "busy": {
+    "text": "Trying again…",
+    "spin": "none 0s none",
+    "running": 0
+   }
+  },
+  {
+   "name": "appRoot",
+   "engine": "webkit",
+   "reduced": true,
+   "busy": {
+    "text": "Trying again…",
+    "spin": "none 0s none",
+    "running": 0
+   }
+  }
+ ],
+ "log": [
+  {
+   "name": "route",
+   "path": "/app/settings/locations",
+   "table": "location_staffing_settings",
+   "hit": 1,
+   "url": "/app/settings/locations",
+   "h1": "Locations"
+  },
+  {
+   "name": "appRoot",
+   "path": "/app",
+   "table": "nevora_workspace_presentation_revisions",
+   "hit": 0,
+   "url": "/app",
+   "h1": "2 things need you"
+  },
+  {
+   "name": "appRoot",
+   "path": "/app",
+   "table": "nevora_workspace_presentation_assets",
+   "hit": 0,
+   "url": "/app",
+   "h1": "2 things need you"
+  },
+  {
+   "name": "appRoot",
+   "path": "/app",
+   "table": "workspaces",
+   "hit": 1,
+   "url": "/app",
+   "h1": "This page didn’t load"
+  },
+  {
+   "name": "public",
+   "path": "/account-deletion",
+   "table": "account_deletion_requests",
+   "hit": 0,
+   "url": "/account-deletion",
+   "h1": "Delete your NEVORA account"
+  },
+  {
+   "name": "public",
+   "path": "/forgot-access",
+   "table": "auth_login_limits",
+   "hit": 0,
+   "url": "/forgot-access",
+   "h1": "Reset your password"
+  },
+  {
+   "name": "public",
+   "path": "/clocker/qa-kiosk",
+   "table": "clocker_devices",
+   "hit": 0,
+   "url": "/clocker/qa-kiosk",
+   "h1": "Set up this tablet"
+  },
+  {
+   "name": "public",
+   "path": "/activate?token=qa-not-real",
+   "table": "company_invitation_claim_counters",
+   "hit": 0,
+   "url": "/activate",
+   "h1": "Set up your account"
+  },
+  {
+   "name": "public",
+   "path": "/reset-access?token=qa-not-real",
+   "table": "employee_credentials",
+   "hit": 0,
+   "url": "/reset-access?token=qa-not-real",
+   "h1": "Choose a new password"
+  },
+  {
+   "name": "public",
+   "path": "/activate?token=qa-not-real",
+   "table": "company_invitations",
+   "hit": 0,
+   "url": "/activate",
+   "h1": "Set up your account"
+  },
+  {
+   "name": "public",
+   "path": "/login",
+   "table": "nevora_workspace_presentation_revisions",
+   "hit": 0,
+   "url": "/login",
+   "h1": "Good afternoon"
+  },
+  {
+   "name": "public",
+   "path": "/welcome",
+   "table": "workspaces",
+   "hit": 0,
+   "url": "/welcome",
+   "h1": "Page not found"
+  },
+  {
+   "name": "public",
+   "path": "/clocker/qa-kiosk",
+   "table": "locations",
+   "hit": 0,
+   "url": "/clocker/qa-kiosk",
+   "h1": "The time clock hit a problem"
+  },
+  {
+   "name": "public",
+   "path": "/activate?token=qa-not-real",
+   "table": "workspaces",
+   "hit": 0,
+   "url": "/activate",
+   "h1": "Set up your account"
+  },
+  {
+   "name": "public",
+   "path": "/reset-access?token=qa-not-real",
+   "table": "employees",
+   "hit": 0,
+   "url": "/reset-access?token=qa-not-real",
+   "h1": "Choose a new password"
+  },
+  {
+   "name": "public",
+   "path": "/login",
+   "table": "workspaces",
+   "hit": 0,
+   "url": "/login",
+   "h1": "Good afternoon"
+  }
+ ]
+}

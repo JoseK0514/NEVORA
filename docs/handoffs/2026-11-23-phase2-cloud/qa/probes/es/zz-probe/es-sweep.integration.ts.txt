@@ -103,6 +103,7 @@ it('spanish integration sweep', async () => {
     await step('time off', () => q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('es-to-1','SWEEP-A',($1::date + 14),($1::date + 15),'Fictional family visit','PENDING',now()),('es-to-2','SWEEP-B',($1::date + 21),($1::date + 21),'Fictional appointment','PENDING',now()),('es-to-3','SWEEP-C',($1::date + 7),($1::date + 8),'Fictional trip','APPROVED',now())", [week]));
     await step('clocker keys', async () => { await q("UPDATE locations SET clocker_key='es-kiosk-main' WHERE id='loc-1'"); await q("UPDATE locations SET clocker_key='es-kiosk-west' WHERE id='loc-2'"); });
     const ownerProof = await fixtureProof(ex, 'QAOWNER'); const owner = { employeeId: 'QAOWNER', sessionTokenHash: ownerProof.sessionTokenHash };
+    await step('rules row', () => q("INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours) VALUES('SWEEP-A',40) ON CONFLICT (employee_id) DO UPDATE SET target_weekly_hours=40"));
     await step('clocker pin', () => setEmployeeClockerPin(owner, { employeeId: 'SWEEP-A', pin: '2468', expectedVersion: 0 }, Buffer.from('ab'.repeat(32), 'hex'), ex));
     const browsers: Record<string, any> = {}; for (const e of ENGINES) browsers[e] = await runtime[e].launch({ headless: true });
     const net = { proxy: { server: tls.server }, ignoreHTTPSErrors: true };
@@ -179,16 +180,52 @@ it('spanish integration sweep', async () => {
         const page = await ctx.newPage(); page.setDefaultTimeout(20000); const r: any = { engine, lang };
         try {
           await page.goto(base + '/app/employees'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
-          const row = page.locator('a.b-row[href="/app/employees/SWEEP-B"]').first();
+          const row = page.locator('a[href="/app/employees/SWEEP-B"]:visible').first();
           r.rowFound = await row.count();
           await row.focus(); await page.keyboard.press('Enter'); await page.waitForURL(/\/app\/employees\/SWEEP-B/, { waitUntil: 'commit' }); r.urlPerson = page.url().replace(base, ''); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
           r.backLink = await page.locator('main .q-nav > .q-nav__l, main a.c-formhead__link, main a[href="/app/employees"]').first().innerText().catch(() => null);
-          await page.locator('main .q-nav > .q-nav__l, main a[href="/app/employees"]').first().focus(); await page.keyboard.press('Enter');
+          await page.locator('main .q-nav > .q-nav__l:visible, main a[href="/app/employees"]:visible, main a.c-nav__back:visible').first().focus(); await page.keyboard.press('Enter');
           r.backHref = await page.locator('main .q-nav > .q-nav__l, main a[href="/app/employees"]').first().getAttribute('href').catch(() => null); await page.waitForURL(/\/app\/employees(\?|#|$)/, { waitUntil: 'commit' }); await page.waitForTimeout(1200); r.urlBack = page.url().replace(base, '');
           r.focusAfterBack = await page.evaluate(() => { const e = document.activeElement as HTMLAnchorElement | null; return e ? e.tagName + ' ' + (e.getAttribute('href') || '') + ' ' + (e.textContent || '').trim().slice(0, 40) : null; });
           r.ring = await page.evaluate(() => { const e = document.activeElement as HTMLElement | null; if (!e) return null; const cs = getComputedStyle(e); return cs.outlineStyle + ' ' + cs.outlineWidth + ' | ' + cs.boxShadow.slice(0, 50); });
           await page.screenshot({ path: join(shots, `spot-team-return-${engine}-${lang}.png`) });
         } catch (e) { r.teamError = String((e as Error).message).slice(0, 400); r.urlAtError = page.url().replace(base, ''); r.focusAtError = await page.evaluate(() => { const e = document.activeElement; return e ? e.outerHTML.slice(0, 200) : null; }).catch(() => null); await page.screenshot({ path: join(shots, `spot-team-error-${engine}-${lang}.png`) }).catch(() => {}); }
+        try {
+          r.rules = [];
+          for (const [w, big] of [[390, false], [390, true], [768, false], [1440, false]] as [number, boolean][]) {
+            await page.setViewportSize({ width: w, height: w > 1000 ? 900 : 844 }); await page.goto(base + '/app/employees/SWEEP-A?edit=rules'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(500);
+            if (big) { await page.addStyleTag({ content: 'html{font-size:200% !important}' }); await page.waitForTimeout(400); }
+            const m = await page.evaluate(() => {
+              const box = (el: Element) => { const rc = el.getBoundingClientRect(); return [Math.round(rc.left), Math.round(rc.top), Math.round(rc.width), Math.round(rc.height)]; };
+              const bgOf = (el: Element | null) => { let bg = 'rgba(0, 0, 0, 0)'; let e = el as HTMLElement | null; while (e && (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent')) { bg = getComputedStyle(e).backgroundColor; e = e.parentElement; } return bg; };
+              const a = document.querySelector('main a.c-nav__back') as HTMLElement | null, t = document.querySelector('main .c-nav__title') as HTMLElement | null;
+              const out: any = { back: null, title: null };
+              if (a) { const cs = getComputedStyle(a); const rc = a.getBoundingClientRect(); const cx = rc.left + rc.width / 2, cy = rc.top + rc.height / 2; const hit = document.elementFromPoint(cx, cy);
+                const prev = a.style.visibility; a.style.visibility = 'hidden'; const under = document.elementFromPoint(cx, cy); a.style.visibility = prev;
+                let clipAnc: string | null = null; for (let e = a.parentElement; e; e = e.parentElement) { const c = getComputedStyle(e); if (c.overflow !== 'visible' || c.clipPath !== 'none') { const er = e.getBoundingClientRect(); if (rc.left < er.left || rc.right > er.right || rc.top < er.top || rc.bottom > er.bottom) { clipAnc = e.tagName + '.' + String(e.className).slice(0, 40); break; } } }
+                out.back = { text: a.innerText.trim(), box: box(a), color: cs.color, ownBg: cs.backgroundColor, bgUnder: under ? bgOf(under) : null, underEl: under ? under.tagName + '.' + String(under.className).slice(0, 40) : null, bandBg: bgOf(a.closest('.c-nav')), visibility: cs.visibility, opacity: cs.opacity, display: cs.display, clipPath: cs.clipPath, contrast: (() => { const p = (c: string) => (c.match(/[\d.]+/g) || []).map(Number); const [r1, g1, b1, al = 1] = p(cs.color); const [r2, g2, b2] = p(bgOf(under)); const mix = (f: number, b: number) => f * al + b * (1 - al); const L = (r: number, g: number, b: number) => { const f = (v: number) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b); }; const l1 = L(mix(r1, r2), mix(g1, g2), mix(b1, b2)), l2 = L(r2, g2, b2); return Math.round(((Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)) * 100) / 100; })(), hitIsLink: !!hit && a.contains(hit), hitEl: hit ? hit.tagName + '.' + String(hit.className).slice(0, 40) : null, inViewport: rc.right > 0 && rc.left < innerWidth && rc.bottom > 0 && rc.top < innerHeight, clippedBy: clipAnc, fontSize: cs.fontSize, scrollW: a.scrollWidth, clientW: a.clientWidth }; }
+              if (t) { const cs = getComputedStyle(t); out.title = { text: t.innerText.trim(), box: box(t), whiteSpace: cs.whiteSpace, overflow: cs.overflow, textOverflow: cs.textOverflow, scrollW: t.scrollWidth, clientW: t.clientWidth, truncated: t.scrollWidth > t.clientWidth + 1, color: cs.color, fontSize: cs.fontSize }; }
+              if (a && t) { const x = a.getBoundingClientRect(), y = t.getBoundingClientRect(); out.backTitleOverlap = Math.max(0, Math.min(x.right, y.right) - Math.max(x.left, y.left)) * Math.max(0, Math.min(x.bottom, y.bottom) - Math.max(x.top, y.top)); out.backLeftOfTitle = x.right <= y.left + 1; }
+              const nav = document.querySelector('main .c-nav'); out.nav = nav ? { box: box(nav), gridCols: getComputedStyle(nav).gridTemplateColumns, display: getComputedStyle(nav).display } : null;
+              return out; });
+            await page.screenshot({ path: join(shots, `spot-rules-${engine}-${lang}-${w}${big ? '-200' : ''}.png`) });
+            r.rules.push({ width: w, big, ...m });
+          }
+          await page.setViewportSize({ width: 1440, height: 900 });
+          try { await page.goto(base + '/app/employees/SWEEP-A?edit=rules'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(500);
+            const before = (await q("SELECT operational_rule_profile AS p FROM employee_scheduling_settings WHERE employee_id='SWEEP-A'")) as any; const rowsB = Array.isArray(before) ? before : before.rows;
+            await page.locator('main details.wa-disclosure > summary').first().click(); await page.waitForTimeout(300);
+            const sel = page.locator('main select[name$=".status"]').first(); r.ruleSelectName = await sel.getAttribute('name'); r.ruleOptions = await sel.locator('option').evaluateAll((o: any[]) => o.map(x => x.value));
+            const want = (r.ruleOptions as string[]).find(v => v !== (rowsB[0]?.p?.[String(r.ruleSelectName).split('.')[0]]?.status ?? 'UNKNOWN') && v !== 'CONFIGURED') ?? 'NOT_APPLICABLE';
+            await sel.selectOption(want); r.ruleWant = want;
+            const posts: string[] = []; page.on('request', (rq: any) => { if (rq.method() === 'POST') posts.push(rq.url().replace(base, '')); });
+            const btn = page.locator('main form button[type="submit"]').last(); r.ruleSaveLabel = await btn.innerText(); await btn.click(); await page.waitForTimeout(150); r.ruleSavingLabel = await btn.innerText().catch(() => null);
+            await page.waitForTimeout(3000); r.rulePosts = posts.length; r.ruleAfterText = (await page.locator('main').innerText()).replace(/\s+/g, ' ').slice(0, 300);
+            const after = (await q("SELECT operational_rule_profile AS p FROM employee_scheduling_settings WHERE employee_id='SWEEP-A'")) as any; const rowsA = Array.isArray(after) ? after : after.rows;
+            r.ruleRevisionBefore = rowsB[0]?.p?.revision ?? null; r.ruleRevisionAfter = rowsA[0]?.p?.revision ?? null; r.ruleSaved = rowsA[0]?.p?.[String(r.ruleSelectName).split('.')[0]]?.status ?? null;
+            await page.screenshot({ path: join(shots, `spot-rules-saved-${engine}-${lang}.png`) });
+          } catch (e) { r.ruleSaveError = String((e as Error).message).slice(0, 240); }
+        } catch (e) { r.rulesError = String((e as Error).message).slice(0, 200); }
         try {
           await page.goto(base + '/app/schedule/edit?shiftId=es-shift-2'); await page.waitForLoadState('networkidle').catch(() => {}); await page.waitForTimeout(600);
           await page.route('**/app/schedule/edit**', async (rt: any) => { if (rt.request().method() === 'POST') { await new Promise(res => setTimeout(res, 4000)); await rt.continue().catch(() => {}); } else await rt.continue(); });

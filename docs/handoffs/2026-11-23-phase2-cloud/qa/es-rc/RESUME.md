@@ -1,3 +1,13 @@
+# Spanish integration release check: DONE
+
+**Done 2026-11-26.** The check finished on `95e390851`. The verdicts, every finding with how it closed, and the open items
+are in `report.md`. Nothing is queued and nothing is running. The checkout `/home/user/NEVORA` is back to a clean
+detached tip, and the throwaway Postgres instances are stopped by each run.
+
+The note below is the pause from Nov 25, kept for the record.
+
+---
+
 # Spanish integration release check: paused, how to resume
 
 Paused 2026-11-26 06:31 UTC at the lead's request (Jose stopping for the night). Nothing is running: the probe, the app
