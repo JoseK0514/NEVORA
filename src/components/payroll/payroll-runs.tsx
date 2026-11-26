@@ -119,7 +119,7 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
   }, [operation.receipt, runId, router, view]);
   const data = !resource.loading && resource.data?.capabilities.canReview ? resource.data : null;
   const state = resource.loading ? <StateCard>{c.loading}</StateCard>
-    : resource.error ? <StateCard alert retry={() => void resource.reload()}>{resource.error}</StateCard>
+    : resource.error ? <StateCard alert retry={() => resource.reload({ retry: true })}>{resource.error}</StateCard>
     : !data ? <StateCard alert>{c.cantReview}</StateCard> : null;
   const run = data && runId ? data.runs.find(item => item.id === runId) ?? null : null;
   const missingRun = data && (view === 'review' || view === 'fix' || view === 'people') && !run

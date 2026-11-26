@@ -11,11 +11,13 @@ import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpLink,CorpNote,CorpRow,Co
 import {arrangeStatements,type PayView} from './pay';
 import './pay-corp.css';
 import {PayB, type PayBStatus} from '../employee-b/pay-b';
-import {BButton, BButtonLink} from '../owner-b/b-kit';
+import {BButtonLink} from '../owner-b/b-kit';
 import {useMobileLang} from './mobile-lang';
 import {LOCALE,dateText,type MobileLang} from './mobile-format';
 import {payCopy} from './copy/pay';
 import {payCorpCopy} from './copy/pay-corp';
+import { RetryButton } from "@/components/kit/retry-button";
+import { BRetryButton } from "@/components/owner-b/b-retry-button";
 
 /** The element to focus: the phone screen's (Direction B) when it is the one showing, else the corporate one. */
 const shownById=(...ids:string[])=>ids.map(id=>document.getElementById(id)).find(el=>!!el&&el.getClientRects().length>0)??document.getElementById(ids[ids.length-1]);
@@ -104,7 +106,7 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
   :state==='denied'?surface(p.deniedTitle,p.deniedBody)
   :state==='module-off'?surface(p.offTitle,p.offBody)
   :state==='paused'?surface(errorCode==='OFFLINE'?p.offlineTitle:p.pausedTitle,errorCode==='OFFLINE'?p.offlineBody:p.pausedBody)
-  :state==='error'?surface(p.errorTitle,p.errorBody,<CorpButton kind="secondary" size="md" full onClick={reload}>{p.tryAgain}</CorpButton>,'alert')
+  :state==='error'?surface(p.errorTitle,p.errorBody,<RetryButton as={CorpButton} kind="secondary" size="md" full onClick={reload}>{p.tryAgain}</RetryButton>,'alert')
   :state==='empty'?<CorpCard label={t.recentStatements}><p className="c-empty"><b>{p.emptyTitle}</b>{p.emptyBody}</p></CorpCard>:null;
  const row=(item:Statement)=><li key={item.id}><CorpRow id={`pay-statement-${item.id}`} href={paycheckHref(item.id)} bold title={payday(item.payday,lang)} detail={period(item.period.startDate,item.period.endDate,lang)}
   label={t.rowLabel(paydayLong(item.payday,lang),role(item,lang),period(item.period.startDate,item.period.endDate,lang))} trail={pill(item,lang)} chevron/></li>;
@@ -113,7 +115,7 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
   :state==='denied'?{title:p.deniedTitle,body:p.deniedBody,live:'status'}
   :state==='module-off'?{title:p.offTitle,body:p.offBody,live:'status'}
   :state==='paused'?{title:errorCode==='OFFLINE'?p.offlineTitle:p.pausedTitle,body:errorCode==='OFFLINE'?p.offlineBody:p.pausedBody,live:'status'}
-  :state==='error'?{title:p.errorTitle,body:p.errorBody,action:<BButton kind="quiet" full onClick={reload}>{p.tryAgain}</BButton>,live:'alert'}:null;
+  :state==='error'?{title:p.errorTitle,body:p.errorBody,action:<BRetryButton kind="quiet" full onClick={reload}>{p.tryAgain}</BRetryButton>,live:'alert'}:null;
  const bNoticeText=failure||missing?{title:failure==='failed'||failure==='temporary'?p.couldntOpen:p.notAvailable,
   body:failure==='failed'?p.failedCheck:failure==='temporary'?p.temporary:state==='empty'?p.maybeReplaced:p.maybeReplacedBelow}:null;
  const b=<PayB view={view} state={state} ordered={ordered} byId={byId} paycheck={paycheck} nextPay={nextPay} daysUntil={daysUntil} listed={listed} thisYear={thisYear}

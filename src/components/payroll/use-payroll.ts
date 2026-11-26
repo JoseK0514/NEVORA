@@ -30,12 +30,14 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   // NETWORK, UNREADABLE, PAUSED or OFFLINE.
   const [errorCode, setErrorCode] = useState('');
   const generation = useRef({ value: 0 });
-  const reload = useCallback(async () => {
+  // `retry` (English flag A6, Nov 26, 2026): a card's Try again reads again without first swapping the failed card for
+  // the loading state, so its button stays on screen (busy, focused) until the answer arrives.
+  const reload = useCallback(async ({ retry = false }: { retry?: boolean } = {}) => {
     const current = ++generation.current.value;
-    setLoading(true); setError(''); setErrorCode('');
+    if (!retry) { setLoading(true); setError(''); setErrorCode(''); }
     try {
       const next = decode(await payrollRequest(path));
-      if (generation.current.value === current) { setData(next); }
+      if (generation.current.value === current) { setData(next); setError(''); setErrorCode(''); }
     } catch (failure) {
       if (generation.current.value === current) {
         setData(null);

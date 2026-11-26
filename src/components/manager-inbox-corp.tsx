@@ -25,6 +25,7 @@ import { managerInboxCopy, type InboxCopy } from "./manager-inbox-copy";
 import { usePortalLang, type PortalLang } from "@/lib/i18n/portal-lang";
 import { BSwapNames } from "./owner-b/b-kit";
 import { isStaffingRepair, repairTitle, repairWhen } from "@/lib/time-off-staffing/present";
+import { RetryButton } from "@/components/kit/retry-button";
 
 /* Things to do (Release 1; approved board O-Inbox, Oct 26). Presentation only: the same action center and Today reads as
  * the Inbox before it, the same review links and the same count as Home and the sidebar badge. One card per kind with its
@@ -364,7 +365,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
     // P3: the kit's one error card.
     body = <CorpCard as="div" ariaLabel={c.title}><div className="c-error-card"><p className="c-error-card__title">{c.failedTitle}</p>
       <p className="c-error-card__body">{c.failedLine}</p>
-      <CorpButton kind="neutral" className="c-error-card__action c-todo__retry" onClick={() => { onRefresh(); focusAfterRetry("#todo-title", ".c-todo__retry"); }}>{c.tryAgain}</CorpButton>
+      <RetryButton as={CorpButton} kind="neutral" className="c-error-card__action c-todo__retry" onClick={() => { onRefresh(); focusAfterRetry("#todo-title", ".c-todo__retry"); }}>{c.tryAgain}</RetryButton>
     </div></CorpCard>;
   } else if (!ready) {
     body = <CorpCard as="div" ariaLabel={c.title}><CorpBody>
@@ -402,7 +403,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
     <CorpTitle id="todo-title" title={title} sub={moreView ? undefined : <span role="status" className="c-sr">{summary}</span>} wide />
     {ready && todayFailed ? <CorpCard as="div" ariaLabel={c.clockIns}><CorpBody>
       <p className="c-todo__state">{c.clockInsFailed}</p>
-      <CorpButton kind="secondary" size="md" onClick={onRefresh}>{c.tryAgain}</CorpButton>
+      <RetryButton as={CorpButton} kind="secondary" size="md" onClick={onRefresh}>{c.tryAgain}</RetryButton>
     </CorpBody></CorpCard> : null}
     {body}
     {/* Review B5 (NV-243): the note offers where to look instead. */}

@@ -241,7 +241,7 @@ export function WagesScreen(props: WagesScreenProps) {
   if (load.state === "loading") body = <Skeleton t={t} />;
   else if (load.state !== "ready") {
     body = <div className="rs-state"><CorpCard label={t.title}>{
-      load.state === "failed" ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ retry: true, label: t.tryAgain, onClick: () => { setLoad({ state: "loading" }); void reload(); } }} />
+      load.state === "failed" ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ retry: true, label: t.tryAgain, onClick: () => reload() }} />
       : load.state === "signed_out" ? <BState alert kind="locked" title={t.signedOutTitle} line={t.signedOutBody} action={{ label: t.signIn, href: "/login" }} />
       : <BState kind="locked" title={t.deniedTitle} line={t.deniedBody} action={{ label: firstName, href: backHref }} />
     }</CorpCard></div>;

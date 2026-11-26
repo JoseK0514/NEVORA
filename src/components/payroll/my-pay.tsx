@@ -60,9 +60,9 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
   const { data, loading, error, errorCode, reload } = usePayrollResource('/api/payroll/statements', readStatements);
   const mobile = useEmployeeMobile();
   const { myPay: t, lang } = usePayrollCopy();
-  if (corporate) return <CorpPayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => void reload()} home={home} />;
+  if (corporate) return <CorpPayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => reload({ retry: true })} home={home} />;
   // One read for both presentations, so rotating a phone never refetches or drops the list.
-  if (mobile) return <QuietPage><EmployeePayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => void reload()} /></QuietPage>;
+  if (mobile) return <QuietPage><EmployeePayView statements={data?.statements ?? null} loading={loading} error={error} errorCode={errorCode} nextPay={nextPay} statement={statement} document={document} reload={() => reload({ retry: true })} /></QuietPage>;
   const statements = data ? [...data.statements].sort(newestFirst) : [];
   const days = nextPay?.daysUntil;
   const payday = nextPay ? new Intl.DateTimeFormat(locale(lang), { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' }).format(utc(nextPay.payday)) : null;
@@ -81,7 +81,7 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
     <div className="q-grp"><h2 id="mp-statements">{t.statements}</h2></div>
     {loading ? <p className="q-empty" role="status">{t.loading}</p>
       : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{errorCode === 'SIGNED_OUT' ? t.signInAgain : t.couldNotLoad}</p>
-        <div className="q-emptyblock__action">{errorCode === 'SIGNED_OUT' ? <Link className="q-btn q-btn--sec" href="/login">{t.signIn}</Link> : <RetryButton className="q-btn q-btn--sec" onClick={() => reload()}>{t.tryAgain}</RetryButton>}</div></div>
+        <div className="q-emptyblock__action">{errorCode === 'SIGNED_OUT' ? <Link className="q-btn q-btn--sec" href="/login">{t.signIn}</Link> : <RetryButton className="q-btn q-btn--sec" onClick={() => reload({ retry: true })}>{t.tryAgain}</RetryButton>}</div></div>
       : statements.length ? <QuietList label={t.statements}>{statements.map((statement, index) => <li key={statement.id} className="q-pay__row">
           {index === 0 ? <Celebration kind="PAYDAY_AVAILABLE" eventKey={statement.id} confirmed={statement.published} /> : null}
           <QuietRow bare href={documentHref(statement)} title={t.paydayTitle(shortDay(statement.payday, lang))} detail={`${periodLabel(statement.period.startDate, statement.period.endDate, lang)} · ${t.pdf}`} label={t.downloadFile(statement.filename)} />

@@ -18,6 +18,7 @@ import {LOCALE,dateText,type MobileLang} from './mobile-format';
 import {payCopy} from './copy/pay';
 import './requests.css';
 import './pay.css';
+import { RetryButton } from "@/components/kit/retry-button";
 
 type Statement=PayrollStatementsResponse['statements'][number];
 export type PayDocumentFailure='unavailable'|'failed'|'temporary';
@@ -131,7 +132,7 @@ export function EmployeePayView({statements,loading,error,errorCode,nextPay,stat
     :state==='denied'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,t.deniedTitle,t.deniedBody)
     :state==='module-off'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,t.offTitle,t.offBody)
     :state==='paused'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,errorCode==='OFFLINE'?t.offlineTitle:t.pausedTitle,errorCode==='OFFLINE'?t.offlineBody:t.pausedBody)
-    :state==='error'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,t.errorTitle,t.errorBody,<button type="button" className="em-request-secondary" onClick={reload}>{t.tryAgain}</button>,'alert')
+    :state==='error'?surface('',<InfoIcon size={24} weight="bold" aria-hidden="true"/>,t.errorTitle,t.errorBody,<RetryButton className="em-request-secondary" onClick={reload}>{t.tryAgain}</RetryButton>,'alert')
     :state==='empty'?<div className="em-pay-card em-pay-quiet"><FileTextIcon size={22} weight="bold" aria-hidden="true"/><span><strong>{t.emptyTitle}</strong><small>{t.emptyBody}</small></span></div>
     :arranged?.latest?<section className="em-pay-section" aria-labelledby="pay-latest-heading">
      <h2 id="pay-latest-heading">{t.latest}</h2>

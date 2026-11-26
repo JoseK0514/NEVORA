@@ -6,11 +6,12 @@ import {formatRecordedDuration,type EmployeeTime,type EmployeeTimeEntry} from '@
 import {useMobileCopy,useMobileLang} from './mobile-lang';
 import {dateText,instantDateText,instantText,type MobileLang} from './mobile-format';
 import {hoursRecordsCopy} from './copy/hours-records';
+import { RetryButton } from "@/components/kit/retry-button";
 /** "Oct 27, 9:00 AM" · "27 oct, 9:00 a. m." */
 export const hoursStamp=(at:string,zone:string,lang:MobileLang='en')=>lang==='en'?new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at)):`${instantDateText(at,lang,{timeZone:zone,month:'short',day:'numeric'})}, ${instantText(at,lang,zone)}`;
 /** "Tue, Oct 27" · "mar, 27 oct" */
 export const hoursDay=(at:string,zone:string,lang:MobileLang='en')=>lang==='en'?new Intl.DateTimeFormat('en-US',{timeZone:zone,weekday:'short',month:'short',day:'numeric'}).format(new Date(at)):instantDateText(at,lang,{timeZone:zone,weekday:'short',month:'short',day:'numeric'});
-export function HoursUnavailable({message,onRefresh}:{message:string;onRefresh:()=>void}){const t=useMobileCopy(hoursRecordsCopy);return <section className="em-request-notice" role="status"><p>{message}</p><button className="em-request-secondary" type="button" onClick={onRefresh}>{t.tryAgain}</button></section>;}
+export function HoursUnavailable({message,onRefresh}:{message:string;onRefresh:()=>void}){const t=useMobileCopy(hoursRecordsCopy);return <section className="em-request-notice" role="status"><p>{message}</p><RetryButton className="em-request-secondary" onClick={onRefresh}>{t.tryAgain}</RetryButton></section>;}
 function RecordRow({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){const lang=useMobileLang(),t=hoursRecordsCopy[lang];return <li><Link id={'hours-entry-'+entry.id} className="em-request-entry" href={'/app/my-time?entry='+encodeURIComponent(entry.id)}><span><strong>{hoursDay(entry.clockInAt,zone,lang)}</strong><small>{hoursStamp(entry.clockInAt,zone,lang)} – {entry.clockOutAt?hoursStamp(entry.clockOutAt,zone,lang):t.inProgress}</small><small>{entry.locationName} · {t.elapsed(formatRecordedDuration(entry.elapsedSeconds))}</small></span><CaretRightIcon size={20} weight="bold" aria-hidden="true"/></Link></li>;}
 /** The older Hours view (a Lead's own time). An Employee's Time is on the kit in hours-corp.tsx. */
 export function HoursRecordsView({data,entryId,onRefresh}:{data:EmployeeTime;entryId:string|null;onRefresh:()=>void;corporate?:boolean}){
