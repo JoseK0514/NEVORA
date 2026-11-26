@@ -1,6 +1,7 @@
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
 import {listOwnPayrollExportReceipts,readOwnPayrollExportReceipt} from '@/lib/payroll-export/service';
+import {payrollExportLaunchRefusal} from '@/lib/payroll-export/launch-guard.server';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 
@@ -11,7 +12,7 @@ async function admitted(request:Request){
  const session=await getSession();if(!session)return correctionJson({state:'unavailable'},401);
  if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);
  if(!['OWNER','MANAGER'].includes(session.role))return correctionJson({state:'unavailable'},403);
- return null;
+ return payrollExportLaunchRefusal();
 }
 const refused=(error:unknown)=>isOperationalAuthorizationError(error)||(error instanceof Error&&error.message==='Export access denied');
 

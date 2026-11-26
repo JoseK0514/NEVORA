@@ -1,4 +1,5 @@
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
+import { payrollExportLaunchRefusal } from "@/lib/payroll-export/launch-guard.server";
 import {
   readPeriodClose,
   readPeriodCloseHistory,
@@ -30,10 +31,14 @@ export async function POST(request: Request) {
     )
       return correctionJson({ state: "unavailable" }, 403);
     const body = (await readCorrectionJson(request, 262144)) as {
-        action?: string;
-        command?: unknown;
-      },
-      proof = await requireSessionMutationProof();
+      action?: string;
+      command?: unknown;
+    };
+    if (body.action === "MANIFEST" || body.action === "HANDOFF") {
+      const launchRefusal = payrollExportLaunchRefusal();
+      if (launchRefusal) return launchRefusal;
+    }
+    const proof = await requireSessionMutationProof();
     const result =
       body.action === "HISTORY"
         ? await readPeriodCloseHistory(proof,body.command)

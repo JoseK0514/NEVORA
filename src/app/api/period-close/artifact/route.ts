@@ -1,4 +1,5 @@
 import { requireSessionMutationProof } from "@/lib/auth/session";
+import { payrollExportLaunchRefusal } from "@/lib/payroll-export/launch-guard.server";
 import { readPeriodArtifact } from "@/lib/period-close/service";
 import {
   correctionResponseHeaders,
@@ -13,6 +14,8 @@ export async function GET(request: Request) {
     format = params.get("format");
   if (!["manifest", "csv", "canonical"].includes(format ?? ""))
     return correctionJson({ state: "invalid" }, 400);
+  const launchRefusal = payrollExportLaunchRefusal();
+  if (launchRefusal) return launchRefusal;
   try {
     const artifact = await readPeriodArtifact(
       await requireSessionMutationProof(),
