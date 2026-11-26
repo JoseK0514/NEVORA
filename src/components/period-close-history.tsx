@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Period } from "@/lib/timecards/project";
 import type { readPeriodCloseHistory } from "@/lib/period-close/service";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
+import { copy as periodWords } from "./payroll-period-close-copy";
 import { PERIOD_CLOSE_HISTORY_COPY } from "./period-close-history-copy";
 
 type Page = Awaited<ReturnType<typeof readPeriodCloseHistory>>;
@@ -24,7 +25,8 @@ export function appendPeriodHistory(previous: LoadedPeriodHistory | null, page: 
 }
 
 export function PeriodCloseHistory({ period, actorId }: { period: Period; actorId: string }) {
-  const t = PERIOD_CLOSE_HISTORY_COPY[usePortalLang()];
+  const lang=usePortalLang(), t=PERIOD_CLOSE_HISTORY_COPY[lang];
+  const eventNames: Record<string,string>={REPORTED_SUBMITTED:periodWords[lang].markedAsSent,REPORTED_IMPORTED:periodWords[lang].markedAsImported,ARTIFACT_SERVED:periodWords[lang].downloadRequested};
   const [history, setHistory] = useState<LoadedPeriodHistory | null>(null);
   const [busy, setBusy] = useState(false), [notice, setNotice] = useState(t.loadToReview);
   const request = useRef<AbortController | null>(null), sequence = useRef({ value: 0 }), mounted = useRef(false);
@@ -84,7 +86,7 @@ export function PeriodCloseHistory({ period, actorId }: { period: Period; actorI
     <button className="button secondary" type="button" disabled={busy} onClick={() => void load(true)}>{history ? t.refresh : t.load}</button>
     {history?.nextCursor && <button className="button secondary" type="button" disabled={busy} onClick={() => void load(false)}>{t.older}</button>}
     <ol>{history?.events.map(event => <li key={event.id}>
-      {event.kind.replaceAll('_', ' ')} · {event.createdAt} · {t.actor(event.actorId)}
+      {eventNames[event.kind] ?? event.kind.replaceAll('_', ' ')} · {event.createdAt} · {t.actor(event.actorId)}
       <details><summary>{t.details}</summary><p style={{ overflowWrap: 'anywhere' }}>{t.manifest(event.manifestId)}</p>
         {([[t.file, 'filename'], [t.destination, 'destination'], [t.reference, 'reference'], [t.format, 'format'], [t.fingerprint, 'sha256']] as const).map(([label, field]) => typeof event.payload[field] === 'string' ? <p key={field} style={{ overflowWrap: 'anywhere' }}>{label}: {String(event.payload[field])}</p> : null)}
         <p>{event.kind === 'ARTIFACT_SERVED' ? t.served : t.reported}</p>

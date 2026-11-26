@@ -5,6 +5,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {afterEach,beforeEach,expect,it,rs} from '@rstest/core';
 const host=rs.hoisted(()=>({cursor:0,mounted:false,slots:[] as {value:unknown}[],effects:[] as (()=>void|(()=>void))[]}));
 rs.mock('react',()=>({...rstestOriginal0,
+ useCallback:(callback:unknown)=>callback,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},

@@ -95,3 +95,23 @@ it('keeps the population form and selected receipts across a refresh where only 
  expect(formPath()).toEqual(before);
  expect(control(n=>n.type==='input'&&n.props.type==='checkbox').checked).toBe(true);
 });
+
+it('a conflicting handoff retires the reviewed period until a new read',async()=>{
+ const pending={action:'HANDOFF',command:{operationId,manifestId:'reviewed',destination:'Fictional system',reference:'F-1',kind:'REPORTED_SUBMITTED'}};
+ localStorage.setItem(recoveryKey,JSON.stringify(pending));
+ rs.stubGlobal('fetch',async(_url:string,init:RequestInit)=>{
+  const input=JSON.parse(String(init.body));
+  return input.action==='READ'?Response.json(ready()):Response.json({state:'conflict'},{status:409});
+ });
+ await mount();click('Try again');await flush();
+ expect(html()).toContain('Refresh the list and review the current record');
+ expect(html()).not.toContain('PRIVATE Period Worker');expect(localStorage.getItem(recoveryKey)).toBeNull();
+ click('Refresh the list');await flush();expect(html()).toContain('PRIVATE Period Worker');
+});
+
+it('an unconfirmed handoff retries the original operation and body',async()=>{
+ const pending={action:'HANDOFF',command:{operationId,manifestId:'reviewed',destination:'Fictional system',reference:'F-2',kind:'REPORTED_IMPORTED'}};
+ localStorage.setItem(recoveryKey,JSON.stringify(pending));transport();await mount();
+ click('Try again');await flush();click('Try again');await flush();
+ expect(commands).toEqual([pending,pending]);expect(JSON.parse(localStorage.getItem(recoveryKey)!)).toEqual(pending);
+});

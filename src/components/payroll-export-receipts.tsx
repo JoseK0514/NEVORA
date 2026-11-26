@@ -5,6 +5,7 @@ import { copy as exportWording } from './payroll-export-copy';
 import { runsCopy } from './payroll/copy/runs';
 import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 import { wholeSpanishTimes } from '@/lib/i18n/whole-spanish-times';
+import { isPayrollExportDisabled } from "./payroll-export-availability";
 import { copy } from './payroll-export-receipts-copy';
 
 import { useEffect, useState } from "react";
@@ -36,7 +37,7 @@ function save(text: string, type: string, name: string) {
  * lists the person's own recent exports (week, people, when; no names or hours) and downloads a stored file again on
  * request, read fresh under current access. The list clears while the page is hidden and is read again on return.
  */
-export function PayrollExportReceipts({ actorId, refreshKey }: { actorId: string; refreshKey: number }) {
+export function PayrollExportReceipts({ actorId, refreshKey, onExportsDisabled }: { actorId: string; refreshKey: number; onExportsDisabled?: () => void }) {
   const lang = usePortalLang();
   const wording = copy[lang];
   const range = (start: string, end: string) => lang === 'es' ? periodRange(start, end, lang) : englishRange(start, end);
@@ -58,7 +59,7 @@ export function PayrollExportReceipts({ actorId, refreshKey }: { actorId: string
       try {
         const response = await fetch("/api/payroll-export/receipts", { method: "GET", cache: "no-store", credentials: "same-origin", headers: headersFor(actorId), signal: abort.signal });
         if (!active) { release(response); return; }
-        if (!response.ok) { release(response); setList({ state: "unavailable", notAllowed: denialOf(nevoraFailure(response), response.status) === "not_allowed" }); return; }
+        if (!response.ok) { if(response.status===403 && onExportsDisabled && isPayrollExportDisabled(response.status,await response.json().catch(()=>null))){if(active)onExportsDisabled();return;} release(response); setList({ state: "unavailable", notAllowed: denialOf(nevoraFailure(response), response.status) === "not_allowed" }); return; }
         const body = await response.json() as { state?: string; receipts?: Receipt[] };
         setList(body.state === "ready" && Array.isArray(body.receipts) ? { state: "ready", receipts: body.receipts } : { state: "unavailable", notAllowed: false });
       } catch { if (active) setList({ state: "unavailable", notAllowed: false }); }
@@ -66,13 +67,14 @@ export function PayrollExportReceipts({ actorId, refreshKey }: { actorId: string
     void load();
     document.addEventListener("visibilitychange", load);
     return () => { active = false; abort.abort(); document.removeEventListener("visibilitychange", load); };
-  }, [actorId, refreshKey]);
+  }, [actorId, refreshKey, onExportsDisabled]);
 
   async function again(receipt: Receipt, file: "csv" | "record") {
     setBusy(`${receipt.operationId}:${file}`); setMessage(null);
     try {
       const response = await fetch("/api/payroll-export/receipts", { method: "POST", cache: "no-store", credentials: "same-origin", headers: headersFor(actorId), body: JSON.stringify({ operationId: receipt.operationId }) });
       if (!response.ok) {
+        if(response.status===403 && onExportsDisabled && isPayrollExportDisabled(response.status,await response.json().catch(()=>null))){onExportsDisabled();return;}
         release(response);
         const denial = denialOf(nevoraFailure(response), response.status);
         setMessage((denial === "not_allowed" ? wording.youDonTHaveAccessToExportsAskTheOwner : (denial === "signed_out" ? wording.yourSessionEndedSignInAgainToDownloadIt : wording.theFileDidnTDownloadTryAgain)));

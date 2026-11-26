@@ -13,6 +13,7 @@ import type {ExportCommand} from '../lib/payroll-export/service';
 // exercised without a new DOM dependency. Browser/session evidence is separate.
 const host=rs.hoisted(()=>({cursor:0,mounted:false,slots:[] as {value:unknown}[],effects:[] as (()=>void|(()=>void))[]}));
 rs.mock('react',()=>({...rstestOriginal0,
+ useCallback:(callback:unknown)=>callback,
  useState:(initial:unknown)=>{const i=host.cursor++;const slot=host.slots[i]??(host.slots[i]={value:typeof initial==='function'?(initial as ()=>unknown)():initial});return [slot.value,(next:unknown)=>{slot.value=typeof next==='function'?(next as (old:unknown)=>unknown)(slot.value):next;}];},
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
@@ -27,8 +28,8 @@ const card={source,sourceHash:'a'.repeat(32),revision:1,state:'FINALIZED',histor
 const ready=(validForMs:unknown=45000)=>({state:'ready',observedAt:'2026-09-29T12:00:00Z',period,validForMs,cards:[card]});
 const profile={...neutralProfile(),name:'PRIVATE Mapping',employeeMappings:[{employeeId:'PRIVATE-E1',providerEmployeeId:'PRIVATE-PROVIDER'}]};
 const mappings=()=>({state:'ready',profiles:[{id:'33333333-3333-4333-8333-333333333333',revision:1,profile}]});
-let cleanup:void|(()=>void),actorId:string;
-function render(){host.cursor=0;return PayrollExport({initialPeriod:period,actorId});}
+let cleanup:void|(()=>void),actorId:string, disabled=false;
+function render(){host.cursor=0;return PayrollExport({initialPeriod:period,actorId,exportsDisabled:disabled,timeZone:source.timeZone});}
 const html=()=>renderToStaticMarkup(render());
 function nodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object'||!('props'in value))return [];const node=value as ReactElement<Record<string,unknown>>;if(node.type===PayrollExportMapping){const mapping=node as ReactElement<Parameters<typeof PayrollExportMapping>[0]>;return [node,...nodes(PayrollExportMapping(mapping.props))];}return [node,...nodes(node.props.children as ReactNode)];}
 function labelText(value:ReactNode):string{if(typeof value==='string'||typeof value==='number')return String(value);if(Array.isArray(value))return value.map(labelText).join('');if(value&&typeof value==='object'&&'props'in value)return labelText((value as ReactElement<{children?:ReactNode}>).props.children);return '';}
@@ -45,7 +46,7 @@ async function mount(){render();host.mounted=true;cleanup=host.effects[0]();awai
 function stallReadReplacements(){const original=fetch;rs.stubGlobal('fetch',(path:string,init?:RequestInit)=>path==='/api/timecards'||(path==='/api/payroll-export/profiles'&&init?.method!=='POST')?new Promise<Response>(()=>{}):original(path,init));}
 function windowEvent(type:string,target:unknown=window){const event=new Event(type);if(target!==window)Object.defineProperty(event,'target',{value:target});window.dispatchEvent(event);}
 function selectEmployee(){const checkbox=control(n=>n.type==='input'&&n.props.type==='checkbox'&&n.props.checked===false);(checkbox.onChange as (e:unknown)=>void)({target:{checked:true}});}
-beforeEach(()=>{language.current='en';actorId='OWNER';host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
+beforeEach(()=>{language.current='en';actorId='OWNER';disabled=false;host.cursor=0;host.mounted=false;host.slots=[];host.effects=[];rs.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','Date','performance']});rs.stubGlobal('window',new EventTarget());rs.stubGlobal('document',Object.assign(new EventTarget(),{visibilityState:'visible'}));rs.stubGlobal('navigator',{onLine:true});});
 afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
 
 it('explains a fresh duplicate export without retaining old files or offering an uncertain-operation retry',async()=>{
@@ -265,4 +266,42 @@ it('explains a period with no finalized timecards in Spanish', async () => {
   ));
   await mount();
   expect(html()).toContain('Nadie ha finalizado su tarjeta de tiempo para estas fechas.');
+});
+
+it.each(['en','es'] as const)('launch-off in %s retains the selected period and makes no export projection request',async lang=>{
+ language.current=lang;disabled=true;const fetcher=rs.fn();rs.stubGlobal('fetch',fetcher);await mount();
+ expect(html()).toContain(lang==='en'?'Payroll exports are unavailable':'Las exportaciones de nómina no están disponibles');
+ expect(html()).toContain('/app/timecards?start=2026-09-21&amp;end=2026-09-27');
+ expect(fetcher).not.toHaveBeenCalled();expect(html()).not.toContain('id="time-export-options"');
+});
+it.each(['profile','generate'] as const)('a private launch refusal on %s preserves period review',async action=>{
+ reads();await mount();
+ rs.stubGlobal('fetch',async(path:string)=>path==='/api/timecards'?Response.json(ready()):Response.json({state:'unavailable',reason:'PAYROLL_EXPORTS_DISABLED'},{status:403}));
+ if(action==='generate'){selectEmployee();click('Create export');}else windowEvent('pageshow');
+ await flush();expect(html()).toContain('Payroll exports are unavailable');expect(html()).toContain('/app/timecards?start=2026-09-21&amp;end=2026-09-27');
+ expect(html()).not.toContain('Retry same export');expect(html()).not.toContain('PRIVATE');
+});
+it.each(['en','es'] as const)('a period-boundary refusal in %s preserves receipts and identifies the dates and zone',async lang=>{
+ language.current=lang;reads();await mount();
+ rs.stubGlobal('fetch',async()=>Response.json({state:'invalid',reason:'PERIOD_BOUNDARY_MISMATCH'},{status:400}));
+ const create=nodes(render()).find(n=>n.type==='button'&&n.props.className==='c-btn c-btn--full')!;
+ (create.props.onClick as ()=>void)();await flush();
+ expect(html()).toContain(source.timeZone);expect(html()).toContain(lang==='en'?'Previous export receipts':'recibos de exportaciones anteriores');
+ expect(html()).toContain('21');expect(html()).toContain('27');
+ expect(nodes(render()).some(n=>typeof n.type==='function'&&n.type.name==='PayrollExportReceipts')).toBe(true);
+});
+
+it('a generated result checks launch policy before saving the verified CSV',async()=>{
+ generatedReads(45000);await mount();selectEmployee();click('Create export');
+ await rs.waitFor(()=>expect(html()).toContain('Download CSV'),{interval:1});
+ const transport=rs.fn(async()=>Response.json({state:'unavailable',reason:'PAYROLL_EXPORTS_DISABLED'},{status:403}));
+ rs.stubGlobal('fetch',transport);
+ const file=rs.spyOn(URL,'createObjectURL');
+ try{
+  click('Download CSV');await flush();expect(transport).toHaveBeenCalledWith('/api/payroll-export/receipts',expect.objectContaining({method:'POST'}));
+  expect(file).not.toHaveBeenCalled();
+  const visible=nodes(render());
+  expect(visible.some(n=>n.props.title==='Payroll exports are unavailable')).toBe(true);
+  expect(visible.some(n=>n.type==='button'&&controlName(n)==='Download CSV')).toBe(false);
+ }finally{file.mockRestore();}
 });
