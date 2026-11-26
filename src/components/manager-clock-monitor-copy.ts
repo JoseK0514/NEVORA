@@ -93,7 +93,7 @@ export const copy = {
     // src/components/manager-clock-monitor.tsx:43
     checkingRecordedClockInsBreaks: 'Comprobando las inscripciones y descansos registrados',
     // src/components/manager-clock-monitor.tsx:46
-    onlyRecordedPunchesAppearHere: 'Solo aparecen los puñetazos registrados aquí',
+    onlyRecordedPunchesAppearHere: 'Aquí solo aparecen las marcaciones registradas',
     // src/components/manager-clock-monitor.tsx:46
     updated: 'Actualizado ',
     // src/components/manager-clock-monitor.tsx:46

@@ -33,7 +33,7 @@ export const copy = {
     // src/components/clocker-photo/photo-notice.tsx:15
     expiredPhotosAreUnavailableReviewRemoving: 'Las fotos caducadas no están disponibles para su revisión. Eliminar una foto conserva su registro de tiempo',
     // src/components/clocker-photo/photo-notice.tsx:17
-    canContinueWithoutPhotoPunchMissing: 'Puedes continuar sin una foto. Tu puñetazo y la foto faltante se registran por separado',
+    canContinueWithoutPhotoPunchMissing: 'Puedes continuar sin una foto. Tu marcación y la foto que falta se registran por separado',
     // src/components/clocker-photo/photo-notice.tsx:19
     getHelp: 'Obtener ayuda',
     // src/components/clocker-photo/photo-notice.tsx:19

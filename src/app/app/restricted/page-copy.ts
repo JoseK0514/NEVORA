@@ -34,7 +34,7 @@ export const copy = {
     // src/app/app/restricted/page.tsx:8
     pageOwners: 'Esa página es para dueños',
     // src/app/app/restricted/page.tsx:8
-    pageOwnersManagers: 'Esa página es para dueños y administradores',
+    pageOwnersManagers: 'Esa página es para dueños y gerentes',
     // src/app/app/restricted/page.tsx:23
     help: 'Pregúntale a tu dueño si necesitas acceso',
   },

@@ -33,6 +33,6 @@ export const copy = {
     // src/app/app/my-time/page.tsx:60
     hours: "Horas",
     // src/app/app/my-time/page.tsx:33
-    openTimecards: "Abrir Hojas de tiempo",
+    openTimecards: "Abrir Tarjetas de tiempo",
   },
 } as const;

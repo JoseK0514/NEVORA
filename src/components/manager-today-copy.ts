@@ -61,7 +61,7 @@ export const copy = {
     // src/components/manager-today.tsx:77
     forDate: ' del {employeeName}',
     // src/components/manager-today.tsx:89
-    missedPunches: 'Puñetazos perdidos ',
+    missedPunches: 'Marcaciones que faltan ',
     // src/components/manager-today.tsx:90
     publishedShiftsTodayNoClockIn: 'Turnos publicados para hoy sin marcación de entrada. Un turno se considera empezado si han pasado más de {START_GRACE_MINUTES} minutos.',
     // src/components/manager-today.tsx:93

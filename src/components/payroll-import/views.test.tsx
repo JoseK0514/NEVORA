@@ -275,7 +275,7 @@ describe("DEC5: the hold card says Time exports once", () => {
       ["El servidor ya tiene un registro completo de este período.", "Ver los archivos"],
     ]);
     for (const kind of holds) expect(`${hold.line({ kind })} ${hold.action({ kind })}`).not.toContain("Exportar horas");
-    expect(hold.action({ kind: "notFinalized", names: [] })).toBe("Abrir Hojas de tiempo");
+    expect(hold.action({ kind: "notFinalized", names: [] })).toBe("Abrir Tarjetas de tiempo");
     expect(hold.action({ kind: "tooManyPeople" })).toBe("Ir a Nómina");
   });
 });

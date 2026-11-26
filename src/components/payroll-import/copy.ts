@@ -424,7 +424,7 @@ const es: PayrollImportCopy = {
       savedCorrectionTitle: "Corrección guardada", savedCorrectionLine: period => `Hay una nómina corregida para ${period} lista para revisar. No se ha compartido ni pagado nada.`,
       review: "Revisar nómina",
       refusedTitle: "Las cantidades no se guardaron", refusedNothing: "No se guardó nada. Tu trabajo sigue aquí.",
-      fix: { amounts: "Volver a las cantidades", match: "Volver a emparejar", file: "Volver al archivo", included: "Elegir quién está incluido", timecards: "Abrir Hojas de tiempo", settings: "Abrir ajustes de nómina", payroll: "Ir a Nómina" },
+      fix: { amounts: "Volver a las cantidades", match: "Volver a emparejar", file: "Volver al archivo", included: "Elegir quién está incluido", timecards: "Abrir Tarjetas de tiempo", settings: "Abrir ajustes de nómina", payroll: "Ir a Nómina" },
       unknownTitle: "No pudimos confirmar que se guardó",
       unknownLine: "Puede que las cantidades se hayan guardado o no. Verifica antes de hacer otra cosa. Esta página guarda las cantidades exactas que enviaste.",
       noReceipt: "Todavía no hay constancia. Aún puede llegar. Verifica otra vez, o envía las mismas cantidades otra vez: enviarlas de nuevo no puede guardarlas dos veces.",
@@ -445,9 +445,9 @@ const es: PayrollImportCopy = {
           case "RUN_STATE_CONFLICT": return "Esta nómina se aprobó o cambió mientras trabajabas, así que ya no acepta esta importación.";
           case "IMPORT_PERIOD_CONFLICT": return "El período de pago o el día de pago del archivo no es el de esta nómina.";
           case "POPULATION_REVIEW_REQUIRED": return "Primero elige quién está incluido en este período de pago. Eso se hace en Exportar horas.";
-          case "POPULATION_SOURCE_CONFLICT": return "El equipo o las hojas de tiempo cambiaron después de que elegiste quién está incluido. Revisa otra vez quién está incluido.";
-          case "SOURCE_CONFLICT": case "REVIEW_CONFLICT": return "Las hojas de tiempo o el equipo cambiaron mientras esto se guardaba. Revisa la nómina y guarda otra vez.";
-          case "FINALIZED_TIME_REQUIRED": return "Finaliza las hojas de tiempo de las personas incluidas antes de aprobar la nómina.";
+          case "POPULATION_SOURCE_CONFLICT": return "El equipo o las tarjetas de tiempo cambiaron después de que elegiste quién está incluido. Revisa otra vez quién está incluido.";
+          case "SOURCE_CONFLICT": case "REVIEW_CONFLICT": return "Las tarjetas de tiempo o el equipo cambiaron mientras esto se guardaba. Revisa la nómina y guarda otra vez.";
+          case "FINALIZED_TIME_REQUIRED": return "Finaliza las tarjetas de tiempo de las personas incluidas antes de aprobar la nómina.";
           case "SETTINGS_REQUIRED": return "Guarda los ajustes de nómina de la empresa antes de preparar esta nómina.";
           case "NATIVE_AMOUNT_INPUT_FORBIDDEN": return "Esta nómina se calcula en NEVORA con el tiempo registrado, así que no acepta cantidades importadas.";
           case "RUN_UNAVAILABLE": return "Esta nómina no está disponible. Puede que una revisión más reciente la haya reemplazado.";
@@ -483,9 +483,9 @@ const es: PayrollImportCopy = {
       title: (hold): string => {
         switch (hold.kind) {
           case "peopleNotReviewed": return "Primero elige quién está incluido";
-          case "peopleChanged": return "El equipo o las hojas de tiempo cambiaron";
+          case "peopleChanged": return "El equipo o las tarjetas de tiempo cambiaron";
           case "tooManyPeople": return "Este equipo pasa del límite de exportación";
-          case "notFinalized": return `Primero finaliza ${count(hold.names.length, "hoja de tiempo", "hojas de tiempo")}`;
+          case "notFinalized": return `Primero finaliza ${count(hold.names.length, "tarjeta de tiempo", "tarjetas de tiempo")}`;
           case "alreadyComplete": return "Este período ya está completo";
         }
       },
@@ -494,11 +494,11 @@ const es: PayrollImportCopy = {
           case "peopleNotReviewed": return "Repasa a todas las personas del equipo para este período y vuelve aquí.";
           case "peopleChanged": return "La exportación usa exactamente la lista de quién está incluido.";
           case "tooManyPeople": return "Una exportación de tiempo pagado cubre hasta 300 personas.";
-          case "notFinalized": return `Siguen abiertas: ${list(hold.names, "y", n => `${n} más`)}. El tiempo pagado se exporta solo de hojas de tiempo finalizadas.`;
+          case "notFinalized": return `Siguen abiertas: ${list(hold.names, "y", n => `${n} más`)}. El tiempo pagado se exporta solo de tarjetas de tiempo finalizadas.`;
           case "alreadyComplete": return "El servidor ya tiene un registro completo de este período.";
         }
       },
-      action: (hold): string => hold.kind === "notFinalized" ? "Abrir Hojas de tiempo" : hold.kind === "tooManyPeople" ? "Ir a Nómina" : hold.kind === "alreadyComplete" ? "Ver los archivos" : "Revisar quién está incluido",
+      action: (hold): string => hold.kind === "notFinalized" ? "Abrir Tarjetas de tiempo" : hold.kind === "tooManyPeople" ? "Ir a Nómina" : hold.kind === "alreadyComplete" ? "Ver los archivos" : "Revisar quién está incluido",
     },
     breaks: {
       heading: "Decide cada descanso registrado",
@@ -538,7 +538,7 @@ const es: PayrollImportCopy = {
       checkBatch: "Verificar este lote", checkBatchFor: index => `Verificar este lote, lote ${index}`,
       download: "Descargar CSV", downloadFor: index => `Descargar CSV, lote ${index}`,
       unknownLine: "La respuesta no llegó o no se pudo verificar. Verificar envía exactamente el mismo archivo otra vez, así que no puede guardarse dos veces. Un archivo cambiado nunca se envía con el mismo recibo.",
-      conflictLine: "Las hojas de tiempo, las personas o el formato del archivo cambiaron después de hacer este plan, y el servidor no tiene constancia de este lote. Este plan se detiene aquí. Empieza una exportación nueva desde Exportar horas.",
+      conflictLine: "Las tarjetas de tiempo, las personas o el formato del archivo cambiaron después de hacer este plan, y el servidor no tiene constancia de este lote. Este plan se detiene aquí. Empieza una exportación nueva desde Exportar horas.",
       duplicateLine: "Estas horas ya se exportaron con otro recibo, que no puede sustituir a este lote. Este plan se detiene aquí. Abre Exportar horas para ver los archivos que se enviaron.",
       refusal: {
         LEGACY_MAPPING_REVIEW_REQUIRED: "El formato de archivo guardado necesita una revisión en Exportar horas antes de usarse.",
@@ -546,7 +546,7 @@ const es: PayrollImportCopy = {
         PAID_TIME_REVIEW_REQUIRED: "Hacen falta las decisiones de los descansos para las horas pagadas. Empieza una exportación nueva.",
         INEXACT_HOURS: "Algunas horas no se pueden escribir exactas con los decimales del archivo, y NEVORA no redondea por ti. Elige una regla de redondeo en el formato de archivo en Exportar horas.",
         PROVIDER_EMPLOYEE_MAPPING_REQUIRED: "Alguien de este lote no tiene ID para tu sistema de nómina. Añádelo en el formato de archivo en Exportar horas.",
-        FINALIZED_TIMECARDS_REQUIRED: "Una hoja de tiempo de este lote ya no está finalizada. Finalízala y empieza una exportación nueva.",
+        FINALIZED_TIMECARDS_REQUIRED: "Una tarjeta de tiempo de este lote ya no está finalizada. Finalízala y empieza una exportación nueva.",
         INVALID: "El servidor no aceptó este lote. Empieza una exportación nueva desde Exportar horas.",
       },
       next: "Ir a terminar", allSaved: "Todos los lotes están guardados.",
@@ -568,7 +568,7 @@ const es: PayrollImportCopy = {
       scope: "Esto es un registro de horas. No demuestra que un archivo se cargó en tu sistema de nómina, y NEVORA no le paga a nadie.",
       openExports: "Abrir Exportar horas",
     },
-    changed: { title: "Las hojas de tiempo o las personas cambiaron", line: dropped => dropped ? `Tus decisiones se conservan, menos ${count(dropped, "descanso que ya no está", "descansos que ya no están")}.` : "Tus decisiones de descansos se conservan.", dismiss: "Entendido" },
+    changed: { title: "Las tarjetas de tiempo o las personas cambiaron", line: dropped => dropped ? `Tus decisiones se conservan, menos ${count(dropped, "descanso que ya no está", "descansos que ya no están")}.` : "Tus decisiones de descansos se conservan.", dismiss: "Entendido" },
     entry: { title: "Exportar tiempo pagado", line: "Decide cada descanso registrado y envía las horas por lotes." },
   },
 };
