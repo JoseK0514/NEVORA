@@ -735,3 +735,49 @@
     max-inline-size: 100%;
   }
 }
+
+/* Let the week and its aggregate status use another line when their text needs it. */
+@layer nv-b {
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) .c-publish__week {
+    flex-wrap: wrap;
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) .c-publish__week > .c-pill {
+    max-inline-size: 100%;
+    white-space: normal !important;
+    block-size: auto !important;
+    min-block-size: max(var(--b-chip-h), 1.375rem);
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row {
+    flex-wrap: wrap;
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row__main {
+    min-inline-size: min-content;
+    max-inline-size: 100%;
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row__title {
+    white-space: normal !important;
+    hyphens: none !important;
+    overflow-wrap: break-word;
+  }
+}
+
+/* The Manager's per-location form stacks its own actions at enlarged text. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) .c-publish__go > form:has(> input[name="confirmWarnings"]) .c-publish__acts > button {
+        margin-block-start: var(--b-space-4) !important;
+      }
+    }
+  }
+}
+
+@layer nv-b {
+  @media (max-width: 359px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row__main {
+        flex-basis: max-content !important;
+      }
+    }
+  }
+}
