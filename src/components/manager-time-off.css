@@ -83,3 +83,17 @@
     }
   }
 }
+
+/* Keep the approval, refusal and notification note within the card at enlarged phone text. */
+@layer nv-b {
+  @media (max-width: 359px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-request:lang(es) .c-request__foot {
+        min-inline-size: 0;
+      }
+      :is(#c-root, html) .app-shell[data-nv-b] .c-request:lang(es) .c-request__decide .c-btns {
+        flex-wrap: wrap;
+      }
+    }
+  }
+}
