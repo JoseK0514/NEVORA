@@ -44,10 +44,17 @@
 .actions { display:flex; flex-direction:column; gap:var(--b-space-12); margin-top:var(--b-space-20); }
 .action,.secondary { display:inline-flex; box-sizing:border-box; align-items:center; justify-content:center; width:100%; min-height:52px; margin:0; padding:var(--b-space-12) var(--b-inset-wide); border:0; border-radius:var(--b-radius-pill); font:inherit; font-size:1rem; line-height:1.3; font-weight:700; text-align:center; text-decoration:none; text-wrap:balance; cursor:pointer; transition:transform var(--b-dur-press) var(--b-ease-out); }
 .action { background:var(--b-band-solid); color:var(--b-on-band); box-shadow:var(--b-elev-glow); }
-.action:hover { background:var(--b-teal); }
+
 .secondary { background:#FFFFFF; color:var(--b-teal); box-shadow:inset 0 0 0 1px var(--b-teal); }
-.secondary:hover { background:var(--b-teal-50); }
-.action:active,.secondary:active { transform:scale(var(--b-press-scale)); }
+@media (hover: hover) and (pointer: fine) {
+  .action:hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) { background:var(--b-teal-press); }
+  .secondary:hover:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) { background:var(--b-teal-50); }
+  .lang:enabled:hover, .seg button[aria-pressed="false"]:enabled:hover {
+    text-decoration: underline;
+    text-underline-offset: var(--b-space-2);
+  }
+}
+:is(.action,.secondary):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) { transform:scale(var(--b-press-scale)); }
 /* Text actions under the card (Sign out), as the links under the sign-in card. */
 .below { display:flex; flex-wrap:wrap; justify-content:center; gap:var(--b-space-4) var(--b-space-24); margin-top:14px; }
 .quiet { display:inline-flex; align-items:center; justify-content:center; min-height:var(--b-target); padding:0 var(--b-space-12); border:0; border-radius:var(--b-radius-pill); background:none; color:var(--b-teal); font:inherit; font-size:var(--b-fs-body); line-height:1.3; font-weight:600; text-decoration:none; cursor:pointer; }
@@ -138,7 +145,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .action,.secondary { transition:none; }
-  .action:active,.secondary:active { transform:none; }
+  :is(.action,.secondary):active:not(:disabled, [aria-disabled="true"], [aria-busy="true"]) { transform:none; }
 }
 
 /* Forced colours (Z3, A4-05, Nov 23, 2026): the main and second actions and the language switch are drawn by their fill

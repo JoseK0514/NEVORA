@@ -177,3 +177,15 @@
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-tc-desk .c-tc-tabs button { transition: none; }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell[data-nv-b] .c-tc-sheet__more > summary:hover { background-color: var(--b-hover); }
+}
+.app-shell[data-nv-b] .c-tc-sheet__more > summary:active { background-color: var(--b-btn-surface-press); }
+
+/* The recorded-punch label and chevron share a row until the entry needs another line. */
+.app-shell[data-nv-b] .c-tc-sheet__more details > summary {
+  flex-wrap: wrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

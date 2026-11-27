@@ -36,6 +36,17 @@
 :is(#q-root, html) main.q-doc .pl-sec__body li + li { margin-top: 6px; }
 :is(#q-root, html) main.q-doc .pl-sec__body strong { font-weight: 600; color: var(--b-ink); }
 :is(#q-root, html) main.q-doc .pl-sec__body a { color: var(--b-teal); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+@media (hover: hover) and (pointer: fine) {
+  :is(#q-root, html) main.q-doc .pl-sec__body a[href]:not(.pl-start__btn):hover {
+    color: var(--b-teal-press);
+    text-decoration-thickness: var(--b-space-2);
+  }
+}
+:is(#q-root, html) main.q-doc .pl-sec__body a[href]:not(.pl-start__btn):active {
+  color: var(--b-teal-press);
+  text-decoration-thickness: var(--b-space-2);
+}
+
 :is(#q-root, html) main.q-doc .legal-unresolved { padding: 0 4px; border-radius: 4px; background: var(--b-amber-50); color: var(--b-amber); font-size: .875em; overflow-wrap: anywhere; }
 
 /* Account deletion's action: an outlined teal pill under the how-to, 48px, never the brightest thing on the page. */
@@ -88,3 +99,44 @@
   /* PB-033: 12px between a group heading and its group, whatever the group is (a list, the address). */
   :is(#q-root, html) main.q-doc .pl-grp + :is(.q-list, .q-doc__address) { margin-top: 0 !important; }
 }
+
+/* Keep each open Support answer visually attached to its question. The inset
+ * highlight sits behind the native disclosure without moving its hit target. */
+#support-common + .q-list .q-details {
+  position: relative;
+  isolation: isolate;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 var(--b-space-4);
+    z-index: -1;
+    pointer-events: none;
+    border-radius: var(--b-radius-field);
+    background: var(--b-teal-50);
+    opacity: 0;
+  }
+
+  /* A pointer click lands on the native summary. In WebKit a hit on its nested
+   * text can otherwise leave Tab parked on this row instead of entering the answer. */
+  & > summary > :is(.q-rt, .q-chev) { pointer-events: none; }
+
+  &[open]::before { opacity: 1; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &::before { transition: opacity var(--b-dur-hover) var(--b-ease-out); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & > summary .q-chev { transition: none !important; }
+  }
+}
+
+/* Keep the switch’s expanded hit area anchored to its pill on desktop;
+ * the adjacent on-band wordmark is a separate link back to sign in. */
+.q-doc__top .q-auth__lang { position: relative; }
+.q-doc__top a.q-auth__wordmark[href] { border-radius: var(--b-radius-btn-sm); }
+@media (hover: hover) and (pointer: fine) {
+  .q-doc__top a.q-auth__wordmark[href]:hover { background-color: var(--b-glass); }
+}
+.q-doc__top a.q-auth__wordmark[href]:active { background-color: var(--b-glass-edge); }

@@ -44,6 +44,17 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
           await page.setViewportSize({width,height:900});
           expect(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),engine+' '+path+' '+width).toBe(true);
         }
+        if (path === '/support') {
+          const question = page.locator('ul[aria-labelledby="support-common"] details').first();
+          await question.locator('summary').click();
+          await page.keyboard.press('Tab');
+          expect(await question.locator('a').first().evaluate((link: Element) => link === document.activeElement)).toBe(true);
+          // The language pill's extended touch target must leave the wordmark clickable.
+          await page.locator('.q-doc__top a[href="/login"]').click();
+          await page.waitForURL(origin + '/login');
+          await page.getByRole('heading', { level: 1 }).first().waitFor();
+          await page.getByRole('button', { name: 'Sign in', exact: true }).waitFor();
+        }
         checks.push(engine+': public '+path+' at 320/390/768/1440');
       }
       await page.setViewportSize({width:390,height:900});

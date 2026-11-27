@@ -16,3 +16,11 @@
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-teamweek :is(.c-week__arrow, .c-card__aside .c-link) { transition: none; }
 }
+
+@layer nv-b {
+  @media (hover: hover) and (pointer: fine) {
+    html body .app-shell[data-nv-b] .c-page.c-teamweek > nav.c-week a.c-week__arrow:hover {
+      background-color: var(--b-press-tint-own) !important;
+    }
+  }
+}

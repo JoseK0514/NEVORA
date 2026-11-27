@@ -173,7 +173,7 @@ function AmountCell({ copy, lang, row, field, fileRow, editing, onEdit, onCorrec
     </span> : locked ? <span className="pim-amt__v" title={r.locked[locked]}>{money(row.amounts[field], lang)}<span className="c-sr"> {r.locked[locked]}</span></span>
       : <button ref={button} type="button" className="pim-amt__btn" id={id} onClick={open} aria-label={`${r.edit(label, row.name)}: ${money(row.amounts[field], lang)}`}>{money(row.amounts[field], lang)}</button>}
     {changed && !editing ? <span className="pim-amt__was"><span>{r.was(money(row.original[field], lang))}</span>
-      <button type="button" className="pim-textbtn" onClick={() => onCorrect(fileRow, field, null)} aria-label={r.undoFor(label, row.name)}>{r.undo}</button></span> : null}
+      <button type="button" className="pim-textbtn" onClick={() => { onCorrect(fileRow, field, null); button.current?.focus(); }} aria-label={r.undoFor(label, row.name)}>{r.undo}</button></span> : null}
   </td>;
 }
 

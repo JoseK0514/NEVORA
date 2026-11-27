@@ -80,8 +80,8 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-starter { display: flex; flex-wrap: wrap; align-items: center; gap: var(--b-space-8) var(--b-space-12); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--b-space-8); min-height: 132px; padding: var(--b-space-20) var(--b-space-16);
   border: 1.5px dashed var(--b-field-edge); border-radius: var(--b-radius-field); background: #FFFFFF; text-align: center; }
-:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-drop[data-over] { border-color: var(--b-teal); border-style: solid; background: var(--b-teal-50); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-drop[data-loaded] { border-style: solid; border-color: var(--b-line); background: var(--b-hover); }
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-drop[data-over] { border-color: var(--b-teal); border-style: solid; background: var(--b-teal-50); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-drop[data-invalid] { border-color: var(--b-red); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-drop__input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-drop__hint { margin: 0; font-size: var(--b-fs-body); line-height: var(--b-lh-body); font-weight: 600; color: var(--b-ink); }
@@ -207,10 +207,13 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-total[data-kind="diff"] .pim-amt[data-changed] .pim-amt__v { margin: -2px -6px; padding: 2px 6px; border-radius: 6px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-recon { margin: 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-green); font-weight: 600; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-recon[data-differs] { color: var(--b-amber); }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
+  :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-person__sum:hover { background-color: var(--b-hover); }
+  :is(#c-root, html) body .app-shell[data-nv-b] .pim button.pim-textbtn:enabled:hover { text-decoration: underline; }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-amt__btn:hover { background: var(--b-hover); }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-pick__clear:hover { background: var(--b-teal-50); }
 }
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-person__sum:active { background-color: var(--b-btn-surface-press); }
 @media (pointer: coarse) { :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-amt__btn { min-height: 44px; } }
 /* Under 1024px each person is a stacked card: the name, then each amount on its own line with its label. The header row
  * stays for screen readers; the cells keep their table roles. */

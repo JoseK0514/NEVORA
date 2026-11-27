@@ -256,3 +256,13 @@
     white-space: normal !important;
   }
 }
+
+/* Mouse feedback for the native date and time pickers is painted on their visible wrapper. */
+@layer nv-b {
+  @media (hover: hover) and (pointer: fine) {
+    .app-shell[data-nv-b] .tof-form:not([aria-busy="true"]) .tof-pick:not(:focus-within):has(> input:enabled:hover:not([readonly], :user-invalid, [aria-invalid="true"])) {
+      outline: 1px solid var(--b-teal) !important;
+      outline-offset: -1px !important;
+    }
+  }
+}

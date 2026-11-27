@@ -280,6 +280,14 @@
 .lang svg, .langSolid svg { flex: none; width: 1.125rem; height: 1.125rem; }
 .langSolid.langSolid:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; box-shadow: 0 0 0 6px var(--b-focus); }
 
+/* A pointer can find the language switch and the editable fields before activating them. */
+@media (hover: hover) and (pointer: fine) {
+  .lang:hover, .langSolid:hover { background-color: var(--b-teal-50); }
+  .field textarea:enabled:hover:not(:focus, [readonly], [aria-invalid=true]) { box-shadow: inset 0 0 0 1px var(--b-field-edge); }
+  .idEntry input:enabled:hover:not(:focus, [readonly], [aria-invalid=true]) { box-shadow: inset 0 0 0 2px var(--b-field-edge); }
+}
+.langSolid:active { background-color: var(--b-teal-50-press); }
+
 /* ---------- setup ---------- */
 .field { display: grid; gap: var(--b-space-8); margin-top: var(--b-space-20); font-size: .875rem; font-weight: 600; color: var(--ck-ink2); text-align: left; }
 .field textarea { width: 100%; min-height: 96px; resize: none; padding: 14px var(--b-space-16); border: 0; border-radius: var(--b-radius-field); background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--ck-field);

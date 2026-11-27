@@ -43,8 +43,8 @@
      * its own size; a day that is today or later and still needs cover leads with one amber dot. No tinted or dashed pill. */
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip[data-over] { color: var(--b-ink2) !important; }
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip:not([data-over])::before { content: "" !important; flex: none !important; width: 6px !important; height: 6px !important; border-radius: 50% !important; background: var(--b-amber-solid) !important; }
+    @media (hover: hover) and (pointer: fine) { :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip:hover { background: var(--b-btn-surface-hover) !important; } }
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip:active { background: var(--b-btn-surface-press) !important; }
-    @media (hover: hover) { :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip:hover { background: var(--b-btn-surface-hover) !important; } }
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip > svg { flex: none !important; }
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip[aria-expanded="true"] > svg { rotate: 180deg !important; }
     :is(#c-root, html) body .app-shell[data-nv-b] .c-sched .cm-grid .sb-openchip[aria-expanded="true"] { background: var(--b-btn-surface-press) !important; }

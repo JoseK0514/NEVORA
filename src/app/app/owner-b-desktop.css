@@ -84,6 +84,12 @@
     html body .app-shell[data-nv-b] .c-page > header.c-title :is(.c-title__actions, .c-title__subrow) :is(.c-btn--secondary, .c-btn--neutral, .c-icon-btn, .c-select-btn, [class*="trigger"]) :is(svg, span) { color: var(--b-on-band) !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title :is(a, .c-link):not(.c-btn):not([class*="trigger"]) { color: var(--b-on-band) !important; }
 
+    @media (hover: hover) and (pointer: fine) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title :is(.c-title__actions, .c-title__subrow) :is(.c-btn, a.c-btn, button.c-btn):hover:not(:active, :focus-visible, :disabled, [aria-disabled="true"], [aria-busy="true"], .c-btn--secondary, .c-btn--neutral, .c-btn--danger) {
+        background-color: var(--b-teal-50) !important;
+      }
+    }
+
     /* Strips that belong to the band (section tabs, search, week stepper, segmented tabs): glass on teal. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd):has(~ :is(nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range):not(:is(.c-page > header.c-title, .q-page > .q-hd) ~ :not(.c-phone-sub, .c-pay__feedback:empty, :empty, .c-sr, .q-sr, [hidden], .b-screen, .c-nav--phone, dialog, script, style, template, .q-nav) ~ *)) { border-image-outset: 240px 100vw 96px 100vw !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range):not(:is(.c-page > header.c-title, .q-page > .q-hd) ~ :not(.c-phone-sub, .c-pay__feedback:empty, :empty, .c-sr, .q-sr, [hidden], .b-screen, .c-nav--phone, dialog, script, style, template, .q-nav) ~ *) { margin-top: var(--b-space-20) !important; position: relative !important; z-index: 1 !important; }

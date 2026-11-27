@@ -247,7 +247,6 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-btn:not(.q-btn--quiet, .q-btn--link) { height: auto !important; min-height: 52px !important; border-radius: var(--b-radius-pill) !important; font-weight: 700 !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-btn:not(.q-btn--sec, .q-btn--quiet, .q-btn--link) { background: var(--b-band-solid) !important; color: var(--b-on-band) !important; border: 0 !important; box-shadow: var(--b-elev-glow) !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-btn.q-btn--sec { background: #FFFFFF !important; color: var(--b-teal) !important; border: 0 !important; box-shadow: inset 0 0 0 1px var(--b-teal) !important; }
-:is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-btn.q-btn--sec:hover { background: var(--b-teal-50) !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey .q-btn.q-btn--sec { background: var(--b-quiet) !important; color: var(--b-ink) !important; box-shadow: none !important; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth :not(.ma-actions) > .q-btn + .q-btn { margin-top: var(--b-space-12) !important; }
 /* Text links and quiet actions: teal 15px/600, at least 44px tall (NV-008 here, NV-194, NV-318). */
@@ -560,7 +559,6 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__or::before,
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__or::after { content: ""; flex: 1; height: 1px; background: var(--b-line); }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey .q-btn.q-btn--sec:not(#ab-none) { width: 100% !important; height: auto !important; min-height: 48px !important; margin: var(--b-space-12) 0 0 !important; padding-block: 6px; gap: var(--b-space-8); background: #FFFFFF !important; color: var(--b-teal) !important; box-shadow: inset 0 0 0 1px var(--b-teal) !important; }
-@media (hover: hover) { :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey .q-btn.q-btn--sec:not(#ab-none):hover { background: var(--b-teal-50) !important; } }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__label { text-align: center; text-wrap: balance; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__label > svg { display: inline-block; margin-right: var(--b-space-8); vertical-align: -4px; color: currentColor; }
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-passkey__note:has(> .q-passkey__icon) { grid-template-columns: 20px minmax(0, 1fr); column-gap: 10px; }
@@ -971,4 +969,47 @@
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(#ab-rem):not(#ab-rem2):not(#ab-rem3):not(#ab-rem4):not(#ab-rem5):not(#ab-rem6):not(#ab-rem7):not(#ab-rem8) :is(.q-auth__hd > p, .q-hd > .ar-ws > p) { height: auto !important; min-height: 0 !important; padding-top: 7px !important; padding-bottom: 7px !important; line-height: 1.25rem !important; }
 @media (min-width: 1024px) {
   :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth:not(.q-doc):not(#ab-rem):not(#ab-rem2):not(#ab-rem3):not(#ab-rem4):not(#ab-rem5):not(#ab-rem6):not(#ab-rem7):not(#ab-rem8) .q-auth__hd > p { padding-top: 6px !important; padding-bottom: 6px !important; }
+}
+
+
+/* Public workflows share these Quiet controls. Eligible fields keep their
+ * existing error and focus treatments; inactive actions keep their state. */
+@layer nv-b {
+  /* Press feedback remains visible when touch or reduced motion removes the lift. */
+  main.q-auth :is(button:enabled, a[href]).q-btn:active:not(.q-btn--off, [aria-disabled="true"], [aria-busy="true"]) {
+    background-image: linear-gradient(var(--b-press-tint-own), var(--b-press-tint-own)) !important;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    main.q-auth {
+      & :is(input, textarea, select).q-in:enabled:hover:not(:focus, [aria-invalid="true"], [readonly]) {
+        box-shadow: inset 0 0 0 1px var(--b-field-edge) !important;
+      }
+      & .q-in__eye:enabled:hover:not([aria-disabled="true"], [aria-busy="true"]) {
+        border-radius: var(--b-radius-btn);
+        background-color: var(--b-teal-50) !important;
+        color: var(--b-teal) !important;
+      }
+      & :is(button:enabled, a[href]).q-btn:hover:not(.q-btn--danger, .q-btn--off, .q-btn--link, .q-btn--quiet, .q-btn--sec, [aria-disabled="true"], [aria-busy="true"]) {
+        background-color: var(--b-teal-press) !important;
+      }
+      & :is(button:enabled, a[href]):is(.q-btn--sec, .pl-sec__btn, .pl-all__btn):hover:not([aria-disabled="true"], [aria-busy="true"]),
+      & :is(a.q-row[href], .q-details > summary):hover {
+        background-color: var(--b-teal-50) !important;
+      }
+      & :is(.q-auth__lang:enabled, .q-auth__back[href], .ar-navbtn:enabled, .ma-details > summary, .q-auth__links a[href], .ma-text[href], button.ma-text:enabled, .ma-language:enabled, .ma-forgot[href], .ma-back[href], .ma-footer-help[href]):hover,
+      & .ma-choice[href]:hover b {
+        text-decoration: underline !important;
+        text-underline-offset: var(--b-space-2);
+      }
+    }
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  main.q-auth .q-in__eye {
+    transition: background-color var(--b-dur-hover) var(--b-ease-out), color var(--b-dur-hover) var(--b-ease-out);
+  }
+  main.q-auth .q-btn:not(.q-btn--danger, .q-btn--off) {
+    transition: background-color var(--b-dur-hover) var(--b-ease-out), transform var(--b-dur-press) var(--b-ease-out);
+  }
 }

@@ -324,3 +324,8 @@
   :is(#c-root, html):lang(es) .oa .oa-acts.oa-acts--att, :is(#c-root, html):lang(es) .oa .oa-acts.oa-acts--att.oa-acts--three { grid-template-columns: minmax(0, 1fr); }
   :is(#c-root, html):lang(es) .oa .oa-acts.oa-acts--att.oa-acts--three > :last-child { grid-column: auto; }
 }
+
+:is(#c-root, html) .oa .oa-fold > summary:active,
+:is(#c-root, html) .oa :is(.oa-headbtn, .oa-addrow):enabled:not([aria-disabled="true"], [aria-busy="true"]):active {
+  background-color: var(--b-btn-surface-press);
+}

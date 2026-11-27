@@ -19,7 +19,7 @@
  #mobile-access-page.q-auth .ma-desktop{display:none}
  #mobile-access-page.q-auth .q-auth__col{width:100%;max-width:none;padding:0 var(--ma-inset);flex:1;min-width:0}
  #mobile-access-page.q-auth .ma-header{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:76px;padding:16px 0 8px}
- #mobile-access-page.q-auth .ma-brand{display:flex;align-items:center;min-height:44px;min-width:104px;color:#0a1e44}
+ #mobile-access-page.q-auth .ma-brand{display:flex;align-items:center;min-height:44px;min-width:104px;border-radius:var(--b-radius-btn-sm);color:#0a1e44}
  #mobile-access-page.q-auth .ma-brand .brand-wordmark{width:88px;height:auto}
  #mobile-access-page.q-auth .ma-language{min-height:44px;border:0;background:transparent;color:var(--ma-teal);font:inherit;font-size:.875rem;font-weight:620;padding:10px 0 10px 12px}
  #mobile-access-page.q-auth .ma-back{display:inline-flex;align-items:center;gap:8px;min-height:44px;margin:16px 0 16px -8px;padding:8px;color:var(--ma-teal);font-size:.875rem;font-weight:620;text-decoration:none;border-radius:8px}
@@ -40,7 +40,6 @@
  #mobile-access-page.q-auth :is(input,textarea):focus{outline:2px solid var(--ma-focus);outline-offset:2px;border-color:var(--ma-teal);box-shadow:none}
  #mobile-access-page.q-auth .q-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:auto;min-height:48px;margin:24px 0 0;padding:12px 18px;border:1px solid transparent;border-radius:12px;background:var(--ma-teal);color:#fff;font:inherit;font-weight:620;font-size:1rem;line-height:1.4;text-align:center;white-space:normal;letter-spacing:-.01em;text-decoration:none;overflow-wrap:anywhere}
  #mobile-access-page.q-auth :is(.q-auth__form,.q-passkey) .q-btn{width:100%;margin-left:0;margin-right:0}
- #mobile-access-page.q-auth .q-btn:hover{background:var(--ma-press)}
  #mobile-access-page.q-auth .q-btn:active:not(:disabled){transform:translateY(1px)}
  #mobile-access-page.q-auth .q-btn:disabled,#mobile-access-page.q-auth .q-btn[aria-disabled=true]{opacity:.65;cursor:wait}
  #mobile-access-page.q-auth .q-btn--sec,#mobile-access-page.q-auth .ma-secondary{background:#fff;color:var(--ma-teal)!important;border-color:var(--ma-border)}
@@ -102,7 +101,6 @@
 }
 
 /* Access v1 refinements (Jose approved October 27, 2026; mockups in docs/handoffs/2026-10-27-access-refinements.md). */
-#mobile-access-page.q-auth .q-btn.q-btn--sec:hover{background:var(--ma-wash,#eaf4f1)!important;border-color:var(--ma-teal,#0b6e69)!important}
 #mobile-access-page.q-auth .ma-text + .ma-text{margin-left:24px}
 #mobile-access-page.q-auth .q-in[aria-invalid="true"]{border-color:#b42318!important;box-shadow:inset 0 0 0 1px #b42318}
 #mobile-access-page.q-auth .q-auth__alert h2{font-size:0.9375rem!important;line-height:1.25rem!important;font-weight:620!important;margin:0 0 4px!important;color:#8f1c13;letter-spacing:0}
@@ -180,3 +178,10 @@
 @media (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
  #mobile-access-page.q-auth .ma-welcome-art{display:none}
 }
+
+/* The signed-out header wordmark links to Welcome. The existing on-band
+ * glass tint gives it a visible pointer and touch response without motion. */
+@media (hover: hover) and (pointer: fine) {
+  #mobile-access-page .ma-brand[href]:hover { background-color: var(--b-glass); }
+}
+#mobile-access-page .ma-brand[href]:active { background-color: var(--b-glass-edge); }

@@ -25,6 +25,14 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     // Each workflow opens in an authenticated tab. Existing navigation suites cover route transitions; no page error is filtered.
     const visit=async(path:string)=>{if(page.url()!=='about:blank'){page=await context.newPage();observe(page);}await page.goto(app.url+path,{waitUntil:'domcontentloaded'});};
     await visit('/login');await page.getByLabel('Employee ID',{exact:true}).fill(fixture.ids.owner);await page.getByLabel('Password',{exact:true}).fill(fixture.password);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');
+    await visit('/app/help');
+    const helpQuestions = page.locator('details.c-help__q').filter({has: page.locator('a[href]')});
+    expect(await helpQuestions.count()).toBeGreaterThan(0);
+    for (const question of await helpQuestions.all()) {
+      await question.locator('summary').click();
+      await page.keyboard.press('Tab');
+      expect(await question.locator('a[href]').first().evaluate((link: HTMLElement) => link === document.activeElement)).toBe(true);
+    }
     const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
     const roster=await q<{id:string}>('SELECT id FROM employees ORDER BY id');
     const csv='employeeId,gross,employeeDeductions,employerContributions,net\r\n'+roster.map(p=>p.id+','+(p.id===fixture.ids.a?'1000,123.40,70,876.60':'0,0,0,0')).join('\r\n')+'\r\n';
@@ -32,6 +40,20 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const fileChooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'Choose a file',exact:true}).click();await (await fileChooser).setFiles({name:'fictional-payroll.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
     await page.getByLabel('Payroll system',{exact:true}).fill('Fictional accountant');await page.getByLabel('Report or reference',{exact:true}).fill('JOINED-'+engine);
     await page.getByRole('button',{name:'Match people',exact:true}).click();await page.getByRole('button',{name:'Review amounts',exact:true}).click();
+    const amount = page.locator('button.pim-amt__btn').first();
+    const initialAmount = await amount.innerText();
+    await amount.focus();
+    await page.keyboard.press('Enter');
+    const amountInput = page.locator('input.pim-amt__in');
+    await amountInput.fill('12.34');
+    await amountInput.press('Enter');
+    expect(await amount.evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
+    const undo = page.getByRole('button', { name: /undo/i });
+    await undo.focus();
+    await page.keyboard.press('Enter');
+    await undo.waitFor({ state: 'hidden' });
+    expect(await amount.innerText()).toBe(initialAmount);
+    expect(await amount.evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
     await page.getByRole('button',{name:'Check and save',exact:true}).click();
     const imported=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST');
     await page.getByRole('button',{name:'Save amounts',exact:true}).click();const saved=await imported;expect(saved.status(),await saved.text()).toBe(200);

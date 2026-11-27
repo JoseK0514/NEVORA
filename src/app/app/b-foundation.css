@@ -1135,3 +1135,68 @@ html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: 
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.mb-dot, .b-dot, .eb-unread, .b-week__d > i.has, .b-week__d > i.gap, .b-week__legend > i):not(#fc1):not(#fc2):not(#fc3):not(#fc4):not(#fc5):not(#fc6):not(#fc7):not(#fc8) { forced-color-adjust: none !important; background: CanvasText !important; }
   }
 }
+
+/* Fine-pointer feedback for controls that previously only acknowledged a press.
+ * The owned focus rings and pressed/selected treatments take precedence. */
+@layer nv-b {
+  @media (hover: hover) and (pointer: fine) {
+    .app-shell[data-nv-b] {
+      /* Draw on the field's existing edge. A read-only value, a validation
+       * error and the focus ring each keep their original appearance. */
+      & :is(input, select, textarea):is(.c-in, .q-in, .eb-input):enabled:hover:not(:focus, :user-invalid, [readonly], [aria-invalid="true"], [aria-disabled="true"], [aria-busy="true"]) {
+        outline: 1px solid var(--b-teal) !important;
+        outline-offset: -1px !important;
+      }
+
+      /* The icon and input share one field on the glass Team and Messages bands. */
+      & :is(.b-search, .eb-select, .c-team-search__field):has(:is(input, select):enabled:hover:not([readonly], :user-invalid, [aria-invalid="true"], [aria-disabled="true"], [aria-busy="true"])):not(:focus-within) {
+        outline: 1px solid currentColor !important;
+        outline-offset: -1px !important;
+      }
+
+      & :is(a[href], button):is(.b-card__a, .b-callout__a, .c-link, .eb-id__link, .eb-avail-req, .q-nav__r):hover:not(:active, :disabled, [aria-disabled="true"], [aria-busy="true"]) {
+        text-decoration-line: underline !important;
+        text-underline-offset: var(--b-space-2);
+      }
+
+      /* These controls appear on both glass and white. Their text colour
+       * supplies the cue without changing the fill of a selected segment. */
+      & :is(.b-seg, .c-seg, .q-seg, .b-filters, .eb-lseg, .c-tc-tabs, .c-pay-tabs) > :is(a[href], button):hover:not(:active, :focus-visible, :disabled, [aria-disabled="true"], [aria-busy="true"], [aria-pressed="true"], [aria-selected="true"], [aria-current]:not([aria-current="false"]), .is-on, .active) {
+        text-decoration-line: underline !important;
+        text-underline-offset: var(--b-space-2);
+      }
+
+      & :is(a.b-step--link[href], details.ar-how > summary.ar-how__label):hover:not(:active, :focus-visible, [aria-disabled="true"], [aria-busy="true"]) {
+        background-color: var(--b-hover) !important;
+      }
+
+      & :is(a[href], button):is(.b-btn--white, .b-btn--glass):hover:not(:active, :focus-visible, :disabled, [aria-disabled="true"], [aria-busy="true"]) {
+        &.b-btn--white { background-color: var(--b-teal-50) !important; }
+        &.b-btn--glass {
+          text-decoration-line: underline !important;
+          text-underline-offset: var(--b-space-2);
+        }
+      }
+
+      & .q-details > summary.q-row:hover:not(:active, :focus-visible, [aria-disabled="true"], [aria-busy="true"]) > .q-rt,
+      & a.sidebar-brand[href]:hover:not(:active, :focus-visible, [aria-disabled="true"], [aria-busy="true"]) .login-brand-module {
+        text-decoration-line: underline;
+        text-underline-offset: var(--b-space-2);
+      }
+
+      & .mobile-header :is(.command-finder-trigger, .portal-account-menu .nevora-action-menu-trigger):enabled:hover:not(:active, :focus-visible, [aria-disabled="true"], [aria-busy="true"], [aria-expanded="true"], [aria-current]:not([aria-current="false"])) {
+        outline: 1px solid currentColor !important;
+        outline-offset: -1px !important;
+      }
+
+      & .wc-savefoot > button.q-btn:enabled:hover:not(:active, :focus-visible, .q-btn--off, .q-btn--sec, .q-btn--quiet, .q-btn--danger, [aria-disabled="true"], [aria-busy="true"]) {
+        background-color: var(--b-teal-press) !important;
+      }
+
+      & :is(a[href], button):is(.b-ib, .c-icon-btn, .c-select-btn, .b-search__go, .c-nav__back):hover:not(:active, :focus-visible, :disabled, [aria-disabled="true"], [aria-busy="true"], [aria-pressed="true"], [aria-expanded="true"]) {
+        outline: 1px solid currentColor !important;
+        outline-offset: calc(-1 * var(--b-focus-offset)) !important;
+      }
+    }
+  }
+}

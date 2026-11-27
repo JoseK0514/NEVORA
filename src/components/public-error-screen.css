@@ -9,7 +9,7 @@
 .pe-page .pe-actions > .nf-cta { width: 100%; margin: 0; gap: 8px; box-sizing: border-box; }
 .pe-page .pe-retry { border: 0; font-family: inherit; line-height: 1; cursor: pointer; }
 .pe-page .pe-signin { background: #FFFFFF; color: #0B6E69; box-shadow: inset 0 0 0 1px #D3DCDA; }
-.pe-page .pe-signin:hover { background: #F2F5F4; }
+@media (hover: hover) and (pointer: fine) { .pe-page a.pe-signin[href]:hover { background: var(--b-teal-50, #E8F3F1); } }
 @media (min-width: 768px) {
   .pe-page .pe-actions { flex-direction: row; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
   .pe-page .pe-actions > .nf-cta { width: fit-content; }

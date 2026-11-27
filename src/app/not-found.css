@@ -12,7 +12,6 @@ html:has(body .nf-page), body:has(.nf-page) { background: #F7F6F3; }
 .not-found-hint { margin: 14px 0 0; padding: 14px; border-radius: 14px; background: #FBF4EA; font-size: .9375rem; line-height: 1.375rem; color: #5B4A33; }
 .not-found-hint strong { display: block; color: #161C1B; font-weight: 500; }
 .nf-cta { display: flex; align-items: center; justify-content: center; min-height: 54px; margin-top: 24px; border-radius: 16px; background: #0D3634; color: #FFFFFF; font-size: 1.0625rem; font-weight: 500; text-decoration: none; }
-.nf-cta:hover { background: #12423F; }
 .nf-cta:focus-visible { outline: 2px solid #161C1B; outline-offset: 3px; }
 .nf-foot { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 36px; text-align: center; font-size: .75rem; line-height: 1rem; color: #6F6C66; }
 .nf-foot .login-brand-lockup { transform: scale(.85); opacity: .85; }
@@ -39,7 +38,10 @@ html:has(body .nf-page), body:has(.nf-page) { background: #F2F5F4; }
 .not-found-hint { display: flex; align-items: flex-start; gap: 10px; }
 .not-found-hint > svg { flex: none; margin-top: 1px; color: #6E3C00; }
 .nf-cta { width: fit-content; min-height: 48px; margin: 20px 0 0; padding: 0 24px; border-radius: 24px; background: #0C726C; font-size: 15.5px; font-weight: 700; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
-.nf-cta:hover { background: #0B6E69; }
+@media (hover: hover) and (pointer: fine) {
+  .nf-cta:hover:not(:disabled, [aria-busy="true"], [aria-disabled="true"]) { background: var(--b-teal-press, #095E5A); }
+  .nf-band .q-auth__lang:enabled:hover { text-decoration: underline; text-underline-offset: var(--b-space-2, 2px); }
+}
 .nf-cta:focus-visible { outline: 2px solid #0B6E69; }
 @media (min-width: 768px) {
   .nf-band { padding: 72px max(24px, calc((100% - 812px) / 2)) 96px; }

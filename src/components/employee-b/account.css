@@ -422,3 +422,10 @@
     inset-block: min(0px, calc((100% - var(--b-btn-h)) / 2));
   }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell[data-nv-b] .eb-textbtn:enabled:not([aria-disabled="true"], [aria-busy="true"]):hover {
+    text-decoration: underline;
+    text-underline-offset: var(--b-space-2);
+  }
+}

@@ -1,5 +1,9 @@
 /* In-app Help (Nov 1 upscale, kit consistency 9): kit cards and rows; a question opens its answer in place. */
 :is(#c-root, html) .c-help .c-help__q > summary { list-style: none; }
+/* Let a pointer hit the native summary so WebKit can Tab directly into the open answer. */
+.c-help__q > summary > :is(.c-row__main, .c-chev) { pointer-events: none; }
+/* Expose every answer link to Tab immediately. The summary chevron still signals expansion. */
+html body .app-shell.nevora-portal .page-frame details.c-help__q[open]::details-content { transition: none; }
 :is(#c-root, html) .c-help .c-help__q > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .c-help .c-help__q > summary > .c-chev { transition: transform var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)); }
 :is(#c-root, html) .c-help .c-help__q[open] > summary > .c-chev { transform: rotate(90deg); }

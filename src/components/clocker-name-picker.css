@@ -6,7 +6,7 @@
 [data-clocker-kiosk] .np-search:focus-within { box-shadow: inset 0 0 0 2px var(--ck-focus), 0 0 0 4px rgb(11 110 105 / .18); }
 [data-clocker-kiosk] .np-search input { flex: 1; min-width: 0; height: 52px; border: 0; background: transparent; color: var(--ck-ink); font: inherit; font-size: 1.125rem; outline: none; }
 [data-clocker-kiosk] .np-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 10.5rem), 1fr)); gap: var(--b-space-8); min-width: 0; margin: 0; padding: 0; list-style: none; }
-[data-clocker-kiosk] .np-tile { display: flex; align-items: center; gap: var(--b-space-12); width: 100%; min-height: 64px; padding: var(--b-space-8) var(--b-space-12); border: 0; border-radius: var(--b-radius-card); background: var(--ck-key); box-shadow: inset 0 0 0 1px var(--ck-field); color: var(--ck-ink); font: inherit; font-size: 1.125rem; font-weight: 600; text-align: left; cursor: pointer; transition: background-color .15s ease; }
+[data-clocker-kiosk] .np-tile { display: flex; align-items: center; gap: var(--b-space-12); width: 100%; min-height: 64px; padding: var(--b-space-8) var(--b-space-12); border: 0; border-radius: var(--b-radius-card); background: var(--ck-key); box-shadow: inset 0 0 0 1px var(--ck-field); color: var(--ck-ink); font: inherit; font-size: 1.125rem; font-weight: 600; text-align: left; cursor: pointer; transition: background-color var(--b-dur-hover) var(--b-ease-out); }
 [data-clocker-kiosk] .np-name { min-width: 0; overflow-wrap: anywhere; }
 [data-clocker-kiosk] .np-initials { flex: none; display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--ck-card); box-shadow: inset 0 0 0 1px var(--ck-field); color: var(--ck-ink2); font-size: .9375rem; font-weight: 700; }
 [data-clocker-kiosk] .np-tile:focus-visible { outline: 3px solid var(--ck-focus); outline-offset: 2px; }
@@ -45,5 +45,9 @@ html:has([data-clocker-kiosk] [data-clocker-names]) { scroll-padding-bottom: 8re
   [data-clocker-kiosk] .np-foot { position: static; padding-top: 0; }
   [data-clocker-kiosk] .np-foot::before { content: none; }
 }
-@media (hover: hover) { [data-clocker-kiosk] .np-tile:hover:not(:disabled) { background: #E6E9EA; } }
+@media (hover: hover) and (pointer: fine) {
+  [data-clocker-kiosk] .np-tile:enabled:hover { background: var(--ck-soft); }
+  [data-clocker-kiosk] .np-search:has(input:enabled:hover):not(:focus-within) { box-shadow: inset 0 0 0 2px var(--b-field-edge); }
+}
+[data-clocker-kiosk] .np-tile:enabled:active { background: var(--b-teal-50-press); }
 @media (prefers-reduced-motion: reduce) { [data-clocker-kiosk] .np-tile { transition: none; } }
