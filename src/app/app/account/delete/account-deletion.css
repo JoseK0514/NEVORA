@@ -9,6 +9,10 @@
   html body .app-shell[data-nv-b] .eb-delete-keep label[for="deletion-password"] {
     line-height: var(--b-lh-meta) !important;
   }
+  html body .app-shell[data-nv-b] .eb-delete-keep #deletion-password-error {
+    display: block;
+    margin-block-start: var(--b-space-8) !important;
+  }
   html body .app-shell[data-nv-b] .eb-delete-keep #deletion-password:focus-visible {
     outline: var(--b-focus-width) solid var(--b-focus) !important;
     outline-offset: var(--b-focus-offset) !important;

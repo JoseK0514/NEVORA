@@ -115,6 +115,37 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
 
    stage='wrong-password';await page.locator('.em-delete-confirm').click();await state('wrong_password');await shot('wrong-password');
    await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);expect(await page.locator('#deletion-password-error').innerText()).toBe('That password isn’t right. Try again.');expect(await page.locator('#deletion-password').inputValue()).toBe('');
+   await page.setViewportSize({width:1024,height:900});
+   const originalTextSize=await page.evaluate(()=>document.documentElement.style.fontSize);
+   try {
+    await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+    await page.evaluate(async()=>{await document.fonts.ready;await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));});
+    const errorLayout=await page.locator('#deletion-password-error').evaluate((error:HTMLElement)=>{
+     const card=error.closest('.eb-confirm')!.getBoundingClientRect();
+     const range=document.createRange();range.selectNodeContents(error);
+     const password=document.querySelector<HTMLInputElement>('#deletion-password')!;
+     const style=getComputedStyle(password);
+     const focusBottom=password.getBoundingClientRect().bottom+parseFloat(style.outlineWidth)+parseFloat(style.outlineOffset);
+     const lines=Array.from(range.getClientRects(),rect=>({top:rect.top,left:rect.left,right:rect.right}));
+     const consent=document.querySelector('.em-delete-check > span')!;
+     const consentRange=document.createRange();consentRange.selectNodeContents(consent);
+     const consentBounds=consent.getBoundingClientRect();
+     const consentFits=[...consentRange.getClientRects()].every(rect=>rect.left>=consentBounds.left-1 && rect.right<=consentBounds.right+1);
+     return {lines,focusBottom,consentFits,cardLeft:card.left,cardRight:card.right,documentWidth:document.documentElement.scrollWidth,viewport:innerWidth};
+    });
+    await writeFile(resolve(evidence,engine+'-password-error-layout.json'),JSON.stringify(errorLayout));
+    expect(errorLayout.lines.length).toBeGreaterThan(0);
+    expect(errorLayout.lines[0].top).toBeGreaterThanOrEqual(errorLayout.focusBottom);
+    for(const line of errorLayout.lines){
+     expect(line.left).toBeGreaterThanOrEqual(errorLayout.cardLeft-1);
+     expect(line.right).toBeLessThanOrEqual(errorLayout.cardRight+1);
+    }
+    expect(errorLayout.consentFits).toBe(true);
+    expect(errorLayout.documentWidth).toBeLessThanOrEqual(errorLayout.viewport);
+   } finally {
+    await page.evaluate((value:string)=>{document.documentElement.style.fontSize=value;},originalTextSize);
+    await page.setViewportSize({width:390,height:844});
+   }
    expect(await own()).toEqual([]);expect(await sessions(actor)).toBe(1);await idle();
    record('Wrong password: field error, focus returns to the password, nothing saved, still signed in');
 
