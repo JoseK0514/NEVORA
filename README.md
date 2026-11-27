@@ -33,7 +33,7 @@ To restore one: git branch <name> <commit>  (or: git push origin <commit>:refs/h
 | claude-codex-collab-nevora-rondo | 8a400c4213c23ab9dceb2b63aa0157574cad6665 |
 | claude-codex-collab-nevora-schedule-tools | a2381a1671c9b51cd246d4ec447b78da5f96579c |
 | claude-codex-collab-nevora-schedule-tools-2 | dcc12231d4cc93b919c09235e97671625e757dd1 |
-| claude-codex-collab-nevora-screens-final | 6c1b36a5fa0ae1668d1f28319fba4fc72b2cf835 |
+| claude-codex-collab-nevora-screens-final | 135b9878bd1e64eb7ebf826a3a05f2d098026ddd (earlier tip 6c1b36a5fa0ae1668d1f28319fba4fc72b2cf835) |
 | claude-codex-collab-nevora-settings-2 | 5032ed10b57321922934bfd95e4bc24445de197d |
 | claude-codex-collab-nevora-settings-base | cbc3d4bc7287b7beffb9d0fcc327824e579b6133 |
 | claude-codex-collab-nevora-settings-billing | 528f77995e9f5ba41ac8f3a6f32ebc48e9ed8b9a |
