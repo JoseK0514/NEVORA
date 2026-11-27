@@ -502,3 +502,37 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
     }
   }
 }
+
+/* Keep the period handoff form inside its card at narrow widths and enlarged text. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form,
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form > fieldset {
+    min-inline-size: 0 !important;
+    max-inline-size: 100% !important;
+    box-sizing: border-box !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form > fieldset {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--b-space-12) !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form legend {
+    max-inline-size: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form label {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--b-space-4) !important;
+    min-inline-size: 0 !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form :is(input, select) {
+    inline-size: 100% !important;
+    min-inline-size: 0 !important;
+    max-inline-size: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+  }
+}
