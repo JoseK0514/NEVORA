@@ -183,6 +183,9 @@ describe.each(["en", "es"] as const)("the paid time export in %s", lang => {
     for (const [name, markup] of states) expect(words(markup).length, name).toBeGreaterThan(3);
     expect(states.length).toBeGreaterThan(40);
     const undecided = of("breaks: undecided (partial)");
+    expect(undecided).toContain('class="nv-compact-action"');
+    expect(undecided).toContain(copy.exp.breaks.correctionFor("Person 01"));
+    expect(copy.exp.breaks.correctionCompact).toBe(lang === "es" ? "Pedir corrección" : "Request a fix");
     expect((undecided.match(/type="radio"/g) ?? []).length).toBe(3 * 38 * 3);
     expect((undecided.match(/checked=""/g) ?? []).length).toBe(2 * 38);
     expect(undecided).not.toMatch(/type="checkbox"|<select/);

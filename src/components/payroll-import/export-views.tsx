@@ -3,6 +3,7 @@
 /* Paid time and export by batch: what each of the four steps shows. Presentation only: export-flow.tsx holds the work and
  * makes the requests. Every sentence comes from copy.ts. */
 import { memo, useId, useState } from "react";
+import { CompactActionLabel } from "@/components/compact-action-label";
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { BButton, BButtonLink, BCallout, BChip, BGlyph, BState, type BTone } from "@/components/owner-b/b-kit";
 import type { PayrollImportCopy } from "./copy";
@@ -58,7 +59,9 @@ const PersonSection = memo(function PersonSection({ copy, base, person, open, lo
       <CaretDownIcon className="pim-person__caret" weight="bold" aria-hidden="true" /></summary>
     {person.breaks.length ? <>
       <div className="pim-break-action">
-        <BButtonLink href={`/app/timecards/corrections/new/${encodeURIComponent(person.employeeId)}`} kind="ghost" label={b.correctionFor(person.name)}>{b.correction}</BButtonLink>
+        <BButtonLink href={`/app/timecards/corrections/new/${encodeURIComponent(person.employeeId)}`} kind="ghost">
+          <CompactActionLabel full={b.correction} short={b.correctionCompact} fullName={b.correctionFor(person.name)} />
+        </BButtonLink>
       </div>
       <ul className="pim-rows">{person.breaks.map((item, index) => {
         const at = breakWhen(item.startAt, item.endAt, timeZone, copy.locale), choice = choices[index];
