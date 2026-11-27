@@ -372,6 +372,11 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 
 /* AR-4: "Who’s included" opens from Payroll's blocker and scrolls clear of the app header. */
 :is(#c-root, html) .c-exp .c-exp__included { scroll-margin-top: 96px; }
+:is(#c-root, html) .c-exp .c-exp__included summary :is(.c-row__title, .c-row__detail > span:first-child) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
 /* Phase 7 (Nov 17, 2026; RA-21): this movement had no reduced-motion rule. */
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-pset .c-pset__item > summary .c-chev, :is(#c-root, html) .c-exp .c-exp__item > summary .c-chev, :is(#c-root, html) .c-pay .c-row .c-pay__caret { transition: none; }
