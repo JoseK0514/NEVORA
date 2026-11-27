@@ -694,3 +694,37 @@
     }
   }
 }
+
+/* The warning is an explicit decision, so its full wording must fit the publish action. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts > button[type="submit"] {
+        block-size: auto !important;
+        min-block-size: var(--b-btn-h) !important;
+        max-inline-size: 100%;
+        padding-block: var(--b-space-4) !important;
+        white-space: normal !important;
+      }
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts > button[type="submit"] :is(.sig-btn__label, .sig-btn__idle) {
+        white-space: normal;
+        min-inline-size: 0;
+        max-inline-size: 100%;
+      }
+    }
+  }
+}
+
+/* Move a full-width warning decision to its own line if the two action labels collide. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts {
+        flex-wrap: wrap;
+      }
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__back {
+        min-inline-size: max-content;
+      }
+    }
+  }
+}
