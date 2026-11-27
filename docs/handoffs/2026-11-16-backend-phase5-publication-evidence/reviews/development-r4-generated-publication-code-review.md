@@ -1,9 +1,0 @@
-# Generated R4 qualification records
-
-CLEAR / APPROVE for documentation commit. No CRITICAL, HIGH, MEDIUM or LOW findings. Reviewed working tree with 32 generated changes against application source fe75d472491e2d168ecef04150686949bd14cdb5. Its application digest is 5d70bff5f5248b81145e40b4a3da0e21bd6f2fe4b0f8fc256c90aca2260536ef.
-
-Independently verified all 182 manifest entries against actual file lengths and SHA-256 digests, complete coverage of the evidence directory excluding the manifest itself, and exact retention of the original 156 R3 manifest entries. No untracked ignored files were found in the evidence directory. The four contract groups and twelve snapshot records compare equal to immutable R3. The current machine record and index agree on R4. R3's failed CI and successful Mobile workflow are recorded separately. The source proof restricts the R3–R4 delta to the three reviewed QA paths while preserving the four authorized production changes across three paths.
-
-Verified all fourteen cell witness hashes against the original per-cell reports, representing 28 login observations. The five clean-source command receipts have zero exit codes, bind fe75d4724 and match the actual raw log hashes. Earlier working-tree preparation and controlled mechanism results remain separate. The records retain ten required exact-source CI checks. No runtime waiver, hosted readiness, model quality, publication or promotion is inferred.
-
-The current working-tree records are ready for staging and commit. Verify the staged manifest before commit. Rebuilding the six guides, checking their final PDF and application bindings, publishing the immutable R4 candidate and verifying actual CI remain subsequent gates. No tracked edits or heavy suite executed in this review. Programming and remove-ai-slops criteria found no remaining provenance or unsupported qualification claims in the generated records.

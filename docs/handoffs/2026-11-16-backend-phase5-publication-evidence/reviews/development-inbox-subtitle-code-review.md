@@ -1,9 +1,0 @@
-# Whole Phase D Inbox subtitle and review focus
-
-Reviewed the pending diff against 50c047393053c0a8e874ba2718e9c66274ba59ef. Code quality BLOCK. Recommendation REQUEST_CHANGES.
-
-**HIGH.** scripts/phase-d-browser-qa.mjs:422 requires the visible employee opener button or its child to have focus after Enter. For the seeded single eligible subject the link has a fragment. src/components/timecards.tsx:323 invokes usePrivateFragmentFocus. src/components/private-fragment-focus.ts:16–25 focuses the identified row itself, and src/components/timecards.tsx:813 assigns the ID and tabIndex to its tr. Correct desktop focus on this ancestor fails the new assertion. Retain the visible opener for readiness and optional click. Verify that its visible, correctly identified desktop row contains the active element, and retain the inspector's nonmodal and focus-exclusion assertions. This is the only blocker.
-
-CRITICAL, MEDIUM and LOW have no open findings. The subtitle change in scripts/phase-d-inbox-browser-support.mjs:8 and :31 matches the actual .b-row__s emitted by BRow. Quantity word boundaries, independent-review subject exclusion, exact period links and displayed counts remain enforced. The whole-d-local-10/report.json receipt at 50c047393 records 62 completed checks followed by the earlier quantity failure. No suite was run for this review. Previously loaded programming and remove-ai-slops perspectives found the focus assertion incompatible with the actual keyboard contract. No unnecessary production code was added.
-
-Verified at c1b5fbd64 that the visible opener now resolves its tr#timecard-D3-E ancestor and tests that row’s containment of actual focus. HIGH resolved; final status CLEAR, recommendation APPROVE, no blockers. See the separate whole-D tail report for the other changes and runtime limits.

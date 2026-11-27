@@ -1,6 +1,0 @@
-
-> fuel-scheduler@0.1.0 format:check
-> node scripts/format-critical.mjs --check
-
-Checking formatting...
-All matched files use Prettier code style!

@@ -1,7 +1,0 @@
-# Employee correction history remediation
-
-Confirmed a stale H1 expectation at scripts/phase-d-remediation-missing-qa.mjs:49. CI log ca40-job-133618906441.log:2012–2025 records the manager assertion passing and the 12-second employee H1 wait timing out. The preceding hoursPage wait already succeeded. Its selector requires the corrections view and ready state (scripts/employee-fix-time-browser.mjs:9).
-
-Both current list renderers supply the exact title “Your correction requests” in src/components/employee-mobile/hours.tsx:63,70. HoursBScreen uses that title in BHero, which emits an H1. Keep the current role, heading level, employee routes and deadlines and change the expected list title. The separate detail title is singular. The passing D2 missing-time scenario uses the same employee route, query parameters and ready-state root. The source supports the existing status, adjustment and changed-timecard detail assertions (src/components/employee-b/time-b.tsx:201–245 and src/components/employee-mobile/hours-corp.tsx:221–262). Preserve the stale-source 409 and unchanged canonical leaf checks. Selecting the Employee tab once before reading its two lists is appropriate after the Manager stage.
-
-MEDIUM driver finding. No CRITICAL, HIGH or LOW findings in the bounded investigation. Code quality WATCH, REQUEST_CHANGES at ca40. The previously consulted remove-ai-slops and programming perspectives support retaining the actual rendered history and state assertions. No browser run or tracked file change.

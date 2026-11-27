@@ -1,5 +1,0 @@
---- a/src/app/app/owner-b-desktop.css
-+++ b/src/app/app/owner-b-desktop.css
-@@ -43,1 +43,1 @@
--    html body .app-shell[data-nv-b] header.mobile-header .command-finder-trigger kbd { background: rgb(255 255 255 / .14) !important; color: var(--b-on-band) !important; border: 0 !important; box-shadow: none !important; border-radius: 7px !important; }
-+    html body .app-shell[data-nv-b] header.mobile-header .command-finder-trigger kbd { background: var(--b-band-solid) !important; color: var(--b-on-band) !important; border: 0 !important; box-shadow: none !important; border-radius: 7px !important; }

@@ -1,9 +1,0 @@
-{
-  "source": "76eeef810240a5a6fd8e678123a57110e3b85463",
-  "argv": [
-    "node",
-    "scripts/phase-d2-corrections-postgres.mjs"
-  ],
-  "exitCode": 1,
-  "durationSeconds": 92.711
-}

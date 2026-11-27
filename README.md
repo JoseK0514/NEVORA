@@ -1,107 +1,46 @@
-# NEVORA Workforce
+# Archived helper branches
 
-Workforce operations platform owned by VELANI LLC, configured for one company per database.
+Jose, Nov 27, 2026: the helper branches were retired so only main, development and claude-codex-collab-nevora remain.
+This branch keeps every one of them reachable: this commit's parents are their last commits, in the order below.
+To restore one: git branch <name> <commit>  (or: git push origin <commit>:refs/heads/<name>)
 
-## What exists and what is off by default
-
-Scheduling, team management and approved-time workflows use the configured workplace and current role/session authorization. The default deployment is one company per database. Separate isolated-workspace onboarding, provisioning and billing services also exist; their presence does not activate self-service signup.
-
-Payroll/statements, punch capture, invitation/onboarding email, commerce gating/API, mobile access and the Owner advisor are opt-in. Their exact boolean gates are listed in [the typed registry](src/lib/feature-flags.ts), with disabled examples in [.env.example](.env.example). An enabled flag still needs its validated origins, keys, transport, schema and release acceptance. Push delivery has its own existing configuration and remains off by default. Jose approved externally calculated amounts with statements in NEVORA on Nov 15. New work defaults to `NEVORA_PAYROLL_CALCULATION_MODE=external`; native tables do not enable calculation. Explicit `native_provisional` is reserved for approved operator/test use. Existing statement history stays immutable; no customer payroll activation is implied. See the [backend contract](docs/handoffs/2026-11-15-inspection-backend-remaining.md) and [named test inventory](docs/handoffs/2026-11-15-test-projects.md).
-
-Development is the primary operating and acceptance line under Jose's Nov 12 release policy. Combined UI/backend must be verified there to production standards before the exact verified release is promoted to main/production with his approval. [Environment observations](docs/handoffs/2026-11-15-feature-environments.md) distinguish checked examples, synthetic tests and unverified hosted settings.
-
-## Single-company deployment
-
-Use the existing single-workspace architecture, authenticated Owner/Manager/Lead/Employee roles, and configured business data. Company identity, timezone, locations, staffing and positions are data; no customer is selected by application code. The [Oct 12 single-company handoff](docs/execution/single-company-20261012.md) records the original bounded delivery; later isolated services are separately gated.
-
-To initialize a **new empty database**, fill the company and private owner fields in your private environment, explicitly select `NEVORA_SETUP_ENVIRONMENT`, `NEVORA_SETUP_DATABASE_URL` and its exact `NEVORA_SETUP_DATABASE_NAME`, then run:
-
-```bash
-npm run setup:company -- --help
-node --env-file=.env.local --import tsx scripts/setup-company.mts
-```
-
-The command applies the canonical development migrations and creates the configured company, one location and a hashed Owner credential in one transaction. It refuses existing schemas. Historical migration customer seeds are removed inside this fresh-install transaction. The first location has no invented staffing/coverage rules; configure them in Owner Settings. Point the application's `DATABASE_URL` at the initialized database after setup. Production setup requires TLS certificate verification and separate owner authorization; no production setup or deployment is implied by this code.
-
-For another Owner in an existing company, explicitly provide `BOOTSTRAP_PRIMARY_LOCATION_ID` and comma-separated `BOOTSTRAP_ELIGIBLE_LOCATION_IDS`, then use `npm run bootstrap:owner`. All selected locations must be active in the configured company. No location IDs or employee prefixes are assumed.
-
-## Branch workflow
-
-- `main`: production branch; a commit is not production-authorized until the frozen SHA has passed required CI, hosted verification, independent QA/UI review, and owner authorization
-- `development`: primary working/operating and acceptance release, held to production standards
-- `claude-codex-collab-nevora`: existing UI/backend collaboration branch
-
-Use these existing branches and detached worktrees for isolation; do not create new phase branches. Feature work integrates on `development`. Promotion to `main` is performed through the release-control path for a frozen candidate; branch location alone is never evidence of production readiness.
-
-## Current foundation
-
-- Next.js 16 + React 19 + TypeScript
-- Neon/PostgreSQL-ready database layer
-- Employee-ID/password authentication with hashed credentials and opaque sessions
-- Role-aware application shell for Owner, Manager, Lead, and Employee
-- Database-backed employee list and employee creation
-- Responsive desktop/mobile scheduling interface
-- Scheduling validation engine with unit tests
-- GitHub Actions is configured to run locked dependency installation, unit tests, type checking, linting, production builds, production dependency audit, and persisted Clocker PostgreSQL verification on governed branches
-
-## Employee record
-
-Required:
-- Employee ID
-- First name
-- Last name
-- Phone number
-- Access role
-- Active primary location and explicit eligible locations
-
-Optional:
-- Email
-
-Roles are Owner, Manager, Lead, and Employee. Operational position qualifications are separate optional configuration; they never follow implicitly from an access role. Credentials are stored separately from employee profile data.
-
-## Workspace foundation and database activation
-
-Workspace name/timezone, locations, eligibility and operational positions are configured data. Access roles are separate from positions. Fuel Coffee Drive retains its Puerto Rico timezone, Monday–Sunday week and existing location records. See the [workspace foundation architecture](docs/architecture/nevora-workspace-foundation.md) and [QA review](docs/ui/2026-10-03-nevora-foundation-review.md).
-
-Migration `0008_workspace_positions.sql` is prepared after exact 0001–0007. No existing customer, development or Neon database was migrated by this foundation. Select an environment and review dependencies, backups/restore, legacy names and application compatibility before separately authorizing activation. Build/start do not apply migrations.
-
-SaaS provisioning and schema distribution remain deferred. The current single-company setup and generic operator owner bootstrap are described above; test-only generic SQL fixtures are not provisioning instructions.
-
-## Automatic weekly drafts
-
-Owner/Manager Build Week and Fill Gaps Only prepare scoped Draft schedules using configured coverage and shared scheduling rules. Review gaps and publish through the existing workflow. See the [automatic scheduler architecture](docs/architecture/nevora-auto-scheduler.md) and [Phase 4 QA record](docs/ui/2026-10-04-nevora-phase-4-review.md). Migration `0009_schedule_generation.sql` is prepared after exact 0001–0008; no customer/Neon activation occurred.
-
-## Executive operating model
-
-NEVORA implementation follows the [Executive Operating Model](docs/governance/nevora-executive-operating-model.md), including the Deputy COO coordination layer, operating directors, Governance & Risk Advisory Group, and independent QA/UI oversight.
-
-Repository agents must follow [AGENTS.md](AGENTS.md). Material work loads the executive routing skill, applicable director skills, and governance controls; independent QA/UI skills are reserved for independent certification or explicit audit work.
-
-## Local development
-
-Start with the [developer guide](docs/development/developer-guide.md) for the code
-map, request flow, method contracts, safe verification commands and common traps.
-
-```bash
-npm install
-npm run dev
-```
-
-Then open `http://localhost:3000`.
-
-## Validation
-
-```bash
-npm test
-npm run typecheck
-npm run lint
-npm run build
-```
-
-See `docs/architecture.md` for the product and workflow blueprint.
-
-For UI work, reuse the [NEVORA UI contract](docs/ui/fuel-ui-contract.md). Future
-automation follows the [delivery charter](docs/architecture/fuel-automation-charter.md);
-it records phase boundaries and exclusions, not implemented capabilities.
-
-Disposable SQL verification additionally uses `npm run test:foundation:integration`, `npm run test:notifications:integration` and `npm run test:generation:integration` with application `DATABASE_URL` unset, a fresh ownership-marked loopback test database and explicit destructive teardown opt-in. The [QA record](docs/ui/2026-10-03-nevora-foundation-review.md) documents exact tested commands and boundaries. Production migration/deployment, provider activation, paid infrastructure and Phase 5 remain separate approvals.
+| Branch | Last commit |
+|---|---|
+| claude-codex-collab-nevora-account | ba21804201cd30d0d29114b2e63e8b157e59f4f0 |
+| claude-codex-collab-nevora-alerts | ee222b0da2eb35f40f9e006f0f5f2d7f73e8e473 |
+| claude-codex-collab-nevora-batch-clocker | 743212e8cce365ea269c703fa200563d64f4f66d |
+| claude-codex-collab-nevora-batch-nav | c5d8273e14f9061e925739e62a3034298f9782a4 |
+| claude-codex-collab-nevora-batch-public | 11574da9cc25e25c0d465b2c10a113af9a3da0b7 |
+| claude-codex-collab-nevora-batch-time-team | 7c00717aa3afdc84c75da9e8550823792445d9f9 |
+| claude-codex-collab-nevora-clocker-states | c215ae9e3e9fb44ed6a8dcf85a038d6db0e1fed1 |
+| claude-codex-collab-nevora-core | e2c0e8d9fbe2ec084dbc9330aa34ccf437c6bc82 |
+| claude-codex-collab-nevora-core-options | 9943126429dd0ab1ce8aa2735bae2635536d6f14 |
+| claude-codex-collab-nevora-ds-pages | 53e1e67f295ef84e878d2eae0e800b61531f2a47 |
+| claude-codex-collab-nevora-es-employee | 84e8109b3ef8eec100cc0c0e26880e772b239403 |
+| claude-codex-collab-nevora-es-mobile | 2cd9ed8cdeafcf3c0dfc4b23027ecd51a8352dc5 |
+| claude-codex-collab-nevora-es-owner | 6de7c2dc234498f55915def4b57b46cdb748f698 |
+| claude-codex-collab-nevora-es-payroll | 89824b49d72d18380d4a2206e425b37f2527e276 |
+| claude-codex-collab-nevora-es-rest | eced81af42d78c15e927886653dd3dbae966d7fd |
+| claude-codex-collab-nevora-es-rondo | 9ceeb06ec2a9d8361d7df95ae4d288d0a418f123 |
+| claude-codex-collab-nevora-kit-final | 2f3e56177a9049363af89157582c67f7dc24cf37 |
+| claude-codex-collab-nevora-messages | 867fdc8766a6a7af803ece27b7228281d6f19e01 |
+| claude-codex-collab-nevora-messages-2 | 170d012272d95c44a4f73cc11f1e1627dc2840be |
+| claude-codex-collab-nevora-payroll-2 | d9282e7191beb86505c9d0696800702b1097885f |
+| claude-codex-collab-nevora-prodcheck | 19c9b09fe482bb21035ee3a0fe7132bc8b13bdf4 |
+| claude-codex-collab-nevora-profile | a25021850a460f47c1f38874463dc4d955d4de73 |
+| claude-codex-collab-nevora-qa | b00d1863959ec113b27aaa933bd4cf0d465563bc |
+| claude-codex-collab-nevora-requests-account | ea2601e589a26806d9ab39a82e661710ab20c2cc |
+| claude-codex-collab-nevora-rondo | 8a400c4213c23ab9dceb2b63aa0157574cad6665 |
+| claude-codex-collab-nevora-schedule-tools | a2381a1671c9b51cd246d4ec447b78da5f96579c |
+| claude-codex-collab-nevora-schedule-tools-2 | dcc12231d4cc93b919c09235e97671625e757dd1 |
+| claude-codex-collab-nevora-screens-final | 6c1b36a5fa0ae1668d1f28319fba4fc72b2cf835 |
+| claude-codex-collab-nevora-settings-2 | 5032ed10b57321922934bfd95e4bc24445de197d |
+| claude-codex-collab-nevora-settings-base | cbc3d4bc7287b7beffb9d0fcc327824e579b6133 |
+| claude-codex-collab-nevora-settings-billing | 528f77995e9f5ba41ac8f3a6f32ebc48e9ed8b9a |
+| claude-codex-collab-nevora-settings-final | 109e6acc8121eec07449b207360e995f820842a8 |
+| claude-codex-collab-nevora-settings-locations | 0e21bbbcaacfe8a1af73c8d096073fd4e228a2b5 |
+| claude-codex-collab-nevora-settings-policies | 27a6143487f614748b36be9010da57594c4d5d73 |
+| claude-codex-collab-nevora-settings-positions | db6508e85d38bbf5742e15a689fb3706237db1d4 |
+| claude-codex-collab-nevora-staff | 83a43d0031f1957bb44856ddecf19ee83a78f1b6 |
+| claude-codex-collab-nevora-sweep-1 | 156a1735574e7e31576a9f56efc7e6577fa2a7f8 |
+| claude-codex-collab-nevora-timecards-final | 8e9c11eada97c532a69496963132be4eae3b2b04 |

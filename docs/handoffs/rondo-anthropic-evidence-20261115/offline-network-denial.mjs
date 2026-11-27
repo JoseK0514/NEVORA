@@ -1,1 +1,0 @@
-let calls=0; globalThis.fetch=async()=>{calls++;throw new Error('external_model_network_forbidden');};process.on('exit',()=>{process.stderr.write('external_fetch_attempts='+calls+'\n');if(calls)process.exitCode=1;});

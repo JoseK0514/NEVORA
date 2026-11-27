@@ -1,9 +1,0 @@
-
- RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-rondo-anthropic-20261115/NEVORA-UI-READINESS
-
-
- Test Files  1 passed (1)
-      Tests  11 passed (11)
-   Start at  14:15:00
-   Duration  102ms (import 41%, tests 23%, transform 23%, worker 12%)
-

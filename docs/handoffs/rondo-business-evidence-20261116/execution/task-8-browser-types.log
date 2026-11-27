@@ -1,3 +1,0 @@
-src/lib/owner-advisor/loop.test.ts(315,190): error TS2322: Type '{ href: string; label: string; }[]' is not assignable to type 'AdvisorSource[]'.
-  Property 'observedAt' is missing in type '{ href: string; label: string; }' but required in type 'AdvisorSource'.
-src/test/integration/owner-advisor-business-browser.integration.ts(52,466): error TS18046: 'session' is of type 'unknown'.

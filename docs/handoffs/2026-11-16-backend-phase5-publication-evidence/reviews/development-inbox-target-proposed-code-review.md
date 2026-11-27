@@ -1,7 +1,0 @@
-# Proposed Inbox pointer-target CSS
-
-Code quality CLEAR. Recommendation APPROVE for the proposed CSS diff. Blockers none. CRITICAL, HIGH, MEDIUM and LOW have no findings. Applying the proposal remains subject to the measured defect and Jose’s authorization.
-
-The external proposed-task-link-target.patch applies cleanly by git apply --check. It adds one rule immediately after src/components/owner-b/owner-b.css:173, scoped to :is(#c-root, html) .app-shell[data-nv-b] .c-todo .b-row__hit. Its min-height uses --b-target, defined as 44px in src/app/b-tokens.css:45. The existing row has a 64px minimum with vertical padding; a primary link inside that row may be shorter than its parent. BRow at src/components/owner-b/b-kit.tsx:117–125 uses a separate .b-row__hit for the primary link when a row also carries trailing controls or actions. Plain Inbox links are themselves full .b-row--link anchors. Current Inbox usages with trailing controls all have hrefs. The CSS selector also covers a non-link .b-row__hit if the generic component is used that way in the Inbox in future.
-
-The change can make a compound Inbox row slightly taller at any width. Normal flow preserves the sibling control’s own hit area. There is no overlay, event interception or navigation change. Minimum height alone does not prove all nine pointer samples pass; the running unpatched replay will identify the failure mode. No CSS was applied and no browser was launched during this review. The previous programming and remove-ai-slops checks found no needless source complexity or test relaxation.

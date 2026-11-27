@@ -1,6 +1,0 @@
-{
-  "rawWhitespaceCheck": "nonzero for preserved CLI logs only",
-  "sourceAndWrittenDocsCheck": "run separately excluding raw .log artifacts",
-  "reason": "Raw build progress carriage returns and original CLI blank/trailing lines are evidence, retained byte-for-byte. No application/source whitespace altered or ignored.",
-  "rawLogContentsNormalized": false
-}

@@ -1,5 +1,0 @@
-<resources>
-    <style name="Theme.Nevora" parent="Theme.Nevora.Base">
-        <item name="android:windowLightNavigationBar">true</item>
-    </style>
-</resources>

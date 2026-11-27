@@ -1,8 +1,0 @@
-
- RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-backend-phase4-20261116/Fuel Scheduler
-
-
- Test Files  7 passed (7)
-      Tests  34 passed (34)
-   Start at  12:50:57
-   Duration  810ms (transform 56%, import 34%, tests 8%, worker 2%)

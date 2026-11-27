@@ -1,5 +1,0 @@
-(node:99236) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-rondo-combined-20261116/NEVORA-UI-READINESS/db/migrations/order.ts is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-rondo-combined-20261116/NEVORA-UI-READINESS/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)
-Canonical onboarding manifest matches source: e5b8672695a353257f10b9452292e60391a27643a275bf1649536e158f2cdb34

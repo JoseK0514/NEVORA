@@ -1,5 +1,0 @@
-Canonical onboarding manifest matches source: 83bc83356924aa7341f321da996437f1471379d3e1c077b49c654aed290fb3cf
-(node:36767) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-backend-phase5-20261116/Fuel%20Scheduler/db/migrations/order.ts is not specified and it doesn't parse as CommonJS.
-Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
-To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-backend-phase5-20261116/Fuel Scheduler/package.json.
-(Use `node --trace-warnings ...` to show where the warning was created)

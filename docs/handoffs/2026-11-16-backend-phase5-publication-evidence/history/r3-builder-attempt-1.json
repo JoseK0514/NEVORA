@@ -1,7 +1,0 @@
-{
-  "source": "d6af305afc3fe64f84562ad23899c3ba53b754af",
-  "failure": "Normalization guard expected /app/advisor; the preserved actual link is /app/ai-manager. The stronger full four-patch byte composition had already passed. No application, index or publication-source record was changed by this failed attempt.",
-  "recovery": "Archived every generated changed/new file, then restored only these known generator outputs to the previously clean HEAD.",
-  "retainedFileCount": 61,
-  "completeEvidenceLocation": "/Users/josek0514/.codex/visualizations/2026/11/16/01a1e554-32a4-75e1-b3f2-a5ac5dde811c/development-publication/r3-builder-attempt-1"
-}

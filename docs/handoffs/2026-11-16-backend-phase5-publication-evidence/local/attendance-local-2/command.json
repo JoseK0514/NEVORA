@@ -1,9 +1,0 @@
-{
-  "source": "c68fa72f2626852ed7cdfb2b7299384a9138f971",
-  "argv": [
-    "node",
-    "scripts/phase-d-attendance-postgres.mjs"
-  ],
-  "exitCode": 0,
-  "durationSeconds": 63.365
-}

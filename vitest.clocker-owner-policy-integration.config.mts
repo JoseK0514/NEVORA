@@ -1,3 +1,0 @@
-import {projectConfig} from './vitest.shared.mts';
-import {defineConfig} from './vitest.shared.mts';
-export default projectConfig('clocker-owner-policy-integration', defineConfig({test:{include:['src/test/integration/clocker-pin-operations.integration.ts','src/test/integration/clocker-owner-policy.integration.ts','src/test/integration/clocker-recovery-review.integration.ts','src/test/integration/clocker-manager-scope.integration.ts','src/test/integration/company-access-pin-management.integration.ts','src/test/integration/company-access-recovery-calendar.integration.ts'],fileParallelism:false,testTimeout:20000,hookTimeout:30000}}));

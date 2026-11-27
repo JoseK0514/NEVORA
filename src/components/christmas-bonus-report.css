@@ -1,6 +1,0 @@
-/* Christmas bonus hours (opened from Insights). The page is the corporate kit; its Direction B rules (the band's year pill,
- * the notes inside the cards, the row's status and the facts that stay whole) are in src/app/app/b-thirty-day.css.
- * A person's line holds the figures and facts the report is for (hours, hire date, ID, days not finalized); it wraps
- * at every width instead of ending in "…" as kit rows do on tablets and desktop, and only between facts. */
-:is(#c-root, html) .c-bonus #bonus-people .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
-:is(#c-root, html) .c-bonus .c-bonus__fact { white-space: nowrap; }

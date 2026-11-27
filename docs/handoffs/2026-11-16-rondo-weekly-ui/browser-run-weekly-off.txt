@@ -1,6 +1,0 @@
-OFF planner 390 h-overflow: false clipped: [] under44: []
-OFF planner 1440 h-overflow: false clipped: [] under44: ["AI manager 32"]
-OFF planner says: Weekly planning is off | Comparing and approving new plans is turned off for this company. A plan you already approved can still be checked from its link. | compare button: 0
-OFF saved link shows: Weekly plan | Review plan | Saved | Saved | Mon, Nov 16, 2:56 PM | Added | 4 shifts | Kept | 9 shifts | Now | Weekly planning is off, so only this record is shown. | This records what was saved as a draft. It doesn’t show attendance, and it isn’t proof the week is covered. Publishing happens in Schedule, and nobody was notified. | Plan another week | Open Schedule | ops: [["check_week_plan","beb0de04-906c-42fb-9736-e466c604baf9",200,"saved","53ea0f31-9015-48c2-86a3-e5cc75d64330"]]
-OFF saved 390 h-overflow: false clipped: [] under44: []
-page errors: []

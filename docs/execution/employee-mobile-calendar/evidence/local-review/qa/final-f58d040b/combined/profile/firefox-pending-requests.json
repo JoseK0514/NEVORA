@@ -1,8 +1,0 @@
-[
-  {
-    "path": "/api/employee/calendar-subscriptions",
-    "method": "GET",
-    "stage": "new-account",
-    "startedAt": 1793143125115
-  }
-]

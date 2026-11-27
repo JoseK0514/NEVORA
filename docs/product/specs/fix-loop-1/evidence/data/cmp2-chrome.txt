@@ -1,2 +1,0 @@
-{"total":0,"allowed":0,"pagesWithDiff":0,"byProp":{},"missingInAfter":[]}
-pixel pages differing 0

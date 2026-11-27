@@ -1,2 +1,0 @@
-# Preserve the generated Windows launcher format while storing canonical text.
-native/android/gradlew.bat text eol=crlf

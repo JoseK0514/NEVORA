@@ -1,5 +1,0 @@
-
-> fuel-scheduler@0.1.0 check:test-projects
-> node scripts/check-vitest-projects.mjs
-
-81 named Vitest projects registered; no orphan configurations.

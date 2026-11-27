@@ -1,4 +1,0 @@
-import {projectConfig} from './vitest.shared.mts';
-import { ownerAdvisorTest } from './vitest.owner-advisor-integration.config.mts';
-import { defineConfig } from './vitest.shared.mts';
-export default projectConfig('owner-advisor-partner-offline', defineConfig({...ownerAdvisorTest,test:{...ownerAdvisorTest.test,maxWorkers:1,include:['src/test/integration/owner-advisor-partner-evidence.test.ts','src/lib/owner-advisor/partner-preflight.integration.ts','src/lib/owner-advisor/memory.integration.ts','src/lib/owner-advisor/decision-mode.integration.ts','src/lib/owner-advisor/legal-research.integration.ts','src/lib/owner-advisor/operational-insights.integration.ts','src/lib/owner-advisor/coverage-actions.integration.ts','src/lib/owner-advisor/legal-research.test.ts','src/lib/owner-advisor/memory.test.ts','src/lib/owner-advisor/decision-mode.test.ts']}}));

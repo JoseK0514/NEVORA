@@ -1,8 +1,0 @@
-{
-  "argv": [
-    "node",
-    "scripts/manuals/check-manuals.mjs"
-  ],
-  "exitCode": 1,
-  "scope": "Closeout V3 index changed after prior PDF qualification; no application delta. Regenerate source-qualified PDFs after committing final index."
-}

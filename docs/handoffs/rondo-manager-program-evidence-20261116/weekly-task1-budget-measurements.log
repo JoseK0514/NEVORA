@@ -1,8 +1,0 @@
-{"maxPeriods":256,"status":"BUDGET_EXHAUSTED","additions":12,"remaining":9,"evaluations":257,"periods":256,"nodes":37,"elapsedMs":193}
-{"maxPeriods":512,"status":"COMPLETE","additions":21,"remaining":0,"evaluations":311,"periods":441,"nodes":22,"elapsedMs":136}
-{"maxPeriods":1024,"status":"COMPLETE","additions":21,"remaining":0,"evaluations":311,"periods":441,"nodes":22,"elapsedMs":128}
-{"maxPeriods":2048,"status":"COMPLETE","additions":21,"remaining":0,"evaluations":311,"periods":441,"nodes":22,"elapsedMs":134}
-{"maxPeriods":4096,"status":"COMPLETE","additions":21,"remaining":0,"evaluations":311,"periods":441,"nodes":22,"elapsedMs":120}
-{"fixture":"3sites_7days_2staff_8workers","maxPeriods":512,"status":"BUDGET_EXHAUSTED","additions":25,"remaining":17,"evaluations":588,"periods":512,"nodes":128,"elapsedMs":562}
-{"fixture":"3sites_7days_2staff_8workers","maxPeriods":1024,"status":"COMPLETE","additions":42,"remaining":0,"evaluations":769,"periods":882,"nodes":43,"elapsedMs":283}
-{"fixture":"3sites_7days_2staff_8workers","maxPeriods":2048,"status":"COMPLETE","additions":42,"remaining":0,"evaluations":769,"periods":882,"nodes":43,"elapsedMs":336}

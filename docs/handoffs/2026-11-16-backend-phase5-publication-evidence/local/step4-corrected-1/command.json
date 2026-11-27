@@ -1,9 +1,0 @@
-{
-  "source": "6a45dd2bcf66fa96d098279ac9372aa371fe2bd9",
-  "argv": [
-    "node",
-    "scripts/step4-local-acceptance.mjs"
-  ],
-  "exitCode": 1,
-  "durationSeconds": 98.589
-}

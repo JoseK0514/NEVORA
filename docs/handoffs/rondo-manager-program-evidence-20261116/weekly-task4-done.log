@@ -1,6 +1,0 @@
-      Tests  63 passed (63)
-   Start at  14:20:32
-   Duration  36.24s (tests 99%, import 1%)
-
-[Payroll PostgreSQL] Owned cluster stopped.
-ledger: Task 4: complete (commits e49c559..66f5616, tests: env -u DATABASE_URL -u TEST_DATABASE_URL -u FUEL_TEST_DATABASE_URL NEVORA_TEST_PG_BIN=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/integration-evidence/pg-runtime/package/native/bin node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts src/lib/owner-advisor/weekly-service.integration.ts src/lib/owner-advisor/weekly-store.integration.ts → [Payroll PostgreSQL] Owned cluster stopped.)
