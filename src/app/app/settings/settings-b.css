@@ -346,3 +346,12 @@
     hyphens: none !important;
   }
 }
+
+/* QA on 193930f0 (Nov 27, 2026): on a phone at enlarged text the Settings band's back link ("Localidades") reached down
+ * into the title row, where the Save pill ("Guardar") covered it. The back link's row keeps its full 44px height without
+ * borrowing space from the row below, in every language. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    html:is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) .c-page.c-setb > .c-nav > .c-nav__back:not(#nb1):not(#nb2):not(#nb3):not(#nb4):not(#nb5):not(#nb6):not(#nb7):not(#nb8) { margin-block: 0 !important; }
+  }
+}
