@@ -236,6 +236,13 @@ does not enable calculation. Imported statement validation and approval do not
 prove tax correctness, wage payment or remittance. Do not turn on customer payroll,
 mail delivery or live commerce through a test fixture or inherited environment.
 
+`NEVORA_PAYROLL_EXPORTS_DISABLED=true` turns off provider payroll exports and file
+downloads: export generation and retry, sent-file lists and stored files, export
+mappings, manifest/CSV/canonical downloads and the period-close manifest and handoff
+answer unavailable (`PAYROLL_EXPORTS_DISABLED`), while period review, history and
+population reads stay available. The launch deployment keeps it `true`, as in
+`.env.example`; any other value leaves exports on.
+
 Enrollment records a readiness request without queue privileges. The privileged
 commerce worker checks durable Owner activation before queuing a workplace-ready
 notice and rechecks current credential readiness before sending. Pending activation

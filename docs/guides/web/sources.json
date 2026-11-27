@@ -56,7 +56,9 @@
         "src/app/onboarding/activate/owner-activation.tsx",
         "src/components/team/clocker-location-access-copy.ts",
         "src/components/clocker-owner-copy.ts",
-        "src/components/clocker-roster-copy.ts"
+        "src/components/clocker-roster-copy.ts",
+        "src/lib/payroll-export/launch-guard.server.ts",
+        ".env.example"
       ]
     },
     {
@@ -291,7 +293,9 @@
         "scripts/rehearsal/2026-11-18-development-baseline.json",
         "src/app/onboarding/page.tsx",
         "src/app/onboarding/verify/verify-journey.tsx",
-        "src/lib/onboarding/signup-page.server.ts"
+        "src/lib/onboarding/signup-page.server.ts",
+        "src/lib/payroll-export/launch-guard.server.ts",
+        ".env.example"
       ]
     }
   ]

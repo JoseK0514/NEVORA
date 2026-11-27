@@ -168,6 +168,9 @@ events** show the full period history in pages, newest first, with loaded/total
 counts. All events in a snapshot are loaded only when the page says so.
 **Refresh history** includes newer events. A recorded download does not confirm
 that a file finished downloading or that a provider imported it.
+Where payroll exports are turned off for a deployment, export and file-download
+actions say they're unavailable, while the period's review, history and people
+stay available.
 
 Live **Updates** communications remain under the D04 hold. A visible destination
 does not activate them; use your existing employer communication channel while
