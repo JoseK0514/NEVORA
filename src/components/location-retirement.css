@@ -20,3 +20,11 @@
   overflow-wrap: anywhere;
   white-space: pre-line;
 }
+
+/* The retirement question follows text enlargement without changing other discard dialogs. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet:has(.b-discard) #retire-title.b-discard__t:not(#dg1):not(#dg2):not(#dg3):not(#dg4):not(#dg5):not(#dg6) {
+    font-size: 1.125rem !important;
+    line-height: 1.5rem !important;
+  }
+}
