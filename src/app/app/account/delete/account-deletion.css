@@ -3,6 +3,9 @@
  * [data-employee-mobile]; these give the same layout to `.em-delete--team`. Layered like account.css (nv-b), so the
  * layered !important declarations there are matched here with a stronger selector. */
 @layer nv-b {
+  html body .app-shell[data-nv-b] .eb-delete-keep label[for="deletion-password"] {
+    line-height: var(--b-lh-meta) !important;
+  }
   @media (min-width: 768px) and (orientation: landscape) and (pointer: coarse) {
     /* On a touch tablet or sideways phone, the Profile link itself fills the tap target. */
     html body .app-shell[data-nv-b][data-employee-mobile] .em-delete .b-screen .b-back {
