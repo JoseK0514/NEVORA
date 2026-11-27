@@ -584,3 +584,29 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 @layer nv-b {
   html body .app-shell[data-nv-b] .c-exp .c-exp__bar .nv-compact-action__text { justify-self: center; }
 }
+
+/* The availability card already supplies the standard inset. Share it on narrow cards
+   so that the icon aligns with the other rows and the period link has its full width. */
+.c-exp__availability { container: export-availability / inline-size; }
+@container export-availability (max-width: 280px) {
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability > .b-statecard {
+    padding-inline: 0;
+  }
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability .b-statecard__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* At enlarged text the longest title word needs the icon column as well. */
+@container export-availability (max-width: 280px) and (max-width: 10rem) {
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability > .b-statecard {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--b-space-12);
+  }
+}
+
+@layer nv-b {
+  /* The kit's inset teal outline shares the button fill. Paint it on the card. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability .b-btn:focus-visible {
+    outline-offset: var(--b-focus-offset) !important;
+  }
+}

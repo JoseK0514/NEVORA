@@ -318,7 +318,7 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
     * confirmed, already exported, out of date) keeps the plain callout and never the success mark. */}
   {notice&&notice!==FILES_READY?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
   {/* R5: section labels sit above their cards. */}
-  {disabled?<div className="c-card c-card__body"><BState kind="paused" heading alert={launchRefused} titleRef={launchRefused?focusOnArrive:undefined} title={payrollExportAvailability[lang].title} line={payrollExportAvailability[lang].line}
+  {disabled?<div className="c-card c-card__body c-exp__availability"><BState kind="paused" heading alert={launchRefused} titleRef={launchRefused?focusOnArrive:undefined} title={payrollExportAvailability[lang].title} line={payrollExportAvailability[lang].line}
    action={{label:payrollExportAvailability[lang].period,href:timecardsHref}}/></div>:shown?<section className="c-pay__group c-exp__result" aria-label={wording.exportReady}>
    {/* Final polish (Nov 21, 2026): the result stands where the form stood. Facts are the receipt's own rows; the receipt
      * id, the checksum and the file layout fold under Details; "Make another export" returns to the same form (no request). */}
