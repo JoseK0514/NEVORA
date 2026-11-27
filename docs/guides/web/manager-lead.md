@@ -153,3 +153,21 @@ Private import work and export files clear when you step away, the current view
 expires or access ends. Reopen with current access and upload an unsaved file
 again. Keep an uncertain original operation for its check or unchanged retry;
 fresh access does not bring back an old CSV download.
+
+## Delete your own account
+
+Managers and Leads open **Profile → Delete my account**. It deletes your NEVORA
+account only. Before you confirm, the page shows **What we delete**: "Your access
+ends right away: you’re signed out on every device and can’t sign in again with
+your password or a passkey. Calendar feed links and device alerts stop." and
+"Within 30 calendar days after we receive the request, we aim to delete your
+profile, sign-in details, notification subscriptions, calendar links and the
+content you contributed. After you confirm, you can’t cancel it in the app." It
+also shows what your employer keeps: "Deleting your NEVORA account doesn’t end
+your employment or remove records your employer has to keep." **What may be kept**
+opens the retention details.
+
+Enter your password, check **I understand my NEVORA account will be deleted and I
+won’t be able to sign in again.** and choose **Delete my account**. **This can’t be
+undone.** Keep the reference the page shows. To ask about the request, email
+support@thevelani.com with your reference. We’ll never ask for your password.

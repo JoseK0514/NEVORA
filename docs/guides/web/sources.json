@@ -58,7 +58,15 @@
         "src/components/clocker-owner-copy.ts",
         "src/components/clocker-roster-copy.ts",
         "src/lib/payroll-export/launch-guard.server.ts",
-        ".env.example"
+        ".env.example",
+        "src/components/edit-location-form.tsx",
+        "src/components/location-retirement-copy.ts",
+        "src/app/app/settings/activity/activity-copy.ts",
+        "src/app/app/settings/activity/page.tsx",
+        "src/components/employee-mobile/deletion-copy.ts",
+        "src/components/employee-mobile/deletion.tsx",
+        "src/components/access-recovery/copy.ts",
+        "src/lib/legal/policies.ts"
       ]
     },
     {
@@ -92,7 +100,10 @@
         "src/lib/employment-dates.ts",
         "src/lib/company-access/employee-profile.server.ts",
         "src/app/app/reports/christmas-bonus/page.tsx",
-        "src/components/manager-attendance-review.tsx"
+        "src/components/manager-attendance-review.tsx",
+        "src/components/employee-mobile/deletion-copy.ts",
+        "src/components/employee-mobile/deletion.tsx",
+        "src/lib/legal/policies.ts"
       ]
     },
     {
