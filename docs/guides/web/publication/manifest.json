@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "date": "2026-11-27",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "9a58b09c53c90058f25ae0f1956a5e8084b3d1da",
-  "applicationHash": "03cadb121a6786e7ed61581b67ab0769614f313d19f3ad6e054e1c8fc1353ab7",
+  "sourceSha": "51cba001c1b87568767448a3c4f2bc5dc34ebbfb",
+  "applicationHash": "80d8f77c482d1a196227fdfd2c6a0574af6d16c12962b71670b21518e11ee35b",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
-    "sha256": "bcbd272e94039b14ff46ecdb8334d280d334b93613622bf2acb96e44a016b44b"
+    "sha256": "11e7e3865b4f123805c664967ef91d2e050caa3e85fe0fbfe6000a7842176b56"
   },
   "guides": [
     {
@@ -14,7 +14,7 @@
       "title": "NEVORA Owner web guide",
       "markdown": {
         "path": "docs/guides/web/owner.md",
-        "sha256": "44cfc44545d2efde3ec0fcf43c37adce27ac771d95d9067e047d12af4b46ba98"
+        "sha256": "12866f774275105f8e0c49399e67aeba83e3facaa0599f9830a10e4a106f0c10"
       },
       "evidence": [
         {
@@ -228,12 +228,44 @@
         {
           "path": ".env.example",
           "sha256": "36bfaa67b2626808f3e6d207f0429083554bfb87646f777eaf5555e4918b18d9"
+        },
+        {
+          "path": "src/components/edit-location-form.tsx",
+          "sha256": "4caafbbe7560e325cb524aff6680d2a2829c3e0b1040a8335e9e2eb1a448d674"
+        },
+        {
+          "path": "src/components/location-retirement-copy.ts",
+          "sha256": "7950e98bed188751b5f996f851bc67e9c6b9e004d94e9407631accaa9296687a"
+        },
+        {
+          "path": "src/app/app/settings/activity/activity-copy.ts",
+          "sha256": "82b0f2639724204843b9376c31ffbc8835817f951f5f38424fbe91f066a55d57"
+        },
+        {
+          "path": "src/app/app/settings/activity/page.tsx",
+          "sha256": "cae9f289d3e726c762bef5efcdd1899ce1eb91496b19fd5b24b83d98101ec2f0"
+        },
+        {
+          "path": "src/components/employee-mobile/deletion-copy.ts",
+          "sha256": "bb033bc55458a1b8faa478b5c39866088f7db6c268c4a142aba8b5ef4f870b50"
+        },
+        {
+          "path": "src/components/employee-mobile/deletion.tsx",
+          "sha256": "34430827c8892fb2a26409ee9ffafa2ae4d3a250a3c103a0b0429d96b03d39c4"
+        },
+        {
+          "path": "src/components/access-recovery/copy.ts",
+          "sha256": "5a892920dc312de21d10e0396cd032ddea4fdadeb740c026b84501a10a892cfa"
+        },
+        {
+          "path": "src/lib/legal/policies.ts",
+          "sha256": "d3ecb6e622dfc0310fe91d78fe6c060d3efbcbcb9f01fdd3b67f10f8b8365394"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "23168d05cd5c0593cb4cf1288922182d3c8b46efaf1d35b57fd6e705f271b62b",
-        "pageCount": 8
+        "sha256": "473a589f47920437f0eef7c8e6eb9b9ec7e73d4a37629b931cae8abfef1bc774",
+        "pageCount": 9
       }
     },
     {
@@ -241,7 +273,7 @@
       "title": "NEVORA Manager and Lead web guide",
       "markdown": {
         "path": "docs/guides/web/manager-lead.md",
-        "sha256": "0e21ff57dd29943fe9905180fb8d58b2fdc4bc859e703a8faef4342e231d2d01"
+        "sha256": "c77b7a420f12a399a4e5b46bf0c63fb5f1cafca890f5d8b42d6224249c9446fb"
       },
       "evidence": [
         {
@@ -351,11 +383,23 @@
         {
           "path": "src/components/manager-attendance-review.tsx",
           "sha256": "7ffd13ef0fbf31c61088bc63f8e462f7ba2138a38e87568bd6fe7e91a90a4dbc"
+        },
+        {
+          "path": "src/components/employee-mobile/deletion-copy.ts",
+          "sha256": "bb033bc55458a1b8faa478b5c39866088f7db6c268c4a142aba8b5ef4f870b50"
+        },
+        {
+          "path": "src/components/employee-mobile/deletion.tsx",
+          "sha256": "34430827c8892fb2a26409ee9ffafa2ae4d3a250a3c103a0b0429d96b03d39c4"
+        },
+        {
+          "path": "src/lib/legal/policies.ts",
+          "sha256": "d3ecb6e622dfc0310fe91d78fe6c060d3efbcbcb9f01fdd3b67f10f8b8365394"
         }
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "84a0230864f650e6b9ddd1a29ec1b6ea882d79475b19b5563ecfc283c477fbd7",
+        "sha256": "2e6f0a5b041a4b5abdcaa8556ab84ae1f22e96d56742e1a7afabc7a170867912",
         "pageCount": 4
       }
     },
@@ -474,7 +518,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "dcca7ff231e6a4eb6ae95806810de82397fa5ae82c95486282e338b40e349e34",
+        "sha256": "82b11fbe00bf9604dc223972b8764321ba5f01b43eb924b831acb43b44503c1c",
         "pageCount": 3
       }
     },
@@ -649,7 +693,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "088674c8676b4c9bcd4436d25fc6e25a3c1908bf2572c85a42e5449afe8b7f74",
+        "sha256": "5167d1288b110435fda7152b0717718a006217850c52dcfeb53a9561f3bce382",
         "pageCount": 5
       }
     },
@@ -912,7 +956,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "fed021f24f7a9bb766daf86c298153e799dcf4532c6a8874a6cafc3e9dfeb70f",
+        "sha256": "3d27f0419531b31f842563a4ac240ba793f0b5839f1e13e1ea1764c0b2bd109e",
         "pageCount": 7
       }
     },
@@ -1115,7 +1159,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "3492e031ef3fd14927ff8a3f6cfc158a4535de09f589d786b88c27f03bc78694",
+        "sha256": "7f1d43cb1dd2fc02713853b315f0f95e9962392e4e9cec4ce6210bfa7dc55611",
         "pageCount": 7
       }
     }
