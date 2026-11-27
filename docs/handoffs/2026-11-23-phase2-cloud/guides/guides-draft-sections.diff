@@ -1,0 +1,100 @@
+diff --git a/docs/guides/web/manager-lead.md b/docs/guides/web/manager-lead.md
+index 9caf12730..14c456ae9 100644
+--- a/docs/guides/web/manager-lead.md
++++ b/docs/guides/web/manager-lead.md
+@@ -153,3 +153,21 @@ Private import work and export files clear when you step away, the current view
+ expires or access ends. Reopen with current access and upload an unsaved file
+ again. Keep an uncertain original operation for its check or unchanged retry;
+ fresh access does not bring back an old CSV download.
++
++## Delete your own account
++
++Managers and Leads open **Profile → Delete my account**. It deletes your NEVORA
++account only. Before you confirm, the page shows **What we delete**: "Your access
++ends right away: you’re signed out on every device and can’t sign in again with
++your password or a passkey. Calendar feed links and device alerts stop." and
++"Within 30 calendar days after we receive the request, we aim to delete your
++profile, sign-in details, notification subscriptions, calendar links and the
++content you contributed. After you confirm, you can’t cancel it in the app." It
++also shows what your employer keeps: "Deleting your NEVORA account doesn’t end
++your employment or remove records your employer has to keep." **What may be kept**
++opens the retention details.
++
++Enter your password, check **I understand my NEVORA account will be deleted and I
++won’t be able to sign in again.** and choose **Delete my account**. **This can’t be
++undone.** Keep the reference the page shows. To ask about the request, email
++support@thevelani.com with your reference; support never asks for your password.
+diff --git a/docs/guides/web/owner.md b/docs/guides/web/owner.md
+index cf51e0f95..8c1655524 100644
+--- a/docs/guides/web/owner.md
++++ b/docs/guides/web/owner.md
+@@ -363,3 +363,69 @@ and may clock in at that location (see **Clock in at**), by first name and last
+ initial. **Use Employee ID** is always there for anyone who isn't listed.
+ 
+ A retained punch may say **not confirmed yet**. **Check if it saved** checks its original reference; **Send it again** retains that reference. **See current status** is a separate current observation. **Ask Owner to check** and **Check your last punch** are recovery routes. A failed check or a disabled service is not proof that a previous punch was never recorded. Offline punches are not queued automatically.
++
++## Deactivate a location
++
++Open **Settings → Locations**, choose the location and switch **Active** off,
++then save. NEVORA asks **Deactivate {location}?** and explains: "The Clocker link
++will stop working here. Past schedules and time records will stay available."
++Choose **Deactivate** to continue or **Keep active** to leave it as it is.
++
++If work at the location is still open, the save stops with **{location} can’t be
++deactivated yet** and lists what to review. Each link opens in a new tab, so your
++edits stay on the form:
++
++- **Reassign or cancel shifts, then publish changes**: ongoing or future shifts,
++  draft or published, are still scheduled there.
++- **Review posted open shifts**: unclaimed open shifts there are still posted;
++  withdraw the ones you no longer need.
++- **Review open time in Timecards**: someone is still clocked in there; close the
++  open punch with the verified time.
++- **Review pending time corrections**: decide the time corrections waiting for
++  that location.
++- **Review pending shift requests**: decide the can't-work, swap or cover
++  requests waiting on its shifts.
++
++Resolve each one, then save again. When it succeeds, the page says **{location}
++is inactive**: the Clocker link is unavailable, and past schedules and time
++records are kept. If the result can't be confirmed, choose **Check again** before
++trying a second time; your entries are kept.
++
++## Activity log
++
++Open **Settings → Activity log** to see recorded changes, newest first. Only
++Owners can open it. It lists published schedules and edits to a published
++schedule, schedule changes after a shift exchange or a can't-work request,
++Manager access assigned or removed, employees activated or deactivated, and wage
++changes. Each entry says who made the change (**Changed by**) and the week or
++locations it affected. Use **Older changes** and **Newer changes** to move
++through the log. It is a record of what changed, not an approval or a way to undo
++a change.
++
++## Delete your own account
++
++Open **Profile → Delete my account**. This deletes your NEVORA account, not the
++company. The page shows what happens before you confirm:
++
++- **What we delete**: "Your access ends right away: you’re signed out on every
++  device and can’t sign in again with your password or a passkey. Calendar feed
++  links and device alerts stop." and "Within 30 calendar days after we receive
++  the request, we aim to delete your profile, sign-in details, notification
++  subscriptions, calendar links and the content you contributed. After you
++  confirm, you can’t cancel it in the app."
++- **What {company} keeps**: "Deleting your NEVORA account doesn’t end your
++  employment or remove records your employer has to keep." and "Your company’s
++  workspace stays open for the rest of your team. To close it, email
++  support@thevelani.com." **What may be kept** opens the retention details.
++
++To confirm, enter your password, check **I understand my NEVORA account will be
++deleted and I won’t be able to sign in again.** and choose **Delete my account**.
++**This can’t be undone.** NEVORA then signs you out everywhere and shows your
++reference; keep it until the deletion is done.
++
++If you're the only Owner, nothing is deleted: the page says **You’re the only
++Owner** because a workplace needs at least one Owner who can sign in. Add another
++Owner first (**Go to Team**), wait until they can sign in, then confirm again.
++Closing the company is a separate request: "Email support and we will walk you
++through it. Writing to us does not close the company or cancel billing by
++itself."
