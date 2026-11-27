@@ -6,6 +6,10 @@
   html body .app-shell[data-nv-b] .eb-delete-keep label[for="deletion-password"] {
     line-height: var(--b-lh-meta) !important;
   }
+  html body .app-shell[data-nv-b] .eb-delete-keep #deletion-password:focus-visible {
+    outline: var(--b-focus-width) solid var(--b-focus) !important;
+    outline-offset: var(--b-focus-offset) !important;
+  }
   @media (min-width: 768px) and (orientation: landscape) and (pointer: coarse) {
     /* On a touch tablet or sideways phone, the Profile link itself fills the tap target. */
     html body .app-shell[data-nv-b][data-employee-mobile] .em-delete .b-screen .b-back {
