@@ -1,4 +1,5 @@
 import {announceOfflineHeld} from './offline-hold';
+export const PRIVATE_SESSION_ENDED = 'nevora:session-ended';
 export type PrivateSnapshot={state:'ready';observedAt:string;validForMs:number}|{state:'unavailable';reason:string};
 export type PrivatePanelState<T>={snapshot:T|null;refreshing:boolean;paused:boolean};
 type EarlyRenewal={safetyMarginMs:number};
