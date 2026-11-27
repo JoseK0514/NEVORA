@@ -269,8 +269,8 @@
    * tablet and desktop band (the sideways phone included) they are 36px inside the 48px week pill, with a 44px hit area. */
   @media (max-width: 767px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { width: 44px !important; height: 44px !important; margin: -4px 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > span:last-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { gap: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: 0 -1px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > span:last-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { gap: var(--b-space-4) !important; }
   }
   /* A #11, B #7: at 320px "Published" drops under the dates and the arrows keep the dates' row. */
   @media (max-width: 359px) {
