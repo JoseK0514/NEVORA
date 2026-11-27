@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import "./compact-action-label.css";
 
 /** Keep the full wording whenever the actual control has room, including after text resizing. */
-export function CompactActionLabel({ full, short }: { full: string; short: string }) {
+export function CompactActionLabel({ full, short, fullName }: { full: string; short: string; fullName?: string }) {
   const fullText = useRef<HTMLSpanElement>(null);
   const [compact, setCompact] = useState(false);
 
@@ -29,6 +29,9 @@ export function CompactActionLabel({ full, short }: { full: string; short: strin
     <span className="nv-compact-action__probe" aria-hidden="true">
       <span ref={fullText} className="nv-compact-action__measure">{full}</span>
     </span>
-    <span className="nv-compact-action__text">{compact ? <>{short}<span className="sr-only"> ({full})</span></> : full}</span>
+    <span className="nv-compact-action__text" aria-hidden={fullName ? true : undefined}>
+      {compact ? <>{short}{!fullName && <span className="sr-only"> ({full})</span>}</> : full}
+    </span>
+    {fullName && <span className="sr-only">{compact ? `${short} (${fullName})` : fullName}</span>}
   </span>;
 }

@@ -18,6 +18,8 @@ rs.mock('react',()=>({...rstestOriginal0,
  useRef:(initial:unknown)=>{const i=host.cursor++;return (host.slots[i]??(host.slots[i]={value:{current:initial}})).value;},
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
+// Keep the parent lifetime hook host isolated from presentational child layout hooks.
+rs.mock('./compact-action-label',()=>({CompactActionLabel:({full,fullName}:{full:string;fullName?:string})=>rstestOriginal0.createElement('span',null,fullName??full)}));
 import {PayrollExport} from './payroll-export';
 import {PayrollExportMapping} from './payroll-export-mapping';
 

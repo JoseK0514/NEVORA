@@ -138,6 +138,7 @@ export const copy = {
     selectAllFinalizedTimecards: "Select all finalized timecards",
     // src/components/payroll-export.tsx:274
     selectAllFinalized: "Select all finalized",
+    selectAllCompact: "Select all",
     // src/components/payroll-export.tsx:274
     clearEmployeeSelection: "Clear employee selection",
     // src/components/payroll-export.tsx:274
@@ -332,6 +333,7 @@ export const copy = {
     selectAllFinalizedTimecards: "Seleccionar todas las tarjetas de tiempo finalizadas",
     // src/components/payroll-export.tsx:274
     selectAllFinalized: "Seleccionar todas las finalizadas",
+    selectAllCompact: "Elegir todas",
     // src/components/payroll-export.tsx:274
     clearEmployeeSelection: "Borrar selección de empleados",
     // src/components/payroll-export.tsx:274
