@@ -15,15 +15,14 @@
 /* The sheet's action column keeps its buttons on one line (nowrap); the card's text wraps. */
 .body {white-space:normal;}
 
-/* Extend the label around the 20px checkbox without moving the attestation. */
-:global(.c-dcorr):lang(es) .confirmation { position: relative; }
-/* Keep the checkbox above the label’s extended hit area. */
-:global(.c-dcorr):lang(es) .confirmation input { position: relative; z-index: 1; }
-:global(.c-dcorr):lang(es) .confirmation::before {
+/* Keep the painted checkbox in place and give the native control its full tap area. */
+:global(.c-dcorr) .confirmation input { position: relative; }
+:global(.c-dcorr) .confirmation input::before {
   content: "";
   position: absolute;
-  inset-inline-start: -12px;
-  top: -10px;
-  width: 44px;
-  height: 44px;
+  left: 50%;
+  top: 50%;
+  width: max(100%, var(--b-btn-h));
+  height: max(100%, var(--b-btn-h));
+  transform: translate(-50%, -50%);
 }

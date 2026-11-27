@@ -47,7 +47,13 @@ describe('Close open punch card',()=>{
   });
 });
 
-test('gives the Spanish delegated attestation a full target around the checkbox', () => {
-  expect(css).toMatch(/:global\(\.c-dcorr\):lang\(es\) \.confirmation input \{[^}]*position: relative;[^}]*z-index: 1;/);
-  expect(css).toMatch(/:global\(\.c-dcorr\):lang\(es\) \.confirmation::before \{[^}]*width: 44px;[^}]*height: 44px;/);
+test('the native delegated checkbox has a centered full tap target in both languages', () => {
+  expect(css).toMatch(/:global\(\.c-dcorr\) \.confirmation input \{[^}]*position: relative;/);
+  const target=css.match(/:global\(\.c-dcorr\) \.confirmation input::before \{([^}]*)\}/)?.[1];
+  expect(target).toContain('width: max(100%, var(--b-btn-h));');
+  expect(target).toContain('height: max(100%, var(--b-btn-h));');
+  expect(target).toContain('left: 50%;');
+  expect(target).toContain('top: 50%;');
+  expect(target).toContain('transform: translate(-50%, -50%);');
+  expect(css).not.toContain('.confirmation::before');
 });
