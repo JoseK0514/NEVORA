@@ -3,6 +3,9 @@
  * [data-employee-mobile]; these give the same layout to `.em-delete--team`. Layered like account.css (nv-b), so the
  * layered !important declarations there are matched here with a stronger selector. */
 @layer nv-b {
+  html body .app-shell[data-nv-b] .eb-delete-keep .c-error {
+    white-space: normal;
+  }
   html body .app-shell[data-nv-b] .eb-delete-keep label[for="deletion-password"] {
     line-height: var(--b-lh-meta) !important;
   }
