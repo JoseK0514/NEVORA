@@ -316,7 +316,7 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
   {disabled?<div className="c-card">{otherDates}</div>:null}
   {/* Phase 7 (moments): the verified export is the shared done state (below, where the form was); every other notice (not
     * confirmed, already exported, out of date) keeps the plain callout and never the success mark. */}
-  {notice&&notice!==FILES_READY?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
+  {notice&&notice!==FILES_READY?<p className="c-callout c-callout--teal c-exp__notice" role="status">{notice}</p>:null}
   {/* R5: section labels sit above their cards. */}
   {disabled?<div className="c-card c-card__body c-exp__availability"><BState kind="paused" heading alert={launchRefused} titleRef={launchRefused?focusOnArrive:undefined} title={payrollExportAvailability[lang].title} line={payrollExportAvailability[lang].line}
    action={{label:payrollExportAvailability[lang].period,href:timecardsHref}}/></div>:shown?<section className="c-pay__group c-exp__result" aria-label={wording.exportReady}>
