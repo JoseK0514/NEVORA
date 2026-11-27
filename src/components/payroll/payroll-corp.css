@@ -479,3 +479,26 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
     }
   }
 }
+
+/* Payroll period fields and explanatory text keep their default sizes and grow with text settings. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-exp > .c-field > #time-export-period.c-in {
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+  }
+  html body .app-shell[data-nv-b] .c-exp > .c-field > .c-field__label {
+    font-size: var(--b-fs-meta) !important;
+    line-height: var(--b-lh-meta) !important;
+  }
+  html body .app-shell[data-nv-b] .c-exp .c-exp__ready .c-note,
+  html body .app-shell[data-nv-b] .c-exp .c-exp__waiting {
+    font-size: 0.8125rem !important;
+    line-height: 1.125rem !important;
+  }
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-exp > .c-field > .c-field__label {
+      font-size: 0.8125rem !important;
+      line-height: 1.125rem !important;
+    }
+  }
+}
