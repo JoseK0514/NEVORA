@@ -26,7 +26,7 @@ export function Feedback({ operation }: { operation: Pick<ReturnType<typeof useP
   }, [done]);
   // Said once: a confirmed result takes focus on its title, so the block is not also a live region for it.
   return <div className="c-pay__feedback" aria-live={done ? "off" : "polite"}>
-    {operation.error ? <p className="c-callout c-callout--red" role="alert">{operation.error}</p> : null}
+    {operation.error ? <p className="c-callout c-callout--red c-pay__error-notice" role="alert">{operation.error}</p> : null}
     {done ? <div className="b-done-host b-done-host--card c-pay__done"><BState silent kind="done" titleRef={title} title={operation.confirmed} line={t.checkStatus} /></div>
       : operation.message ? <p className="c-callout c-callout--teal">{operation.message}</p> : null}
     {operation.pending ? <CorpCard as="div" ariaLabel={t.unconfirmedLabel}><CorpBody>

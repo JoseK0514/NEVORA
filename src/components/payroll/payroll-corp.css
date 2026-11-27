@@ -617,3 +617,10 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
     line-height: 1.125rem !important;
   }
 }
+
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-pay .c-pay__error-notice {
+    font-size: 0.8125rem !important;
+    line-height: 1.125rem !important;
+  }
+}
