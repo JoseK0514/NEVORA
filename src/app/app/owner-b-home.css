@@ -570,7 +570,8 @@
 }
 
 /* QA on fdda95dd and 54216ce0 (Nov 27, 2026), person page at enlarged text. Every language. The status's dot slot keeps
- * its width when the status wraps, so the first letters aren't cut.
+ * its width when the status wraps, so the first letters aren't cut, and the status itself shrinks to the column (it is
+ * flex: none in the kit), so it wraps as soon as it doesn't fit.
  * - The header's clock chip ("Not clocked in · 3") and shift status ("Empieza 1:00 p. m.") couldn't wrap, so they ran
  *   past their column and under the call and message buttons. They now wrap inside it.
  * - A row's detail line ("The whole schedule couldn't be read") ended in an ellipsis; it now wraps.
@@ -578,7 +579,7 @@
  *   doesn't break the word. On phones the value moves under the title instead, in rows without an icon or avatar. */
 @layer nv-b {
   html:is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) .app-shell[data-nv-b] .c-page.c-person .c-person__who .c-person__state:not(#pp1):not(#pp2):not(#pp3):not(#pp4):not(#pp5):not(#pp6):not(#pp7):not(#pp8) { flex: 0 1 auto !important; max-width: 100% !important; white-space: normal !important; }
-  html:is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) .app-shell[data-nv-b] .c-page.c-person .c-person__who .c-person__state > *:not(#pp1):not(#pp2):not(#pp3):not(#pp4):not(#pp5):not(#pp6):not(#pp7):not(#pp8) { min-width: 0 !important; max-width: 100% !important; height: auto !important; white-space: normal !important; overflow-wrap: break-word !important; }
+  html:is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) .app-shell[data-nv-b] .c-page.c-person .c-person__who .c-person__state > *:not(#pp1):not(#pp2):not(#pp3):not(#pp4):not(#pp5):not(#pp6):not(#pp7):not(#pp8) { flex: 0 1 auto !important; min-width: 0 !important; max-width: 100% !important; height: auto !important; white-space: normal !important; overflow-wrap: break-word !important; }
   html:is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) .app-shell[data-nv-b] .c-page.c-person .c-person__who .c-person__state:not(#pp1):not(#pp2):not(#pp3):not(#pp4):not(#pp5):not(#pp6):not(#pp7):not(#pp8)::before { flex: none !important; }
   /* Home at 320 with 200% text (QA on 54216ce0): "See everyone" ran past the Today card and the coverage line
    * ("101 h 30 min of 336 h") was cut at the right. The card head lets its link wrap under the title, and the line wraps. */
