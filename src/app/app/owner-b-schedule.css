@@ -675,3 +675,22 @@
     }
   }
 }
+/* Keep the two controls inside the Spanish Schedule header at enlarged phone text. */
+@media (max-width: 359px) {
+  @container not style(--nv-rem: 16px) {
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right:has(> a[href^="/app/schedule/publish"]) {
+      max-inline-size: 100%;
+    }
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right:has(> a[href^="/app/schedule/publish"]) > :first-child {
+      flex-shrink: 0;
+    }
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right > a[href^="/app/schedule/publish"] {
+      min-inline-size: 0;
+      flex-shrink: 1;
+      white-space: normal;
+      height: auto;
+      padding-block: var(--b-space-4);
+      text-align: center;
+    }
+  }
+}
