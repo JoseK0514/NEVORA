@@ -24,6 +24,10 @@ export const SETUP_WELCOME_MS = 6000;
 
 
 /** Keep the Settings path together while it fits in the instruction's text column. */
+/* English flag B5 (Nov 27, 2026): at 320 with 200% text "tablets" is wider than the step's column. A soft hyphen lets it
+ * break as "tab-lets" (with a visible hyphen) on every browser, rather than relying on a hyphenation dictionary. */
+const englishSettingsStep = (text: string) => text.replace(/\btablets\b/, 'tab\u00adlets');
+
 function SpanishSetupInstruction({ text }: { text: string }) {
   const instruction = useRef<HTMLSpanElement>(null);
   const [wrapPath, setWrapPath] = useState(false);
@@ -249,7 +253,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <h1 ref={heading} tabIndex={-1} className={styles.title}>{t("Set up this tablet")}</h1>
         <p className={`${styles.lead} ${setup.lead}`}>{placeLine}</p>
         <ol className={setup.steps} aria-label={t('How to set it up')}>
-          <li><span className={setup.n} aria-hidden="true">1</span>{locale === 'es' ? <SpanishSetupInstruction text={settingsStep}/> : <span>{settingsStep}</span>}</li>
+          <li><span className={setup.n} aria-hidden="true">1</span>{locale === 'es' ? <SpanishSetupInstruction text={settingsStep}/> : <span>{englishSettingsStep(settingsStep)}</span>}</li>
           <li><span className={setup.n} aria-hidden="true">2</span><span>{t('The Owner adds this tablet and gets its setup code.')}</span></li>
           <li><span className={setup.n} aria-hidden="true">3</span><span>{t('Point this tablet’s camera at the code, or type the code below.')}</span></li>
         </ol>

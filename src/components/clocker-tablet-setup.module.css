@@ -38,6 +38,6 @@
 .root:not(.nv-any-lang) .steps .n { min-inline-size: 1.85em; min-block-size: 1.85em; align-self: start; line-height: 1; margin-block-start: 0; }
 
 /* English flag B5 follow-up (Nov 26, 2026): a step's text stays inside its row at 320 with 200% text (a long settings
- * path could run 7px past it; Spanish ran 24px). A word longer than the column hyphenates ("tab-lets") rather than
- * splitting at an arbitrary letter. */
+ * path could run 7px past it; Spanish ran 24px). English carries a soft hyphen in "tab-lets" (clocker-setup.tsx), so
+ * it breaks there with a hyphen rather than at an arbitrary letter. */
 .root .steps > li > :last-child { min-inline-size: 0; overflow-wrap: break-word; hyphens: auto; }
