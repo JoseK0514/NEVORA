@@ -155,3 +155,19 @@
     min-height: var(--b-btn-h) !important;
   }
 }
+
+/* Preserve full access instructions and their words when text grows. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a:is([href$="/clocker-pin"], [href^="/app/account-recovery?employee="]) .c-row__detail > span:first-child {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: normal !important;
+  }
+  /* A 9rem text basis fits the original compact row, then moves the trailing
+     action below when enlarged copy needs the full card width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a[href$="/clocker-pin"]:has(.c-row__detail) { flex-wrap: wrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a[href$="/clocker-pin"]:has(.c-row__detail) .c-row__main { flex: 1 1 9rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a[href$="/clocker-pin"]:has(.c-row__detail) .c-row__value { max-width: none !important; margin-left: auto !important; overflow-wrap: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access #person-access .c-rows > li:first-child .c-row__value { max-width: none !important; overflow-wrap: normal !important; }
+}
