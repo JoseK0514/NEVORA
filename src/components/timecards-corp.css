@@ -142,6 +142,9 @@
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] > td { background: var(--c-tint); }
   /* QA D13: #6B7075 on the #E6F1EF tint is 4.33:1, so the open row's grey text (status, breaks, units) is #4A4F54. */
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] { --c-grey: var(--c-ink2); }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-tc-desk .c-tc-table tbody tr[data-open] .b-status {
+    color: var(--b-grey-on-fill);
+  }
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] > td:first-child { box-shadow: inset 2px 0 0 var(--c-teal); }
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] + tr > td { box-shadow: none; }
 }
