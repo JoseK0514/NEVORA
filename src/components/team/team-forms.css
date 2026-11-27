@@ -139,3 +139,19 @@
   :is(#c-root, html) .c-formhead .c-formhead__dots > i { border: 1.5px solid CanvasText; box-shadow: none; }
   :is(#c-root, html) .c-formhead .c-formhead__dots > i[data-on] { forced-color-adjust: none; background: CanvasText; }
 }
+:is(#c-root, html) .app-shell[data-nv-b] .c-status-form .c-btn {
+  font-size: var(--b-fs-body);
+  line-height: var(--b-lh-body);
+  height: auto;
+  min-height: var(--b-btn-h);
+  white-space: normal;
+}
+:is(#c-root, html) .app-shell[data-nv-b] .c-status-form .c-note {
+  font-size: var(--b-fs-meta);
+  line-height: var(--b-lh-meta);
+}
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page form.c-status-form .c-btn.c-btn--full {
+    min-height: var(--b-btn-h) !important;
+  }
+}
