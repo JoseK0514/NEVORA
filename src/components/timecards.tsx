@@ -385,8 +385,29 @@ export function Timecards({initialPeriod,manager,actorId,locations=[],employeeCo
   },[manager]);
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
-    const query=window.matchMedia(INSPECTOR_QUERY),sync=()=>setInspector(query.matches);
-    sync();query.addEventListener('change',sync);return ()=>query.removeEventListener('change',sync);
+    const query=window.matchMedia(INSPECTOR_QUERY);
+    const frame=document.querySelector?.('.page-frame');
+    const sync=()=>{
+      const rootSize=typeof window.getComputedStyle==='function'
+        ? parseFloat(window.getComputedStyle(document.documentElement).fontSize)||16 : 16;
+      // The detail takes 420px with a 24px gutter. At enlarged text the week controls
+      // and table need at least 22rem beside it. The frame excludes the navigation rail.
+      const frameWidth=frame?.getBoundingClientRect().width||window.innerWidth;
+      setInspector(query.matches&&(rootSize<=16||frameWidth>=444+22*rootSize));
+    };
+    sync();
+    const layout=frame&&typeof ResizeObserver!=='undefined'?new ResizeObserver(sync):null;
+    if(frame)layout?.observe(frame);
+    const text=typeof MutationObserver!=='undefined'?new MutationObserver(sync):null;
+    text?.observe(document.documentElement,{attributes:true,attributeFilter:['style','data-text-step']});
+    window.addEventListener('resize',sync);
+    query.addEventListener('change',sync);
+    return ()=>{
+      layout?.disconnect();
+      text?.disconnect();
+      window.removeEventListener('resize',sync);
+      query.removeEventListener('change',sync);
+    };
   },[manager]);
   // The detail is the kit's sheet (P5). It stays open while its card refreshes and closes when the protected read is
   // cleared; that automatic close moves no focus.

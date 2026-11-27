@@ -2,7 +2,9 @@ import { expect, it } from '@rstest/core';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { createOwnedNextApp } from './owned-next-app';
+import { createOwnedNextApp, ownedProductionRequested } from './owned-next-app';
+import { OWNED_COLLAB_ORIGIN } from './owned-collab-origin';
+import { startOwnedTlsProxy } from './owned-tls-proxy';
 import { assignOwnedManagerCompanyAccess, seedOwnedApp, TEST_PASSWORD } from './owned-app-fixture';
 import { hashPassword } from '../../lib/auth/password';
 
@@ -12,7 +14,10 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
   const output = resolve(evidence, 'quick-wins');
   await mkdir(output, { recursive: true });
   const runtime = createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE ?? resolve('tools/ci-browser-runtime/package.json'))('playwright');
-  const app = await createOwnedNextApp(output, { payrollEnabled: true });
+  const production = ownedProductionRequested();
+  const origin = OWNED_COLLAB_ORIGIN;
+  const app = await createOwnedNextApp(output, { payrollEnabled: true, portalHttpsOrigin: origin, production });
+  const proxy = await startOwnedTlsProxy({[origin]: app.url}).catch(async error => { await app.close(); throw error; });
   const browsers: { close(): Promise<void> }[] = [];
   const checks: string[] = [], errors: string[] = [];
   let complete = false;
@@ -24,11 +29,10 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
     await assignOwnedManagerCompanyAccess(app.database.executor, 'QW-MANAGER');
     await q("INSERT INTO clocker_devices(id,location_id,name) VALUES('quick-wins-device','loc-1','Fictional quick wins tablet')");
     await q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status,version) VALUES('quick-wins-open','QAOWNER','loc-1','quick-wins-device',now()-interval '30 minutes','CLOCKED_IN',1)");
-    const origin = app.url.replace('127.0.0.1', 'localhost');
     for (const engine of ['chromium', 'webkit']) {
-      const browser = await runtime[engine].launch({ headless: true }); browsers.push(browser);
+      const browser = await runtime[engine].launch({ headless: true, proxy: {server: proxy.server} }); browsers.push(browser);
       for (const actor of ['QAOWNER', 'QW-MANAGER']) {
-        const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
+        const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, ignoreHTTPSErrors: true, serviceWorkers: 'block' });
         let holdRefresh = false;
         const pendingRefresh: (() => void)[] = [];
         const releaseRefresh = () => { holdRefresh = false; pendingRefresh.splice(0).forEach(release => release()); };
@@ -102,6 +106,18 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               expect(await page.getByRole('dialog').textContent()).toContain('Fictional Owner');
               // Nov 1 upscale (review M5): at 1440px the panel is a non-modal inspector; Escape still closes it.
               expect(await page.getByRole('dialog').evaluate((element: HTMLElement) => element.matches(':modal'))).toBe(false);
+              await page.setViewportSize({width:1024,height:900});
+              const originalTextSize=await page.evaluate(()=>document.documentElement.style.fontSize);
+              try {
+                await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+                await page.waitForSelector('dialog[open]:modal');
+                expect(await page.getByRole('dialog').textContent()).toContain('Fictional Owner');
+                await page.evaluate((value:string)=>{document.documentElement.style.fontSize=value;},originalTextSize);
+                await page.waitForSelector('dialog[open][data-inspector]');
+              } finally {
+                await page.evaluate((value:string)=>{document.documentElement.style.fontSize=value;},originalTextSize);
+                await page.setViewportSize({width:1440,height:900});
+              }
               await page.keyboard.press('Escape');
               await page.getByRole('dialog').waitFor({ state: 'hidden' });
               checks.push(engine + ': ' + actor + ' folded timecards keyboard focus and drawer link');
@@ -176,7 +192,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
     complete = true;
   } finally {
     await Promise.all(browsers.map(browser => browser.close()));
-    await app.close();
-    await writeFile(output + '/report.json', JSON.stringify({ complete, checks, errors, source: app.sourceHashes, fictionalOnly: true, runtime: 'Next development with owned PostgreSQL transport' }, null, 2));
+    try { await proxy.close(); } finally { await app.close(); }
+    await writeFile(output + '/report.json', JSON.stringify({ complete, checks, errors, source: app.sourceHashes, fictionalOnly: true, runtime: `Next ${production ? 'production' : 'development'} with owned HTTPS and PostgreSQL transport` }, null, 2));
   }
 }, 240000);
