@@ -5,6 +5,7 @@ import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { TEAM_COPY } from "./team-copy";
 import { BFilters } from "./owner-b/b-kit";
 import { TeamLivePill, teamStateOf, useTeamLive, type TeamState } from "./team-live";
+import { useTeamReturn } from "./owner-b/team-return";
 
 /** One active person's row, as the server page lays it out (name, "Position · Location"). The row's visible content is its
  * spoken name, so the live status is read too and nothing off screen is added (QA A4-03, Nov 21, 2026). */
@@ -24,6 +25,9 @@ export function TeamDeskPeople({ rows, limit, peopleLabel }: { rows: TeamDeskRow
   const live = useTeamLive();
   const t = TEAM_COPY[usePortalLang()];
   const [filter, setFilter] = useState<Filter>("all");
+  // English flag A1 (Nov 26, 2026): Back from a profile restores this list's filter, row and keyboard focus too (the phone
+  // list already did); the shared Team visit remembers the row.
+  const rememberRow = useTeamReturn(live.ready, filter, setFilter);
   const count = (key: Filter) => rows.filter(row => inFilter(key, teamStateOf(live, row.id))).length;
   const shown = rows.filter(row => inFilter(filter, teamStateOf(live, row.id)));
   const listed = filter === "all" && limit ? shown.slice(0, limit) : shown;
@@ -35,7 +39,7 @@ export function TeamDeskPeople({ rows, limit, peopleLabel }: { rows: TeamDeskRow
       ...(live.partial ? [] : [{ key: "off" as const, label: t.offToday, count: count("off"), current: filter === "off", onSelect: () => setFilter("off") }]),
     ]} /> : null}
     {listed.length ? <CorpRows label={peopleLabel}>{listed.map(row => <li key={row.id}>
-      <CorpRow href={row.href} bold title={row.name} detail={row.detail} avatar={<CorpAvatar name={row.name} initials={row.initials} />}
+      <CorpRow href={row.href} onLinkClick={rememberRow} bold title={row.name} detail={row.detail} avatar={<CorpAvatar name={row.name} initials={row.initials} />}
         trail={<TeamLivePill employeeId={row.id} />} chevron={!!row.href} />
     </li>)}</CorpRows>
       : <p className="c-team__empty c-team__empty--filter" role="status">{filter === "working" ? t.noOneClockedIn : filter === "late" ? t.everyoneClockedIn : t.noOneOff}</p>}

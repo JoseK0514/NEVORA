@@ -3,7 +3,7 @@ import { BState } from "../owner-b/b-kit";
 import "./corp.css";
 import Link from "next/link";
 import { cloneElement, isValidElement } from "react";
-import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes, CSSProperties } from "react";
+import type { MouseEvent, ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes, CSSProperties } from "react";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { BrandWordmark } from "@/components/brand-mark";
@@ -102,6 +102,8 @@ export function CorpAvatar({ initials, grey, large, open, name }: { initials?: s
 
 export type CorpRowProps = {
   title: ReactNode;
+  /** A link row's click, before it navigates (Team remembers the row it opened). */
+  onLinkClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   detail?: ReactNode;
   /** Right side of the detail line (usually a pill), so the time stays on one line. */
   detailEnd?: ReactNode;
@@ -141,7 +143,7 @@ function rowIcon(icon: ReactNode): ReactNode {
 }
 
 /** One list row: optional lead column, avatar or icon; title and 13px detail; value, trail and chevron on the right. */
-export function CorpRow({ title, detail, detailEnd, lead, avatar, icon, value, valueTone, trail, href, onClick, chevron, bold, danger, one, tall, label, id, prefetch, native, disabled, current }: CorpRowProps) {
+export function CorpRow({ title, detail, detailEnd, lead, avatar, icon, value, valueTone, trail, href, onClick, onLinkClick, chevron, bold, danger, one, tall, label, id, prefetch, native, disabled, current }: CorpRowProps) {
   const className = `c-row${one ?? !detail ? " c-row--one" : ""}${tall ? " c-row--tall" : ""}${danger ? " c-row--danger" : ""}`;
   const showChev = chevron ?? (!!(href || onClick) && !trail && !disabled);
   const body = <>
@@ -157,8 +159,8 @@ export function CorpRow({ title, detail, detailEnd, lead, avatar, icon, value, v
     {showChev ? <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" /> : null}
   </>;
   if (href && !disabled) return native
-    ? <a id={id} className={className} href={href} aria-label={label} aria-current={current ? "page" : undefined}>{body}</a>
-    : <Link id={id} className={className} href={href} aria-label={label} prefetch={prefetch} aria-current={current ? "page" : undefined}>{body}</Link>;
+    ? <a id={id} className={className} href={href} aria-label={label} aria-current={current ? "page" : undefined} onClick={onLinkClick}>{body}</a>
+    : <Link id={id} className={className} href={href} aria-label={label} prefetch={prefetch} aria-current={current ? "page" : undefined} onClick={onLinkClick}>{body}</Link>;
   if (onClick && !disabled) return <button id={id} type="button" className={className} aria-label={label} onClick={onClick}>{body}</button>;
   return <div id={id} className={className} aria-label={label} aria-disabled={disabled || undefined}>{body}</div>;
 }

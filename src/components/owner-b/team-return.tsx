@@ -29,7 +29,7 @@ export function useTeamReturn(ready: boolean, filter: Filter, setFilter: (value:
     if (filter !== saved.filter) { setFilter(saved.filter); return; }
     if (!ready) return;
     const frame = requestAnimationFrame(() => {
-      const row = Array.from(document.querySelectorAll<HTMLAnchorElement>("a.b-row[href]"))
+      const row = Array.from(document.querySelectorAll<HTMLAnchorElement>("a.b-row[href], a.c-row[href]"))
         .find(link => link.pathname === saved.profile && link.getClientRects().length > 0);
       if (row) {
         row.scrollIntoView({block: "nearest", behavior: "instant"});
