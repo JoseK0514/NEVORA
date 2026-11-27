@@ -1,7 +1,7 @@
 export const copy = {
   en: {
     // src/components/clocker-owner-copy.ts:51
-    compactGetCode: "Get setup code",
+    compactGetCode: "Get code",
     // src/components/clocker-owner-copy.ts:26
     connectedOne: "{connected} connected",
     // src/components/clocker-owner-copy.ts:26

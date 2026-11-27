@@ -108,10 +108,10 @@ describe('the page', () => {
     expect(html).not.toContain('b-btn b-btn--teal');
     expect(html).toMatch(/<button type="button" class="ck-trow__main ck-trow__open" data-clocker-add="" disabled="">.*Add tablet<\/span>/);
   });
-  it('identifies the tablet when the Spanish setup-code action uses compact wording', () => {
+  it('identifies the tablet when the setup-code action uses compact wording, in both languages (English flag B3)', () => {
     const html = render(tablets, locations, 'es');
     expect(html).toMatch(/aria-label="Obtener código, Patio tablet"[^>]*><span class="ck-code-label"><span class="ck-code-label__full">Obtener código/);
-    expect(render(tablets)).not.toContain('ck-code-label');
+    expect(render(tablets)).toMatch(/aria-label="Get setup code, Patio tablet"[^>]*><span class="ck-code-label"><span class="ck-code-label__full">Get setup code/);
   });
   it('empty: says what a time clock tablet is and leads to adding one', () => {
     const html = render([]);

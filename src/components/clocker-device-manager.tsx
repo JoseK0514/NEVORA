@@ -29,7 +29,7 @@ type Ticket = { code: string; expiresAt: string; device: ClockerDeviceView; adde
 const subscribe = () => () => {};
 const needsSetup = (device: ClockerDeviceView) => device.state === 'UNREGISTERED' || device.state === 'PENDING' || device.state === 'EXPIRED';
 
-/** Measure the complete Spanish label against the row's action column, even while its shorter label is visible. */
+/** Measure the complete label against the row's action column, even while its shorter label is visible. */
 function SetupCodeLabel({ full, compact }: { full: string; compact: string }) {
   const fullText = useRef<HTMLSpanElement>(null);
   const [shortened, setShortened] = useState(false);
@@ -357,9 +357,9 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
   const row = (item: ClockerDeviceView) => {
     const active = locationActive(item), line = tabletLine(item, { place: place(item.locationId), locationActive: active, timeZone, lang });
     const removedRow = item.state === 'REVOKED';
-    const setupLabel = lang === 'es'
-      ? <SetupCodeLabel full={t.getCode} compact={tabletWords.es.compactGetCode} />
-      : t.getCode;
+    // English flag B3 (Nov 26, 2026): at 768 with 200% text "Get setup code" ran 27px past its button; English now falls
+    // back to "Get code" there, as Spanish falls back to its shorter label.
+    const setupLabel = <SetupCodeLabel full={t.getCode} compact={tabletWords[lang].compactGetCode} />;
     const go = removedRow
       ? <button type="button" className="b-btn b-btn--ghost ck-trow__go" data-clocker-device={item.id} aria-label={t.setUpAgainFor(item.name)} disabled={!hydrated || !active} onClick={event => open({ operation: 'ROTATE', device: item }, event)}>{t.setUpAgain}</button>
       : !active ? null : needsSetup(item)

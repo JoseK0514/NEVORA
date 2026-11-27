@@ -47,6 +47,7 @@ describe('Close open punch card',()=>{
   });
 });
 
-test('gives the Spanish delegated attestation a full target around the checkbox', () => {
-  expect(css).toMatch(/:global\(\.c-dcorr\):lang\(es\) \.confirmation::before \{[^}]*width: 44px;[^}]*height: 44px;/);
+// English flag C7 (Nov 26, 2026): the label itself reaches around the checkbox, in both languages, with no layout shift.
+test('gives the delegated attestation a full target around the checkbox', () => {
+  expect(css).toMatch(/:global\(\.c-dcorr\) \.confirmation \{ padding-block: 10px; margin-block: -10px; padding-inline-start: 12px; margin-inline-start: -12px; \}/);
 });

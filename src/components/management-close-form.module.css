@@ -15,13 +15,8 @@
 /* The sheet's action column keeps its buttons on one line (nowrap); the card's text wraps. */
 .body {white-space:normal;}
 
-/* Extend the label around the 20px checkbox without moving the attestation. */
-:global(.c-dcorr):lang(es) .confirmation { position: relative; }
-:global(.c-dcorr):lang(es) .confirmation::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: -12px;
-  top: -10px;
-  width: 44px;
-  height: 44px;
-}
+/* Extend the label around the 20px checkbox without moving the attestation (English flag C7, Nov 26, 2026, both
+ * languages): the label's own box reaches 12px left of and 10px above and below the checkbox, with matching negative
+ * margins so nothing moves. A tap there is a tap on the label, which toggles the checkbox. (The earlier Spanish-only
+ * ::before was drawn under the form and never took the tap.) */
+:global(.c-dcorr) .confirmation { padding-block: 10px; margin-block: -10px; padding-inline-start: 12px; margin-inline-start: -12px; }

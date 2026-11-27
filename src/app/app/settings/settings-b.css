@@ -270,16 +270,16 @@
 /* At large text sizes, put the supporting fact below the label inside the same
    tappable row. Use the actual row width because Settings also runs beside a rail. */
 @layer nv-b {
-  .c-page.c-settings:not(.nv-any-lang) .c-rows > li,
-  .c-page:not(.nv-any-lang) li[data-location],
-  .c-page:not(.nv-any-lang) #photo-policy-form .c-rows > li {
+  .c-page.c-settings[lang=es] .c-rows > li,
+  .c-page[lang=es] li[data-location],
+  .c-page[lang=es] #photo-policy-form .c-rows > li {
     container: setting-entry / inline-size;
   }
-  .c-page:not(.nv-any-lang) #edit-location-form .c-rows > li:has(> .c-row > .c-row__value) {
+  .c-page[lang=es] #edit-location-form .c-rows > li:has(> .c-row > .c-row__value) {
     container: inactive-clocker / inline-size;
   }
   @container setting-entry (max-width: 24rem) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page:not(.nv-any-lang) :is(#settings-pay, #settings-clocker, #settings-company, #settings-scheduling, li[data-location]) .c-row:is(:has(> .c-row__value), :has(> .c-row__trail)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] :is(#settings-pay, #settings-clocker, #settings-company, #settings-scheduling, li[data-location]) .c-row:is(:has(> .c-row__value), :has(> .c-row__trail)):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       display: grid !important;
       grid-template-columns: auto minmax(0, 1fr) auto !important;
       grid-template-areas: "icon main chev" ". fact chev" !important;
@@ -290,7 +290,7 @@
       & > .c-chev { grid-area: chev !important; }
       & .c-row__title, & .c-row__detail span { hyphens: none !important; overflow-wrap: normal !important; word-break: normal !important; }
     }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page:not(.nv-any-lang) #photo-policy-form label.c-row:has(> .ck-switch__state):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #photo-policy-form label.c-row:has(> .ck-switch__state):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       display: grid !important;
       grid-template-columns: minmax(0, 1fr) auto !important;
       grid-template-areas: "main toggle" "status toggle" !important;
@@ -301,7 +301,7 @@
     }
   }
   @container inactive-clocker (max-width: 30rem) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page:not(.nv-any-lang) #edit-location-form .c-row:has(> .c-row__value):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] #edit-location-form .c-row:has(> .c-row__value):not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       display: grid !important;
       grid-template-areas: "main chev" "value chev" !important;
       grid-template-columns: minmax(0, 1fr) auto !important;
@@ -315,15 +315,15 @@
 
 /* At double text size a narrow card still needs room for a complete location or feature name. */
 @layer nv-b {
-  .c-page:not(.nv-any-lang) #features li:has(#module-payStatements) { container: pay-statements-option / inline-size; }
+  .c-page[lang=es] #features li:has(#module-payStatements) { container: pay-statements-option / inline-size; }
   @container setting-entry (max-width: 10rem) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-settings:not(.nv-any-lang) .c-row:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-settings[lang=es] .c-row:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       column-gap: var(--b-space-4) !important;
       & .c-row__title { hyphens: none !important; overflow-wrap: normal !important; word-break: normal !important; }
     }
   }
   @container pay-statements-option (max-width: 10rem) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page:not(.nv-any-lang) label[for=module-payStatements]:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page[lang=es] label[for=module-payStatements]:not(#s1):not(#s2):not(#s3):not(#s4):not(#s5):not(#s6):not(#s7) {
       display: grid !important;
       grid-template-columns: minmax(0, 1fr) !important;
       gap: var(--b-space-4) !important;
@@ -333,7 +333,7 @@
 }
 
 @layer nv-b {
-  .c-page:not(.nv-any-lang) .c-row[href="/app/settings/locations/new"] .c-row__title {
+  .c-page[lang=es] .c-row[href="/app/settings/locations/new"] .c-row__title {
     hyphens: none !important;
     word-break: normal !important;
     overflow-wrap: normal !important;
@@ -341,8 +341,8 @@
 }
 
 @layer nv-b {
-  .c-page:not(.nv-any-lang) :is(#features, #features-words) :is(.c-section__label, .c-row__detail, .c-row__detail span),
-  .c-page:not(.nv-any-lang) a[href="/app/settings/clocker/photos/review"] .c-row__detail {
+  .c-page[lang=es] :is(#features, #features-words) :is(.c-section__label, .c-row__detail, .c-row__detail span),
+  .c-page[lang=es] a[href="/app/settings/clocker/photos/review"] .c-row__detail {
     hyphens: none !important;
   }
 }

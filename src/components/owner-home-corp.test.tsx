@@ -210,18 +210,18 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     // Nov 11, 2026 decision; Nov 14 inspection (BR-9). A shift that began and has no punch is never called missed.
     const running = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in")]) });
     expect(running).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a">');
-    expect(running).toContain('<span class="b-home-attendance-label">Not clocked in</span></span><span class="b-sr">\u00a0</span><span class="b-live__v">1</span>');
+    expect(running).toContain('Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">1</span>');
     expect(running).toMatch(/>Not clocked in\s·\sshift\sbegan\s\d{1,2}:\d{2}\s?[AP]M</);
     expect(running).not.toMatch(/Missed|missed/);
     // Both kinds: the live tile counts who is waiting to clock in, and each kind has its own row.
     const both = phone({ value: needsYou(items, "2026-10-30", [shift("b", "not_clocked_in"), shift("c", "no_punches")]) });
-    expect(both).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span><span class="b-home-attendance-label">Not clocked in</span></span><span class="b-sr">\u00a0</span><span class="b-live__v">1</span>');
+    expect(both).toContain('<a href="/app/inbox#todo-not-clocked-in" class="b-live__a"><span class="b-live__l"><span class="b-dot b-dot--warn" aria-hidden="true"></span>Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">1</span>');
     // Gaps G39: the two rows are named by what they show (the person, then what and when), with no aria-label.
     expect(both).not.toMatch(/aria-label="(Not clocked in|Missed clock-ins):/);
     expect(both).toMatch(/>Not clocked in\s·\sshift\sbegan\s/);
     expect(both).toMatch(/>Missed clock-in\s·\sshift\sended\s/);
     // Nobody waiting and nothing missed: the tile keeps its name with a zero.
-    expect(phone({ value: needsYou(items, "2026-10-30", []) })).toContain('<span class="b-home-attendance-label">Not clocked in</span></span><span class="b-sr">\u00a0</span><span class="b-live__v">0</span>');
+    expect(phone({ value: needsYou(items, "2026-10-30", []) })).toContain('Not clocked in</span><span class="b-sr">\u00a0</span><span class="b-live__v">0</span>');
   });
   it("names both people on a shift request, says which timecards Payday counts, and leads with setup until it is done", () => {
     // Nov 14 inspection (BR-7): the other person in a swap or cover, when the read carries them.

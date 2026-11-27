@@ -54,5 +54,5 @@ it('names the confirmation rule the DEC6 way in review and in the Manager list',
 it('keeps a complete Spanish acknowledgement switch target around its visible track', async () => {
  const {readFileSync}=await import('node:fs');
  const css=readFileSync(new URL('./messages-manager-b.css',import.meta.url),'utf8');
- expect(css).toMatch(/\.mb-tog:lang\(es\)::before \{[^}]*inset: -7px 0;/);
+ expect(css).toMatch(/.mb-tog:not\(\.nv-any-lang\)::before \{[^}]*inset: -7px 0;/);
 });
