@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Retire the 38 helper branches (Jose, Nov 26, 2026). Run from a clone of JoseK0514/NEVORA with push access.
+# Retire the helper branches (Jose, Nov 26, 2026; refreshed Nov 27). Run from a clone of JoseK0514/NEVORA with push access.
+# Keeps main, development and claude-codex-collab-nevora. This run retires 36 branches; -qa and -screens-final are still
+# in use (QA evidence, guide builds) and are retired after the final guide build by re-running with them added back.
 # Step 1 tags each branch at the exact commit recorded here, step 2 checks every tag on GitHub, and step 3 deletes a
 # branch only when its tag matches and the branch has not moved since. Safe to re-run.
 set -euo pipefail
@@ -40,12 +42,10 @@ claude-codex-collab-nevora-messages-2 170d012272d95c44a4f73cc11f1e1627dc2840be
 claude-codex-collab-nevora-payroll-2 d9282e7191beb86505c9d0696800702b1097885f
 claude-codex-collab-nevora-prodcheck 19c9b09fe482bb21035ee3a0fe7132bc8b13bdf4
 claude-codex-collab-nevora-profile a25021850a460f47c1f38874463dc4d955d4de73
-claude-codex-collab-nevora-qa b00d1863959ec113b27aaa933bd4cf0d465563bc
 claude-codex-collab-nevora-requests-account ea2601e589a26806d9ab39a82e661710ab20c2cc
 claude-codex-collab-nevora-rondo 8a400c4213c23ab9dceb2b63aa0157574cad6665
 claude-codex-collab-nevora-schedule-tools a2381a1671c9b51cd246d4ec447b78da5f96579c
 claude-codex-collab-nevora-schedule-tools-2 dcc12231d4cc93b919c09235e97671625e757dd1
-claude-codex-collab-nevora-screens-final 0dab3e15ee886b8a9ab1061ab7b6fe5363a09e27
 claude-codex-collab-nevora-settings-2 5032ed10b57321922934bfd95e4bc24445de197d
 claude-codex-collab-nevora-settings-base cbc3d4bc7287b7beffb9d0fcc327824e579b6133
 claude-codex-collab-nevora-settings-billing 528f77995e9f5ba41ac8f3a6f32ebc48e9ed8b9a
