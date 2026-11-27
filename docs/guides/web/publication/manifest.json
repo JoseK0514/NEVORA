@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "date": "2026-11-26",
+  "date": "2026-11-27",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "caa768fbf8ddfb1e1a4a117cd9e6faa9a6205d37",
-  "applicationHash": "9ae094d3b45445bae2ed7cad5832bf125ecc8e6e91d28653ca4a2bddf4b8fda2",
+  "sourceSha": "ca129b14ebda5662e7304c917d39bb4e07a7c206",
+  "applicationHash": "5d087ea7f33ad8a75a0412b1505df44d1530432e043ed723570791bb6a3366b5",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "94e9da77b419a672e0e53bf2a2e33a134894bc8adf82c04d8fe66bd0c38e3f4e"
@@ -39,7 +39,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "8f7f15715cec79564dfab8cd01afdf4d9ab534fc38057d1e2d00c8da7d293175"
+          "sha256": "bd27d68ae8622ed64f8e786c328a27e2179d20481b54dc4c479007743359755a"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -224,7 +224,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "e079e50bab76866315429e353bf7f9a6ac3b76241f0221093f511d78bf790200",
+        "sha256": "a5412faab449c8f0b1c25eda2ffa772a07f1f050e3c6a9ed08627fddcc52d5a0",
         "pageCount": 8
       }
     },
@@ -262,7 +262,7 @@
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "8f7f15715cec79564dfab8cd01afdf4d9ab534fc38057d1e2d00c8da7d293175"
+          "sha256": "bd27d68ae8622ed64f8e786c328a27e2179d20481b54dc4c479007743359755a"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
@@ -347,7 +347,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "e32e100dd9bc0668790daa18b47f85fa2e1b0854d6cdf8de1ab004d426b3a7c9",
+        "sha256": "d45d08e5a4c85bbac301f0bce443e9e860f1abbe8dcb68f871079a9a3cb2e023",
         "pageCount": 4
       }
     },
@@ -445,7 +445,7 @@
         },
         {
           "path": "src/components/employee-b/home-b.tsx",
-          "sha256": "472dca538662afc94e39c4c89313c195cd62f402258e04b9d857884aa417723c"
+          "sha256": "8b2223783adb1cb72bf04686fdb5bf87df14b950d73e6713aa75c49561aef67c"
         },
         {
           "path": "src/components/access-recovery/support-reference-seam.ts",
@@ -466,7 +466,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "bf7601f8edcfa11da037029267587c2ad0fd7a054c254ca4a2a0a62122feb12c",
+        "sha256": "ac6136ff9cf35dec4fe336f22f9dd5616db217d8db665be093f19aceb9263e44",
         "pageCount": 3
       }
     },
@@ -641,7 +641,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "bb8164825d0797d22547d460c534ab7d2167c6181416612eb20d897f40d44dd0",
+        "sha256": "3ee74b7f2a3d768815be6bf5b7fdc9a0fb43ae488621570cdeaa0f1598e055f5",
         "pageCount": 5
       }
     },
@@ -904,7 +904,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "fa9ded82ad33e1bd90de80c5250204006580f5cea3046b289037624570651d15",
+        "sha256": "df46688fbca485b62454e3958922df6f9c6799ce8e0244c37df13f102f0230d3",
         "pageCount": 7
       }
     },
@@ -1099,7 +1099,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "3170a3e5702fe534e780d9d0d74a5c0384056d4e27379d4cb99d2696d9a571b4",
+        "sha256": "743f047fde53c8d067af44ac2d5f84b40b3971a340d432031c149210e495c0d0",
         "pageCount": 7
       }
     }
