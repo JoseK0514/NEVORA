@@ -8,6 +8,7 @@ import { shown as onScreen } from "./employee-b/account-host";
 import { LastOwnerCard } from "./access-recovery/last-owner-card";
 import { supportReferenceOfState } from "./access-recovery/support-reference-seam";
 import type { AuthLang } from "@/lib/auth-copy";
+import { PRIVATE_SESSION_ENDED } from "@/lib/private-snapshot-client";
 
 type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
 type Done = Extract<DeletionFormState, { reference: string }>;
@@ -34,6 +35,9 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   const [state, action, pending] = useActionState<DeletionFormState, FormData>(async (previous, formData) => {
     let next: DeletionFormState;
     try { next = await requestAccountDeletion(previous, formData); } catch { next = { kind: "uncertain" }; }
+    if (next.kind === "received" || next.kind === "duplicate" || next.kind === "signed_out") {
+      window.dispatchEvent(new Event(PRIVATE_SESSION_ENDED));
+    }
     if (next.kind === "uncertain") setRetry(true);
     // The password is held only while it can still be needed for this account's request.
     // React resets an action form's uncontrolled fields after every reply; forget the copy too, so a later resize

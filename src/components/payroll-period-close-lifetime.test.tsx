@@ -14,6 +14,7 @@ rs.mock('react',()=>({...rstestOriginal0,
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 import {PayrollPeriodClose} from './payroll-period-close';
+import {copy} from './payroll-period-close-copy';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 const operationId='22222222-2222-4222-8222-222222222222';
 const original={action:'POPULATION',command:{...period,operationId,expectedRevision:0,sourceHash:'a'.repeat(64),members:[{employeeId:'PRIVATE-E1',disposition:'ZERO_TIME',reason:'Fictional reviewed zero time',employmentFacts:'Fictional employment fact',employmentBasis:'MANAGER_ATTESTED'}]}};
@@ -94,4 +95,38 @@ it('keeps the population form and selected receipts across a refresh where only 
  await rs.advanceTimersByTimeAsync(10000);expect(reads).toBe(2);
  expect(formPath()).toEqual(before);
  expect(control(n=>n.type==='input'&&n.props.type==='checkbox').checked).toBe(true);
+});
+
+it('a conflicting handoff retires the reviewed period until a new read',async()=>{
+ const pending={action:'HANDOFF',command:{operationId,manifestId:'reviewed',destination:'Fictional system',reference:'F-1',kind:'REPORTED_SUBMITTED'}};
+ localStorage.setItem(recoveryKey,JSON.stringify(pending));
+ rs.stubGlobal('fetch',async(_url:string,init:RequestInit)=>{
+  const input=JSON.parse(String(init.body));
+  return input.action==='READ'?Response.json(ready()):Response.json({state:'conflict'},{status:409});
+ });
+ await mount();click('Try again');await flush();
+ expect(html()).toContain('Refresh the list and review the current record');
+ expect(control(n=>n.props.role==='status').tabIndex).toBe(-1);
+ expect(html()).not.toContain('PRIVATE Period Worker');expect(localStorage.getItem(recoveryKey)).toBeNull();
+ click('Refresh the list');await flush();expect(html()).toContain('PRIVATE Period Worker');
+ expect(control(n=>n.props.role==='status').tabIndex).toBeUndefined();
+});
+
+it('keeps keyboard focus when an ordinary refusal happens to use the handoff wording',async()=>{
+ localStorage.setItem(recoveryKey,JSON.stringify(original));
+ rs.stubGlobal('fetch',async(_url:string,init:RequestInit)=>{
+  const input=JSON.parse(String(init.body));
+  return input.action==='READ'?Response.json(ready()):Response.json({state:'invalid',message:copy.en.handoffChanged},{status:400});
+ });
+ await mount();click('Try again');await flush();
+ const notice=control(n=>n.props.role==='status');
+ expect(notice.children).toBe(copy.en.handoffChanged);
+ expect(notice.tabIndex).toBeUndefined();
+});
+
+it('an unconfirmed handoff retries the original operation and body',async()=>{
+ const pending={action:'HANDOFF',command:{operationId,manifestId:'reviewed',destination:'Fictional system',reference:'F-2',kind:'REPORTED_IMPORTED'}};
+ localStorage.setItem(recoveryKey,JSON.stringify(pending));transport();await mount();
+ click('Try again');await flush();click('Try again');await flush();
+ expect(commands).toEqual([pending,pending]);expect(JSON.parse(localStorage.getItem(recoveryKey)!)).toEqual(pending);
 });

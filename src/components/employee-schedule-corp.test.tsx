@@ -67,3 +67,11 @@ it('gaps G66: no Schedule row or open-shifts row carries a label that differs fr
   // The phone row's day is spoken: the day lead isn't hidden, and a space keeps "Mon" and "2" apart.
   expect(output).toMatch(/<span class="b-day eb-day[^"]*"><span>Mon<\/span><span class="b-sr"> <\/span><b>2<\/b><\/span>/);
 });
+
+it('shows the address for a visible assignment and drops it on an unavailable week', () => {
+  const row = {...shift('qa-address', '2026-11-01'), locationAddress: '21 Calle Norte\nLocal <B>'};
+  const ready = html({shifts: [row]});
+  expect(ready).toContain('21 Calle Norte\nLocal &lt;B&gt;');
+  expect(html({state: 'unavailable', shifts: [row]})).not.toContain('21 Calle Norte');
+  expect(html({shifts: [{...row, locationAddress: null}]})).not.toContain('class="assignment-address"');
+});

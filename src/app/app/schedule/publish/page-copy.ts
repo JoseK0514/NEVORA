@@ -134,6 +134,8 @@ export const copy = {
     eachPersonChangeNotifiedOnceWhen: "Each person with a change is notified once when you publish.",
     // src/app/app/schedule/publish/page.tsx:191
     publishChangesAnyway: "Publish changes anyway",
+    // src/app/app/schedule/publish/page.tsx:41
+    publishAnywayShort: "Publish anyway",
     // src/app/app/schedule/publish/page.tsx:191
     publishChanges: "Publish changes",
     // src/app/app/schedule/publish/page.tsx:193
@@ -308,6 +310,8 @@ export const copy = {
     eachPersonChangeNotifiedOnceWhen: "Cada persona con un cambio recibe un solo aviso cuando publicas.",
     // src/app/app/schedule/publish/page.tsx:191
     publishChangesAnyway: "Publicar cambios de todos modos",
+    // src/app/app/schedule/publish/page.tsx:41
+    publishAnywayShort: "Publicar aun así",
     // src/app/app/schedule/publish/page.tsx:191
     publishChanges: "Publicar",
     // src/app/app/schedule/publish/page.tsx:193

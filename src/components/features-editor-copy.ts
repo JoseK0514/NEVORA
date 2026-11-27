@@ -111,6 +111,7 @@ const en = {
   sessionEnded: 'Your session ended',
   notSavedYet: 'Not saved yet',
   notSaved: 'Not saved',
+  reviewTimeOff: 'Review time-off requests',
   signIn: 'Sign in',
   tryAgain: 'Try again',
 };
@@ -137,6 +138,7 @@ const es: typeof en = {
   savedLine: copy.es.saved,
   sessionEnded: copy.es.yourSessionEnded,
   notSavedYet: copy.es.notSavedYet,
+  reviewTimeOff: 'Revisar solicitudes de días libres',
   notSaved: copy.es.notSaved,
   signIn: copy.es.signIn,
   tryAgain: copy.es.tryAgain,

@@ -158,7 +158,7 @@
 :is(#c-root, html) .c-exp .c-exp__item[open] > summary .c-chev { transform: rotate(90deg); }
 :is(#c-root, html) .c-exp .c-exp__body { display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; }
 :is(#c-root, html) .c-exp .c-exp__bar { display: flex; gap: 20px; }
-:is(#c-root, html) .c-exp .c-exp__bar .c-link { min-height: 44px; margin: -8px 0; }
+:is(#c-root, html) .c-exp .c-exp__bar .c-link { min-height: 44px; margin: 0; }
 :is(#c-root, html) .c-exp .c-exp__bar .c-link:disabled { color: var(--c-faint); cursor: default; }
 :is(#c-root, html) .c-exp .c-exp__people { margin: 0 -16px; }
 :is(#c-root, html) .c-exp .c-exp__person { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 16px; cursor: pointer; }
@@ -372,6 +372,11 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 
 /* AR-4: "Who’s included" opens from Payroll's blocker and scrolls clear of the app header. */
 :is(#c-root, html) .c-exp .c-exp__included { scroll-margin-top: 96px; }
+:is(#c-root, html) .c-exp .c-exp__included summary :is(.c-row__title, .c-row__detail > span:first-child) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
 /* Phase 7 (Nov 17, 2026; RA-21): this movement had no reduced-motion rule. */
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .c-pset .c-pset__item > summary .c-chev, :is(#c-root, html) .c-exp .c-exp__item > summary .c-chev, :is(#c-root, html) .c-pay .c-row .c-pay__caret { transition: none; }
@@ -472,5 +477,150 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
       & > .c-row__value { flex: 0 0 auto !important; width: auto !important; max-width: 100% !important; text-align: start !important; margin: 0 !important; }
       & > .c-chev { position: absolute !important; inset-inline-end: var(--b-inset) !important; top: 50% !important; translate: 0 -50%; }
     }
+  }
+}
+
+/* Payroll period fields and explanatory text keep their default sizes and grow with text settings. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-exp > .c-field > #time-export-period.c-in {
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+  }
+  html body .app-shell[data-nv-b] .c-exp > .c-field > .c-field__label {
+    font-size: var(--b-fs-meta) !important;
+    line-height: var(--b-lh-meta) !important;
+  }
+  html body .app-shell[data-nv-b] .c-exp .c-exp__ready .c-note,
+  html body .app-shell[data-nv-b] .c-exp .c-exp__waiting {
+    font-size: 0.8125rem !important;
+    line-height: 1.125rem !important;
+  }
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-exp > .c-field > .c-field__label {
+      font-size: 0.8125rem !important;
+      line-height: 1.125rem !important;
+    }
+  }
+}
+
+/* Keep the period handoff form inside its card at narrow widths and enlarged text. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form,
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form > fieldset {
+    min-inline-size: 0 !important;
+    max-inline-size: 100% !important;
+    box-sizing: border-box !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form > fieldset {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--b-space-12) !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form legend {
+    max-inline-size: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form label {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--b-space-4) !important;
+    min-inline-size: 0 !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > form :is(input, select) {
+    inline-size: 100% !important;
+    min-inline-size: 0 !important;
+    max-inline-size: 100% !important;
+    box-sizing: border-box !important;
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+  }
+}
+
+/* Keep legacy population and record controls separate at the 44px touch floor. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy .employee-form {
+    margin-block-start: var(--b-space-8) !important;
+    padding-block-start: var(--b-space-12) !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy article.panel > details {
+    margin-block-end: var(--b-space-8) !important;
+  }
+  html body .app-shell[data-nv-b] #who-is-included .c-exp__legacy .employee-form :is(input, select, textarea) {
+    font-size: 1rem !important;
+    line-height: 1.25rem !important;
+  }
+}
+
+/* Respect reduced motion on legacy payroll actions, including saved-file links. */
+@layer nv-b {
+  @media (prefers-reduced-motion: reduce) {
+    html body .app-shell[data-nv-b] .c-exp .c-exp__legacy .button {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+}
+
+/* Let selection actions wrap as complete targets instead of compressing their text. */
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-exp .c-exp__bar {
+    flex-wrap: wrap !important;
+    gap: var(--b-space-8) var(--b-space-20) !important;
+    justify-content: center !important;
+  }
+  html body .app-shell[data-nv-b] .c-exp .c-exp__bar .c-link {
+    flex: 0 1 auto !important;
+    min-inline-size: 0 !important;
+    max-inline-size: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    text-align: center !important;
+    font-size: 0.9375rem !important;
+    line-height: 1.25rem !important;
+  }
+}
+
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-exp .c-exp__bar .nv-compact-action__text { justify-self: center; }
+}
+
+/* The availability card already supplies the standard inset. Share it on narrow cards
+   so that the icon aligns with the other rows and the period link has its full width. */
+.c-exp__availability { container: export-availability / inline-size; }
+@container export-availability (max-width: 280px) {
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability > .b-statecard {
+    padding-inline: 0;
+  }
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability .b-statecard__main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* At enlarged text the longest title word needs the icon column as well. */
+@container export-availability (max-width: 280px) and (max-width: 10rem) {
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability > .b-statecard {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--b-space-12);
+  }
+}
+
+@layer nv-b {
+  /* The kit's inset teal outline shares the button fill. Paint it on the card. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability .b-btn:focus-visible {
+    outline-offset: var(--b-focus-offset) !important;
+  }
+}
+
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-exp .c-exp__notice {
+    font-size: 0.8125rem !important;
+    line-height: 1.125rem !important;
+  }
+}
+
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-pay .c-pay__error-notice {
+    font-size: 0.8125rem !important;
+    line-height: 1.125rem !important;
   }
 }

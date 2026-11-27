@@ -101,7 +101,7 @@ export async function payrollRequest(path: string, command?: object): Promise<un
   }
   if (!response.ok) {
     const code = record(value) && typeof value.error === 'string' ? value.error : '';
-    const known = (['SOURCE_CONFLICT', 'NATIVE_REVIEW_STALE', 'REVISION_CONFLICT', 'REVIEW_CONFLICT', 'FINALIZED_TIME_REQUIRED', 'SETTINGS_REQUIRED'] as const).find(item => item === code);
+    const known = (['SOURCE_CONFLICT', 'NATIVE_REVIEW_STALE', 'REVISION_CONFLICT', 'REVIEW_CONFLICT', 'FINALIZED_TIME_REQUIRED', 'SETTINGS_REQUIRED','PAYROLL_SELF_REVIEW','INDEPENDENT_PAYROLL_APPROVAL_REQUIRED'] as const).find(item => item === code);
     const server = record(value) && typeof value.message === 'string' ? value.message : null;
     const issues = record(value) && Array.isArray(value.issues) ? value.issues.filter(record).filter(issue => typeof issue.path === 'string' && typeof issue.message === 'string').map(issue => `${issue.path}: ${issue.message}`).join(' ') : '';
     // NEVORA's own sentence for a known code, else the server's words as they came, else the generic one.

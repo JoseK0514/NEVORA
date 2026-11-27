@@ -93,7 +93,7 @@
   /* NV-286: Help's Contact: one reply-time line, then the warning as a tinted note with the lock. */
   /* Phase 8 (review C, rows 4, 5 and 36). The red button and "This can't be undone." are one piece under the consent line. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .eb-delete-go:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { display: flex !important; flex-direction: column !important; gap: var(--b-space-16) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .em-delete-check > span:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { text-wrap: pretty !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .eb-delete-keep .em-delete-check > span:not(#f8a):not(#f8b):not(#f8c):not(#f8d):not(#f8e):not(#f8f):not(#f8g) { white-space: normal !important; text-wrap: pretty !important; }
   @media (max-width: 767px) {
     /* A form's screen hides the bell and the avatar as well as the tab bar (the shell's rule drew them back). */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen > .eb-form) .mobile-header .mobile-header-actions:not(#f8a):not(#f8b):not(#f8c):not(#f8d) { display: none !important; }

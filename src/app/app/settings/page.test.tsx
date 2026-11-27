@@ -98,3 +98,7 @@ it('lists Plan and billing in Company only while billing is on for this deployme
   expect(html.indexOf('href="/app/billing"')).toBeLessThan(html.indexOf('href="/app/settings/positions"'));
  }finally{rs.unstubAllEnvs();}
 });
+
+it('links the Owner settings hub to its activity log', async () => {
+  expect(renderToStaticMarkup(await SettingsPage())).toContain('href="/app/settings/activity"');
+});

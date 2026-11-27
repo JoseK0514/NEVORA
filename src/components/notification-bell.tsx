@@ -5,7 +5,7 @@ import {useEffect,useRef,useState} from 'react';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 import {SHELL_WORDS} from './shell-copy';
-import {createPrivateSnapshotController,type PrivatePanelState} from '../lib/private-snapshot-client';
+import {createPrivateSnapshotController,PRIVATE_SESSION_ENDED,type PrivatePanelState} from '../lib/private-snapshot-client';
 import {parseEmployeeView,type EmployeeViewSnapshot} from '../lib/employee-view';
 
 /** The private notifications snapshot (existing lifetime/fencing and inbox DTO), shared by the bell and the count. */
@@ -18,18 +18,21 @@ function useNotificationsSnapshot(authority:string){
    if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};
    if(!response.ok)throw Error('Notifications unavailable');return response.json();
   },value=>parseEmployeeView(value,'notifications'),reason=>({state:'unavailable',reason}),()=> 'read_failed');
-  control.current=controller;let mounted=true,active=false;
+  control.current=controller;let mounted=true,active=false,ended=false;
   const pause=()=>{active=false;controller.pause();};
+  const endSession=()=>{ended=true;pause();};
   const sync=(event?:Event)=>{
+   if(ended)return;
    if(document.visibilityState==='hidden'||!navigator.onLine){pause();return;}
    if(active&&event?.type!=='nevora:notifications-changed')return;
    pause();active=true;controller.start();
   };
   document.addEventListener('visibilitychange',sync);
+  window.addEventListener(PRIVATE_SESSION_ENDED,endSession);
   for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
   for(const event of ['focus','pageshow','online','nevora:notifications-changed'])window.addEventListener(event,sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
-  return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','nevora:notifications-changed'])window.removeEventListener(event,sync);};
+  return ()=>{mounted=false;controller.stop();control.current=null;window.removeEventListener(PRIVATE_SESSION_ENDED,endSession);document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','nevora:notifications-changed'])window.removeEventListener(event,sync);};
  },[authority]);
  const ready=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.kind==='notifications'?state.snapshot:null;
  const count=ready?.items.filter(item=>item.reviewState==='unread').length;

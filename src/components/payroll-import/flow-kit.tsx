@@ -29,11 +29,13 @@ export function periodText(startDate: string, endDate: string, locale: string) {
 /** One day: "Tue, Oct 20". */
 export const dayText = (date: string, locale: string) => new Intl.DateTimeFormat(locale, { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(utcDay(date));
 /** A recorded break in the workplace's time zone: when ("Tue, Oct 6 · 12:02 PM – 12:34 PM") and how long ("32 min"). */
-export function breakWhen(startAt: string, endAt: string, timeZone: string, locale: string) {
+export function breakWhen(startAt: string, endAt: string | null, timeZone: string, locale: string) {
   const day = new Intl.DateTimeFormat(locale, { timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(startAt));
   const time = (at: string) => new Intl.DateTimeFormat(locale, { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(at));
+  const start = `${day} · ${time(startAt)}`;
+  if (!endAt) return { day, when: start, length: null };
   const minutes = Math.round((Date.parse(endAt) - Date.parse(startAt)) / 60_000);
-  return { day, when: `${day} · ${time(startAt)} – ${time(endAt)}`, length: durationSentence(minutes) };
+  return { day, when: `${start} – ${time(endAt)}`, length: durationSentence(minutes) };
 }
 export const money = (minor: string, lang: Lang) => formatPayrollMoney(minor, lang);
 export const signedMoney = (minor: string, lang: Lang) => formatSignedPayrollMoney(minor, lang);

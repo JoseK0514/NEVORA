@@ -54,3 +54,21 @@ it("keeps a data outage distinct from a missing location", async () => {
   await expect(render()).rejects.toThrow("unavailable");
   expect(mocks.notFound).not.toHaveBeenCalled();
 });
+
+it("restricts read-back to the requested Owner catalog record and its current version", async () => {
+  const { readEditedLocation } = await import("./read-current");
+  const latest = {...location, active: false, updatedAt: "2030-01-02 03:04:05.654321+00"};
+  mocks.list.mockResolvedValue([{...location, id: "another"}, latest]);
+  expect(await readEditedLocation("east")).toEqual(latest);
+  expect(await readEditedLocation("missing")).toBeNull();
+  expect(mocks.list).toHaveBeenCalledWith({ includeInactive: true });
+  mocks.role.mockRejectedValueOnce(new Error("denied"));
+  mocks.list.mockClear();
+  await expect(readEditedLocation("east")).rejects.toThrow("denied");
+  expect(mocks.list).not.toHaveBeenCalled();
+});
+
+it("loads the saved multiline address into the editable draft", async () => {
+  mocks.list.mockResolvedValue([{...location, address: "15 Calle Clara\nSan Juan"}]);
+  expect(await render()).toMatch(/<textarea(?=[^>]*name="address")(?=[^>]*maxLength="300")[^>]*>15 Calle Clara\nSan Juan<\/textarea>/);
+});

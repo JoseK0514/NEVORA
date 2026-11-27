@@ -18,3 +18,11 @@ it('uses the compact Spanish button and retains the full action when publishing 
   expect(words.publishChanges(false)).toBe(copy.es.publishChanges);
   expect(words.publishChanges(true)).toBe(copy.es.publishChangesAnyway);
 });
+
+it.each(['en', 'es'] as const)('uses the approved short warning in %s while retaining the draft details', lang => {
+  const words = scheduleWords(lang).publish;
+  expect(words.publishAnywayShort).toBe(lang === 'en' ? 'Publish anyway' : 'Publicar aun así');
+  expect(words.publishAnywayShort).toBe(copy[lang].publishAnywayShort);
+  expect(words.publishDrafts(words.drafts(2), true, true)).toContain(words.drafts(2));
+  expect(words.publishLocation('Calle Loíza', true)).toContain('Calle Loíza');
+});

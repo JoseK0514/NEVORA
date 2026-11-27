@@ -1,0 +1,44 @@
+.location-retirement-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: var(--b-space-4);
+  min-width: 0;
+}
+:is(#c-root, html) .location-retirement-links .c-link {
+  max-width: 100%;
+  font-size: var(--b-fs-body-sm);
+  line-height: var(--b-lh-body-sm);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.location-review-values {
+  display: grid;
+  gap: var(--b-space-4);
+  margin-top: var(--b-space-8);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+/* The retirement question follows text enlargement without changing other discard dialogs. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet:has(.b-discard) #retire-title.b-discard__t:not(#dg1):not(#dg2):not(#dg3):not(#dg4):not(#dg5):not(#dg6) {
+    font-size: 1.125rem !important;
+    line-height: 1.5rem !important;
+  }
+}
+
+/* Keep both retirement choices equal, and stack them when a pair will not fit. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet:has(#retire-title) .b-discard__acts:not(#dg1):not(#dg2):not(#dg3):not(#dg4):not(#dg5):not(#dg6) {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet:has(#retire-title) .b-discard__acts > .b-btn:not(#dg1):not(#dg2):not(#dg3):not(#dg4):not(#dg5):not(#dg6) {
+    inline-size: 100% !important;
+    justify-content: center !important;
+    margin-inline: 0 !important;
+    padding-inline: var(--b-space-8) !important;
+  }
+}

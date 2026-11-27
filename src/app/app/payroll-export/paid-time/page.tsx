@@ -1,3 +1,5 @@
+import { payrollExportsDisabled } from '@/lib/payroll-export/launch-setting.server';
+import { redirect } from 'next/navigation';
 import { routeTitle } from "@/app/app/route-titles";
 import {scopedObservation} from '@/lib/company-access/observation';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
@@ -36,6 +38,7 @@ export default async function PaidTimeExportPage({searchParams}:{searchParams:Pr
   const monday=today.subtract({days:today.dayOfWeek-1});
   let period={startDate:monday.toString(),endDate:monday.add({days:6}).toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current week, as Time exports does. */}
+  if (payrollExportsDisabled()) redirect(`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`);
   return <ScopedReadFrame observation={scopedObservation(access)}><CorpPage className="c-addemp c-sheetpage c-pim" labelledBy="paid-export-title">
     <SheetMarker/>
     <PaidTimeExportFlow lang={lang} key={`${session.id}:${period.startDate}:${period.endDate}`} actorId={session.id} workspaceId={workspace.id} period={period} timeZone={workspace.timeZone}/>

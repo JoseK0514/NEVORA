@@ -7,10 +7,11 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { ReturnToNext } from './team/return-to-next';
 import {EmployeeAccessForm,EmployeeSavedBlock,type EmployeeSavedReceipt,type EmployeeSavedState} from './company-access/employee-access-form';
 import {DecisionAsk} from './owner-b/decision-parts';
+import {useAskStep} from './owner-b/ask-step';
 import {coreCommandFromForm} from './company-access/commands';
 import {ManagerOperationalScopeFields} from './company-access/manager-operational-scope-fields';
 import type {OwnerScopeContext,ScopeSelection} from '@/lib/company-access/model';
-import {CorpField} from '@/components/corp/corp';
+import {CorpCard,CorpField,CorpRow,CorpRows} from '@/components/corp/corp';
 import {FormHead,FormHeadLink,PhoneField} from '@/components/team/team-forms';
 import type { EmployeeManagementProfile } from "@/lib/data/employees";
 import type { Location, UserRole } from "@/lib/domain";
@@ -136,16 +137,28 @@ export function EmployeeStatusForm({employee,locations,actorId,actorRole,ownerSc
  // and one step back to Team. The page refreshes itself after the save (the rows above show the new account state) and
  // that refresh remounts the editor below, so the result is kept here, above it, for the rest of the visit.
  const [result,setResult]=useState<{done:EmployeeSavedState;receipt:EmployeeSavedReceipt}|null>(null);
- if(result)return <EmployeeSavedBlock done={result.done} names={{first:employee.firstName,last:employee.lastName}} receipt={result.receipt}/>;
+ const t=employeeTeamCopy(usePortalLang());
+ if(result)return <>
+  <EmployeeSavedBlock done={result.done} names={{first:employee.firstName,last:employee.lastName}} receipt={result.receipt}/>
+  {!result.receipt.active && <CorpCard label={t.offboardingReview}>
+    <CorpRows>
+      <li><CorpRow href={locations.some(l=>l.id===employee.primaryLocationId&&l.active)?`/app/schedule?location=${encodeURIComponent(employee.primaryLocationId)}`:"/app/schedule"} title={t.reviewAssignments} chevron /></li>
+      <li><CorpRow href={`/app/timecards#timecard-${encodeURIComponent(employee.id)}`} title={t.reviewOpenTime} chevron /></li>
+    </CorpRows>
+  </CorpCard>}
+ </>;
  return <StatusEditor key={JSON.stringify([actorId,actorRole,employee.id,employee.updatedAt])} employee={employee} locations={locations} actorRole={actorRole} ownerScope={ownerScope} action={action} onResult={setResult}/>;
 }
 function StatusEditor({employee,locations,actorRole,ownerScope,action,onResult}:{employee:EmployeeManagementProfile;locations:Location[];actorRole:UserRole;ownerScope:OwnerScopeContext|null;action:(data:FormData)=>Promise<unknown>;onResult:(result:{done:EmployeeSavedState;receipt:EmployeeSavedReceipt})=>void}){
  const t=employeeTeamCopy(usePortalLang());
  const [baseline]=useState(()=>({employee,ownerScope}));
- const [confirming,setConfirming]=useState(false),[scope,setScope]=useState<ScopeSelection|null>(null);
+ const {open:confirming,ask,keep,titleRef,openerRef}=useAskStep();
+ const [scope,setScope]=useState<ScopeSelection|null>(null);
  const needsScope=!employee.active&&employee.role==='MANAGER'&&actorRole==='OWNER';
  const next=!employee.active;
  const first=employee.firstName;
+ const needsPrimary=next&&!locations.some(location=>location.id===employee.primaryLocationId&&location.active);
+ const activeLocations=locations.filter(location=>location.active);
  const fields=<>
   <input type="hidden" name="employeeId" value={employee.id}/>
   <input type="hidden" name="firstName" value={employee.firstName}/>
@@ -153,7 +166,13 @@ function StatusEditor({employee,locations,actorRole,ownerScope,action,onResult}:
   <input type="hidden" name="phone" value={employee.phone}/>
   <input type="hidden" name="email" value={employee.email??''}/>
   <input type="hidden" name="role" value={employee.role}/>
-  <input type="hidden" name="primaryLocationId" value={employee.primaryLocationId}/>
+  {needsPrimary ? <CorpField label={t.primaryLocation} htmlFor="reactivate-primary">
+    <select id="reactivate-primary" name="primaryLocationId" className="c-in" required defaultValue="" aria-describedby="reactivate-location-help">
+      <option value="" disabled>{t.chooseLocation}</option>
+      {activeLocations.map(location=><option key={location.id} value={location.id}>{location.shortName}</option>)}
+    </select>
+    <span className="c-field__help" id="reactivate-location-help">{activeLocations.length?t.chooseActiveLocation:t.noActiveLocation}</span>
+  </CorpField> : <input type="hidden" name="primaryLocationId" value={employee.primaryLocationId}/>}
   <input type="hidden" name="active" value={String(next)}/>
  </>;
  // Confirmations B (#15): the confirm is the shared question block. The command, its fields and the one submit are
@@ -165,11 +184,11 @@ function StatusEditor({employee,locations,actorRole,ownerScope,action,onResult}:
   {fields}
   {needsScope&&(baseline.ownerScope?<ManagerOperationalScopeFields current={baseline.ownerScope} locations={locations.filter(l=>l.active).map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null}/>:<p role="alert" className="c-error">{t.scopeUnavailableReactivate}</p>)}
   {next
-   ? <button type="submit" className="c-btn c-btn--secondary c-btn--full">{t.reactivate(first)}</button>
+   ? <button type="submit" disabled={needsPrimary&&!activeLocations.length} className="c-btn c-btn--secondary c-btn--full">{t.reactivate(first)}</button>
    : confirming
-    ? <DecisionAsk className="c-status-ask" groupLabel={t.deactivateAsk(first)} question={t.deactivateAsk(first)} consequence={t.deactivateConsequence}
-       keep={t.keepActive} onKeep={()=>setConfirming(false)} go={t.deactivate} goLabel={t.deactivateName(first)} goValue="deactivate"/>
-    : <button type="button" className="c-btn c-btn--danger c-btn--full" onClick={()=>setConfirming(true)}>{t.deactivateName(first)}</button>}
+    ? <DecisionAsk className="c-status-ask" groupLabel={t.deactivateAsk(first)} question={t.deactivateAsk(first)} consequence={t.deactivateConsequence} titleRef={titleRef}
+       keep={t.keepActive} onKeep={keep} go={t.deactivate} goLabel={t.deactivateName(first)} goValue="deactivate"/>
+    : <button type="button" className="c-btn c-btn--danger c-btn--full" ref={openerRef} onClick={ask}>{t.deactivateName(first)}</button>}
   {confirming?null:<p className="c-note c-note--center">{next?t.reactivateNote:t.deactivateConsequence}</p>}
  </EmployeeAccessForm>;
 }

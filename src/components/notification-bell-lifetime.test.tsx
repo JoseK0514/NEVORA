@@ -21,6 +21,16 @@ beforeEach(()=>{
  rs.stubGlobal('fetch',(_path:string,init?:RequestInit)=>new Promise<Response>(resolve=>{if(!init?.signal)throw Error('Expected fenced notification read');pending.push({signal:init.signal,resolve});}));
 });
 afterEach(()=>{cleanup?.();cleanup=undefined;rs.unstubAllGlobals();rs.useRealTimers();});
+
+it('stops private notification reads when a confirmed deletion ends this session',async()=>{
+ await mount();
+ expect(pending).toHaveLength(1);
+ window.dispatchEvent(new Event('nevora:session-ended'));
+ expect(pending[0].signal.aborted).toBe(true);
+ for(const event of ['blur','focus','pageshow','online','nevora:notifications-changed'])window.dispatchEvent(new Event(event));
+ await rs.advanceTimersByTimeAsync(60000);
+ expect(pending).toHaveLength(1);
+});
 it('duplicate foreground focus/pageshow/visibility events do not abort or restart a current notification read',async()=>{
  await mount();expect(pending).toHaveLength(1);
  window.dispatchEvent(new Event('focus'));window.dispatchEvent(new Event('pageshow'));document.dispatchEvent(new Event('visibilitychange'));await flush();

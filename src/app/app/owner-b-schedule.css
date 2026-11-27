@@ -269,8 +269,8 @@
    * tablet and desktop band (the sideways phone included) they are 36px inside the 48px week pill, with a 44px hit area. */
   @media (max-width: 767px) {
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { width: 44px !important; height: 44px !important; margin: -4px 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: 0 !important; }
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > span:last-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { gap: 0 !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__arrow:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6)::after { inset: 0 -1px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-sched .b-week .b-week__h > span:last-child:not(#fa1):not(#fa2):not(#fa3):not(#fa4):not(#fa5):not(#fa6) { gap: var(--b-space-4) !important; }
   }
   /* A #11, B #7: at 320px "Published" drops under the dates and the arrows keep the dates' row. */
   @media (max-width: 359px) {
@@ -661,6 +661,122 @@
         content: "";
         position: absolute;
         inset: 0 0 -1px;
+      }
+    }
+  }
+}
+
+@layer nv-b {
+  @media (max-width: 767px) {
+    #schedule-locations-to-plan:lang(es) .b-row__s {
+      display: block !important;
+      -webkit-line-clamp: none !important;
+      overflow: visible !important;
+    }
+  }
+}
+/* Keep the two controls inside the Spanish Schedule header at enlarged phone text. */
+@media (max-width: 359px) {
+  @container not style(--nv-rem: 16px) {
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right:has(> a[href^="/app/schedule/publish"]) {
+      max-inline-size: 100%;
+    }
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right:has(> a[href^="/app/schedule/publish"]) > :first-child {
+      flex-shrink: 0;
+    }
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right > a[href^="/app/schedule/publish"] {
+      min-inline-size: 0;
+      flex-shrink: 1;
+      white-space: normal;
+      height: auto;
+      padding-block: var(--b-space-4);
+      text-align: center;
+    }
+  }
+}
+
+/* The warning is an explicit decision, so its full wording must fit the publish action. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts > button[type="submit"] {
+        block-size: auto !important;
+        min-block-size: var(--b-btn-h) !important;
+        max-inline-size: 100%;
+        padding-block: var(--b-space-4) !important;
+        white-space: normal !important;
+      }
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts > button[type="submit"] :is(.sig-btn__label, .sig-btn__idle) {
+        white-space: normal;
+        min-inline-size: 0;
+        max-inline-size: 100%;
+      }
+    }
+  }
+}
+
+/* Move a full-width warning decision to its own line if the two action labels collide. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts {
+        flex-wrap: wrap;
+      }
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__back {
+        min-inline-size: max-content;
+      }
+    }
+  }
+}
+
+/* Cap the warning button at its row even when a location has a long name. */
+@layer nv-b {
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts > button[type="submit"] {
+    max-inline-size: 100%;
+  }
+}
+
+/* Let the week and its aggregate status use another line when their text needs it. */
+@layer nv-b {
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) .c-publish__week {
+    flex-wrap: wrap;
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) .c-publish__week > .c-pill {
+    max-inline-size: 100%;
+    white-space: normal !important;
+    block-size: auto !important;
+    min-block-size: max(var(--b-chip-h), 1.375rem);
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row {
+    flex-wrap: wrap;
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row__main {
+    min-inline-size: min-content;
+    max-inline-size: 100%;
+  }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row__title {
+    white-space: normal !important;
+    hyphens: none !important;
+    overflow-wrap: break-word;
+  }
+}
+
+/* The Manager's per-location form stacks its own actions at enlarged text. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) .c-publish__go > form:has(> input[name="confirmWarnings"]) .c-publish__acts > button {
+        margin-block-start: var(--b-space-4) !important;
+      }
+    }
+  }
+}
+
+@layer nv-b {
+  @media (max-width: 359px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) #publish-locations .c-row__main {
+        flex-basis: max-content !important;
       }
     }
   }

@@ -167,7 +167,7 @@ export function EmployeeMySchedule(props: EmployeeMyScheduleProps & { corporate?
     return {
       id: shift.id, day: dayFmt(shift.date, { weekday: 'long', month: 'short', day: 'numeric' }, lang), hours: hours(shift, lang), length: lengthLabel(minutes, lang),
       ends: ends ? dayFmt(ends, { weekday: 'short', month: 'short', day: 'numeric' }, lang) : null,
-      location: nameOf(shift.locationId) || t.locationUnavailable, position: shift.positionName ?? null,
+      location: nameOf(shift.locationId) || t.locationUnavailable, locationAddress: shift.locationAddress, position: shift.positionName ?? null,
       lead: shift.isDesignatedLead, calloutApproved: shift.isCalloutApproved,
       canSwap: modules.marketplace && swappable(shift, today, observedAt, timeZone),
       canReport: modules.marketplace && !shift.isCalloutApproved && hasNotEnded(shift, observedAt, timeZone),

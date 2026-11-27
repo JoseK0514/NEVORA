@@ -2,8 +2,11 @@
 import { usePortalLang } from '@/lib/i18n/portal-lang';
 import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
 import { copy } from './payroll-export-copy';
+import {CompactActionLabel} from './compact-action-label';
+import { copy as receiptCopy } from './payroll-export-receipts-copy';
+import { isPayrollExportDisabled, payrollExportAvailability } from './payroll-export-availability';
 import {PayrollPeriodClose} from './payroll-period-close';
-import {useEffect,useRef,useState} from 'react';
+import {useCallback,useEffect,useRef,useState} from 'react';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CorpNav,CorpTitle} from './corp/corp';
@@ -71,9 +74,10 @@ function weekChoices(lang: ExportLang){
  * builds the link); the section then opens and scrolls into view instead of waiting, collapsed, at the bottom, and a
  * phone shows the list at once. Its own component, so the page keeps its one effect (the timecards read). */
 const INCLUDED_HASH='who-is-included';
-function IncludedSection({payroll,period,actorId}:{payroll:boolean;period:Period;actorId:string}){
+function IncludedSection({payroll,period,actorId,exportsDisabled,onExportsDisabled}:{payroll:boolean;period:Period;actorId:string;exportsDisabled:boolean;onExportsDisabled:()=>void}){
   const lang = usePortalLang();
   const wording = copy[lang];
+ const sectionTitle=exportsDisabled?payrollExportAvailability[lang].history:payroll?wording.whoSIncludedAndSentFiles:wording.exportHistory;
  const section=useRef<HTMLDetailsElement>(null),[fromBlocker,setFromBlocker]=useState(false);
  useEffect(()=>{
   const openIncluded=()=>{
@@ -86,9 +90,9 @@ function IncludedSection({payroll,period,actorId}:{payroll:boolean;period:Period
   openIncluded();window.addEventListener('hashchange',openIncluded);
   return()=>window.removeEventListener('hashchange',openIncluded);
  },[]);
- return <section className="c-card c-exp__included" id={INCLUDED_HASH} aria-label={(payroll ? wording.whoSIncludedAndSentFiles : wording.exportHistory)}>
-  <details ref={section} className="c-exp__item c-exp__close"><summary className="c-row"><span className="c-row__main"><span className="c-row__title">{(payroll ? wording.whoSIncludedAndSentFiles : wording.exportHistory)}</span><span className="c-row__detail"><span>{(payroll ? wording.peopleInThisPayrollAndWhereFilesWent : wording.filesYouVeDownloaded)}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
-   <div className="c-exp__legacy"><PayrollPeriodClose period={period} actorId={actorId} startOpen={fromBlocker}/></div>
+ return <section className="c-card c-exp__included" id={INCLUDED_HASH} aria-label={sectionTitle}>
+  <details ref={section} className="c-exp__item c-exp__close"><summary className="c-row"><span className="c-row__main"><span className="c-row__title">{sectionTitle}</span><span className="c-row__detail"><span>{exportsDisabled?payrollExportAvailability[lang].historyLine:payroll?wording.peopleInThisPayrollAndWhereFilesWent:wording.filesYouVeDownloaded}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
+   <div className="c-exp__legacy"><PayrollPeriodClose exportsDisabled={exportsDisabled} onExportsDisabled={onExportsDisabled} period={period} actorId={actorId} startOpen={fromBlocker}/></div>
   </details>
  </section>;
 }
@@ -96,7 +100,7 @@ function IncludedSection({payroll,period,actorId}:{payroll:boolean;period:Period
  * when it arrives (the title is then what is read). A stable callback ref: it runs once when the title mounts and never on
  * a later render, and the page keeps its one effect (the timecards read). */
 const focusOnArrive=(node:HTMLElement|null)=>{node?.focus({preventScroll:true});};
-export function PayrollExport({initialPeriod,actorId,tabs=null,today}:{initialPeriod:Period;actorId:string;tabs?:PayrollTab[]|null;
+export function PayrollExport({initialPeriod,actorId,tabs=null,today,exportsDisabled=false,timeZone}:{initialPeriod:Period;exportsDisabled?:boolean;timeZone?:string;actorId:string;tabs?:PayrollTab[]|null;
  /** MG-010: the workspace's date, so a week that has not ended says when its timecards can be approved. */
  today?:string}){
   const lang = usePortalLang();
@@ -111,8 +115,12 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
  const mutating=useRef(false),cancelRefresh=useRef<()=>void>(()=>{}),acceptSavedProfile=useRef<(item:SavedExportProfile)=>void>(()=>{});
  const [receiptsKey,setReceiptsKey]=useState(0);
  const previousActor=useRef(actorId),validUntil=useRef(0),clearProtected=useRef<(message:string,denied?:boolean)=>void>(()=>{});
+ const [launchRefused,setLaunchRefused]=useState(false);
+ const disabled=exportsDisabled||launchRefused;
+ const onExportsDisabled=useCallback(()=>{clearProtected.current('',true);setLaunchRefused(true);},[]);
  const headers={'content-type':'application/json','x-nevora-payroll-export':'1','x-nevora-actor':actorId};
  useEffect(()=>{
+  if(disabled)return;
   if(previousActor.current!==actorId){setRetry(null);saveRetry.current=null;}previousActor.current=actorId;
   let active=true,focused=true,reading=false,readSequence=0,sourceKey:string|null=null;
   let sourceSnapshot:{cards:TimecardItem[];profiles:SavedExportProfile[]}|null=null;let expiry:ReturnType<typeof setTimeout>|undefined,early:ReturnType<typeof setTimeout>|undefined;const lifecycle=generation.current,pendingSave=saveRetry;
@@ -135,8 +143,21 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
    try{
     // Either denied response retires retained data immediately, even if its
     // paired request has not returned headers or completed body parsing.
-    const observe=(request:Promise<Response>)=>request.then(response=>{if(active&&current===generation.current.value&&sequence===readSequence&&(response.status===401||response.status===403))clear(wording.exportAccessEnded,true);return response;});
-    const responses=await Promise.all([observe(fetch('/api/timecards',{method:'POST',cache:'no-store',credentials:'same-origin',signal:abort.current.signal,headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(period)})),observe(fetch('/api/payroll-export/profiles',{cache:'no-store',credentials:'same-origin',signal:abort.current.signal,headers:{'x-nevora-payroll-export':'1','x-nevora-actor':actorId}}))]);
+    const observe=(request:Promise<Response>,profile=false)=>request.then(async response=>{
+     if(active&&current===generation.current.value&&sequence===readSequence&&(response.status===401||response.status===403)){
+      // Retire the display immediately. A profile refusal's body distinguishes launch policy from lost access.
+      const refusal=profile&&response.status===403?abort.current:null;
+      if(refusal)abort.current=null;
+      clear(wording.exportAccessEnded,true);
+      if(refusal){
+       const retired=generation.current.value,timeout=setTimeout(()=>refusal.abort(),15000);
+       try{if(isPayrollExportDisabled(response.status,await response.json().catch(()=>null))&&active&&retired===generation.current.value)onExportsDisabled();}
+       finally{clearTimeout(timeout);refusal.abort();}
+      }
+     }
+     return response;
+    });
+    const responses=await Promise.all([observe(fetch('/api/timecards',{method:'POST',cache:'no-store',credentials:'same-origin',signal:abort.current.signal,headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(period)})),observe(fetch('/api/payroll-export/profiles',{cache:'no-store',credentials:'same-origin',signal:abort.current.signal,headers:{'x-nevora-payroll-export':'1','x-nevora-actor':actorId}}),true)]);
     if(!active||current!==generation.current.value||sequence!==readSequence)return;
     if(responses.some(r=>r.status===401||r.status===403)){clear(wording.exportAccessEnded,true);return;}
     if(responses.some(r=>!r.ok))throw new Error();const [time,mappings]=await Promise.all(responses.map(r=>r.json()));
@@ -167,14 +188,41 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
   window.addEventListener('focus',refresh);window.addEventListener('blur',hide);window.addEventListener('pageshow',refresh);window.addEventListener('storage',account);window.addEventListener('online',refresh);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);document.addEventListener('visibilitychange',visible);
   const poll=setInterval(()=>{if(focused&&document.visibilityState==='visible'&&navigator.onLine)void load(true);},30000);
   return()=>{active=false;lifecycle.value++;abort.current?.abort();if(expiry)clearTimeout(expiry);if(early)clearTimeout(early);clearInterval(poll);validUntil.current=0;clearProtected.current=()=>{};cancelRefresh.current=()=>{};acceptSavedProfile.current=()=>{};sourceSnapshot=null;mutating.current=false;pendingSave.current=null;window.removeEventListener('focus',refresh);window.removeEventListener('blur',hide);window.removeEventListener('pageshow',refresh);window.removeEventListener('storage',account);window.removeEventListener('online',refresh);window.removeEventListener('offline',offline);window.removeEventListener('pagehide',hide);document.removeEventListener('visibilitychange',visible);};
- },[period,actorId,wording]);
+ },[period,actorId,wording,disabled,onExportsDisabled]);
  const currentActor=snapshotActor===actorId;
- const downloadCurrent=(text:string,type:string,name:string)=>{if(!currentActor||performance.now()>=validUntil.current){clearProtected.current(wording.thisExportIsOutOfDateRefreshToStartAgain);return;}download(text,type,name);};
+ const downloadCurrent=async(file:'csv'|'record')=>{
+  if(!currentActor||performance.now()>=validUntil.current){clearProtected.current(wording.thisExportIsOutOfDateRefreshToStartAgain);return;}
+  if(!result||disabled||mutating.current)return;
+  const current=generation.current.value,stillCurrent=()=>current===generation.current.value&&performance.now()<validUntil.current;
+  mutating.current=true;setBusy(true);
+  try{
+   const response=await fetch('/api/payroll-export/receipts',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify({operationId:result.operationId})});
+   const body=await response.json().catch(()=>null);
+   if(!stillCurrent())return;
+   if(isPayrollExportDisabled(response.status,body)){onExportsDisabled();return;}
+   if(response.status===401||response.status===403){clearProtected.current(wording.exportAccessEnded,true);return;}
+   if(!response.ok||body?.state!=='ready'||body.export?.operationId!==result.operationId||body.export.csvSha256!==result.csvSha256||body.export.canonicalSha256!==result.canonicalSha256)throw Error();
+   // The local bytes were independently verified when this result arrived. A fresh receipt authorizes saving those exact bytes.
+   if(file==='csv')download(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`);
+   else download(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`);
+  }catch{if(stillCurrent())setNotice(receiptCopy[lang].theFileDidnTDownloadTryAgain);}
+  finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
+ };
  const saved=profiles.find(p=>p.id===profileId);
  const send=async(command:ExportCommand)=>{
   if(!currentActor){clearProtected.current(wording.exportAccessEnded,true);return;}
   if(mutating.current||busy||!cards||performance.now()>=validUntil.current){if(performance.now()>=validUntil.current)clearProtected.current(wording.thisExportIsOutOfDateRefreshToStartAgain);return;}cancelRefresh.current();mutating.current=true;setBusy(true);setNotice('');setResult(null);setRetry(command);const current=generation.current.value;
-  try{const response=await fetch('/api/payroll-export',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current(wording.exportAccessEnded,true);return;}
+  try{const response=await fetch('/api/payroll-export',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current(wording.exportAccessEnded,true);
+    const retired=generation.current.value;
+    if(response.status===403&&isPayrollExportDisabled(response.status,await response.json().catch(()=>null))&&retired===generation.current.value)onExportsDisabled();
+    return;}
+   if(response.status===400){
+    const body=await response.json().catch(()=>null);
+    if(current!==generation.current.value)return;
+    if(body?.state==='invalid'&&body.reason==='PERIOD_BOUNDARY_MISMATCH'){
+     setRetry(null);setNotice(payrollExportAvailability[lang].boundary(rangeText(period.startDate,period.endDate),timeZone??cards[0]?.card.timeZone??'UTC'));return;
+    }
+   }
    if(response.status===409){
     setRetry(null);
     const body=await response.json().catch(()=>null);
@@ -189,7 +237,10 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
   if(mutating.current||busy||!cards||performance.now()>=validUntil.current){if(performance.now()>=validUntil.current)clearProtected.current(wording.thisExportIsOutOfDateRefreshToStartAgain);return;}
   let command;try{const profile=parseExportProfile({...draft,reviewedTimeBasis:reviewed});command=saveRetry.current??{operationId:crypto.randomUUID(),id:saved?.id??crypto.randomUUID(),expectedRevision:saved?.revision??0,profile};}catch(error){setNotice(mappingFailure(error,lang));return;}
   saveRetry.current=command;cancelRefresh.current();mutating.current=true;setBusy(true);setNotice('');const current=generation.current.value;
-  try{const response=await fetch('/api/payroll-export/profiles',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current(wording.exportAccessEnded,true);return;}if(response.status===409){saveRetry.current=null;setNotice(wording.theFileFormatChangedRefreshToSeeTheLatest);return;}if(!response.ok)throw new Error();const body=await response.json();if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current(wording.thisExportIsOutOfDateRefreshToStartAgain);return;}if(body?.state!=='saved'||!body.profile)throw new Error();const item={id:body.profile.id,revision:body.profile.revision,profile:parseExportProfile(body.profile.profile)} as SavedExportProfile;if(item.id!==command.id||!Number.isSafeInteger(item.revision)||item.revision!==command.expectedRevision+1||stableExportJson(item.profile)!==stableExportJson(command.profile))throw Error('Unverified mapping receipt');acceptSavedProfile.current(item);setProfiles(p=>[...p.filter(p=>p.id!==item.id),item]);setProfileId(item.id);setDraft(item.profile);saveRetry.current=null;setNotice(formatPortalCopy(wording.mappingSavedAsRevisionRevision, { revision: item.revision }));}catch{if(current===generation.current.value)setNotice(wording.weCouldnTConfirmTheFileFormatWasSavedSave);}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
+  try{const response=await fetch('/api/payroll-export/profiles',{method:'POST',cache:'no-store',credentials:'same-origin',headers,body:JSON.stringify(command)});if(current!==generation.current.value)return;if(response.status===401||response.status===403){clearProtected.current(wording.exportAccessEnded,true);
+    const retired=generation.current.value;
+    if(response.status===403&&isPayrollExportDisabled(response.status,await response.json().catch(()=>null))&&retired===generation.current.value)onExportsDisabled();
+    return;}if(response.status===409){saveRetry.current=null;setNotice(wording.theFileFormatChangedRefreshToSeeTheLatest);return;}if(!response.ok)throw new Error();const body=await response.json();if(current!==generation.current.value)return;if(performance.now()>=validUntil.current){clearProtected.current(wording.thisExportIsOutOfDateRefreshToStartAgain);return;}if(body?.state!=='saved'||!body.profile)throw new Error();const item={id:body.profile.id,revision:body.profile.revision,profile:parseExportProfile(body.profile.profile)} as SavedExportProfile;if(item.id!==command.id||!Number.isSafeInteger(item.revision)||item.revision!==command.expectedRevision+1||stableExportJson(item.profile)!==stableExportJson(command.profile))throw Error('Unverified mapping receipt');acceptSavedProfile.current(item);setProfiles(p=>[...p.filter(p=>p.id!==item.id),item]);setProfileId(item.id);setDraft(item.profile);saveRetry.current=null;setNotice(formatPortalCopy(wording.mappingSavedAsRevisionRevision, { revision: item.revision }));}catch{if(current===generation.current.value)setNotice(wording.weCouldnTConfirmTheFileFormatWasSavedSave);}finally{if(current===generation.current.value){mutating.current=false;setBusy(false);}}
  };
  const visibleSelection=selectVisibleFinalized(cards??[]);
  const generate=(ids:string[]=selected)=>{try{if(!cards||ids.length===0||ids.length>100)throw new Error(wording.choose1To100FinalizedEmployees);const chosen=ids.map(id=>cards.find(c=>c.card.employeeId===id)!);if(chosen.some(c=>!c||c.state!=='FINALIZED'))throw new Error(wording.everySelectedCardMustBeFinalized);void send({...period,operationId:crypto.randomUUID(),profileId:saved?.id??null,profileRevision:saved?.revision??0,cards:chosen.map(c=>({employeeId:c.card.employeeId,revision:c.revision,sourceHash:c.sourceHash,finalizationOperationId:c.history[0].operationId}))});}catch(error){setNotice(error instanceof Error?error.message:wording.reviewTheExport);}};
@@ -238,6 +289,17 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
  const shown=ready&&result?result:null;
  // Back to the same form: the result leaves the screen; nothing is requested. Focus goes to the form's heading.
  const anotherExport=()=>{setResult(null);setNotice('');setTimeout(()=>document.getElementById('time-export-send')?.focus(),0);};
+ const otherDates=<details className="c-exp__item">
+    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">{wording.otherDates}</span><span className="c-row__detail"><span>{wording.upTo31Days}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
+    <form className="c-exp__body" onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice(wording.finishTheCurrentOperationBeforeRefreshingExportData);return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice(wording.finishOrRetryTheCurrentExportOrMappingSaveBefore);return;}clearProtected.current(wording.loadingFinalizedTime);setPeriod(nextPeriod);}setNotice('');}catch{setNotice(wording.chooseAPeriodOf1To31Days);}}}>
+     <div className="c-field__row">
+      <div className="c-field"><label className="c-field__label" htmlFor="time-export-start">{wording.start}</label><span className="c-in c-pay__date"><span aria-hidden="true">{dayText(draftPeriod.startDate)||wording.chooseADate}</span><CalendarBlankIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true"/><input id="time-export-start" type="date" required value={draftPeriod.startDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,startDate:e.target.value})}/></span></div>
+      <div className="c-field"><label className="c-field__label" htmlFor="time-export-end">{wording.end}</label><span className="c-in c-pay__date"><span aria-hidden="true">{dayText(draftPeriod.endDate)||wording.chooseADate}</span><CalendarBlankIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true"/><input id="time-export-end" type="date" required value={draftPeriod.endDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,endDate:e.target.value})}/></span></div>
+     </div>
+     {periodChanged&&!disabled?<p className="c-note">{wording.datesChangedShowThemToReviewThisPeriodBeforeExporting}</p>:null}
+     <button type="submit" className="c-btn c-btn--secondary c-btn--md c-btn--full" disabled={busy}>{wording.showTheseDates}</button>
+    </form>
+   </details>;
  return <div className={`c-page c-payroll c-pay c-exp c-page--narrow${payroll?'':' c-exp--time'}`} data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
   <CorpNav back={payroll?{href:'/app/payroll',label:wording.payroll}:{href:'/app/timecards',label:wording.timecards}} title={wording.timeExports} phoneOnly/>
   {/* Phase 2 (G8): with Payroll's tabs (from 768) the band names the section and the selected tab names this page, so
@@ -251,19 +313,21 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
     {weeks.map(w=><option key={w.value} value={w.value}>{w.label}</option>)}
    </select>
   </div>
+  {disabled?<div className="c-card">{otherDates}</div>:null}
   {/* Phase 7 (moments): the verified export is the shared done state (below, where the form was); every other notice (not
     * confirmed, already exported, out of date) keeps the plain callout and never the success mark. */}
-  {notice&&notice!==FILES_READY?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
+  {notice&&notice!==FILES_READY?<p className="c-callout c-callout--teal c-exp__notice" role="status">{notice}</p>:null}
   {/* R5: section labels sit above their cards. */}
-  {shown?<section className="c-pay__group c-exp__result" aria-label={wording.exportReady}>
+  {disabled?<div className="c-card c-card__body c-exp__availability"><BState kind="paused" heading alert={launchRefused} titleRef={launchRefused?focusOnArrive:undefined} title={payrollExportAvailability[lang].title} line={payrollExportAvailability[lang].line}
+   action={{label:payrollExportAvailability[lang].period,href:timecardsHref}}/></div>:shown?<section className="c-pay__group c-exp__result" aria-label={wording.exportReady}>
    {/* Final polish (Nov 21, 2026): the result stands where the form stood. Facts are the receipt's own rows; the receipt
      * id, the checksum and the file layout fold under Details; "Make another export" returns to the same form (no request). */}
    <div className="b-done-host b-done-host--card">
     <BState kind="done" heading titleRef={focusOnArrive} title={wording.exportReady} line={<BSegs parts={[runsCopy[lang].people(shown.model.rows.length),<span key="h" className="c-num">{hoursText(shown.model.rows.reduce((sum,row)=>sum+BigInt(row.recordedNanoseconds),BigInt(0)).toString())}</span>,rangeText(shown.model.period.startDate,shown.model.period.endDate)]}/>}
      quiet={<button type="button" className="b-done__quiet" onClick={anotherExport}>{wording.makeAnotherExport}</button>}>
      <div className="c-exp__dls">
-      <button type="button" className="b-btn b-btn--teal" onClick={()=>downloadCurrent(shown.csv,'text/csv;charset=utf-8',`nevora-mapped-${shown.model.period.startDate}-${shown.operationId}.csv`)}>{wording.downloadCSV}</button>
-      <button type="button" className="b-btn b-btn--quiet" aria-label={wording.downloadTimeRecordJSON} onClick={()=>downloadCurrent(stableExportJson(shown.model),'application/json',`nevora-canonical-${shown.model.period.startDate}-${shown.operationId}.json`)}>{wording.downloadTimeRecord}</button>
+      <button type="button" className="b-btn b-btn--teal" disabled={busy} onClick={()=>void downloadCurrent('csv')}>{wording.downloadCSV}</button>
+      <button type="button" className="b-btn b-btn--quiet" aria-label={wording.downloadTimeRecordJSON} disabled={busy} onClick={()=>void downloadCurrent('record')}>{wording.downloadTimeRecord}</button>
      </div>
      <details className="c-exp__more c-exp__details"><summary>{wording.details}</summary><dl className="c-exp__receipt"><div><dt>{wording.fileLayout}</dt><dd className="c-exp__plain">{`${shown.profile.name}${shown.profileRevision>0?` · Rev. ${shown.profileRevision}`:''}`}</dd></div><div><dt>{wording.receipt}</dt><dd>{shown.operationId}</dd></div><div><dt>{wording.csvChecksumSHA256}</dt><dd>{shown.csvSha256}</dd></div></dl></details>
     </BState>
@@ -289,7 +353,7 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
    </>:<div className="c-card__body"><p className="c-payroll__state" role="status" data-export-loading={state===wording.loadingFinalizedTime||undefined}>{stateText}</p>{state!==wording.loadingFinalizedTime?<button type="button" className="c-btn c-btn--secondary c-btn--md c-pay__gap" disabled={busy} onClick={()=>reload.current()}>{wording.tryAgain}</button>:null}</div>}
    </div>
   </section>}
-  {ready?<section className="c-pay__group" aria-labelledby="time-export-options">
+  {!disabled&&ready?<section className="c-pay__group" aria-labelledby="time-export-options">
    <div className="c-sec-label c-pay__sec"><h2 id="time-export-options">{wording.options}</h2></div>
    <div className="c-card">
    {/* U01: the way into the paid time export (every recorded break decided, sent in batches), for the dates shown. */}
@@ -297,7 +361,7 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
    <details className="c-exp__item" open={selected.length>0||undefined}>
     <summary className="c-row"><span className="c-row__main"><span className="c-row__title">{wording.peopleInThisExport}</span><span className="c-row__detail"><span>{(visibleSelection.overLimit ? formatPortalCopy(wording.selectedcountSelectedExcludedNotFinalizedSelectUpTo100People, { selectedCount: selected.length, excluded: visibleSelection.excluded }) : formatPortalCopy(wording.selectedcountSelectedExcludedNotFinalized, { selectedCount: selected.length, excluded: visibleSelection.excluded }))}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
     <div className="c-exp__body">
-     <div className="c-exp__bar"><button type="button" className="c-link c-link--l" aria-label={wording.selectAllFinalizedTimecards} disabled={locked||finalized.length===0} onClick={()=>{setSelected(visibleSelection.selected);setResult(null);}}>{wording.selectAllFinalized}</button><button type="button" className="c-link c-link--l" aria-label={wording.clearEmployeeSelection} disabled={locked||selected.length===0} onClick={()=>{setSelected([]);setResult(null);}}>{wording.clear}</button></div>
+     {lang==='es'&&<span id="time-export-select-all-description" className="sr-only">{wording.selectAllFinalizedTimecards}</span>}<div className="c-exp__bar"><button type="button" className="c-link c-link--l" aria-describedby={lang==='es'?"time-export-select-all-description":undefined} disabled={locked||finalized.length===0} onClick={()=>{setSelected(visibleSelection.selected);setResult(null);}}><CompactActionLabel full={wording.selectAllFinalized} short={wording.selectAllCompact} fullName={lang==='en'?wording.selectAllFinalizedTimecards:wording.selectAllFinalized}/></button><button type="button" className="c-link c-link--l" aria-label={wording.clearEmployeeSelection} disabled={locked||selected.length===0} onClick={()=>{setSelected([]);setResult(null);}}>{wording.clear}</button></div>
      {cards?.length===0?<p className="c-note">{wording.noOneHasTimeInThisPeriod}</p>:<ul className="c-exp__people">{cards?.map(c=><li key={c.card.employeeId}><label className="c-exp__person" data-off={c.state!=='FINALIZED'||undefined}>
       <input type="checkbox" aria-label={formatPortalCopy(wording.exportEmployeeName, { employeeName: c.card.employeeName })} disabled={c.state!=='FINALIZED'||locked||(!selected.includes(c.card.employeeId)&&selected.length>=100)} checked={selected.includes(c.card.employeeId)} onChange={e=>{setSelected(ids=>changeExportSelection(cards??[],ids,c.card.employeeId,e.target.checked));setResult(null);}}/>
       <span className="c-row__main"><span className="c-row__title">{c.card.employeeName}</span><span className="c-row__detail"><span>{c.state==='FINALIZED'?wording.finalized:c.state==='APPROVED'?wording.approvedNotFinalized:c.state==='DRAFT'?wording.draft:c.state.charAt(0)+c.state.slice(1).toLowerCase().replaceAll('_',' ')}</span></span></span>
@@ -306,22 +370,12 @@ const FILES_READY=wording.filesReadyDownloadTheCSVAndItsTimeRecord;
      {selected.length?<p className="c-note">{formatPortalCopy(wording.selectedRecordedRecordedBreaksOfBreaksListedSeparately, { recorded: hoursText(recorded), breaks: hoursText(breaks) })}</p>:null}
     </div>
    </details>
-   <details className="c-exp__item">
-    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">{wording.otherDates}</span><span className="c-row__detail"><span>{wording.upTo31Days}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
-    <form className="c-exp__body" onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice(wording.finishTheCurrentOperationBeforeRefreshingExportData);return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice(wording.finishOrRetryTheCurrentExportOrMappingSaveBefore);return;}clearProtected.current(wording.loadingFinalizedTime);setPeriod(nextPeriod);}setNotice('');}catch{setNotice(wording.chooseAPeriodOf1To31Days);}}}>
-     <div className="c-field__row">
-      <div className="c-field"><label className="c-field__label" htmlFor="time-export-start">{wording.start}</label><span className="c-in c-pay__date"><span aria-hidden="true">{dayText(draftPeriod.startDate)||wording.chooseADate}</span><CalendarBlankIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true"/><input id="time-export-start" type="date" required value={draftPeriod.startDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,startDate:e.target.value})}/></span></div>
-      <div className="c-field"><label className="c-field__label" htmlFor="time-export-end">{wording.end}</label><span className="c-in c-pay__date"><span aria-hidden="true">{dayText(draftPeriod.endDate)||wording.chooseADate}</span><CalendarBlankIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true"/><input id="time-export-end" type="date" required value={draftPeriod.endDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,endDate:e.target.value})}/></span></div>
-     </div>
-     {periodChanged?<p className="c-note">{wording.datesChangedShowThemToReviewThisPeriodBeforeExporting}</p>:null}
-     <button type="submit" className="c-btn c-btn--secondary c-btn--md c-btn--full" disabled={busy}>{wording.showTheseDates}</button>
-    </form>
-   </details>
+   {otherDates}
    <PayrollExportMapping draft={draft} setDraft={setDraft} cards={cards??[]} reviewed={reviewed} setReviewed={setReviewed} disabled={locked} save={()=>void save()} />
    </div>
   </section>:null}
   {/* QA A3-03 (Nov 21, 2026): past exports stay downloadable after this page clears a result. */}
-  <PayrollExportReceipts actorId={actorId} refreshKey={receiptsKey}/>
-  <IncludedSection payroll={payroll} period={period} actorId={actorId}/>
+  {!disabled&&<PayrollExportReceipts actorId={actorId} refreshKey={receiptsKey} onExportsDisabled={onExportsDisabled}/>}
+  <IncludedSection exportsDisabled={disabled} onExportsDisabled={onExportsDisabled} payroll={payroll} period={period} actorId={actorId}/>
  </div>;
 }

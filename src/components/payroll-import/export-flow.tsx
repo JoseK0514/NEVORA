@@ -6,6 +6,7 @@
  * body goes verbatim to POST /api/payroll-export and its reply is verified before it counts; the period is complete
  * only when POST /api/period-close (MANIFEST) answers for exactly these batches. The plan lives in this tab's memory. */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { isPayrollExportDisabled, payrollExportAvailability } from "../payroll-export-availability";
 import { PayrollExportBatchError, paidExportBatchProgress, planPaidExportBatches, type PaidExportBatchPlan } from "@/lib/payroll-export/batches";
 import {parseExportCommand} from "@/lib/payroll-export/command";
 import { verifyExportReply } from "@/lib/payroll-export/client";
@@ -41,6 +42,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   const copy = payrollImportCopy[lang];
   const [work, setWork, dropWork] = useHeld<Work>(`export:${workspaceId}:${actorId}:${period.startDate}:${period.endDate}`, emptyWork,retireWork);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" }), [busy, setBusy] = useState(false);
+  const [exportStop,setExportStop]=useState<"disabled"|"boundary"|null>(null);
   const offline = useOffline(), latest = useRef(work), running = useRef(false);
   useEffect(() => { latest.current = work; }, [work]);
   const active = useRef(false), focused = useRef(true), readSequence = useRef(0), validUntil = useRef(0),generation=useRef(0);
@@ -54,12 +56,12 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   const hasLease = () => active.current && focused.current && foreground() && performance.now() < validUntil.current;
   const started = Object.keys(work.states).length > 0;
   const unresolved = Object.values(work.states).some(holdsCustody) || holdsCustody(work.record);
-  useLeaveGuard(unresolved || (started && work.record.phase !== "saved"));
+  useLeaveGuard(!exportStop && (unresolved || (started && work.record.phase !== "saved")));
   useStepFocus(`${work.step}:${work.record.phase}`, HEADING_ID);
   useEffect(() => () => { if (latest.current.record.phase === "saved") dropWork(); }, [dropWork]);
 
   const load = useCallback(async function loadExport() {
-    if (!active.current || !focused.current || !foreground()) return;
+    if (exportStop || !active.current || !focused.current || !foreground()) return;
     const sequence = ++readSequence.current, began = performance.now();
     const [close, time] = await Promise.all([
       post("/api/period-close", { "x-nevora-period-close": "1", "x-nevora-actor": actorId }, JSON.stringify({ action: "READ", command: period })),
@@ -88,7 +90,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
       const ready = exportReadiness(source), kept = "included" in ready ? keepDecisions(periodBreaks(ready.included, period), now.decisions) : { decisions: now.decisions, dropped: 0 };
       setWork(value => ({ ...value, source: key, decisions: kept.decisions, plan: null, planFor: null, planProblem: null, step: value.source && value.step > 1 ? 1 : value.step, changed: value.source ? kept.dropped : null }));
     } catch { pausePrivate(); setLoaded({ state: "failed", why: "network" }); }
-  }, [actorId, period, setWork, pausePrivate]);
+  }, [actorId, period, setWork, pausePrivate, exportStop]);
   useEffect(() => {
     active.current = true; focused.current = foreground();
     queueMicrotask(() => { if (active.current) void load(); });
@@ -119,7 +121,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
   useEffect(() => {
     if (work.step !== 2 || started || !source || !gate.ready || gate.overLimit || work.planFor === planKey) return;
     let active = true;
-    void planPaidExportBatches(planInput(source, included, people, work.decisions, { planId: crypto.randomUUID(), actorId, workspaceId }))
+    void Promise.resolve().then(() => planPaidExportBatches(planInput(source, included, people, work.decisions, { planId: crypto.randomUUID(), actorId, workspaceId })))
       .then(next => { if (active&&hasLease()) setWork(value => ({ ...value, plan: next, planFor: planKey, planProblem: null })); })
       .catch(failure => { if (active) setWork(value => ({ ...value, plan: null, planFor: planKey, planProblem: failure instanceof PayrollExportBatchError && failure.reason === "EMPLOYEE_EXCEEDS_COMMAND_LIMIT" ? "tooBig" : "coverage" })); });
     return () => { active = false; };
@@ -133,6 +135,16 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     return next;
   }, [setWork]);
 
+  function stopForRefusal(answer: {status:number;body:unknown}) {
+    const body=answer.body;
+    const disabled=isPayrollExportDisabled(answer.status,body);
+    const boundary=answer.status===400 && typeof body==="object" && body!==null && "state" in body && body.state==="invalid" && "reason" in body && body.reason==="PERIOD_BOUNDARY_MISMATCH";
+    if(!disabled && !boundary)return false;
+    pausePrivate();
+    setExportStop(disabled?"disabled":"boundary");
+    return true;
+  }
+
   /** Send one batch's stored body, exactly as planned, and settle its state from the verified reply. */
   async function sendBatch(current: PaidExportBatchPlan, key: string): Promise<boolean> {
     if (!hasLease()) { pausePrivate(); return false; }
@@ -143,6 +155,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     if (applyBatch(key, { type: "send", custody }).phase !== "sending") return false;
     const answer = await post("/api/payroll-export", { "x-nevora-payroll-export": "1", "x-nevora-actor": current.actorId }, batch.body), result = classifyExportAnswer(answer.status, answer.body);
     if(currentGeneration!==generation.current||!hasLease()){applyBatch(key,{type:"unknown"});return false;}
+    if(stopForRefusal(answer))return false;
     if (result.kind === "generated") {
       // A reply counts only when its CSV, both fingerprints and the workplace are the ones this batch asked for.
       try { const verified = await verifyExportReply(result.reply, batch.command); if (verified.model.workspaceId !== current.workspaceId) throw new Error("foreign");if(currentGeneration!==generation.current||!hasLease()){applyBatch(key,{type:"unknown"});return false;} applyBatch(key, { type: "saved", receipt: result.reply }); return true; }
@@ -187,6 +200,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
       latest.current={...latest.current,record:sending};setWork(latest.current);
       const answer = await post("/api/period-close", { "x-nevora-period-close": "1", "x-nevora-actor": current.actorId }, custody.body);
       if(currentGeneration!==generation.current||!hasLease())return;
+    if(stopForRefusal(answer))return;
       const body = answer.body as { state?: unknown; result?: unknown } | undefined;
       const event: WriteEvent<unknown> = answer.status === 200 && body?.state === "ready" && manifestMatches(body.result, current) ? { type: "saved", receipt: body.result }
         : answer.status === 401 || answer.status === 403 ? { type: "blocked", reason: answer.status === 401 ? "signed_out" : "denied" }
@@ -202,6 +216,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     // authority and verifies the stored artifact before returning any bytes.
     const answer=await post("/api/payroll-export",{"x-nevora-payroll-export":"1","x-nevora-actor":actorId},batch.body);
     if(currentGeneration!==generation.current||!hasLease())return;
+    if(stopForRefusal(answer))return;
     if(answer.status!==200){pausePrivate();void load();return;}
     try{const verified=await verifyExportReply(answer.body,batch.command);if(verified.model.workspaceId!==workspaceId)throw Error("foreign");if(currentGeneration!==generation.current||!hasLease())return;download(verified.csv,"text/csv;charset=utf-8",`nevora-paid-time-${period.startDate}-${key.slice(0,8)}.csv`);}catch{pausePrivate();}
   }
@@ -219,6 +234,7 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     try{
       const answer=await post(manifest?"/api/period-close":"/api/payroll-export",{[manifest?"x-nevora-period-close":"x-nevora-payroll-export"]:"1","x-nevora-actor":actorId},custody.body);
       if(currentGeneration!==generation.current||!hasLease())return;
+    if(stopForRefusal(answer))return;
       if(answer.status===401||answer.status===403){pausePrivate();void load();return;}
       let confirmed=false;
       if(manifest){
@@ -247,6 +263,12 @@ export function PaidTimeExportFlow({ lang = "en", actorId, workspaceId, period, 
     <form className="c-teamform pim" data-wide={step >= 1 && step <= 3 ? "" : undefined} noValidate onSubmit={event => event.preventDefault()} aria-labelledby={TITLE_ID}><p className="pim-eyebrow">{eyebrow}</p>{children}</form>
   </>;
 
+  if(exportStop) {
+    const words=payrollExportAvailability[lang];
+    return frame(0,null,<StopCard kind="paused" alert title={exportStop==="disabled"?words.title:copy.exp.title}
+      line={exportStop==="disabled"?words.line:words.boundary(periodLabel,timeZone)}
+      action={{label:exportStop==="disabled"?words.period:copy.exp.finish.openExports,href:exportsHref}}/>);
+  }
   if (loaded.state === "loading") return frame(0, null, <Skeleton label={copy.common.loading} />);
   if (loaded.state === "failed") return frame(0, null, loaded.why === "network"
     ? <StopCard kind={offline ? "offline" : "failed"} alert title={offline ? copy.common.offlineTitle : copy.common.loadFailedTitle} line={offline ? copy.common.offlineLine : copy.common.loadFailedLine} action={{ retry: true, label: copy.common.tryAgain, onClick: () => { setLoaded({ state: "loading" }); void load(); } }} />

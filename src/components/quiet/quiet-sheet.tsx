@@ -60,6 +60,9 @@ export function QuietSheet({open, onClose, label, labelledBy, describedBy, role,
     if (!node) return;
     // Opened again while it was leaving: the exit is forgotten.
     if (open) cancelOverlayExit(node);
+    // Switching presentation while open requires closing the native dialog first.
+    // Keep its children mounted so an in-progress entry survives text-size changes.
+    if (open && node.open && modal === node.hasAttribute('data-inspector')) node.close();
     if (open && !node.open) {
       if (modal) { node.removeAttribute('data-inspector'); node.showModal(); node.focus({preventScroll: true}); document.documentElement.setAttribute('data-q-sheet', ''); }
       else {

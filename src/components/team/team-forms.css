@@ -139,3 +139,35 @@
   :is(#c-root, html) .c-formhead .c-formhead__dots > i { border: 1.5px solid CanvasText; box-shadow: none; }
   :is(#c-root, html) .c-formhead .c-formhead__dots > i[data-on] { forced-color-adjust: none; background: CanvasText; }
 }
+:is(#c-root, html) .app-shell[data-nv-b] .c-status-form .c-btn {
+  font-size: var(--b-fs-body);
+  line-height: var(--b-lh-body);
+  height: auto;
+  min-height: var(--b-btn-h);
+  white-space: normal;
+}
+:is(#c-root, html) .app-shell[data-nv-b] .c-status-form .c-note {
+  font-size: var(--b-fs-meta);
+  line-height: var(--b-lh-meta);
+}
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page form.c-status-form .c-btn.c-btn--full {
+    min-height: var(--b-btn-h) !important;
+  }
+}
+
+/* Preserve full access instructions and their words when text grows. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a:is([href$="/clocker-pin"], [href^="/app/account-recovery?employee="]) .c-row__detail > span:first-child {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    overflow-wrap: normal !important;
+  }
+  /* A 9rem text basis fits the original compact row, then moves the trailing
+     action below when enlarged copy needs the full card width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a[href$="/clocker-pin"]:has(.c-row__detail) { flex-wrap: wrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a[href$="/clocker-pin"]:has(.c-row__detail) .c-row__main { flex: 1 1 9rem !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access a[href$="/clocker-pin"]:has(.c-row__detail) .c-row__value { max-width: none !important; margin-left: auto !important; overflow-wrap: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .c-page.c-access #person-access .c-rows > li:first-child .c-row__value { max-width: none !important; overflow-wrap: normal !important; }
+}

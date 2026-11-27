@@ -27,7 +27,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   const [words, setWords] = useState<WordPresetId>(preset);
   const [off, setOff] = useState<ModuleId[]>(disabled);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<{ tone: "info" | "error" | "success"; text: string } | null>(null);
+  const [notice, setNotice] = useState<{ tone: "info" | "error" | "success"; text: string; reviewTimeOff?: boolean } | null>(null);
   const pending = useRef<Command[] | null>(null);
   const sending = useRef(false);
   const feedback = useRef<HTMLDivElement>(null);
@@ -60,7 +60,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
         // Branch audit, Nov 26, 2026: nothing was saved, so the switches go back to the saved modules (QA saw Time off left
         // drawn off beside "Not saved"). The server writes its busy sentence in English, so the person's language comes from the
         // reply's module and count (FEATURES_EDITOR_COPY.blocker), with the server's sentence only as a fallback.
-        if (response.status === 409 && body?.state === "busy") { pending.current = null; setOff(disabled); setNotice({ tone: "error", text: `${index ? t.wordsSaved : ""}${featuresBusyText(lang, body) ?? body.message ?? t.stillWaiting}` }); if (index) router.refresh(); return; }
+        if (response.status === 409 && body?.state === "busy") { pending.current = null; setOff(disabled); setNotice({ tone: "error", reviewTimeOff: body.module === "timeOff", text: `${index ? t.wordsSaved : ""}${featuresBusyText(lang, body) ?? body.message ?? t.stillWaiting}` }); if (index) router.refresh(); return; }
         if (response.status === 409) { pending.current = null; setNotice({ tone: "error", text: t.changedElsewhere }); return; }
         if (!response.ok) throw Error();
       }
@@ -113,7 +113,7 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
 
     <p className="c-sr" role="status">{busy ? t.saving : changed ? "" : t.savedLine}</p>
     {notice ? <ResultB innerRef={feedback} tone={notice.tone === "error" ? "urgent" : notice.tone === "success" ? "done" : "info"} title={notice.tone === "error" ? (notice.text === t.signInAgain ? t.sessionEnded : notice.text === t.mayNotHaveSaved ? t.notSavedYet : t.notSaved) : undefined}
-      action={notice.text === t.signInAgain ? <Link className="c-btn c-btn--secondary" href="/login">{t.signIn}</Link> : <button type="button" className="c-btn c-btn--secondary" onClick={() => { setNotice(null); void save(); }}>{t.tryAgain}</button>}>{notice.text}</ResultB> : null}
+      action={notice.reviewTimeOff ? <Link className="c-btn c-btn--secondary" href="/app/requests">{t.reviewTimeOff}</Link> : notice.text === t.signInAgain ? <Link className="c-btn c-btn--secondary" href="/login">{t.signIn}</Link> : <button type="button" className="c-btn c-btn--secondary" onClick={() => { setNotice(null); void save(); }}>{t.tryAgain}</button>}>{notice.text}</ResultB> : null}
     <span className="c-sr" ref={savedLine} tabIndex={-1}>{changed ? "" : t.savedLine}</span>
   </>;
 }

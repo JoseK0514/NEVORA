@@ -7,13 +7,14 @@
  * batch's stored body is sent as it is. The period is complete only when the server's own record of it says so. */
 import type { TimecardItem } from "@/lib/timecards/read-model";
 import { periodInstants, type Period } from "@/lib/timecards/project";
-import type { BreakTreatment } from "@/lib/payroll-export/paid-time";
+import { parsePaidTimeReview, type BreakTreatment } from "@/lib/payroll-export/paid-time";
 import type { PaidExportBatchInput, PaidExportBatchPlan } from "@/lib/payroll-export/batches";
 import type { Manifest, Population } from "@/lib/period-close/service";
 import type { WriteState } from "./recovery";
 
-export type Treatment = BreakTreatment["treatment"];
-export const TREATMENTS: readonly Treatment[] = ["PAID_REST", "UNPAID_RELIEVED_MEAL"];
+export const TREATMENTS = ["PAID_REST", "UNPAID_RELIEVED_MEAL", "PAID_AS_WORKED"] as const;
+export type Treatment = (typeof TREATMENTS)[number];
+type ReviewedBreak = Omit<BreakTreatment, "treatment"> & { treatment: Treatment };
 
 /** POST /api/period-close READ, the parts this flow uses. */
 export type PeriodRead = {
@@ -70,11 +71,14 @@ export function exportReadiness(source: ExportSource): { hold: Hold } | { includ
 
 /* ---------- the breaks and their decisions ---------- */
 
-export type RecordedBreak = { key: string; employeeId: string; entryId: string; breakId: string; startAt: string; endAt: string; label: string; place: string };
+export type RecordedBreak = { key: string; employeeId: string; entryId: string; breakId: string; startAt: string; endAt: string; label: string; place: string;
+  original?: { startAt: string; endAt: string | null } };
 export type PersonBreaks = { employeeId: string; name: string; breaks: RecordedBreak[] };
 export type Decisions = Record<string, Treatment | undefined>;
 
-export const breakKey = (employeeId: string, entryId: string, breakId: string) => JSON.stringify([employeeId, entryId, breakId]);
+// A review applies to the effective interval shown when a choice was made.
+const breakKey = (employeeId: string, entryId: string, breakId: string, startAt: string, endAt: string) =>
+  JSON.stringify([employeeId, entryId, breakId, startAt, endAt]);
 const instant = (at: string) => Date.parse(at);
 
 /** Every recorded break that overlaps the period, by person, in the order it happened. A break is listed by what was
@@ -83,7 +87,11 @@ export function periodBreaks(included: readonly Included[], period: Period): Per
   return included.map(person => {
     const bounds = periodInstants(period, person.card.card.timeZone), start = instant(bounds.startAt), end = instant(bounds.endAt);
     const breaks = person.card.card.entries.flatMap(entry => entry.breaks.filter(item => item.endAt !== null && Math.min(instant(item.endAt), end) > Math.max(instant(item.startAt), start))
-      .map((item): RecordedBreak => ({ key: breakKey(person.employeeId, entry.id, item.id), employeeId: person.employeeId, entryId: entry.id, breakId: item.id, startAt: item.startAt, endAt: item.endAt!, label: item.name, place: entry.locationName })))
+      .map((item): RecordedBreak => ({
+        key: breakKey(person.employeeId, entry.id, item.id, item.startAt, item.endAt!), employeeId: person.employeeId, entryId: entry.id, breakId: item.id,
+        startAt: item.startAt, endAt: item.endAt!, label: item.name, place: entry.locationName,
+        ...(item.rawStartAt !== item.startAt || item.rawEndAt !== item.endAt ? { original: { startAt: item.rawStartAt, endAt: item.rawEndAt } } : {}),
+      })))
       .sort((a, b) => instant(a.startAt) - instant(b.startAt) || (a.key < b.key ? -1 : 1));
     return { employeeId: person.employeeId, name: person.name, breaks };
   });
@@ -95,17 +103,23 @@ export function breakGate(people: readonly PersonBreaks[], decisions: Decisions)
   const all = people.flatMap(person => person.breaks), decided = all.filter(item => decisions[item.key]).length;
   return { total: all.length, decided, undecided: all.length - decided, ready: decided === all.length, overLimit: people.some(person => person.breaks.length > 1000) };
 }
-export function treatmentsOf(people: readonly PersonBreaks[], decisions: Decisions): BreakTreatment[] {
+export function treatmentsOf(people: readonly PersonBreaks[], decisions: Decisions): ReviewedBreak[] {
   return people.flatMap(person => person.breaks.map(item => ({ employeeId: item.employeeId, entryId: item.entryId, breakId: item.breakId, treatment: decisions[item.key]! })));
 }
 
 /* ---------- the plan ---------- */
 
 export function planInput(source: ExportSource, included: readonly Included[], people: readonly PersonBreaks[], decisions: Decisions, ids: { planId: string; actorId: string; workspaceId: string }): PaidExportBatchInput {
+  const breakTreatments = treatmentsOf(people, decisions).map(({ treatment, ...identity }): BreakTreatment =>
+    // Use the shared contract for the new treatment. Each batch still validates
+    // its own full review, including coverage, duplicates and the per-batch limit.
+    treatment === "PAID_AS_WORKED"
+      ? parsePaidTimeReview({ version: 1, breakTreatments: [{ ...identity, treatment }] }).breakTreatments[0]
+      : { ...identity, treatment });
   return {
     ...ids, period: source.read.period, sourceHash: source.read.sourceHash, population: source.read.population!, profileId: null, profileRevision: 0,
     cards: included.map(person => ({ employeeId: person.employeeId, revision: person.card.revision, sourceHash: person.card.sourceHash, finalizationOperationId: person.card.history[0].operationId })),
-    paidTime: { version: 1, breakTreatments: treatmentsOf(people, decisions) },
+    paidTime: { version: 1, breakTreatments },
   };
 }
 
@@ -123,7 +137,7 @@ export function sourceKey(source: ExportSource): string {
   return JSON.stringify([source.read.sourceHash, source.read.population?.revision ?? 0, source.read.exports.map(item => item.operationId).sort(), source.read.manifests.filter(item => item.current).map(item => item.id),
     source.cards.map(card => [card.card.employeeId, card.state, card.revision, card.sourceHash]).sort()]);
 }
-/** Keep the choices whose break is still there. */
+/** Keep choices for breaks whose effective intervals still match. */
 export function keepDecisions(people: readonly PersonBreaks[], decisions: Decisions): { decisions: Decisions; dropped: number } {
   const keys = new Set(people.flatMap(person => person.breaks.map(item => item.key)));
   const kept = Object.fromEntries(Object.entries(decisions).filter(([key, value]) => value && keys.has(key)));

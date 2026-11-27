@@ -67,7 +67,10 @@ it("lists readiness warnings per location before Publish anyway confirms", async
   expect(out).toContain('c-publish__back" href="/app/schedule?week=');
   expect(out).toContain('name="confirmWarnings" value="yes"');
   expect(out).toContain(">Publish 2 drafts anyway<");
-  expect(await html()).not.toContain("confirmWarnings");
+  expect(out).toContain('class="nv-compact-action"');
+  const ordinary = await html();
+  expect(ordinary).not.toContain("confirmWarnings");
+  expect(ordinary).not.toContain('class="nv-compact-action"');
 });
 
 it("says when nothing is left to publish, and stops when access is unavailable", async () => {
@@ -100,6 +103,8 @@ it("lists changes to the published week and publishes them once with Publish cha
   const review = await html({ review: "changes" });
   expect(review).toContain("Review before publishing");
   expect(review).toContain(">Publish changes anyway<");
+  expect(review).toContain('class="nv-compact-action"');
+  expect(out).not.toContain('class="nv-compact-action"');
   expect(review).toContain('name="confirmWarnings" value="yes"');
 });
 

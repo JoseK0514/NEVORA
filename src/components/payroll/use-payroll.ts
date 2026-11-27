@@ -168,7 +168,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
         await reload();
       }
       else if (failure instanceof PayrollRequestError && [401, 403].includes(failure.status)) { setUnconfirmed(true); setRetryAvailable(true); await reload(); }
-      else if (failure instanceof PayrollRequestError && [400, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409); finish(next.operationId); await reload(); }
+      else if (failure instanceof PayrollRequestError && [400, 409].includes(failure.status)) { setRevisionConflict(failure.status === 409 && failure.code !== 'PAYROLL_SELF_REVIEW' && failure.code !== 'INDEPENDENT_PAYROLL_APPROVAL_REQUIRED'); finish(next.operationId); await reload(); }
       else setRetryAvailable(true);
       setError(payrollErrorText(failure, lang, t.interrupted));
     } finally { inFlight.current = false; setBusy(false); }

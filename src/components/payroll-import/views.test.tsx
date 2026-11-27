@@ -183,7 +183,10 @@ describe.each(["en", "es"] as const)("the paid time export in %s", lang => {
     for (const [name, markup] of states) expect(words(markup).length, name).toBeGreaterThan(3);
     expect(states.length).toBeGreaterThan(40);
     const undecided = of("breaks: undecided (partial)");
-    expect((undecided.match(/type="radio"/g) ?? []).length).toBe(3 * 38 * 2);
+    expect(undecided).toContain('class="nv-compact-action"');
+    expect(undecided).toContain(copy.exp.breaks.correctionFor("Person 01"));
+    expect(copy.exp.breaks.correctionCompact).toBe(lang === "es" ? "Pedir corrección" : "Request a fix");
+    expect((undecided.match(/type="radio"/g) ?? []).length).toBe(3 * 38 * 3);
     expect((undecided.match(/checked=""/g) ?? []).length).toBe(2 * 38);
     expect(undecided).not.toMatch(/type="checkbox"|<select/);
     expect(words(undecided)).toContain(copy.exp.breaks.undecided(38));
@@ -200,6 +203,24 @@ describe.each(["en", "es"] as const)("the paid time export in %s", lang => {
       expect(words(of(name)), name).not.toContain(copy.exp.finish.completeTitle);
     }
     expect(words(of("finish: complete"))).toContain(copy.exp.finish.scope);
+  });
+  it("describes the worked-through choice and keeps the original punch and correction route visible", () => {
+    const readiness = exportReadiness(exportSource(1, 1));
+    if (!("included" in readiness)) throw Error("held");
+    const breakEntry = readiness.included[0].card.card.entries[0].breaks[0];
+    breakEntry.endAt = "2026-09-21T13:15:00Z";
+    const people = periodBreaks(readiness.included, PERIOD);
+    const decisions = { [people[0].breaks[0].key]: "PAID_AS_WORKED" } as const;
+    const markup = html(<BreaksStep copy={copy} headingId="h" people={people} decisions={decisions} gate={breakGate(people, decisions)} timeZone="America/Puerto_Rico" onDecide={nothing} />);
+    const selected = markup.match(/<input[^>]*checked=""[^>]*>/g);
+    expect(selected).toHaveLength(1);
+    expect(selected?.[0]).toContain('value="PAID_AS_WORKED"');
+    expect(selected?.[0]).toMatch(/aria-describedby="[^"]+-worked"/);
+    expect(words(markup)).toContain(lang === "en" ? "Worked through break" : "Trabajó durante el descanso");
+    expect(words(markup)).toContain(copy.exp.breaks.workedThrough);
+    expect(words(markup)).toContain(copy.exp.breaks.partialWork);
+    expect(words(markup)).toContain(copy.exp.breaks.originalPunch("").trim());
+    expect(markup).toContain('href="/app/timecards/corrections/new/emp-01"');
   });
 });
 

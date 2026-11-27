@@ -8,6 +8,7 @@ import {Temporal} from '@js-temporal/polyfill';
 import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {isManagerRole} from '@/lib/auth/permissions';
 import {getWorkspace} from '@/lib/data/workspaces';
+import {listLocations} from '@/lib/data/locations';
 import {listEmployees} from '@/lib/data/employees';
 import {parsePeriod} from '@/lib/timecards/project';
 import {Timecards} from '@/components/timecards';
@@ -20,7 +21,8 @@ export async function generateMetadata() { return { title: ROUTE_COPY[await read
 export default async function TimecardsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession(),workspace=await getWorkspace(),params=await searchParams;
   const proof=isManagerRole(session.role)?await requireSessionMutationProof():null;
-  const access=proof?await withOperationalCompany(proof,async()=>null):null;
+  const access=proof?await withOperationalCompany(proof,async()=>
+    (await listLocations({includeInactive:true}).catch(()=>[])).map(({id,name})=>({id,name}))):null;
   if(access?.state==='unavailable')return <OperationalUnavailable lang={await readPageLang()} title={ROUTE_COPY[await readPageLang()].timecardsUnavailable} reason={access.reason}/>;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   let period={startDate:today.subtract({days:6}).toString(),endDate:today.toString()};
@@ -42,7 +44,7 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
     const viewerIsOwner=session.role==='OWNER';
     const owners=viewerIsOwner?[]:await listEmployees().then(list=>list.filter(employee=>employee.role==='OWNER'&&employee.active!==false).map(employee=>`${employee.firstName} ${employee.lastName}`.trim())).catch(()=>[]);
     return <ScopedReadFrame observation={scopedObservation(access)}><div className="cm-timecards" data-nv-page="">
-      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} managementRecoveryScope={managementRecoveryScope(workspace.id)} employeeCorporate={false} today={today.toString()} payrollStep={payrollStep} viewerIsOwner={viewerIsOwner} owners={owners}/>
+      <Timecards key={session.id} initialPeriod={managerPeriod} manager actorId={session.id} locations={access?.state==='ready'?access.data:[]} managementRecoveryScope={managementRecoveryScope(workspace.id)} employeeCorporate={false} today={today.toString()} payrollStep={payrollStep} viewerIsOwner={viewerIsOwner} owners={owners}/>
     </div></ScopedReadFrame>;
   }
   // Signature (phase 1): the employee page is the Timecards component's own band and sheet.

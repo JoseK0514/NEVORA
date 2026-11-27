@@ -23,6 +23,16 @@ describe('canonical recorded-time review summary',()=>{
   expect(open.card.recordedNanoseconds).toBe('0');expect(open.card.issues).toContain('open_entry');
   expect(classifyTimecardReview(open)).toBe('awaiting_approval');
  });
+ it('keeps zero-hour assignments visible for review before approval',()=>{
+  const original=item('ASSIGNED','DRAFT',false);
+  const shift={assignmentId:'published:shift',locationId:'fixture-office',date:'2026-09-22'};
+  for(const status of ['UNRESOLVED','APPROVED_CALLOUT'] as const){
+   const source={...original.source,shiftOutcomes:[{...shift,status}]};
+   const [card]=parseTimecardsResponse({observedAt,cards:[{...original,source}]},period).cards;
+   expect(classifyTimecardReview(card)).toBe('awaiting_approval');
+   expect(card.card.issues).toEqual(status==='UNRESOLVED'?['missing_shift_disposition']:[]);
+  }
+ });
  it('keeps Action Center own-card prompts, period links and scheduling aggregation',()=>{
   const attendance:Extract<AttendanceDisplayReview,{state:'ready'}>={state:'ready',engineVersion:1,workspaceId:'fixture-workspace',timeZone:'America/Puerto_Rico',observedAt,scope:{kind:'TODAY_AND_OPEN',localDate:'2026-09-29',dayStartAt:'2026-09-29T04:00:00Z'},groups:[],recordCount:0,signalCount:0,affectedEmployeeCount:0,coverage:{state:'complete',limitations:[],deferredCapabilities:[]},validForMs:45000,pendingCorrectionCount:0,labels:{employees:[],locations:[]}};
   const actions=combineManagerActions([{id:'setup',type:'TARGET_MISSING',priority:'MISSING_INPUT',title:'Set target',detail:'Missing target',href:'/app/employees'}],attendance,{state:'ready',validForMs:45000,observedAt,timeZone:'America/Puerto_Rico',requests:[]},{cards:mixed()},'DRAFT');

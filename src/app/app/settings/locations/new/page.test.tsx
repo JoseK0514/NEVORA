@@ -32,3 +32,9 @@ it("retains the creation contract and automatic optional Clocker key", async () 
   expect(html).toContain('type="submit" form="new-location-form"');
 });
 
+
+it("offers a labeled optional multiline address when adding a location", async () => {
+  const html = renderToStaticMarkup(await NewLocationPage());
+  expect(html).toContain('for="new-location-address">Address (optional)</label>');
+  expect(html).toMatch(/<textarea(?=[^>]*name="address")(?=[^>]*maxLength="300")(?![^>]*required)[^>]*>/);
+});

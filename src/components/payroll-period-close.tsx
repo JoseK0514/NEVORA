@@ -2,6 +2,7 @@
 import { wholeSpanishTimes } from '@/lib/i18n/whole-spanish-times';
 import { usePortalLang } from '@/lib/i18n/portal-lang';
 import { formatPortalCopy } from '@/lib/i18n/format-portal-copy';
+import { isPayrollExportDisabled } from "./payroll-export-availability";
 import { copy } from './payroll-period-close-copy';
 import { useCallback, useEffect, useRef, useState, type ComponentProps } from "react";
 import type { Period } from "@/lib/timecards/project";
@@ -15,7 +16,7 @@ type Review = Awaited<ReturnType<typeof readPeriodClose>>;
 type PendingCommand = { action: string; command: unknown };
 /** `startOpen` (AR-4, Nov 14 inspection): the page was opened from Payroll's blocker, so a phone shows the list at once
  * instead of behind its "Choose who’s included" disclosure. */
-type Props={period:Period;actorId:string;startOpen?:boolean};
+type Props={period:Period;actorId:string;startOpen?:boolean;exportsDisabled?:boolean;onExportsDisabled?:()=>void};
 /** AR-4: plain words for this tool's labels and notices. Commands, payloads and what the server checks are unchanged. */
 /** A stored timestamp ("2026-11-14 23:35:01+00") as "Nov 14, 2026, 7:35 PM"; the stored text if it can't be read. */
 const whenText=(value:string,lang:keyof typeof copy)=>{const date=new Date(value.replace(' ','T').replace(/([+-]\d{2})$/,'$1:00'));return Number.isNaN(date.getTime())?value:lang==='es'?wholeSpanishTimes(new Intl.DateTimeFormat('es-PR',{dateStyle:'medium',timeStyle:'short',hour12:true}).format(date)):new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short'}).format(date);};
@@ -33,14 +34,17 @@ export function populationIdentity(result:{members:readonly object[]}&Record<str
 export function PayrollPeriodClose(props:Props){
   return <PeriodCloseView key={JSON.stringify([props.actorId,props.period.startDate,props.period.endDate])} {...props}/>;
 }
-function PeriodCloseView({period,actorId,startOpen=false}:Props) {
+const handoffConflict = Symbol('handoff conflict');
+type PeriodNotice = string | typeof handoffConflict;
+const focusNotice = (node: HTMLParagraphElement | null) => node?.focus();
+function PeriodCloseView({period,actorId,startOpen=false,exportsDisabled=false,onExportsDisabled}:Props) {
   const lang = usePortalLang();
   const wording = copy[lang];
 const LOADING=wording.loadingTheListOfPeople,OUT_OF_DATE=wording.thisListIsOutOfDateRefreshItToSee;
 const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadRequested,REPORTED_SUBMITTED:wording.markedAsSent,REPORTED_IMPORTED:wording.markedAsImported};
 
   const [review, setReview] = useState<Review | null>(null),
-    [notice, setNotice] = useState<string>(LOADING),
+    [notice, setNotice] = useState<PeriodNotice>(LOADING),
     [busy, setBusy] = useState(false),
     [selected, setSelected] = useState<string[]>([]),
     [retry, setRetry] = useState<PendingCommand | null>(null),
@@ -52,7 +56,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
   const expiry=useRef<ReturnType<typeof setTimeout>|null>(null),early=useRef<ReturnType<typeof setTimeout>|null>(null),readTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
   const [viewKey,setViewKey]=useState('');
   const cancelRead=useCallback(()=>{sequence.current++;request.current?.abort();reading.current=false;if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;},[]);
-  const retire=useCallback((message:string)=>{generation.current.value++;cancelRead();if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);expiry.current=early.current=null;deadline.current=0;sourceKey.current=null;mutating.current=false;setReview(null);setViewKey('');setSelected([]);setBusy(false);setNotice(message);},[cancelRead]);
+  const retire=useCallback((message:PeriodNotice)=>{generation.current.value++;cancelRead();if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);expiry.current=early.current=null;deadline.current=0;sourceKey.current=null;mutating.current=false;setReview(null);setViewKey('');setSelected([]);setBusy(false);setNotice(message);},[cancelRead]);
   const post = useCallback(
     async (action: string, command: unknown, signal?:AbortSignal) =>
       fetch("/api/period-close", {
@@ -119,13 +123,14 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
       document.removeEventListener('visibilitychange',visible);};
   },[load,recoveryKey,retire,cancelRead,wording]);
   const send = async (action: string, command: unknown) => {
-    if (busy || mutating.current || !recoveryReady) return;
+    if (busy || mutating.current || !recoveryReady || (exportsDisabled && action!=="POPULATION")) return;
     if(!active.current||!sourceKey.current||performance.now()>=deadline.current){retire(wording.thisListIsOutOfDateRefreshItBeforeSaving);return;}
     cancelRead();const own=generation.current.value;
     let pending: PendingCommand;
     try {
       const saved = localStorage.getItem(recoveryKey);
       pending = saved ? JSON.parse(saved) : retry ?? { action, command };
+      if (exportsDisabled && pending.action!=="POPULATION") return;
       localStorage.setItem(recoveryKey, JSON.stringify(pending));
     } catch {
       setNotice(wording.weCouldnTKeepACopyOfThisChangeSo);
@@ -137,6 +142,17 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
       const response = await post(pending.action, pending.command),
         body = await response.json();
       if(!active.current||own!==generation.current.value)return;
+      if (isPayrollExportDisabled(response.status,body)){
+        // Preserve any previously uncertain command for the next enabled review.
+        onExportsDisabled?.();
+        return;
+      }
+      if (pending.action === "HANDOFF" && response.status === 409 && body?.state === "conflict") {
+        localStorage.removeItem(recoveryKey);
+        setRetry(null);
+        retire(handoffConflict);
+        return;
+      }
       if (response.status === 400 || response.status === 409) {
         localStorage.removeItem(recoveryKey);
         setRetry(null);
@@ -161,18 +177,43 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
       if(active.current&&own===generation.current.value){mutating.current=false;setBusy(false);}
     }
   };
+  async function downloadArtifact(event: React.MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    if (busy || exportsDisabled || !active.current || performance.now()>=deadline.current) return;
+    const own=generation.current.value;
+    const current=()=>active.current && own===generation.current.value && performance.now()<deadline.current;
+    const href=event.currentTarget.href;
+    setBusy(true);
+    try {
+      const response=await fetch(href,{cache:"no-store",credentials:"same-origin"});
+      if (!current()) return;
+      if (response.status===403 && isPayrollExportDisabled(response.status,await response.json().catch(()=>null))){
+        if(current())onExportsDisabled?.();
+        return;
+      }
+      if (!response.ok) throw Error();
+      const filename=/filename="([^"/]+)"/i.exec(response.headers.get("content-disposition")??"")?.[1];
+      if (!filename) throw Error();
+      const file=await response.blob();
+      if (!current()) return;
+      const url=URL.createObjectURL(file),link=document.createElement("a");
+      link.href=url;link.download=filename;link.click();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    } catch { if(current())setNotice(wording.downloadFailed); }
+    finally { if(current())setBusy(false); }
+  }
   return (
     <section className="panel">
       <h2>{wording.whoSInThisPayroll}</h2>
       <p>{wording.chooseWhatToDoWithEachPersonForThisPeriod}</p>
-      <p role="status">{notice}</p>
+      <p role="status" tabIndex={notice === handoffConflict ? -1 : undefined} ref={notice === handoffConflict ? focusNotice : undefined}>{notice === handoffConflict ? wording.handoffChanged : notice}</p>
       <button
         className="button secondary"
         type="button"
         disabled={busy}
         onClick={() => void load()}
       >{wording.refreshTheList}</button>
-      {retry && (
+      {retry && (!exportsDisabled || retry.action==="POPULATION") && (
         <button
           className="button primary"
           type="button"
@@ -181,7 +222,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
         >{wording.tryAgain}</button>
       )}
       <ListDisclosure open={startOpen} id="mobile-payroll-population" label={wording.chooseWhoSIncluded} expandedLabel={wording.hideTheList}
-        available={Boolean(review) && !busy && !retry}
+        available={Boolean(review) && !busy && (!retry || exportsDisabled)}
         summary={review && !busy && !retry ? <p>{formatPortalCopy(wording.memberscountPeopleInThisPeriod, { membersCount: review.members.length })}</p> : undefined}>
       {review && (
         <div key={viewKey}>
@@ -269,7 +310,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
               type="submit"
             >{wording.saveThisList}</button>
           </form>
-          <h3>{wording.matchYourExportFiles}</h3>
+          {!exportsDisabled&&<><h3>{wording.matchYourExportFiles}</h3>
           <p>{formatPortalCopy(wording.listVersionRevisionSelectTheExportFilesThatCoverEach, { revision: review.population?.revision ?? 0 })}</p>
           {review.exports.map((e) => (
             <label key={e.actorId + e.operationId}>
@@ -324,6 +365,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
           ) && (
             <p>{wording.thisVersionOfTheListAlreadyHasAPeriodRecord}</p>
           )}
+          </>}
           <h3>{wording.periodRecords}</h3>
           {review.manifests.map((m) => (
             <article className="panel" key={m.id}>
@@ -336,19 +378,19 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
                 <summary>{wording.recordFingerprint}</summary>
                 <code style={{ overflowWrap: "anywhere" }}>{m.hash}</code>
               </details>
-              <a
+              {!exportsDisabled&&<><a
                 className="button secondary"
-                href={`/api/period-close/artifact?id=${m.id}&format=manifest`}
+                onClick={downloadArtifact} href={`/api/period-close/artifact?id=${m.id}&format=manifest`}
               >{wording.downloadPeriodRecord}</a>
               {m.exports.map((e) => (
                 <div key={e.index}>
                   <a
-                    href={`/api/period-close/artifact?id=${m.id}&format=csv&index=${e.index}`}
+                    onClick={downloadArtifact} href={`/api/period-close/artifact?id=${m.id}&format=csv&index=${e.index}`}
                   >{formatPortalCopy(wording.downloadCSVFileNumber, { number: e.index + 1 })}
                   </a>{" "}
                   ·{" "}
                   <a
-                    href={`/api/period-close/artifact?id=${m.id}&format=canonical&index=${e.index}`}
+                    onClick={downloadArtifact} href={`/api/period-close/artifact?id=${m.id}&format=canonical&index=${e.index}`}
                   >{formatPortalCopy(wording.downloadTimeRecordNumberJSON, { number: e.index + 1 })}</a>
                   <details>
                     <summary>{wording.csvFingerprint}</summary>
@@ -359,7 +401,8 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
                 </div>
               ))}
               <p>{wording.nevoraRecordsEachDownloadRequestItCanTConfirmThe}</p>
-              <form
+              </>}
+              {!exportsDisabled&&m.current&&<form
                 onSubmit={(event) => {
                   event.preventDefault();
                   const data = new FormData(event.currentTarget);
@@ -389,7 +432,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
                   <button className="button secondary" type="submit">{wording.saveNote}</button>
                 </fieldset>
                 <p>{wording.nevoraIsnTConnectedToYourProviderSoItCan}</p>
-              </form>
+              </form>}
               <h4>{wording.latestDownloadsAndNotes}</h4>
               <p>{(m.eventCoverage.complete ? formatPortalCopy(wording.returnedeventsOfTotalEventsEventsInThisSummaryAllEventsFor, { returnedEvents: m.eventCoverage.returnedEvents, totalEvents: m.eventCoverage.totalEvents }) : formatPortalCopy(wording.returnedeventsOfTotalEventsEventsInThisSummaryLatestEventOf, { returnedEvents: m.eventCoverage.returnedEvents, totalEvents: m.eventCoverage.totalEvents }))}</p>
               <ul>
@@ -419,7 +462,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
       {/* Gap closure (Nov 23, 2026, QA trace-1): saved runs sit outside the keyed view. Someone clocked in changes every
         * READ (their open interval counts up to observedAt), so the key above changes on each early refresh; inside it,
         * the history and its loaded pages were remounted every 10 s. */}
-      {review && review.manifests.length > 0 && <PeriodCloseHistory period={period} actorId={actorId} />}
+      {review && (exportsDisabled || review.manifests.length > 0) && <PeriodCloseHistory period={period} actorId={actorId} />}
       </ListDisclosure>
     </section>
   );

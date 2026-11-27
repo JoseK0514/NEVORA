@@ -60,6 +60,32 @@ describe("the break decisions gate", () => {
     expect(treatmentsOf(people, all)).toHaveLength(12);
     expect(new Set(treatmentsOf(people, all).map(item => item.treatment))).toEqual(new Set(["PAID_REST", "UNPAID_RELIEVED_MEAL"]));
   });
+  it("keeps worked time distinct from paid rest and an unpaid meal when reviewing the recorded break IDs", () => {
+    const people = periodBreaks(ready(exportSource(1, 3)).included, PERIOD), [worked, rest, meal] = people[0].breaks;
+    const firstTwo = { [worked.key]: "PAID_AS_WORKED", [rest.key]: "PAID_REST" } as const;
+    expect(breakGate(people, firstTwo)).toMatchObject({ decided: 2, undecided: 1, ready: false });
+    const decisions = { ...firstTwo, [meal.key]: "UNPAID_RELIEVED_MEAL" } as const;
+    expect(breakGate(people, decisions)).toMatchObject({ ready: true });
+    expect(treatmentsOf(people, decisions)).toEqual([
+      { employeeId: worked.employeeId, entryId: worked.entryId, breakId: worked.breakId, treatment: "PAID_AS_WORKED" },
+      { employeeId: rest.employeeId, entryId: rest.entryId, breakId: rest.breakId, treatment: "PAID_REST" },
+      { employeeId: meal.employeeId, entryId: meal.entryId, breakId: meal.breakId, treatment: "UNPAID_RELIEVED_MEAL" },
+    ]);
+  });
+  it("keeps the original punch when reviewing the corrected effective interval", () => {
+    const included = ready(exportSource(1, 1)).included;
+    const punch = included[0].card.card.entries[0].breaks[0];
+    const [reviewed] = periodBreaks(included, PERIOD)[0].breaks;
+    const endAt = "2026-09-21T13:15:00Z";
+    punch.endAt = endAt;
+    const updated = periodBreaks(included, PERIOD);
+    expect(updated[0].breaks[0]).toMatchObject({
+      startAt: punch.startAt, endAt, original: { startAt: punch.rawStartAt, endAt: punch.rawEndAt },
+    });
+    const retained = keepDecisions(updated, { [reviewed.key]: "PAID_AS_WORKED" });
+    expect(retained).toEqual({ decisions: {}, dropped: 1 });
+    expect(breakGate(updated, retained.decisions).ready).toBe(false);
+  });
   it("is open at once when no break was recorded, and leaves out breaks outside the period", () => {
     const none = periodBreaks(ready(exportSource(2, 0)).included, PERIOD);
     expect(breakGate(none, {})).toMatchObject({ total: 0, ready: true });

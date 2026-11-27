@@ -1,5 +1,7 @@
 export const copy = {
   en: {
+    handoffChanged: "The period record changed. Refresh the list and review the current record before reporting the handoff.",
+    downloadFailed: "The file didn’t download. Try again.",
     // src/components/payroll-period-close.tsx:16
     loadingTheListOfPeople: "Loading the list of people…",
     // src/components/payroll-period-close.tsx:16
@@ -7,9 +9,9 @@ export const copy = {
     // src/components/payroll-period-close.tsx:17
     downloadRequested: "Download requested",
     // src/components/payroll-period-close.tsx:17
-    markedAsSent: "Marked as sent",
+    markedAsSent: "Operator reported submission",
     // src/components/payroll-period-close.tsx:17
-    markedAsImported: "Marked as imported",
+    markedAsImported: "Operator reported import",
     // src/components/payroll-period-close.tsx:87
     checkEveryoneOnTheListIncludingInactiveAccountsAndPeople: "Check everyone on the list, including inactive accounts and people with no hours.",
     // src/components/payroll-period-close.tsx:89
@@ -89,7 +91,7 @@ export const copy = {
     // src/components/payroll-period-close.tsx:363
     matchesTheCurrentList: "Matches the current list",
     // src/components/payroll-period-close.tsx:363
-    olderRecordMadeBeforeTheListChanged: "Older record, made before the list changed",
+    olderRecordMadeBeforeTheListChanged: "Historical period record",
     // src/components/payroll-period-close.tsx:368
     listVersionPopulationRevision: "List version {populationRevision} · ",
     // src/components/payroll-period-close.tsx:369
@@ -140,6 +142,8 @@ export const copy = {
     recorded: "Recorded",
   },
   es: {
+    handoffChanged: "El registro del período cambió. Actualiza la lista y revisa el registro vigente antes de informar el envío.",
+    downloadFailed: "El archivo no se descargó. Inténtalo de nuevo.",
     // src/components/payroll-period-close.tsx:16
     loadingTheListOfPeople: "Cargando la lista de personas…",
     // src/components/payroll-period-close.tsx:16
@@ -147,9 +151,9 @@ export const copy = {
     // src/components/payroll-period-close.tsx:17
     downloadRequested: "Descarga solicitada",
     // src/components/payroll-period-close.tsx:17
-    markedAsSent: "Se marcó como enviado",
+    markedAsSent: "Envío informado por el equipo",
     // src/components/payroll-period-close.tsx:17
-    markedAsImported: "Se marcó como importado",
+    markedAsImported: "Importación informada por el equipo",
     // src/components/payroll-period-close.tsx:87
     checkEveryoneOnTheListIncludingInactiveAccountsAndPeople: "Revisa a todas las personas de la lista, incluidas las que tienen cuentas inactivas y las que no tienen horas.",
     // src/components/payroll-period-close.tsx:89
@@ -229,7 +233,7 @@ export const copy = {
     // src/components/payroll-period-close.tsx:363
     matchesTheCurrentList: "Coincide con la lista actual",
     // src/components/payroll-period-close.tsx:363
-    olderRecordMadeBeforeTheListChanged: "Registro anterior al cambio en la lista",
+    olderRecordMadeBeforeTheListChanged: "Registro histórico del período",
     // src/components/payroll-period-close.tsx:368
     listVersionPopulationRevision: "Versión {populationRevision} de la lista · ",
     // src/components/payroll-period-close.tsx:369

@@ -63,7 +63,7 @@ export const copy = {
     // src/components/timecards.tsx:104
     thisPeriodOverlapsFinalizedTimeReopenThatPeriodFirst: "This period overlaps finalized time. Reopen that period first.",
     // src/components/timecards.tsx:104
-    payrollForThisPeriodIsApprovedStartAPayrollCorrection: "Payroll for this period is approved. Start a payroll correction for it first, then reopen.",
+    approvedPayrollLock: "Payroll is approved. This timecard stays finalized while a payroll correction is in draft.",
     // src/components/timecards.tsx:105
     thisPeriodChangedRefreshAndReviewTheLatestTimeBefore: "This period changed. Refresh and review the latest time before acting.",
     // src/components/timecards.tsx:107
@@ -697,7 +697,7 @@ export const copy = {
     // src/components/timecards.tsx:104
     thisPeriodOverlapsFinalizedTimeReopenThatPeriodFirst: "Este período se solapa con tiempo finalizado. Reabre ese período primero.",
     // src/components/timecards.tsx:104
-    payrollForThisPeriodIsApprovedStartAPayrollCorrection: "La nómina de este período está aprobada. Primero inicia una corrección de nómina y luego reábrelo.",
+    approvedPayrollLock: "La nómina está aprobada. Esta tarjeta de tiempo sigue finalizada aunque haya un borrador de corrección de nómina.",
     // src/components/timecards.tsx:105
     thisPeriodChangedRefreshAndReviewTheLatestTimeBefore: "Este período cambió. Actualiza y revisa el tiempo más reciente antes de actuar.",
     // src/components/timecards.tsx:107
@@ -1286,6 +1286,9 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 
 const en = {
   locale: 'en-US',
+  publishedShift: 'Published shift',
+  approvedCallout: 'Approved callout',
+  locationReference: (id: string) => `Location ${id}`,
   /** Clock times as written in this language ("8:00 AM" stays; Spanish "8:00 a. m."). */
   times: (text: string) => text,
   /** A status word or phrase the logic keys on, as shown in this language. */
@@ -1311,15 +1314,17 @@ const en = {
   issue: {
     period_open: 'Period is still open', open_entry: 'No clock-out yet', open_break: 'Open break',
     pending_correction: 'Correction awaiting review', overlapping_time: 'Overlapping recorded time',
+    missing_shift_disposition: 'A published shift needs a time review.',
   } as Record<string, string>,
   // Command results
   blocked: {
     self_review: 'Another manager approves your own timecard.',
     unresolved_time: 'Resolve open time, overlaps and pending corrections before approval.',
+    missing_shift_disposition: 'Resolve the published shift with missing time before closing this timecard.',
     approval_required: 'Approve the latest version of this timecard before finalizing.',
     period_state: 'Refresh the period and choose an action for its current state.',
     overlapping_period: 'This period overlaps finalized time. Reopen that period first.',
-    payroll_approved: 'Payroll for this period is approved. Start a payroll correction for it first, then reopen.',
+    payroll_approved: copy.en.approvedPayrollLock,
   } as Record<string, string>,
   conflict: 'This period changed. Refresh and review the latest time before acting.',
   mayBeSaved: (title: string) => `${title}. It may already be saved.`,
@@ -1484,6 +1489,7 @@ const ES_STATUS: Record<string, string> = {
   'Ready to finalize': 'Lista para finalizar', 'Finalized': 'Finalizada', 'In progress': 'En curso', 'No time yet': 'Sin horas aún',
   'Missing clock-out': 'Falta la salida', 'No clock-out': 'Sin salida', 'Check breaks': 'Revisa los descansos',
   'Correction waiting': 'Corrección pendiente', 'Correction': 'Corrección', 'Overlapping recorded time': 'Horas registradas solapadas',
+  'Missing shift time': 'Faltan horas del turno',
   'Period is still open': 'El período sigue abierto', 'No clock-out yet': 'Aún sin salida', 'Open break': 'Descanso abierto',
   'Correction awaiting review': 'Corrección pendiente de revisión', 'Draft': 'Borrador', 'Approved': 'Aprobada', 'Reopened': 'Reabierta',
 };
@@ -1491,6 +1497,9 @@ const esPlural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one
 
 const es: typeof en = {
   locale: 'es-PR',
+  publishedShift: 'Turno publicado',
+  approvedCallout: 'Ausencia aprobada',
+  locationReference: (id: string) => `Localidad ${id}`,
   times: wholeSpanishTimes,
   status: (text: string) => ES_STATUS[text] ?? text,
   open: 'ahora',
@@ -1512,14 +1521,16 @@ const es: typeof en = {
   issue: {
     period_open: copy.es.periodIsStillOpen, open_entry: copy.es.noClockOutYet, open_break: copy.es.openBreak,
     pending_correction: copy.es.correctionAwaitingReview, overlapping_time: copy.es.overlappingRecordedTime,
+    missing_shift_disposition: 'Hay que revisar las horas de un turno publicado.',
   },
   blocked: {
     self_review: copy.es.anotherManagerApprovesYourOwnTimecard,
     unresolved_time: copy.es.resolveOpenTimeOverlapsAndPendingCorrectionsBeforeApproval,
+    missing_shift_disposition: 'Resuelve las horas que faltan en el turno publicado antes de cerrar esta tarjeta de tiempo.',
     approval_required: copy.es.approveTheLatestVersionOfThisTimecardBeforeFinalizing,
     period_state: copy.es.refreshThePeriodAndChooseAnActionForItsCurrent,
     overlapping_period: copy.es.thisPeriodOverlapsFinalizedTimeReopenThatPeriodFirst,
-    payroll_approved: copy.es.payrollForThisPeriodIsApprovedStartAPayrollCorrection,
+    payroll_approved: copy.es.approvedPayrollLock,
   },
   conflict: copy.es.thisPeriodChangedRefreshAndReviewTheLatestTimeBefore,
   mayBeSaved: (title: string) => formatPortalCopy(copy.es.unknowntitleItMayAlreadyBeSaved, { unknownTitle: title }),

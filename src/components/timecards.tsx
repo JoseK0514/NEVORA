@@ -126,7 +126,7 @@ const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FIN
 const NARROW_STATUS:Readonly<Record<string,string>>={'Missing clock-out':'No clock-out','Correction waiting':'Correction'};
 /** Phase 9 (spec 3.1): the live dot for a card whose person is on the clock right now; every other quiet state has none. */
 const LIVE_DOT:Readonly<Record<string,'green'>>={'Clocked in now':'green'};
-const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time'};
+const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction waiting',overlapping_time:'Overlapping recorded time',missing_shift_disposition:'Missing shift time'};
 type RowTone='review'|'done'|'neutral';
 // Owner premium R7/R10 (copy table 36–38): Approve is step 1 and Finalize step 2 on every surface (lead decision, Oct 31:
 // one vocabulary with Time exports; "approved for payroll" would read like Payroll's own Approved). "In progress" shows
@@ -178,10 +178,10 @@ function TimecardsState({title,message,failed,signIn,onRetry,className,T=TIMECAR
 const originFailure=(response:Response)=>{const code=nevoraFailure(response);return !!code&&failureRecovery(code)==='origin';};
 const ORIGIN_LINE=`${FAILURE_MESSAGES.origin.title}. ${FAILURE_MESSAGES.origin.body}`;
 
-export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false,managementRecoveryScope,payrollStep,viewerIsOwner=true,owners}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;managementRecoveryScope?:string;
+export function Timecards({initialPeriod,manager,actorId,locations=[],employeeCorporate=false,today,signature=false,managementRecoveryScope,payrollStep,viewerIsOwner=true,owners}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;managementRecoveryScope?:string;
   /** MG-004 / MG-010 (manager view): whether the viewer is an Owner, and the workspace's Owners by name (the team list the
    * viewer already sees), so a Manager's own timecard can say who approves it. Display only. */
-  viewerIsOwner?:boolean;owners?:readonly string[];
+  viewerIsOwner?:boolean;owners?:readonly string[];locations?:readonly {id:string;name:string}[];
   /** AR-11 (manager view): what follows a finalized period for this viewer. 'prepare' when they can review payroll,
    * 'owner' when payroll is on and belongs to an Owner; left out when payroll is off (the next step is Time exports). */
   payrollStep?:'prepare'|'owner';
@@ -205,6 +205,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   // with the protected snapshot (expiry, leaving the window, Done), so it never outlives the cards it names.
   const [kept,setKept]=useState<BatchOutcome[]|null>(null);
   // Review B #8: the reason field for reopening shows only once Reopen is chosen, for that card.
+  const [payrollLock,setPayrollLock]=useState<Pick<TimecardCommand,'employeeId'|'expectedRevision'|'expectedSourceHash'>|null>(null);
   const [reopenFor,setReopenFor]=useState<string|null>(null);
   // The list's own "Check again" is running (display only: the panel keeps its place while the check is out).
   const [checking,setChecking]=useState(false);
@@ -219,7 +220,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const expires=useRef<ReturnType<typeof setTimeout>|null>(null);
   const clearBatch=useCallback(()=>{setSelected([]);setReview(null);setConfirmed(false);setOutcomes(null);},[]);
   const cancelRead=useCallback(()=>{readSequence.current++;request.current?.abort();reading.current=false;if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;},[]);
-  const invalidate=useCallback(()=>{setKept(null);generation.current++;cancelRead();if(expires.current)clearTimeout(expires.current);if(early.current)clearTimeout(early.current);expires.current=early.current=null;source.current=null;validUntil.current=0;},[cancelRead]);
+  const invalidate=useCallback(()=>{setPayrollLock(null);setKept(null);generation.current++;cancelRead();if(expires.current)clearTimeout(expires.current);if(early.current)clearTimeout(early.current);expires.current=early.current=null;source.current=null;validUntil.current=0;},[cancelRead]);
   const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage(T.outOfDate);},[invalidate,clearBatch,T]);
   const refresh=useCallback(async function refreshProjection(selected:Period,background=false):Promise<void>{
     if(!activeView.current||document.visibilityState==='hidden'||!navigator.onLine)return;
@@ -305,6 +306,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         const shown=kept??outcomes;
         if(result.status!=='reopened'&&shown?.some(outcome=>outcome.command.operationId===command.operationId)){const status=result.status;setKept(shown.map(outcome=>outcome.command.operationId===command.operationId?{...outcome,status}:outcome));}
         if(result.status==='blocked'||result.status==='conflict'||result.status==='unavailable')setOutcomes(current=>current?.map(outcome=>outcome.command.operationId===command.operationId?{...outcome,status:result.status}:outcome)??null);
+        if(command.action==='REOPEN'&&result.status==='blocked'&&result.reason==='payroll_approved'){
+          setPayrollLock({employeeId:command.employeeId,expectedRevision:command.expectedRevision,expectedSourceHash:command.expectedSourceHash});
+          setReopenFor(null);
+        }
         commandRef.current=null;setPending(null);
         // Review B2 (NV-029): the page stays as it was while the fresh read runs in the background (it replaces the rows when it
         // lands), and the status line says what happened ("…approved"). A failed background read falls back as before.
@@ -380,8 +385,29 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   },[manager]);
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
-    const query=window.matchMedia(INSPECTOR_QUERY),sync=()=>setInspector(query.matches);
-    sync();query.addEventListener('change',sync);return ()=>query.removeEventListener('change',sync);
+    const query=window.matchMedia(INSPECTOR_QUERY);
+    const frame=document.querySelector?.('.page-frame');
+    const sync=()=>{
+      const rootSize=typeof window.getComputedStyle==='function'
+        ? parseFloat(window.getComputedStyle(document.documentElement).fontSize)||16 : 16;
+      // The detail takes 420px with a 24px gutter. At enlarged text the week controls
+      // and table need at least 22rem beside it. The frame excludes the navigation rail.
+      const frameWidth=frame?.getBoundingClientRect().width||window.innerWidth;
+      setInspector(query.matches&&(rootSize<=16||frameWidth>=444+22*rootSize));
+    };
+    sync();
+    const layout=frame&&typeof ResizeObserver!=='undefined'?new ResizeObserver(sync):null;
+    if(frame)layout?.observe(frame);
+    const text=typeof MutationObserver!=='undefined'?new MutationObserver(sync):null;
+    text?.observe(document.documentElement,{attributes:true,attributeFilter:['style','data-text-step']});
+    window.addEventListener('resize',sync);
+    query.addEventListener('change',sync);
+    return ()=>{
+      layout?.disconnect();
+      text?.disconnect();
+      window.removeEventListener('resize',sync);
+      query.removeEventListener('change',sync);
+    };
   },[manager]);
   // The detail is the kit's sheet (P5). It stays open while its card refreshes and closes when the protected read is
   // cleared; that automatic close moves no focus.
@@ -543,6 +569,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         keep={M.notYet} onKeep={keepFinalize} go={M.finalizeTimecard} onGo={()=>{setAskFinalize(null);void act(openItem,'FINALIZE');}}/>:null;
     // Jose's review (Nov 23, 2026): why an open timecard can't be approved (or finalized) yet, in one line, in place of a dead
     // button. Only real issues block; a period still running keeps its own sentence above.
+    const payrollLocked=openItem?.state==='FINALIZED'&&payrollLock?.employeeId===openItem.card.employeeId&&
+      payrollLock.expectedRevision===openItem.revision&&payrollLock.expectedSourceHash===openItem.sourceHash;
     const blockedWhy=openItem&&!own&&!locked&&!justSaved(openItem)&&!lost&&openItem.state!=='FINALIZED'&&openItem.card.issues.length&&tone!=='neutral'
       ?T.blockedWhy(openItem.state==='APPROVED'?T.finalizeVerb:T.approveVerb,openItem.card.issues.includes('pending_correction')?'correction'
         :openItem.card.issues.some(issue=>issue==='open_entry'||issue==='open_break')?'open'
@@ -578,6 +606,15 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               action={openItem.card.issues.includes('pending_correction')?{label:T.reviewCorrection,href:'/app/timecards/corrections'}:undefined}>
               {/* Gate check (Nov 23, 2026): the issues are the note; the line on how to clear them before approval is gone. */}
               {openItem.card.issues.map(issue=><p key={issue}>{T.issue[issue]}</p>)}</BCallout></div>:null}
+            {openItem.card.shiftOutcomes?.map(outcome=>{
+              const site=locations.find(location=>location.id===outcome.locationId)?.name
+                ??openItem.card.entries.find(entry=>entry.locationId===outcome.locationId)?.locationName
+                ??T.locationReference(outcome.locationId);
+              return <p key={outcome.assignmentId} className="c-tc-sheet__issue">
+                <strong>{outcome.status==='APPROVED_CALLOUT'?T.approvedCallout:T.publishedShift}</strong>
+                {' · '}<time dateTime={outcome.date}>{shortDate(outcome.date,T.locale)}</time>{' · '}{site}
+              </p>;
+            })}
           </section>
           <CorpCard id="tc-days" label={T.days}>
             {days.length?<ul className="c-rows" aria-label={T.daysWithTime}>{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
@@ -602,7 +639,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               timeEntryId={openItem.card.entries.find(entry=>entry.sourceKind==='RECORDED'&&!entry.endAt&&!entry.rawEndAt)?.id} onClosed={()=>void refresh(period,true)}/>:null}
             {/* Review B #8: undoing a finalized card is one quiet "Reopen"; choosing it shows the reason field and its button. */}
             {justSaved(openItem)||lost?null:
-              openItem.state==='FINALIZED'?own?null:reopenFor===openItem.card.employeeId||flies('REOPEN')?<><label className="c-field"><span className="c-field__label">{M.reopenReason}</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" readOnly={locked} onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
+              openItem.state==='FINALIZED'?own?null:payrollLocked?<p role="status" className="c-tc-sheet__note">{T.blocked.payroll_approved}</p>:reopenFor===openItem.card.employeeId||flies('REOPEN')?<><label className="c-field"><span className="c-field__label">{M.reopenReason}</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" readOnly={locked} onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} aria-busy={flies('REOPEN')||undefined} onClick={()=>void act(openItem,'REOPEN')}>{busyLabel(flies('REOPEN'),M.reopenTimecard)}</button></>
                 :<button type="button" className="c-link c-tc-sheet__quiet" disabled={locked} onClick={()=>setReopenFor(openItem.card.employeeId)}>{M.reopen}</button>:
               own?<p className="c-tc-sheet__note">{approver.card}</p>:null}

@@ -744,3 +744,41 @@ html:not(.nv-any-lang) .c-exp .b-row__tx > .c-exp__dls {
     inset-block: calc(-1 * var(--b-space-2));
   }
 }
+@layer nv-b {
+  @media (min-width: 768px) and (max-height: 500px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet[open] .c-tc-sheet > .c-tc-sheet__foot {
+        position: static !important;
+      }
+    }
+  }
+}
+
+/* Let the English submit label grow vertically at enlarged phone text. */
+@layer nv-b {
+  @media (max-width: 767px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-dcorr:lang(en) form > button[type="submit"] {
+        block-size: auto !important;
+        min-block-size: var(--b-btn-h) !important;
+        max-inline-size: 100%;
+        padding-block: var(--b-space-4) !important;
+        white-space: normal !important;
+      }
+      :is(#c-root, html) .app-shell[data-nv-b] .c-dcorr:lang(en) form > button[type="submit"] :is(span, .b-busy__idle) {
+        white-space: normal;
+        min-inline-size: 0;
+        max-inline-size: 100%;
+      }
+    }
+  }
+}
+
+/* Give the sheet’s Done link room beside the native scrollbar in short windows. */
+@layer nv-b {
+  @media (min-width: 768px) and (max-height: 500px) {
+    html body .app-shell[data-nv-b] .c-tc-sheet .cm-tc-done {
+      min-inline-size: calc(var(--b-target) + var(--b-space-4)) !important;
+    }
+  }
+}

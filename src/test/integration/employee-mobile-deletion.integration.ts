@@ -2,7 +2,7 @@ import {it,expect} from '@rstest/core';
 import {createRequire} from 'node:module';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
-import {createOwnedNextApp} from './owned-next-app';
+import {createDeletionBrowserApp} from './deletion-browser-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
 import {AUTH_COPY} from '../../lib/auth-copy';
 import {POLICY_FACTS,SUPPORT_EMAIL} from '../../lib/legal/policies';
@@ -15,7 +15,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
  const evidence=process.env.NEVORA_EMPLOYEE_DELETION_EVIDENCE;if(!evidence)throw Error('Select explicit external deletion evidence directory');
  await mkdir(evidence,{recursive:true});
  const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
- const app=await createOwnedNextApp(evidence),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;subject:string;ratio:number}[]=[],messages:{engine:string;type:string;text:string;expected:boolean;stage:string}[]=[],media:Record<string,unknown>[]=[];
+ const app=await createDeletionBrowserApp(evidence),checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;subject:string;ratio:number}[]=[],messages:{engine:string;type:string;text:string;expected:boolean;stage:string}[]=[],media:Record<string,unknown>[]=[];
  const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
  let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
  try{
@@ -24,7 +24,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    const f=await seedOwnedScenario(app.database.executor,'DELM'+index,index),[actor,landscapeActor,manager]=f.actors;
    await q("UPDATE employees SET role=$2 WHERE id=$1",[actor,index===1?'LEAD':'EMPLOYEE']);await q("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[landscapeActor]);
    const activeBrowser=await runtime[engine].launch({headless:true});browser=activeBrowser;
-   const context=await activeBrowser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
+   const context=await activeBrowser.newContext({...app.network,viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});
    // Light is the default since PR36; this journey's theme checks follow the device, which is the explicit System choice.
    // B2: the theme script now clears this stored choice and fixes Light (Direction B is light only).
    await context.addInitScript(()=>{try{localStorage.setItem('nv-theme','system');}catch{}});
@@ -115,6 +115,37 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
 
    stage='wrong-password';await page.locator('.em-delete-confirm').click();await state('wrong_password');await shot('wrong-password');
    await expect.poll(()=>focused(page.locator('#deletion-password'))).toBe(true);expect(await page.locator('#deletion-password-error').innerText()).toBe('That password isn’t right. Try again.');expect(await page.locator('#deletion-password').inputValue()).toBe('');
+   await page.setViewportSize({width:1024,height:900});
+   const originalTextSize=await page.evaluate(()=>document.documentElement.style.fontSize);
+   try {
+    await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+    await page.evaluate(async()=>{await document.fonts.ready;await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));});
+    const errorLayout=await page.locator('#deletion-password-error').evaluate((error:HTMLElement)=>{
+     const card=error.closest('.eb-confirm')!.getBoundingClientRect();
+     const range=document.createRange();range.selectNodeContents(error);
+     const password=document.querySelector<HTMLInputElement>('#deletion-password')!;
+     const style=getComputedStyle(password);
+     const focusBottom=password.getBoundingClientRect().bottom+parseFloat(style.outlineWidth)+parseFloat(style.outlineOffset);
+     const lines=Array.from(range.getClientRects(),rect=>({top:rect.top,left:rect.left,right:rect.right}));
+     const consent=document.querySelector('.em-delete-check > span')!;
+     const consentRange=document.createRange();consentRange.selectNodeContents(consent);
+     const consentBounds=consent.getBoundingClientRect();
+     const consentFits=[...consentRange.getClientRects()].every(rect=>rect.left>=consentBounds.left-1 && rect.right<=consentBounds.right+1);
+     return {lines,focusBottom,consentFits,cardLeft:card.left,cardRight:card.right,documentWidth:document.documentElement.scrollWidth,viewport:innerWidth};
+    });
+    await writeFile(resolve(evidence,engine+'-password-error-layout.json'),JSON.stringify(errorLayout));
+    expect(errorLayout.lines.length).toBeGreaterThan(0);
+    expect(errorLayout.lines[0].top).toBeGreaterThanOrEqual(errorLayout.focusBottom);
+    for(const line of errorLayout.lines){
+     expect(line.left).toBeGreaterThanOrEqual(errorLayout.cardLeft-1);
+     expect(line.right).toBeLessThanOrEqual(errorLayout.cardRight+1);
+    }
+    expect(errorLayout.consentFits).toBe(true);
+    expect(errorLayout.documentWidth).toBeLessThanOrEqual(errorLayout.viewport);
+   } finally {
+    await page.evaluate((value:string)=>{document.documentElement.style.fontSize=value;},originalTextSize);
+    await page.setViewportSize({width:390,height:844});
+   }
    expect(await own()).toEqual([]);expect(await sessions(actor)).toBe(1);await idle();
    record('Wrong password: field error, focus returns to the password, nothing saved, still signed in');
 
@@ -162,7 +193,7 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
    record('Done removes the dead cookie; the right password still cannot sign in while the request is open');
 
    stage='coarse-landscape';
-   const touch=engine!=='firefox';const landscape=await activeBrowser.newContext({viewport:{width:844,height:390},hasTouch:touch,...(engine==='chromium'?{isMobile:true}:{}),reducedMotion:'reduce',serviceWorkers:'block'});
+   const touch=engine!=='firefox';const landscape=await activeBrowser.newContext({...app.network,viewport:{width:844,height:390},hasTouch:touch,...(engine==='chromium'?{isMobile:true}:{}),reducedMotion:'reduce',serviceWorkers:'block'});
    try{
     const other=await landscape.newPage();await other.goto(app.url+'/login');await login(other,landscapeActor);await other.goto(app.url+'/app/account/delete');
     const metrics=await other.evaluate(()=>({coarse:matchMedia('(pointer: coarse)').matches,landscape:matchMedia('(orientation: landscape)').matches,touchPoints:navigator.maxTouchPoints,width:innerWidth,height:innerHeight}));
@@ -188,11 +219,21 @@ it('requests own account deletion with truthful unknown outcomes and a recoverab
 
    if(engine==='chromium'){
     stage='role-separation';await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[manager]);
-    const managerContext=await activeBrowser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
-    try{const m=await managerContext.newPage();await m.goto(app.url+'/login');await login(m,manager);await m.goto(app.url+'/app/account/delete');await m.locator('.q-deletion').waitFor();
-     expect(await m.locator('.em-delete').count()).toBe(0);expect(await m.locator('#employee-mobile').count()).toBe(0);const file=engine+'-manager-390.png';await m.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);}
+    const managerContext=await activeBrowser.newContext({...app.network,viewport:{width:390,height:844},serviceWorkers:'block'});
+    try{
+     const m=await managerContext.newPage();
+     await m.goto(app.url+'/login');await login(m,manager);await m.goto(app.url+'/app/account/delete');
+     const screen=m.locator('.em-delete--team');
+     await screen.waitFor();
+     expect(await screen.locator('h1:visible').first().innerText()).toBe('Delete account');
+     await screen.locator('#deletion-password:visible').waitFor();
+     expect(await screen.locator('a[href="/app/profile#profile-privacy"]:visible').count()).toBeGreaterThan(0);
+     expect(await screen.locator('a[href="/app/employees"], #last-owner-title').count()).toBe(0);
+     expect(await m.locator('#employee-mobile').count()).toBe(0);
+     const file=engine+'-manager-390.png';await m.screenshot({path:evidence+'/'+file,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);
+    }
     finally{await managerContext.close();}
-    record('Manager at phone width keeps the incumbent Quiet page; the kit page is Employee/Lead only');
+    record('Manager at phone width uses the Direction B management screen and its own Profile return without employee navigation or Owner recovery');
    }
    await idle();await context.close();await browser!.close();browser=undefined;failed=undefined;
   }
