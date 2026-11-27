@@ -4,6 +4,7 @@ import {createHash,randomBytes} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {createDeletionBrowserApp} from './deletion-browser-app';
+import {createOwnedNextApp} from './owned-next-app';
 import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from './owned-app-fixture';
 import {AUTH_COPY,AUTH_LANG_COOKIE} from '../../lib/auth-copy';
 import {POLICY_FACTS,SUPPORT_EMAIL} from '../../lib/legal/policies';
