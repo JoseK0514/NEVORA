@@ -551,3 +551,13 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
     line-height: 1.25rem !important;
   }
 }
+
+/* Respect reduced motion on legacy payroll actions, including saved-file links. */
+@layer nv-b {
+  @media (prefers-reduced-motion: reduce) {
+    html body .app-shell[data-nv-b] .c-exp .c-exp__legacy .button {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+}
