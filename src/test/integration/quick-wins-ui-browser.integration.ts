@@ -106,6 +106,18 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               expect(await page.getByRole('dialog').textContent()).toContain('Fictional Owner');
               // Nov 1 upscale (review M5): at 1440px the panel is a non-modal inspector; Escape still closes it.
               expect(await page.getByRole('dialog').evaluate((element: HTMLElement) => element.matches(':modal'))).toBe(false);
+              await page.setViewportSize({width:844,height:390});
+              const done = page.locator('.c-tc-sheet .cm-tc-done');
+              await done.scrollIntoViewIfNeeded();
+              const closeTargetReachesEveryEdge = await done.evaluate((link: HTMLElement) => {
+                const bounds = link.getBoundingClientRect();
+                const x = bounds.left + bounds.width / 2;
+                const y = bounds.top + bounds.height / 2;
+                return [[0,0],[-21.5,0],[21.5,0],[0,-21.5],[0,21.5]].every(([dx,dy]) =>
+                  link.contains(document.elementFromPoint(x + dx, y + dy))
+                );
+              });
+              expect(closeTargetReachesEveryEdge).toBe(true);
               await page.setViewportSize({width:1024,height:900});
               const originalTextSize=await page.evaluate(()=>document.documentElement.style.fontSize);
               try {
