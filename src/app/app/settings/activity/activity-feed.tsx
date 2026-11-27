@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BButton, BState } from "@/components/owner-b/b-kit";
+import { SkeletonRows } from "@/components/skeleton";
 import { CorpCard } from "@/components/corp/corp";
 import type { OwnerActivityPage } from "@/lib/activity/owner-feed";
 import type { PortalLang } from "@/lib/i18n/portal-lang";
@@ -114,7 +115,10 @@ export function ActivityFeed({ lang, timeZone }: { lang: PortalLang; timeZone: s
         : view.state === "denied" ? <BState kind="locked" title={t.denied} line={t.deniedBody}/>
         : view.state === "offline" ? <BState kind="offline" title={t.offline} line={t.offlineBody}/>
         : view.state === "unavailable" ? <BState kind="failed" title={t.unavailable} action={{ label: t.retry, onClick: () => read(firstPage, true) }}/>
-        : <BState kind="loading" title={slow ? t.slow : t.checking}/>}
+        : <div className="activity-loading">
+            <p role="status" className="c-card__label">{slow ? t.slow : t.checking}</p>
+            <SkeletonRows rows={3} variant="line" />
+          </div>}
     </CorpCard>
   </div>;
 }

@@ -1,4 +1,9 @@
 :is(#c-root, html) .c-owner-activity .activity-result { min-width: 0; }
+:is(#c-root, html) .c-owner-activity .activity-loading {
+  display: grid;
+  gap: var(--b-space-16);
+  padding: var(--b-space-16) var(--b-inset);
+}
 :is(#c-root, html) .c-owner-activity .activity-result:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: var(--b-radius-card); }
 :is(#c-root, html) .c-owner-activity .activity-entries { padding: 0 var(--b-inset); margin: 0; list-style: none; }
 :is(#c-root, html) .c-owner-activity .activity-entries li { display: grid; gap: var(--b-space-4); padding: var(--b-space-16) 0; overflow-wrap: anywhere; }
