@@ -603,3 +603,17 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
     row-gap: var(--b-space-12);
   }
 }
+
+@layer nv-b {
+  /* The kit's inset teal outline shares the button fill. Paint it on the card. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-exp__availability .b-btn:focus-visible {
+    outline-offset: var(--b-focus-offset) !important;
+  }
+}
+
+@layer nv-b {
+  html body .app-shell[data-nv-b] .c-exp .c-exp__notice {
+    font-size: 0.8125rem !important;
+    line-height: 1.125rem !important;
+  }
+}
