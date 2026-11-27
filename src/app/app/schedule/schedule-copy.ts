@@ -41,7 +41,7 @@ const en = {
     shiftUpdatedNote: "Shift saved.", shiftUpdatedPublishNote: "Shift saved. Publish changes when you’re ready to tell your team.",
     shiftDeletedNote: "Shift deleted.",
     deadlineUpdated: "Availability deadline updated.",
-    openedForReview: "Opened for review", showFullWeek: "Show full week",
+    openedForReview: "In review", showFullWeek: "Show full week",
     thisWeek: "This week", buildAndPublish: "Build and publish", availability: "Availability", whoCanWork: "Who can work and when",
     copyPreviousWeek: "Copy previous week", weekTemplates: "Week templates",
     settings: "Settings", schedulingRules: "Scheduling rules", availabilityDeadline: "Availability deadline", activity: "Activity",

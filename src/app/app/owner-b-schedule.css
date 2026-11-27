@@ -356,7 +356,7 @@
  *   card the Delete shift row was.
  * - Review before publishing: one row per warning (18px amber Warning, the count at 600), and a quiet way back beside
  *   the primary.
- * - The day opened after a shift is saved ("Opened for review"): a white card with the day and place as a facts line and
+ * - The day opened after a shift is saved ("In review"): a white card with the day and place as a facts line and
  *   one tinted "Show full week"; the saved row is marked by a teal edge, not a square outline; "Full week" is a pill.
  * - An invalid Add shift field has one red edge (the border), not a border and a ring. */
 @layer nv-b {

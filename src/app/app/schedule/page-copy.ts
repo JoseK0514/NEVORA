@@ -83,7 +83,7 @@ export const copy = {
     // src/app/app/schedule/page.tsx:472
     shiftDeleted: 'Shift deleted',
     // src/app/app/schedule/page.tsx:475
-    openedForReview: 'Opened for review',
+    openedForReview: 'In review',
     // src/app/app/schedule/page.tsx:475
     reviewDate: '{weekday}, {day}',
     // src/app/app/schedule/page.tsx:476

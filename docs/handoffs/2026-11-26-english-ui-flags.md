@@ -87,7 +87,7 @@ box-for-box against e1c51aed, and English at default text unchanged apart from t
 | Sub-pixel only, accepted | C1, C4: probes 1px inside each edge land on their own target; only a 0.5px probe touches the abutting neighbour (same in Spanish) |
 | Not reproducible with fictional data (Spanish fix shared where one existed) | B7, B10, B19, B20, C10, D6 |
 | Not reached with fictional data (Spanish fix shared, not browser-checked) | B6, C5, C8, D5 |
-| Waiting on Jose | A5 wording: "Show full week" / "Opened for review" (Spanish "Ver semana" / "En revisión") |
+| Done (Jose, Nov 27) | A5 wording: "Show full week" kept; "Opened for review" became "In review" to match Spanish "En revisión" |
 
 How the shared fixes work: an approved Spanish rule extended to English swaps `:lang(es)` / `[lang=es]` for
 `:not(.nv-any-lang)`, the same specificity, so the cascade is otherwise unchanged. Two shared rules regressed English at
