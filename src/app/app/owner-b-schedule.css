@@ -728,3 +728,10 @@
     }
   }
 }
+
+/* Cap the warning button at its row even when a location has a long name. */
+@layer nv-b {
+  :is(#c-root, html) .app-shell[data-nv-b] .c-pub:not(.nv-any-lang) form:has(> input[name="confirmWarnings"]) .c-publish__acts > button[type="submit"] {
+    max-inline-size: 100%;
+  }
+}

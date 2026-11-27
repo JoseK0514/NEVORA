@@ -4,8 +4,11 @@
  * receipt keeps its own table (src/components/copy-receipt-copy.ts). */
 import { dateRange } from "@/lib/duration-format";
 import { addDays } from "@/lib/date-utils";
+import { copy as publishCopy } from "./publish/page-copy";
 
 export type ScheduleLang = "en" | "es";
+
+const shortPublishWarning = (lang: ScheduleLang): string => publishCopy[lang].publishAnywayShort;
 
 const plural = (n: number | string, one: string, many: string) => `${n} ${Number(n) === 1 ? one : many}`;
 
@@ -90,6 +93,7 @@ const en = {
     checkSchedule: "Check the schedule",
     eachNotified: "Each person with a change is notified once when you publish.",
     backToSchedule: "Back to schedule", publishing: "Publishing…",
+    publishAnywayShort: shortPublishWarning("en"),
     publishChanges: (anyway: boolean) => `Publish changes${anyway ? " anyway" : ""}`,
     ownerPublishes: "An Owner or company-wide Manager publishes these changes.",
     publishDrafts: (what: string, withChanges: boolean, anyway: boolean) => `Publish ${what}${withChanges ? " and changes" : ""}${anyway ? " anyway" : ""}`,
@@ -332,6 +336,7 @@ const es: typeof en = {
     checkSchedule: "Revisar el horario",
     eachNotified: "Cada persona con un cambio recibe un solo aviso cuando publicas.",
     backToSchedule: "Volver al horario", publishing: "Publicando…",
+    publishAnywayShort: shortPublishWarning("es"),
     publishChanges: (anyway: boolean) => anyway ? "Publicar cambios de todos modos" : "Publicar",
     ownerPublishes: "Un dueño o un gerente de toda la empresa publica estos cambios.",
     publishDrafts: (what: string, withChanges: boolean, anyway: boolean) => `Publicar ${what}${withChanges ? " y cambios" : ""}${anyway ? " de todos modos" : ""}`,

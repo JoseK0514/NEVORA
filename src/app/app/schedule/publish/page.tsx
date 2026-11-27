@@ -11,6 +11,7 @@ import { CorpBody, CorpButtonLink, CorpCard, CorpNote, CorpPage, CorpPill, CorpR
 import { ScheduleCopyForm } from "@/components/schedule-copy-form";
 import { OperationalUnavailable } from "@/components/company-access/operational-unavailable";
 import { ScopedReadFrame } from "@/components/company-access/scoped-read-frame";
+import { CompactActionLabel } from "@/components/compact-action-label";
 import { EmployeeSubmitButton } from "@/components/employee-submit-button";
 import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
 import { requireSessionMutationProof } from "@/lib/auth/session";
@@ -34,6 +35,12 @@ import "@/components/schedule-shift-form.css";
 import "./publish.css";
 
 export const generateMetadata = routeTitle("publish");
+
+function PublishButton({ text, warning, words }: { text: string; warning: boolean; words: ScheduleWords["publish"] }) {
+  return <EmployeeSubmitButton className="c-btn c-btn--full" pendingText={words.publishing}>
+    {warning ? <CompactActionLabel full={text} short={words.publishAnywayShort} /> : text}
+  </EmployeeSubmitButton>;
+}
 
 /** The Owner builds and reviews the full week. Managers review their publication locations. A held change's field names
  * are the table's `publish.fields` (Added, Removed, Person changed …). */
@@ -102,6 +109,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
   const pending = "pending" in source.data ? source.data.pending : null;
   const drafts = locations.filter(location => location.status === "DRAFT");
   // QA A3-05: a Manager's read lists only the locations they may publish, so a ready read means they can publish them.
+  const reviewedChanges = params.review === "changes" && review.length > 0;
   const managerCanPublish = !owner && "publishLocationIds" in source.data && source.data.publishLocationIds.length > 0;
   const when = weekStart === currentWeek ? t.thisWeek : weekStart === addDays(currentWeek, 7) ? t.nextWeek : weekStart === addDays(currentWeek, -7) ? t.lastWeek : t.week;
   const statePill = (value: string | null) => {
@@ -182,10 +190,10 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
           </CorpCard> : null}
           {(owner || managerCanPublish) && (!drafts.length && pending?.hasPendingChanges ? pending.canPublish ? <UnconfirmedActionForm action={publishScheduleChangesAction} className="c-publish__go" unconfirmed={{ title: t.changesUnconfirmed, check: { label: t.checkSchedule, href: scheduleHref } }}>
             <input type="hidden" name="weekStart" value={weekStart} />
-            {params.review === "changes" && review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
+            {reviewedChanges ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
             <CorpNote icon={<BellIcon weight="bold" className="c-ic c-ic--s" aria-hidden="true" />}>{t.eachNotified}</CorpNote>
             <div className="c-publish__acts">{review.length ? <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet c-publish__back" href={scheduleHref}>{t.backToSchedule}</Link> : null}
-              <EmployeeSubmitButton className="c-btn c-btn--full" pendingText={t.publishing}>{t.publishChanges(params.review === "changes" && review.length > 0)}</EmployeeSubmitButton>
+              <PublishButton text={t.publishChanges(reviewedChanges)} warning={reviewedChanges} words={t} />
             </div>
           </UnconfirmedActionForm> : <CorpNote>{t.ownerPublishes}</CorpNote>
           : drafts.length && !owner ? <ManagerPublishForms t={t} weekStart={weekStart} drafts={drafts} reviewed={review.map(item => item.location.id)} scheduleHref={scheduleHref} notified={notified} />
@@ -195,9 +203,8 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
             {review.length ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
             {notified}
             <div className="c-publish__acts">{review.length ? <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet c-publish__back" href={scheduleHref}>{t.backToSchedule}</Link> : null}
-            <EmployeeSubmitButton className="c-btn c-btn--full" pendingText={t.publishing}>
-              {t.publishDrafts(drafts.length === 1 ? drafts[0].shortName : t.drafts(drafts.length), !!pending?.hasPendingChanges, review.length > 0)}
-            </EmployeeSubmitButton>
+            <PublishButton words={t} warning={review.length > 0}
+              text={t.publishDrafts(drafts.length === 1 ? drafts[0].shortName : t.drafts(drafts.length), !!pending?.hasPendingChanges, review.length > 0)} />
             </div>
           </UnconfirmedActionForm> : allPublished ? null : <CorpNote icon={<CheckCircleIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>{t.nothingPlanned}</CorpNote>)}
         </div>
@@ -225,7 +232,7 @@ function ManagerPublishForms({ t, weekStart, drafts, reviewed, scheduleHref, not
         <input type="hidden" name="from" value="publish" />
         {anyway ? <input type="hidden" name="confirmWarnings" value="yes" /> : null}
         <div className="c-publish__acts">{anyway ? <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet c-publish__back" href={locationHref}>{t.backToSchedule}</Link> : null}
-          <EmployeeSubmitButton className="c-btn c-btn--full" pendingText={t.publishing}>{t.publishLocation(location.shortName, anyway)}</EmployeeSubmitButton>
+          <PublishButton text={t.publishLocation(location.shortName, anyway)} warning={anyway} words={t} />
         </div>
       </UnconfirmedActionForm>;
     })}
