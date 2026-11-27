@@ -744,3 +744,12 @@ html:not(.nv-any-lang) .c-exp .b-row__tx > .c-exp__dls {
     inset-block: calc(-1 * var(--b-space-2));
   }
 }
+@layer nv-b {
+  @media (min-width: 768px) and (max-height: 500px) {
+    @container not style(--nv-rem: 16px) {
+      :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] dialog.q-sheet[open] .c-tc-sheet > .c-tc-sheet__foot {
+        position: static !important;
+      }
+    }
+  }
+}
