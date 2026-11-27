@@ -253,5 +253,6 @@ describe('the setup code from the Owner’s link, and each answer', () => {
 it('keeps the complete Spanish navigation path on first render', () => {
   const html = renderToStaticMarkup(<ClockerSetup locationKey="qa-cafe" locationLabel="Calle Loíza"
     timeZone="America/Puerto_Rico" initialLocale="es" />);
-  expect(html).toContain('Configuración\u00a0→ Tabletas de Clocker.');
+  // English flag B5 (Nov 27, 2026): the long word carries a soft hyphen, so it breaks as "Configura-ción" at large text.
+  expect(html).toContain('Configura\u00adción\u00a0→ Tabletas de Clocker.');
 });
