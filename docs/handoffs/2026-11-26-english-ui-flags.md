@@ -75,3 +75,20 @@ narrow screen; **P3** polish.
 - Bilingual verified photo-deletion and backup disclosures go to Codex and the platform owner. They're shown verbatim and may stay English in Spanish.
 - The shift action's conflict reason is an English server message in both languages; it goes to Codex.
 - The QA state scanner must keep the owned HTTPS origin and proxy for new contexts. That's QA harness work.
+
+## Status (Nov 27, 2026, Collab 9e2beede: application ca129b14, guides built from it)
+
+QA verified every item below on a production build (Chromium; WebKit where the flag names it), with Spanish compared
+box-for-box against e1c51aed, and English at default text unchanged apart from the fixes.
+
+| Result | Items |
+|---|---|
+| Fixed, QA PASS | A1, A2 (button; "Shift saved" not reached in QA's fixture), A3, A4 (was already in place), A6, B1, B2, B3, B4, B5, B8, B9 (wraps; 4px content overshoot accepted, nothing clipped), B11, B12, B13, B14, B15, B16, B17, B18, C2, C3, C6, C7, C9, D1, D2, D3, D4 |
+| Sub-pixel only, accepted | C1, C4: probes 1px inside each edge land on their own target; only a 0.5px probe touches the abutting neighbour (same in Spanish) |
+| Not reproducible with fictional data (Spanish fix shared where one existed) | B7, B10, B19, B20, C10, D6 |
+| Not reached with fictional data (Spanish fix shared, not browser-checked) | B6, C5, C8, D5 |
+| Waiting on Jose | A5 wording: "Show full week" / "Opened for review" (Spanish "Ver semana" / "En revisión") |
+
+How the shared fixes work: an approved Spanish rule extended to English swaps `:lang(es)` / `[lang=es]` for
+`:not(.nv-any-lang)`, the same specificity, so the cascade is otherwise unchanged. Two shared rules regressed English at
+default text (Settings rows, Owner Home strip) and were restored to Spanish-only, with English-specific fixes instead.
