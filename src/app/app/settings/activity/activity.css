@@ -23,3 +23,6 @@
 @media (max-width: 767px) {
   :is(#c-root, html) .c-owner-activity .activity-result .c-card__foot { flex-direction: column; align-items: stretch; }
 }
+
+/* QA on 84f51f30 (WebKit, ES 390 at 200%): "Cargando actividad…" ran past its card. The loading line wraps. */
+:is(#c-root, html) .c-owner-activity .activity-loading > p:not(#act-none) { min-width: 0; white-space: normal; overflow-wrap: break-word; }

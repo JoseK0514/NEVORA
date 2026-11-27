@@ -17,7 +17,7 @@ const en = {
   confirm: (name: string) => `Deactivate ${name}?`,
   consequence: "The Clocker link will stop working here. Past schedules and time records will stay available.",
   keep: "Keep active", keepRestaurant: "Keep active", deactivate: "Deactivate",
-  blocked: (name: string) => `${name} is still active`,
+  blocked: (name: string) => `${name} can’t be deactivated yet`,
   resolve: "Review the work below before deactivating. Each link opens in a new tab so you can return to your edits.",
   blockers: {
     SCHEDULE: "Reassign or cancel shifts, then publish changes",

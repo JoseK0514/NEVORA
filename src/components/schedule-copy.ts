@@ -35,7 +35,7 @@ const en = {
   },
   change: {
     verbs: { ADDED: 'Added', REMOVED: 'Removed', TIME_CHANGED: 'New time', EMPLOYEE_REASSIGNED: 'Reassigned', LOCATION_CHANGED: 'New location', POSITION_CHANGED: 'New position', LEAD_CHANGED: 'Lead changed', CALLOUT_CHANGED: 'Can’t work updated' } as Record<string, string>,
-    moved: 'Moved', locationUnavailable: 'Location unavailable', shiftLead: 'Shift lead', cantWorkApproved: 'Can’t work approved',
+    moved: 'Moved', locationUnavailable: 'Location unavailable', shiftLead: 'Shift lead', cantWorkApproved: 'Can’t work · approved',
     was: (what: string) => `Was ${what}`, hadNoPosition: 'Had no position', summary: 'What changed in your schedule',
   },
   publish: {
@@ -97,7 +97,7 @@ const es: typeof en = {
   },
   change: {
     verbs: { ADDED: 'Añadido', REMOVED: 'Eliminado', TIME_CHANGED: 'Nueva hora', EMPLOYEE_REASSIGNED: 'Reasignado', LOCATION_CHANGED: 'Nueva localidad', POSITION_CHANGED: 'Nuevo puesto', LEAD_CHANGED: 'Cambió el líder', CALLOUT_CHANGED: 'No puedo trabajar actualizado' },
-    moved: 'Movido', locationUnavailable: 'Localidad no disponible', shiftLead: 'Líder del turno', cantWorkApproved: 'No puedo trabajar aprobado',
+    moved: 'Movido', locationUnavailable: 'Localidad no disponible', shiftLead: 'Líder del turno', cantWorkApproved: 'No puedo trabajar · aprobado',
     was: (what: string) => `Antes: ${what}`, hadNoPosition: 'No tenía puesto', summary: 'Qué cambió en tu horario',
   },
   publish: {

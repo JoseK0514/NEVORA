@@ -88,12 +88,19 @@
 @layer nv-b {
   @media (max-width: 359px) {
     @container not style(--nv-rem: 16px) {
-      :is(#c-root, html) .app-shell[data-nv-b] .c-request:lang(es) .c-request__foot {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-request:not(.nv-any-lang) .c-request__foot {
         min-inline-size: 0;
       }
-      :is(#c-root, html) .app-shell[data-nv-b] .c-request:lang(es) .c-request__decide .c-btns {
+      :is(#c-root, html) .app-shell[data-nv-b] .c-request:not(.nv-any-lang) .c-request__decide .c-btns {
         flex-wrap: wrap;
       }
     }
   }
 }
+
+
+/* QA on 84f51f30 (Nov 27, 2026), both languages: at 320 with 200% text a long name ran into the "Waiting" / "En espera"
+ * pill. The request's header wraps: the name keeps its line and the pill moves under it when they can't share one. */
+:is(#c-root, html) .c-request .c-request__who:not(#tod-none) { flex-wrap: wrap; row-gap: var(--b-space-8); }
+:is(#c-root, html) .c-request .c-request__who > .c-row__main:not(#tod-none) { flex: 1 1 8rem; min-width: 0; }
+:is(#c-root, html) .c-request .c-request__who .c-row__title:not(#tod-none) { white-space: normal; overflow-wrap: normal; }

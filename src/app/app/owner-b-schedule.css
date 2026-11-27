@@ -668,7 +668,7 @@
 
 @layer nv-b {
   @media (max-width: 767px) {
-    #schedule-locations-to-plan:lang(es) .b-row__s {
+    #schedule-locations-to-plan:not(.nv-any-lang) .b-row__s {
       display: block !important;
       -webkit-line-clamp: none !important;
       overflow: visible !important;
@@ -678,13 +678,13 @@
 /* Keep the two controls inside the Spanish Schedule header at enlarged phone text. */
 @media (max-width: 359px) {
   @container not style(--nv-rem: 16px) {
-    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right:has(> a[href^="/app/schedule/publish"]) {
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:not(.nv-any-lang) .b-title__right:has(> a[href^="/app/schedule/publish"]) {
       max-inline-size: 100%;
     }
-    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right:has(> a[href^="/app/schedule/publish"]) > :first-child {
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:not(.nv-any-lang) .b-title__right:has(> a[href^="/app/schedule/publish"]) > :first-child {
       flex-shrink: 0;
     }
-    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:lang(es) .b-title__right > a[href^="/app/schedule/publish"] {
+    :is(#c-root, html) .app-shell[data-nv-b] .c-sched:not(.nv-any-lang) .b-title__right > a[href^="/app/schedule/publish"] {
       min-inline-size: 0;
       flex-shrink: 1;
       white-space: normal;

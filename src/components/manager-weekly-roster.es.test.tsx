@@ -75,10 +75,10 @@ it("keeps English exactly as it was outside Spanish", () => {
     "aria-label=\"Today, go to this week\">Today</a>", "No one assigned", "Covered this week"]) expect(out).toContain(words);
 });
 
-it("keeps the full Spanish planning note available on a narrow phone", () => {
+it("keeps the full planning note available on a narrow phone, in both languages", () => {
   const task = { ...b.toPlan[0], detail: "Nada programado esta semana", action: "Planificar" };
   const html = render({ corp, b: { ...b, toPlan: [task] } });
   expect(html).toMatch(/<section[^>]+id="schedule-locations-to-plan"[^>]*>[\s\S]*?<span class="b-row__s">Nada programado esta semana<\/span>/);
   const css = readFileSync(join(__dirname, "../app/app/owner-b-schedule.css"), "utf8");
-  expect(css).toMatch(/@media \(max-width: 767px\)\s*\{\s*#schedule-locations-to-plan:lang\(es\) \.b-row__s\s*\{[^}]*-webkit-line-clamp: none !important;[^}]*overflow: visible !important;/);
+  expect(css).toMatch(/@media \(max-width: 767px\)\s*\{\s*#schedule-locations-to-plan:not\(\.nv-any-lang\) \.b-row__s\s*\{[^}]*-webkit-line-clamp: none !important;[^}]*overflow: visible !important;/);
 });
