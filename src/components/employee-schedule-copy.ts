@@ -35,7 +35,7 @@ const en = {
   comingUp: 'Coming up', thisWeek: 'This week', shiftsTitle: 'Shifts', laterThisWeek: 'Later this week',
   cantCheckSchedule: 'Your schedule couldn’t be checked', noPublished: 'No published shifts', thisWeekSuffix: ' this week',
   shiftLead: 'Shift lead', shiftLeadLower: ', shift lead', locationUnavailable: 'Location unavailable', ends: (day: string) => `Ends ${day}`,
-  cantWorkApproved: 'Can’t work · approved', calloutApproved: 'Call-out approved',
+  cantWorkApproved: 'Can’t work · approved', calloutApproved: 'Can’t work · approved',
   confirmWeek: 'Confirm this week', scheduleReview: 'Schedule review', managerAsked: 'Your manager asked you to check it',
   noAssignments: 'No assignments remain this week. Review the changes, then confirm.', reviewAgain: 'Review the current week again.',
   confirm: 'Confirm', confirmed: 'Confirmed', upToDate: 'You’re up to date', youConfirmed: 'You’ve confirmed this week.',

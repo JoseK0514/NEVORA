@@ -100,3 +100,23 @@ for these:
 - publish review;
 - time-off request footer;
 - in both languages at 320, 390, 768 and 1440, at 100% and 200%.
+
+## Applied (Jose, Nov 27, 2026: "yes agree to all 3")
+
+- **Payroll wording:**
+  - Codex's changes approved: "Historical period record", and "Payroll is approved. This timecard stays finalized
+    while a payroll correction is in draft."
+  - "Operator reported submission/import" broke the glossary, so it is now "Reported as sent" / "Reported as imported" ·
+    "Informado como enviado" / "Informado como importado". The meaning is kept: someone reported it, the system didn't
+    confirm it.
+- **Glossary:** "callout" / "Call-out" became the app's existing can't-work pattern:
+  - "Can't work · approved" · "No puedo trabajar · aprobado", in timecards, review details and Employee Schedule. The
+    last two were older strings with the same problem.
+  - "Schedule changed after a can't-work request" · "Cambio de horario por una solicitud de no puedo trabajar".
+- **Consistency:**
+  - Location status: "Activa" / "Inactiva", as on the Locations page.
+  - The blocked heading: "No se puede desactivar {name} todavía".
+  - The result heading stays "Se desactivó {name}". Both work for a feminine location or a masculine restaurant name.
+  - "Offboarding follow-up" became "Still to review" · "Pendientes por revisar".
+- **Checks:** tsc clean, lint 0 errors, and 16,585 tests pass. Only the guide test fails, which is expected until the
+  rebuild.

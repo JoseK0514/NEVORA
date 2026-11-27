@@ -1287,7 +1287,7 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 const en = {
   locale: 'en-US',
   publishedShift: 'Published shift',
-  approvedCallout: 'Approved callout',
+  approvedCallout: 'Can’t work · approved',
   locationReference: (id: string) => `Location ${id}`,
   /** Clock times as written in this language ("8:00 AM" stays; Spanish "8:00 a. m."). */
   times: (text: string) => text,
@@ -1498,7 +1498,7 @@ const esPlural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one
 const es: typeof en = {
   locale: 'es-PR',
   publishedShift: 'Turno publicado',
-  approvedCallout: 'Ausencia aprobada',
+  approvedCallout: 'No puedo trabajar · aprobado',
   locationReference: (id: string) => `Localidad ${id}`,
   times: wholeSpanishTimes,
   status: (text: string) => ES_STATUS[text] ?? text,

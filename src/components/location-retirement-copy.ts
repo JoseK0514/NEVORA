@@ -38,7 +38,7 @@ const es: typeof en = {
   confirm: name => `¿Desactivar ${name}?`,
   consequence: "El enlace de Clocker dejará de funcionar aquí. Los horarios y registros de tiempo anteriores seguirán disponibles.",
   keep: "Mantener activa", keepRestaurant: "Mantener activo", deactivate: "Desactivar",
-  blocked: name => `${name} sigue en servicio`,
+  blocked: name => `No se puede desactivar ${name} todavía`,
   resolve: "Revisa los pendientes antes de desactivar. Cada enlace abre en otra pestaña para que puedas volver a tus cambios.",
   blockers: {
     SCHEDULE: "Reasignar o cancelar turnos y publicar los cambios",
@@ -53,6 +53,6 @@ const es: typeof en = {
   unknown: "Datos guardados no disponibles", checkFirst: "Tus cambios se conservan. Verifica los datos guardados antes de volver a intentarlo.",
   checked: "Datos guardados verificados", review: "Revisa los datos actuales y tus cambios antes de volver a guardar.",
   matches: "Los datos guardados coinciden con tus cambios.",
-  current: "Datos actuales", active: "En servicio", inactiveStatus: "Fuera de servicio",
+  current: "Datos actuales", active: "Activa", inactiveStatus: "Inactiva",
 };
 export const LOCATION_RETIREMENT_COPY = { en, es };

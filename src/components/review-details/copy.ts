@@ -84,7 +84,7 @@ const en = {
   swapDeclined: 'Swap declined', bothKeep: (a: string, b: string) => `${a} and ${b} keep their shifts.`,
   coverApproved: 'Cover approved', hasShiftNow: (name: string) => `${name} has the shift now.`, scheduleShowsIt: 'The schedule shows it now.',
   coverDeclined: 'Cover declined', keepsShift: (name: string) => `${name} keeps the shift.`,
-  calloutApproved: 'Call-out approved', calloutApprovedLine: 'The shift is off their schedule and still needs cover.',
+  calloutApproved: 'Can’t work · approved', calloutApprovedLine: 'The shift is off their schedule and still needs cover.',
   calloutDeclined: 'Call-out declined',
   requestClosed: 'Request closed',
   // Jose (Nov 21, 2026): every Decline asks first. The question, then one line with what stays as it is (the declined
@@ -171,7 +171,7 @@ const es: ReviewCopy = {
   swapDeclined: 'Cambio rechazado', bothKeep: (a, b) => `${a} y ${b} conservan sus turnos.`,
   coverApproved: 'Cobertura aprobada', hasShiftNow: name => `${name} ya tiene el turno.`, scheduleShowsIt: 'El horario ya lo muestra.',
   coverDeclined: 'Cobertura rechazada', keepsShift: name => `${name} conserva el turno.`,
-  calloutApproved: 'Ausencia aprobada', calloutApprovedLine: 'El turno salió de su horario y todavía necesita cobertura.',
+  calloutApproved: 'No puedo trabajar · aprobado', calloutApprovedLine: 'El turno salió de su horario y todavía necesita cobertura.',
   calloutDeclined: 'Ausencia rechazada',
   requestClosed: 'Solicitud cerrada',
   askDeclineSwap: '¿Rechazar este cambio?', askDeclineCover: '¿Rechazar esta solicitud de cobertura?', askDeclineCallout: '¿Rechazar esta ausencia?',

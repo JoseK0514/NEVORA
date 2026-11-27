@@ -48,7 +48,7 @@ const en = {
   deactivateName: (first: string) => `Deactivate ${first}`, deactivateAsk: (first: string) => `Deactivate ${first}?`,
   deactivateConsequence: 'They’re signed out right away. Their history stays. You still need to review future shifts, open time and final pay.', keepActive: 'Keep active',
   primaryLocation: 'Primary location', noActiveLocation: 'An active location is needed before you can reactivate this employee.',
-  offboardingReview: 'Offboarding follow-up', reviewAssignments: 'Review future shifts', reviewOpenTime: 'Review timecards',
+  offboardingReview: 'Still to review', reviewAssignments: 'Review future shifts', reviewOpenTime: 'Review timecards',
   reactivateNote: 'They sign in again after this. Their history is kept.',
   // Profile sections (employee-profile-tabs.tsx)
   tabs: ['Details', 'Scheduling'] as readonly string[], profileSections: 'Employee profile sections',
@@ -107,7 +107,7 @@ const es: typeof en = {
   deactivateName: (first: string) => `Desactivar a ${first}`, deactivateAsk: (first: string) => `¿Desactivar a ${first}?`,
   deactivateConsequence: 'Su sesión se cierra de inmediato. Su historial se conserva. Quedan por revisar sus próximos turnos, los ponches abiertos y el pago final.', keepActive: 'Mantener activo',
   primaryLocation: 'Localidad principal', noActiveLocation: 'Necesitas una localidad activa para reactivar a este empleado.',
-  offboardingReview: 'Pendientes de la baja', reviewAssignments: 'Revisar próximos turnos', reviewOpenTime: 'Revisar tarjetas de tiempo',
+  offboardingReview: 'Pendientes por revisar', reviewAssignments: 'Revisar próximos turnos', reviewOpenTime: 'Revisar tarjetas de tiempo',
   reactivateNote: 'Después de esto, inicia sesión otra vez. Su historial se conserva.',
   tabs: ['Detalles', 'Horarios'], profileSections: 'Secciones del perfil del empleado',
   language: 'Idioma', appearance: 'Apariencia', appearanceNote: 'Para este dispositivo.',

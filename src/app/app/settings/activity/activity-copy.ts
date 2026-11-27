@@ -12,7 +12,7 @@ export const activityCopy = {
     locations: (n: number) => n === 1 ? "1 location" : `${n} locations`,
     kinds: {
       SCHEDULE_PUBLISHED: "Schedule published", SCHEDULE_EDITED: "Published schedule edited",
-      SCHEDULE_EXCHANGE: "Schedule changed after a shift exchange", SCHEDULE_CALLOUT: "Schedule changed after a callout",
+      SCHEDULE_EXCHANGE: "Schedule changed after a shift exchange", SCHEDULE_CALLOUT: "Schedule changed after a can’t-work request",
       MANAGER_SCOPE_ASSIGNED: "Manager access assigned", MANAGER_SCOPE_REVOKED: "Manager access removed",
       EMPLOYEE_ACTIVATED: "Employee activated", EMPLOYEE_DEACTIVATED: "Employee deactivated", WAGE_CHANGED: "Wage changed",
     } satisfies Record<OwnerActivityChange["kind"], string>,
@@ -28,7 +28,7 @@ export const activityCopy = {
     locations: (n: number) => n === 1 ? "1 localidad" : `${n} localidades`,
     kinds: {
       SCHEDULE_PUBLISHED: "Horario publicado", SCHEDULE_EDITED: "Horario publicado editado",
-      SCHEDULE_EXCHANGE: "Cambio de horario por intercambio de turno", SCHEDULE_CALLOUT: "Cambio de horario por ausencia",
+      SCHEDULE_EXCHANGE: "Cambio de horario por intercambio de turno", SCHEDULE_CALLOUT: "Cambio de horario por una solicitud de no puedo trabajar",
       MANAGER_SCOPE_ASSIGNED: "Acceso de gerente asignado", MANAGER_SCOPE_REVOKED: "Acceso de gerente retirado",
       EMPLOYEE_ACTIVATED: "Empleado activado", EMPLOYEE_DEACTIVATED: "Empleado desactivado", WAGE_CHANGED: "Cambio de salario",
     } satisfies Record<OwnerActivityChange["kind"], string>,

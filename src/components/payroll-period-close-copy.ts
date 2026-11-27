@@ -9,9 +9,9 @@ export const copy = {
     // src/components/payroll-period-close.tsx:17
     downloadRequested: "Download requested",
     // src/components/payroll-period-close.tsx:17
-    markedAsSent: "Operator reported submission",
+    markedAsSent: "Reported as sent",
     // src/components/payroll-period-close.tsx:17
-    markedAsImported: "Operator reported import",
+    markedAsImported: "Reported as imported",
     // src/components/payroll-period-close.tsx:87
     checkEveryoneOnTheListIncludingInactiveAccountsAndPeople: "Check everyone on the list, including inactive accounts and people with no hours.",
     // src/components/payroll-period-close.tsx:89
@@ -151,9 +151,9 @@ export const copy = {
     // src/components/payroll-period-close.tsx:17
     downloadRequested: "Descarga solicitada",
     // src/components/payroll-period-close.tsx:17
-    markedAsSent: "Envío informado por el equipo",
+    markedAsSent: "Informado como enviado",
     // src/components/payroll-period-close.tsx:17
-    markedAsImported: "Importación informada por el equipo",
+    markedAsImported: "Informado como importado",
     // src/components/payroll-period-close.tsx:87
     checkEveryoneOnTheListIncludingInactiveAccountsAndPeople: "Revisa a todas las personas de la lista, incluidas las que tienen cuentas inactivas y las que no tienen horas.",
     // src/components/payroll-period-close.tsx:89
