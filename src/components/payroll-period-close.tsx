@@ -34,6 +34,8 @@ export function populationIdentity(result:{members:readonly object[]}&Record<str
 export function PayrollPeriodClose(props:Props){
   return <PeriodCloseView key={JSON.stringify([props.actorId,props.period.startDate,props.period.endDate])} {...props}/>;
 }
+const handoffConflict = Symbol('handoff conflict');
+type PeriodNotice = string | typeof handoffConflict;
 const focusNotice = (node: HTMLParagraphElement | null) => node?.focus();
 function PeriodCloseView({period,actorId,startOpen=false,exportsDisabled=false,onExportsDisabled}:Props) {
   const lang = usePortalLang();
@@ -42,7 +44,7 @@ const LOADING=wording.loadingTheListOfPeople,OUT_OF_DATE=wording.thisListIsOutOf
 const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadRequested,REPORTED_SUBMITTED:wording.markedAsSent,REPORTED_IMPORTED:wording.markedAsImported};
 
   const [review, setReview] = useState<Review | null>(null),
-    [notice, setNotice] = useState<string>(LOADING),
+    [notice, setNotice] = useState<PeriodNotice>(LOADING),
     [busy, setBusy] = useState(false),
     [selected, setSelected] = useState<string[]>([]),
     [retry, setRetry] = useState<PendingCommand | null>(null),
@@ -54,7 +56,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
   const expiry=useRef<ReturnType<typeof setTimeout>|null>(null),early=useRef<ReturnType<typeof setTimeout>|null>(null),readTimeout=useRef<ReturnType<typeof setTimeout>|null>(null);
   const [viewKey,setViewKey]=useState('');
   const cancelRead=useCallback(()=>{sequence.current++;request.current?.abort();reading.current=false;if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;},[]);
-  const retire=useCallback((message:string)=>{generation.current.value++;cancelRead();if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);expiry.current=early.current=null;deadline.current=0;sourceKey.current=null;mutating.current=false;setReview(null);setViewKey('');setSelected([]);setBusy(false);setNotice(message);},[cancelRead]);
+  const retire=useCallback((message:PeriodNotice)=>{generation.current.value++;cancelRead();if(expiry.current)clearTimeout(expiry.current);if(early.current)clearTimeout(early.current);expiry.current=early.current=null;deadline.current=0;sourceKey.current=null;mutating.current=false;setReview(null);setViewKey('');setSelected([]);setBusy(false);setNotice(message);},[cancelRead]);
   const post = useCallback(
     async (action: string, command: unknown, signal?:AbortSignal) =>
       fetch("/api/period-close", {
@@ -148,7 +150,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
       if (pending.action === "HANDOFF" && response.status === 409 && body?.state === "conflict") {
         localStorage.removeItem(recoveryKey);
         setRetry(null);
-        retire(wording.handoffChanged);
+        retire(handoffConflict);
         return;
       }
       if (response.status === 400 || response.status === 409) {
@@ -204,7 +206,7 @@ const EVENT_LABELS:Record<string,string>={ARTIFACT_SERVED:wording.downloadReques
     <section className="panel">
       <h2>{wording.whoSInThisPayroll}</h2>
       <p>{wording.chooseWhatToDoWithEachPersonForThisPeriod}</p>
-      <p role="status" tabIndex={notice===wording.handoffChanged?-1:undefined} ref={notice===wording.handoffChanged?focusNotice:undefined}>{notice}</p>
+      <p role="status" tabIndex={notice === handoffConflict ? -1 : undefined} ref={notice === handoffConflict ? focusNotice : undefined}>{notice === handoffConflict ? wording.handoffChanged : notice}</p>
       <button
         className="button secondary"
         type="button"
