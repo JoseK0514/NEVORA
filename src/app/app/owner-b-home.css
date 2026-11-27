@@ -561,7 +561,7 @@
  * at enlarged text, the strip's labels may take a second line instead (default text keeps one line, as before). Spanish
  * measures its own label (HomeFitLabel) and is unchanged. */
 @layer nv-b {
-  @container not style(--nv-rem: 16px) {
-    html:not(:lang(es)) .b-home-strip .b-live__l:not(#b16-none) { white-space: normal !important; overflow-wrap: normal !important; min-inline-size: 0 !important; }
+  @media (max-width: 359px) {
+    html:is([data-text-step="150"], [data-text-step="200"]):not(:lang(es)) .b-home-strip .b-live__l:not(#b16-none) { white-space: normal !important; overflow-wrap: normal !important; min-inline-size: 0 !important; }
   }
 }
