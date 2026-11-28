@@ -595,3 +595,11 @@
     html:is([data-text-step="150"], [data-text-step="200"]) :is(#c-root, body) .app-shell[data-nv-b] .c-page.c-person .c-row:not(.c-person__who):not(:has(> :is(.c-row__icon, .c-row__lead, .c-avatar))) > .c-row__value:not(#pp1):not(#pp2):not(#pp3):not(#pp4):not(#pp5):not(#pp6):not(#pp7):not(#pp8) { max-width: 100% !important; margin-left: 0 !important; text-align: left !important; }
   }
 }
+
+/* QA on ad25175f: the person page's call and message buttons were the only icon buttons with no mouse hover. */
+@layer nv-b {
+  @media (hover: hover) and (pointer: fine) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person a.c-person__act[href]:hover:not(:active, :focus-visible):not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { background: var(--b-btn-surface-hover) !important; outline: 1px solid currentColor !important; outline-offset: -1px !important; }
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-person a.c-person__act[href]:active:not(#p8a):not(#p8b):not(#p8c):not(#p8d):not(#p8e) { background: var(--b-btn-surface-press) !important; }
+}
