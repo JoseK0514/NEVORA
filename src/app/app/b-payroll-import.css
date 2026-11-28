@@ -36,9 +36,10 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-ul:focus { outline: none; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-textbtn { display: inline-flex; align-items: center; min-height: 32px; margin: -6px 0; padding: 0 2px; border: 0; background: none; color: var(--b-teal); font: inherit; font-weight: 600; cursor: pointer; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-textbtn:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: 2px; border-radius: 6px; }
-/* QA on ad25175f: Undo was 37×32. Its hit area reaches 44px tall without moving the line it sits on. */
+/* QA on ad25175f and 35bf6afb: Undo was 37×32. Its hit area reaches 44px tall, growing downward only so it leaves the
+ * amount button above it alone, and without moving the line it sits on. */
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-textbtn { position: relative; }
-:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-textbtn::before { content: ""; position: absolute; inset: -6px -4px; }
+:is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-textbtn::before { content: ""; position: absolute; inset: 0 -4px -12px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-receipt { display: inline-flex; align-items: baseline; gap: 6px; margin: 0; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
 :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-receipt code { font-family: inherit; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; color: var(--b-ink2); }
 
