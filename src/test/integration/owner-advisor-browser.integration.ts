@@ -286,9 +286,13 @@ it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI again
               await page.getByText('Answers to typed questions are off', { exact: true }).waitFor();
               const attention = page.getByRole("region", { name: "Needs your attention", exact: true });
               await attention.getByRole("heading", { name: "Needs your attention", exact: true }).waitFor();
-              const firstIssue = attention.locator("ol > li").filter({ hasText: "Main Office" });
-              expect(await firstIssue.count()).toBe(1);
-              expect(await firstIssue.getByRole("heading", { name: "Review today's planning gaps", exact: true }).count()).toBe(1);
+              const issueGroup = attention.locator("ol > li").filter({ hasText: "Main Office" });
+              expect(await issueGroup.count()).toBe(1);
+              expect(await issueGroup.getByRole("heading", { name: "Review today's planning gaps", exact: true }).count()).toBe(1);
+              // When another place has the same issue (Main Office and West Office both have planning gaps at some
+              // business-local hours), the briefing groups them under one title and each place keeps its own actions.
+              const firstIssue = issueGroup.locator(".oa-subitem").filter({ has: page.getByRole("heading", { name: "Main Office", exact: true }) })
+                .or(issueGroup.filter({ hasNot: page.locator(".oa-subitem") }));
               await firstIssue.getByRole("button", { name: "Track this issue", exact: true }).click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await firstIssue.getByRole("button", { name: "Later · 1 hour", exact: true }).click();
