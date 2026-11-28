@@ -27,6 +27,7 @@ import { prepareExchangeContext } from "@/lib/scheduling/exchange-validation";
 import { scheduleCopy } from "@/components/schedule-copy";
 import { accessCopy } from "@/components/company-access/access-copy";
 import { shiftFormEntry } from "@/lib/scheduling/shift-form-entry";
+import { RECEIPT_WORDS } from "@/components/copy-receipt-copy";
 import { validateShift } from "@/lib/scheduling/validate-shift";
 import {ShiftReviewConflictError,requireShiftReview} from '@/lib/data/shift-review';
 import { ManualAssignmentConflictError } from "@/lib/data/manual-assignment-validation";
@@ -73,7 +74,10 @@ async function createShiftBatch(form: FormData, proof: Awaited<ReturnType<typeof
   const lang = form.get("batchLanguage") === "es" ? "es" : "en";
   const words = scheduleCopy(lang).shiftForm;
   const route = accessCopy(lang).route;
-  const reason = (issue: { code: string; message: string }) => lang === "en" ? issue.message : route.editor[issue.code] ?? route.shiftNotUpdated;
+  // Spanish: the editor's sentence for the rule, else the copy receipt's short reason for it, else a create-specific line
+  // (QA on e7938e7a: OUTSIDE_AVAILABILITY and MAX_WEEKLY_HOURS fell back to "No se pudo actualizar el turno").
+  const skips: Record<string, string | undefined> = RECEIPT_WORDS[lang].skips;
+  const reason = (issue: { code: string; message: string }) => lang === "en" ? issue.message : route.editor[issue.code] ?? skips[issue.code] ?? words.notSaved;
   const weekStart = String(form.get("weekStart") ?? "");
   const count = Number(form.get("shiftCount"));
   const dates = [...form.keys()].filter(key => key === "date" || /^shift-\d+-date$/.test(key));

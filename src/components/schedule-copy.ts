@@ -37,6 +37,7 @@ const en = {
     missingFields: 'Choose a person, location and date in this week.', invalidTimes: 'Check the start and end times.',
     unavailableAssignment: 'The person or location is unavailable.',
     checkBatch: 'Check the schedule to see whether these shifts were saved.', checkWeek: 'Check this week',
+    notSaved: 'This shift couldn’t be saved. Check it and try again.',
     saving: "Saving…", saveChanges: 'Save changes', saveShift: 'Save shift',
   },
   change: {
@@ -105,6 +106,7 @@ const es: typeof en = {
     missingFields: 'Elige una persona, una localidad y una fecha de esta semana.', invalidTimes: 'Revisa las horas de inicio y fin.',
     unavailableAssignment: 'La persona o la localidad no está disponible.',
     checkBatch: 'Revisa el horario para ver si se guardaron estos turnos.', checkWeek: 'Revisar esta semana',
+    notSaved: 'No se pudo guardar este turno. Revísalo e inténtalo de nuevo.',
     saving: "Guardando…", saveChanges: 'Guardar cambios', saveShift: 'Guardar turno',
   },
   change: {
