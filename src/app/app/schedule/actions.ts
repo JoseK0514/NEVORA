@@ -9,7 +9,7 @@ import { localDateTimeToInstant, shiftBoundaryInstants } from "@/lib/business-ti
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
+import { addDays, isDateInWeek, isValidWeekStart } from "@/lib/date-utils";
 import { setAvailabilityDeadline } from "@/lib/data/week-settings";
 import { publishScheduleChanges, publishScheduleWithRevision } from "@/lib/data/publication-revisions";
 import {
@@ -18,11 +18,15 @@ import {
   getShiftForManagement,
   getShiftValidationContext,
   insertShiftAtLocation,
+  insertManualShifts,
   listScheduleStatuses,
   updateShift,
 } from "@/lib/data/schedules";
 import { executeScheduleCopy } from "@/lib/data/schedule-copy";
 import { prepareExchangeContext } from "@/lib/scheduling/exchange-validation";
+import { scheduleCopy } from "@/components/schedule-copy";
+import { accessCopy } from "@/components/company-access/access-copy";
+import { shiftFormEntry } from "@/lib/scheduling/shift-form-entry";
 import { validateShift } from "@/lib/scheduling/validate-shift";
 import {ShiftReviewConflictError,requireShiftReview} from '@/lib/data/shift-review';
 import { ManualAssignmentConflictError } from "@/lib/data/manual-assignment-validation";
@@ -64,6 +68,67 @@ async function currentPublicationAdmission(
   }
 }
 
+async function createShiftBatch(form: FormData, proof: Awaited<ReturnType<typeof requireSessionMutationProof>>) {
+  if (proof.employee.role !== "OWNER" || form.has("coverageRepairReview")) return accessError();
+  const lang = form.get("batchLanguage") === "es" ? "es" : "en";
+  const words = scheduleCopy(lang).shiftForm;
+  const route = accessCopy(lang).route;
+  const reason = (issue: { code: string; message: string }) => lang === "en" ? issue.message : route.editor[issue.code] ?? route.shiftNotUpdated;
+  const weekStart = String(form.get("weekStart") ?? "");
+  const count = Number(form.get("shiftCount"));
+  const dates = [...form.keys()].filter(key => key === "date" || /^shift-\d+-date$/.test(key));
+  if (count !== dates.length || count < 2 || !isValidWeekStart(weekStart)) {
+    return { error: words.invalidBatch };
+  }
+  const shifts = Array.from({ length: count }, (_, i) => shiftFormEntry(form, i));
+  let warningCode: string | undefined;
+  try {
+    const admission = await assertOperationalAccess(proof, { kind: "COMPANY" });
+    for (const [i, shift] of shifts.entries()) {
+      if (!shift.employeeId || !shift.locationId || !isDateInWeek(shift.date, weekStart)) {
+        return { error: `${words.shiftNumber(i + 1)} · ${words.missingFields}` };
+      }
+      try { shiftBoundaryInstants(shift, admission.workspace.timeZone); }
+      catch { return { error: `${words.shiftNumber(i + 1)} · ${words.invalidTimes}` }; }
+    }
+    // Dates share the same weekly rules. Include next Monday for overnight Sunday shifts.
+    const contexts = new Map<string, Awaited<ReturnType<typeof getShiftValidationContext>>>();
+    for (const [i, shift] of shifts.entries()) {
+      const key = JSON.stringify([shift.employeeId, shift.locationId, shift.positionId]);
+      if (!contexts.has(key)) {
+        contexts.set(key, await getShiftValidationContext({ ...shift, weekStart, date: weekStart, endDate: addDays(weekStart, 7) }));
+      }
+      const context = contexts.get(key);
+      let problem: { error: string; issueCode?: string } | undefined;
+      if (!context) problem = { error: `${words.shiftNumber(i + 1)} · ${words.unavailableAssignment}` };
+      else {
+        const others = shifts.filter((other, j) => i !== j && other.employeeId === shift.employeeId);
+        const validation = validateShift({ ...context, candidate: shift, mode: "MANAGER_SCHEDULE",
+          existingShifts: [...context.existingShifts, ...others] });
+        const blocking = validation.blockers[0];
+        if (blocking) problem = { error: `${words.shiftNumber(i + 1)} (${shift.date}) · ${reason(blocking)}`, issueCode: blocking.code };
+        warningCode ??= validation.warnings[0]?.code;
+      }
+      if (problem) return await currentAdmission(proof, admission) ? problem : accessError();
+    }
+    if (!await currentAdmission(proof, admission)) return accessError();
+    try {
+      await insertManualShifts({ proof, actorEmployeeId: proof.employee.id, weekStart }, shifts);
+    } catch (error) {
+      if (error instanceof ManualAssignmentConflictError) {
+        return await currentAdmission(proof, admission) ? { error: reason(error), issueCode: error.code } : accessError();
+      }
+      throw error;
+    }
+    if (!await currentAdmission(proof, admission)) return accessError();
+  } catch (error) {
+    if (denied(error)) return accessError();
+    throw error;
+  }
+  revalidatePath("/app/schedule");
+  redirect(scheduleUrl(weekStart, warningCode ? `&warning=${encodeURIComponent(warningCode)}` : ""));
+}
+
 /**
  * Converts the manager form into a validated assignment in workspace local time.
  * UI validation gives actionable issues; the data writer must also revalidate
@@ -75,6 +140,10 @@ export async function createShiftAction(formData: FormData) {
   const proof = await requireSessionMutationProof();
 
   const weekStart = String(formData.get("weekStart") ?? "");
+  if (formData.has("shiftCount")) {
+    if (session.role !== "OWNER" || session.id !== proof.employee.id) return accessError();
+    return createShiftBatch(formData, proof);
+  }
   const employeeId = String(formData.get("employeeId") ?? "").trim().toUpperCase();
   const locationId = String(formData.get("locationId") ?? "");
   const date = String(formData.get("date") ?? "");

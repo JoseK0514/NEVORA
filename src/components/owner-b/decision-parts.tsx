@@ -1,5 +1,5 @@
 import type { ReactNode, Ref } from "react";
-import { BState } from "./b-kit";
+import { BSpin, BState } from "./b-kit";
 
 /* Final polish (Nov 20, 2026; confirmations review A): the two parts every Owner and Manager decision shares. They are
  * the kit's own pieces (`BState`, `b-btn`, `b-rowact`) in one arrangement; the layout is in owner-b-requests.css
@@ -28,9 +28,10 @@ export function DecisionResult({ tone, title, line, icon, className, silent }: {
  * nothing to what the form sends), or with `onGo`
  * a plain button that calls the caller's own handler. `titleRef` makes the question focusable, so focus can move to it
  * when it appears (ask-step.ts). */
-export function DecisionAsk({ groupLabel, question, consequence, keep, keepLabel, onKeep, go, goLabel, goValue, goName = "decision", onGo, tone, groupRef, titleRef, className, lang }: {
+export function DecisionAsk({ groupLabel, question, consequence, keep, keepLabel, onKeep, go, goLabel, goValue, goName = "decision", onGo, tone, groupRef, titleRef, className, lang, children, busyLabel }: {
   /** The group's accessible name ("Decline time off for Ana Colon?"). */
   groupLabel: string; question: ReactNode; consequence: ReactNode;
+  children?: ReactNode; busyLabel?: string;
   keep: ReactNode; keepLabel?: string; onKeep: () => void;
   go: ReactNode; goLabel?: string; goValue?: string; goName?: string;
   /** The commit is the caller's own handler, not a form's submit. */
@@ -39,13 +40,15 @@ export function DecisionAsk({ groupLabel, question, consequence, keep, keepLabel
   tone?: "commit";
   groupRef?: Ref<HTMLDivElement>; titleRef?: Ref<HTMLParagraphElement>; className?: string; lang?: string;
 }) {
-  return <div ref={groupRef} className={className ? `b-ask ${className}` : "b-ask"} role="group" aria-label={groupLabel} lang={lang} data-tone={tone}>
+  return <div ref={groupRef} className={className ? `b-ask ${className}` : "b-ask"} role="group" aria-label={groupLabel} lang={lang} data-tone={tone} aria-busy={busyLabel ? true : undefined}>
     <p className="b-ask__t" ref={titleRef} tabIndex={titleRef ? -1 : undefined}>{question}</p>
     <p className="b-ask__s">{consequence}</p>
+    {children}
     <div className="b-ask__acts">
-      <button type="button" className="b-btn b-btn--quiet b-rowact b-rowact--quiet b-ask__keep" onClick={onKeep} aria-label={keepLabel}>{keep}</button>
+      <button type="button" className="b-btn b-btn--quiet b-rowact b-rowact--quiet b-ask__keep" onClick={onKeep} disabled={!!busyLabel} aria-label={keepLabel}>{keep}</button>
       {onGo ? <button type="button" className="b-btn b-btn--quiet b-ask__go" onClick={onGo} aria-label={goLabel}>{go}</button>
-        : <button type="submit" name={goValue === undefined ? undefined : goName} value={goValue} className="b-btn b-btn--quiet b-ask__go" aria-label={goLabel}>{go}</button>}
+        : <button type="submit" name={goValue === undefined ? undefined : goName} value={goValue} className="b-btn b-btn--quiet b-ask__go" disabled={!!busyLabel} aria-label={busyLabel ?? goLabel}>{busyLabel ? <><BSpin small />{busyLabel}</> : go}</button>}
     </div>
+    {busyLabel && <span className="c-sr" role="status">{busyLabel}</span>}
   </div>;
 }

@@ -5,6 +5,7 @@
  * visibly a separate thing from their schedule. Save is the card's one Solid action and stays off until something changed;
  * then Saving (same width), then Saved, with focus moved to the result. A refusal shows the server's own sentence in a kit
  * notice; a stale or uncertain save locks the sheet until the profile is reloaded. */
+import { AllLocationsCheckbox } from "@/components/team/all-locations-checkbox";
 import { useEffect, useId, useRef, useState } from 'react';
 import { BBusyLabel, BCallout } from '@/components/owner-b/b-kit';
 import { saveClockerLocationAccessAction } from '@/app/app/employees/[employeeId]/clocker-location-actions';
@@ -19,21 +20,28 @@ import './clocker-location-access.css';
 export type ClockerLocationViewProps = {
   lang: ClockerLocationLang; mode: ClockerLocationMode; picked: string[]; places: ClockerLocationPlace[]; work: string[];
   primaryId: string | null; status: ClockerLocationStatus; changed: boolean; ids: { group: string; hint: string };
-  onMode?: (mode: ClockerLocationMode) => void; onPick?: (id: string, on: boolean) => void; onSave?: () => void; onReload?: () => void;
+  onMode?: (mode: ClockerLocationMode) => void; onPick?: (id: string, on: boolean) => void; onPickAll?: (ids: string[]) => void; onSave?: () => void; onReload?: () => void;
   resultRef?: React.Ref<HTMLDivElement>;
 };
 
 /** Everything drawn, from plain values: each state renders without a browser (tests and the captures use it). */
-export function ClockerLocationView({ lang, mode: current, picked, places, work, primaryId, status, changed, ids, onMode, onPick, onSave, onReload, resultRef }: ClockerLocationViewProps) {
+export function ClockerLocationView({ lang, mode: current, picked, places, work, primaryId, status, changed, ids, onMode, onPick, onPickAll, onSave, onReload, resultRef }: ClockerLocationViewProps) {
   const t = clockerLocationCopy[lang];
   const busy = status.kind === 'saving', locked = status.kind === 'failed' && status.refresh;
   const invalid = clockerLocationInvalid(current, picked);
   const workNames = places.filter(place => work.includes(place.id)).map(place => place.name).join(', ') || t.none;
   const choices: [ClockerLocationMode, string, string | null][] = [['ASSIGNED', t.where, workNames], ['SELECTED', t.only, null], ['ALL', t.every, t.everyDetail]];
   const list = <fieldset className="clk-list" aria-label={t.locations}>
+    {current === 'SELECTED' && <AllLocationsCheckbox lang={lang} ids={places.map(place => place.id)} selected={picked} className="clk-choice"
+      onToggle={all => onPickAll?.(all ? places.map(place => place.id) : [])} />}
     {places.map(place => { const tag = clockerLocationTag(lang, place.id, work, primaryId); return <label key={place.id} className="clk-choice">
-      <input type="checkbox" name="locationId" value={place.id} checked={picked.includes(place.id)} aria-describedby={invalid ? ids.hint : undefined}
-        onChange={event => onPick?.(place.id, event.currentTarget.checked)} />
+      <input type="checkbox" name="locationId" value={place.id} checked={current === 'ALL' || picked.includes(place.id)} aria-describedby={invalid ? ids.hint : undefined}
+        onChange={event => {
+          if (current === 'ALL') {
+            onMode?.('SELECTED');
+            onPickAll?.(places.filter(item => item.id !== place.id).map(item => item.id));
+          } else onPick?.(place.id, event.currentTarget.checked);
+        }} />
       <span className="clk-choice__text"><span>{place.name}</span>{tag ? <small>{tag}</small> : null}</span>
     </label>; })}
   </fieldset>;
@@ -51,7 +59,7 @@ export function ClockerLocationView({ lang, mode: current, picked, places, work,
           <input type="radio" name="mode" value={mode} checked={current === mode} onChange={() => onMode?.(mode)} />
           <span className="clk-choice__text"><span>{label}</span>{help ? <small>{help}</small> : null}</span>
         </label>
-        {mode === 'SELECTED' && current === 'SELECTED' ? list : null}
+        {current === mode && mode !== 'ASSIGNED' ? list : null}
       </div>)}
     </fieldset>
     {invalid ? <p id={ids.hint} className="clk-hint">{t.chooseOne}</p> : null}
@@ -94,7 +102,7 @@ export function ClockerLocationSheet(props: SheetProps) {
   }
   return <ClockerLocationView lang={props.lang} mode={mode} picked={picked} places={props.places} work={props.work} primaryId={props.primaryId}
     status={status} changed={clockerLocationChanged(baseline, mode, picked)} ids={{ group: `clk-${id}-group`, hint: `clk-${id}-hint` }} resultRef={resultRef}
-    onMode={next => { edit(); setMode(next); }} onPick={(place, on) => { edit(); setPicked(current => on ? [...new Set([...current, place])] : current.filter(value => value !== place)); }}
+    onPickAll={ids => { edit(); setPicked(ids); }} onMode={next => { edit(); setMode(next); }} onPick={(place, on) => { edit(); setPicked(current => on ? [...new Set([...current, place])] : current.filter(value => value !== place)); }}
     onSave={() => void save()} onReload={() => window.location.reload()} />;
 }
 

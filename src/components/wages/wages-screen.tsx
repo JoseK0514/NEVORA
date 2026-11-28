@@ -1,4 +1,5 @@
 "use client";
+import { AllLocationsCheckbox } from "@/components/team/all-locations-checkbox";
 import { useViewLang } from "@/components/owner-b/use-owner-lang";
 import { DiscardGuard } from "@/components/kit/discard-dialog";
 import { leaveWithDiscardGuard } from "@/components/kit/use-discard-guard";
@@ -246,6 +247,7 @@ export function WagesScreen(props: WagesScreenProps) {
       : <BState kind="locked" title={t.deniedTitle} line={t.deniedBody} action={{ label: firstName, href: backHref }} />
     }</CorpCard></div>;
   } else if (step === "edit" && draft) {
+    const choices = locations.filter(location => location.active || draft.locationIds.includes(location.id));
     const set = (patch: Partial<Draft>) => { const next = { ...draft, ...patch }; setDraft(next); if (problems.length) setProblems(check(next)); };
     const err = (problem: Problem, id: string, text: string) => problems.includes(problem) ? <p className="rs-err" id={id}><WarningCircleIcon size={16} weight="bold" aria-hidden="true" />{text}</p> : null;
     body = <>
@@ -258,7 +260,9 @@ export function WagesScreen(props: WagesScreenProps) {
               { key: "stop", label: t.modeStop, current: draft.mode === "stop", onSelect: () => set({ mode: "stop" }) }]} /></div>
           <fieldset className="rs-field wg-locs" aria-describedby="wg-locs-h">
             <legend className="rs-field__l">{t.locations}</legend>
-            {locations.filter(l => l.active || draft.locationIds.includes(l.id)).map(location => <label key={location.id} className="rs-check wg-check">
+            <AllLocationsCheckbox lang={lang} ids={choices.map(location => location.id)} selected={draft.locationIds} className="rs-check wg-check" disabled={busy}
+              onToggle={all => set({ locationIds: all ? choices.map(location => location.id) : [] })} />
+            {choices.map(location => <label key={location.id} className="rs-check wg-check">
               <input type="checkbox" checked={draft.locationIds.includes(location.id)} disabled={busy} aria-invalid={problems.includes("locations") || undefined}
                 onChange={event => set({ locationIds: event.target.checked ? [...draft.locationIds, location.id] : draft.locationIds.filter(id => id !== location.id) })} />
               <span>{location.name}</span></label>)}

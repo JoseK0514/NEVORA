@@ -1,0 +1,45 @@
+.employment-date { position: relative; display: block; }
+.employment-date > input[type=date] { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; pointer-events: none; }
+@layer nv-b {
+  html body .app-shell[data-nv-b] .employment-date > .employment-date__trigger {
+    display: flex !important; align-items: center !important; justify-content: space-between !important;
+    width: 100% !important; min-height: 48px !important; padding: 8px 14px !important;
+    color: var(--b-ink) !important; background: white !important; box-shadow: none !important;
+    border: 1px solid var(--b-field-edge) !important; border-radius: var(--b-radius-field, 12px) !important;
+    font: inherit !important; text-align: start !important; cursor: pointer;
+  }
+  html body .app-shell[data-nv-b] .employment-date > .employment-date__trigger[data-empty] { color: var(--b-grey) !important; }
+  html body .app-shell[data-nv-b] .employment-date > .employment-date__trigger[data-invalid=true] { border-color: var(--b-red) !important; }
+  html body .app-shell[data-nv-b] .employment-date > .employment-date__trigger:focus-visible { outline: 2px solid var(--b-focus) !important; }
+}
+.employment-date__trigger svg { flex: none; color: var(--b-teal); }
+.employment-calendar { width: 100%; box-sizing: border-box; padding: 8px clamp(6px, 2vw, 16px) 16px; font-family: Inter, system-ui, sans-serif; color: var(--b-ink); }
+.employment-calendar header, .employment-calendar__nav { display: flex; align-items: center; gap: 6px; }
+.employment-calendar header { justify-content: space-between; padding-inline: 4px; }
+.employment-calendar h2 { font: 650 1.15rem/1.35 Inter, system-ui, sans-serif; margin: 0; }
+.employment-calendar button, .employment-calendar select, .employment-calendar input {
+  box-sizing: border-box; min-height: 44px; border: 0; border-radius: 10px; font: 550 1rem/1.25 Inter, system-ui, sans-serif; color: var(--b-ink); background: transparent;
+}
+.employment-calendar button, .employment-calendar select { cursor: pointer; }
+.employment-calendar header button, .employment-calendar footer button { color: var(--b-teal); padding-inline: 8px; }
+.employment-calendar__nav { margin-block: 12px; justify-content: space-between; }
+.employment-calendar__nav button { flex: 0 0 44px; display: grid; place-items: center; }
+.employment-calendar__nav select, .employment-calendar__nav input { background: var(--b-quiet); padding-inline: 8px; min-width: 0; }
+.employment-calendar__nav select { flex: 1; }
+.employment-calendar__nav input { width: 6ch; text-align: center; }
+.employment-calendar__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
+.employment-calendar__days > span { padding-block: 6px; font-size: .8rem; color: var(--b-grey); }
+.employment-calendar__days button { padding: 0; border-radius: var(--b-radius-pill); font-variant-numeric: tabular-nums; }
+.employment-calendar__days button[aria-pressed=true] { background: var(--b-teal); color: white; }
+.employment-calendar :disabled { opacity: .5; cursor: default; }
+.employment-calendar :focus-visible { outline: 2px solid var(--b-focus); outline-offset: -2px; }
+.employment-calendar footer { border-top: 1px solid var(--b-line); margin-top: 8px; }
+@media (hover:hover) { .employment-calendar button:enabled:hover:not([aria-pressed=true]) { background: var(--b-teal-50); } }
+:is(#q-root, html) dialog.q-sheet:has(.employment-calendar) {
+  width: min(400px, 100%); height: fit-content; min-height: 0; max-height: 92dvh; margin-inline: auto; background: white;
+}
+:is(#q-root, html) dialog.q-sheet:has(.employment-calendar) > .q-sheet__in {
+  min-height: 0; padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.employment-calendar__days button[aria-current=date]:not([aria-pressed=true]) { background: var(--b-teal-50); color: var(--b-teal); }

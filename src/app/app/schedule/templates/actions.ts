@@ -10,6 +10,7 @@ import { isValidWeekStart } from "@/lib/date-utils";
 import {
   archiveScheduleTemplate,
   createTemplateFromWeek,
+  editSavedTemplate, type TemplateEditResult,
 } from "@/lib/data/schedule-templates";
 function templateUrl(weekStart: string, suffix = "") {
   return `/app/schedule/templates?week=${encodeURIComponent(weekStart)}${suffix}`;
@@ -71,4 +72,12 @@ export async function archiveTemplateAction(formData: FormData) {
   catch(error){if(isOperationalAuthorizationError(error))redirect(templateUrl(weekStart,'&error=ACCESS_DENIED'));throw error;}
   revalidatePath("/app/schedule/templates");
   redirect(templateUrl(weekStart, "&archived=1"));
+}
+
+export async function editTemplateAction(id: string, revision: string, form: FormData): Promise<TemplateEditResult> {
+  await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
+  const result = await editSavedTemplate(id, revision, form, proof);
+  if (result === "saved" || result === "stale") revalidatePath("/app/schedule/templates");
+  return result;
 }

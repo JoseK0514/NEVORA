@@ -7,7 +7,7 @@ import ScheduleTemplatesPage from "./page";
 const access=rs.hoisted(()=>({denied:false}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 const f = rs.hoisted(() => ({
-  requireRoles: rs.fn(), requireProof: rs.fn(), list: rs.fn(), copy: rs.fn(),
+  requireRoles: rs.fn(), requireProof: rs.fn(), list: rs.fn(), detail: rs.fn(), copy: rs.fn(),
   proof: { employee: { id: "manager", role: "MANAGER" }, sessionTokenHash: "a".repeat(64) },
   templates: [{ id: "pattern-1", name: "Regular week", shiftCount: 12, createdAt: "2026-10-01" }],
 }));
@@ -23,14 +23,15 @@ rs.mock("@/components/schedule-copy-form",  () => {
   } };
 });
 rs.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
-rs.mock("@/lib/data/schedule-templates", () => ({ listScheduleTemplates: f.list }));
-rs.mock("./actions", () => ({ saveTemplateAction: rs.fn(), applyTemplateAction: rs.fn(), archiveTemplateAction: rs.fn() }));
+rs.mock("@/lib/data/schedule-templates", () => ({ listScheduleTemplates: f.list, readTemplateDetail: f.detail }));
+rs.mock("./actions", () => ({ editTemplateAction: rs.fn(), saveTemplateAction: rs.fn(), applyTemplateAction: rs.fn(), archiveTemplateAction: rs.fn() }));
 
 beforeEach(() => {
   access.denied=false;
   rs.useRealTimers();
   f.requireRoles.mockReset().mockResolvedValue({ id: "manager" });
   f.requireProof.mockReset().mockResolvedValue(f.proof);
+  f.detail.mockReset();
   f.copy.mockReset();
   f.list.mockReset().mockImplementation(async () => f.templates);
   f.templates = [{ id: "pattern-1", name: "Regular week", shiftCount: 12, createdAt: "2026-10-01" }];
@@ -40,6 +41,25 @@ async function html(params: Parameters<typeof ScheduleTemplatesPage>[0]["searchP
 }
 
 describe("schedule template workflow presentation", () => {
+  it("opens the selected template with its saved shifts and a return to the selected week", async () => {
+    f.detail.mockResolvedValue({ id: "night", name: "Evening coverage", revision: "v1",
+      locations: [{id: "a", name: "Condado", active: true}], employees: [], positions: [],
+      shifts: [{id: "s", day: 5, start: "19:00", end: "02:00", employee: null, location: "a", position: null, lead: false, notes: "Stock check"}] });
+    const output = await html(Promise.resolve({week: "2026-10-12", template: "night"}));
+    expect(f.detail).toHaveBeenCalledWith("night", f.proof);
+    expect(f.list).not.toHaveBeenCalled();
+    for (const label of ["Evening coverage", "Saturday", "Open shift", "Condado", "Stock check", "Next day", "Edit shift"]) expect(output).toContain(label);
+    expect(output).toContain('href="/app/schedule/templates?week=2026-10-12"');
+    expect(f.copy).not.toHaveBeenCalled();
+  });
+  it("recovers from an archived template and withholds the detail read when access is denied", async () => {
+    f.detail.mockResolvedValue(null);
+    const params = Promise.resolve({week: "2026-10-12", template: "missing"});
+    expect(await html(params)).toContain("Choose an active template");
+    f.detail.mockClear(); access.denied = true;
+    expect(await html(params)).not.toContain("Template shifts");
+    expect(f.detail).not.toHaveBeenCalled();
+  });
   it("requires management access before reading template data", async () => {
     f.requireRoles.mockRejectedValue(new Error("Forbidden"));
     await expect(html()).rejects.toThrow("Forbidden");
@@ -79,6 +99,8 @@ describe("schedule template workflow presentation", () => {
     // Phase 2 (C7): the band names the week once; each saved week's button says Apply and is named for its week.
     expect(output).toMatch(/Week[\s\u00a0]of[\s\u00a0]Oct[\s\u00a0]12–18/);
     expect(output).toContain('aria-label="Apply &lt;script&gt;alert(&#x27;name&#x27;)&lt;/script&gt; &amp; Operations to Oct 12–18');
+    expect(output).toContain("View and edit");
+    expect(output).toContain("week=2026-10-12&amp;template=unsafe");
     expect(output).toContain("Archive");
     // Phase 2 (C7): Direction B for real, so the page carries no older-kit parts (Quiet, Wave).
     expect(output).not.toMatch(/class="[^"]*\b(?:q-(?!sheet|page q-sheet|sr")|wb-|wc-|wa-|sig-|nv-)/);

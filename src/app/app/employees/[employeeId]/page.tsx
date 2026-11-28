@@ -255,7 +255,7 @@ export default async function EmployeeProfilePage({
         <input type="hidden" name="employeeId" value={employee.id} />
         <ChoiceField listed label={t.positions} name="positionIds" empty={t.noPositions}
           choices={positions.filter(position => position.active || employee.positionIds.includes(position.id)).map(position => ({ value: position.id, label: position.name, checked: employee.positionIds.includes(position.id), help: position.active ? undefined : t.inactiveQualification }))} />
-        <ChoiceField listed label={t.workLocations} name="eligibleLocationIds"
+        <ChoiceField listed label={t.workLocations} name="eligibleLocationIds" allLocations
           choices={locations.filter(location => location.active || employee.eligibleLocationIds.includes(location.id) || employee.primaryLocationId === location.id).map(location => ({
             value: location.id, label: location.shortName, checked: employee.eligibleLocationIds.includes(location.id) || employee.primaryLocationId === location.id, disabled: employee.primaryLocationId === location.id,
             help: [!location.active ? t.inactive : null, employee.primaryLocationId === location.id ? t.theirLocation : null].filter(Boolean).join(" · ") || undefined }))} />

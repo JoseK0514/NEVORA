@@ -78,6 +78,7 @@ export const CURRENT_MIGRATIONS = [
   '0077_clocker_face_verification.sql',
   '0078_clocker_picker.sql',
   '0079_timecard_missing_shift_disposition.sql',
+  '0080_time_off_decline_note.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

@@ -69,12 +69,15 @@ it('renders Find cover and Copy previous week in Spanish', () => {
   expect(en(<ScheduleCopyForm command={{operationId: 'op', kind: 'PREVIOUS_WEEK', weekStart: '2026-12-07'} as never} actorId="a" />)).toContain('Copy previous week');
 });
 
-// English flag A2 (Nov 26, 2026): the edit form's save button holds "Saving…" at its resting width in both languages.
-it('reserves room for pending feedback on the shift editor in both languages, not on Add shift', () => {
-  const editor = <ScheduleShiftForm {...formProps} mode="edit" />;
-  const spanish = renderToStaticMarkup(<PortalLangProvider lang="es">{editor}</PortalLangProvider>);
-  expect(spanish).toContain('<span aria-hidden="true">Guardando…</span>');
-  expect(spanish).toContain('<span>Guardar</span>');
-  expect(renderToStaticMarkup(editor)).toContain('<span aria-hidden="true">Saving…</span>');
-  expect(renderToStaticMarkup(<PortalLangProvider lang="es"><ScheduleShiftForm {...formProps} /></PortalLangProvider>)).not.toContain('c-shift__save-label');
+it.each(['add', 'edit'] as const)('reserves space for the localized saving state on both %s shift buttons', mode => {
+  for (const lang of ['en', 'es'] as const) {
+    const html = renderToStaticMarkup(<PortalLangProvider lang={lang}><ScheduleShiftForm {...formProps} mode={mode} /></PortalLangProvider>);
+    const buttons = html.match(/<button[^>]*type="submit"[^>]*>[\s\S]*?<\/button>/g) ?? [];
+    expect(buttons).toHaveLength(2);
+    for (const button of buttons) {
+      expect(button).toContain('class="b-busy"');
+      expect(button).not.toContain('aria-busy="true"');
+      expect(button).toContain(SCHEDULE_COPY[lang].shiftForm.saving);
+    }
+  }
 });

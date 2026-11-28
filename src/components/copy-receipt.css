@@ -17,6 +17,7 @@
 :is(#c-root, html) .c-copy .c-copy__group + .c-copy__group { box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-copy .c-copy__kind { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 12px var(--b-inset, 16px) 4px; font-size: 0.9375rem; line-height: 1.25rem; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-copy .c-copy__warn { width: 1.125rem; height: 1.125rem; margin-top: 0.0625rem; flex: none; color: var(--b-amber, #8A4B00); }
+:is(#c-root, html) .c-copy .c-copy__warn--limit { color: var(--b-amber-solid); }
 :is(#c-root, html) .c-copy .c-copy__group .c-rows > li:first-child > .c-row { box-shadow: none; }
 :is(#c-root, html) .c-copy .c-copy__group .c-row__title { white-space: normal; }
 :is(#c-root, html) .c-copy .c-copy__group .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; font-variant-numeric: tabular-nums; }

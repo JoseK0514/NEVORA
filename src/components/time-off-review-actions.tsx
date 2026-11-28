@@ -4,8 +4,7 @@ import { useFormStatus } from "react-dom";
 import { useKeepHeight } from "./wave-a/keep-height";
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
-import { useEffect } from "react";
-import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { LeaveDeclineAsk } from "@/components/leave-decline-ask";
 import { useAskStep } from "@/components/owner-b/ask-step";
 import { firstName } from "@/components/time-off-waiting-list";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
@@ -20,14 +19,11 @@ export function TimeOffReviewActions({ name, quiet = false, corp = false }: { na
   const ASK = t.ask;
   const decline = useKeepHeight<HTMLButtonElement>(pending);
   const approve = useKeepHeight<HTMLButtonElement>(pending);
-  // Jose (Nov 21, 2026): Decline asks first here too, in the block the Waiting list and Things to do use. Decline opens
-  // the question and sends nothing; the question's Decline is the same submit (decision=DENIED) as before. Approve
-  // stays one tap. Once the decision is out the buttons are back with "Declining…", as they were.
-  const { open, ask, keep, done: closeAsk, titleRef, openerRef, mark } = useAskStep();
-  useEffect(() => { if (pending) closeAsk(); }, [pending, closeAsk]);
+  // Keep the decline confirmation in place while its form action is saving.
+  const { open, ask, keep, titleRef, openerRef, mark } = useAskStep();
   const who = name ?? t.thisPerson;
-  if (open && !pending) return <DecisionAsk className="tod-ask" titleRef={titleRef} groupLabel={t.declineForAsk(who)} question={ASK.question} consequence={name ? ASK.consequence(firstName(name)) : ASK.consequenceAnyone}
-    keep={ASK.keep} keepLabel={name ? t.keepFor(name) : undefined} onKeep={keep} go={ASK.decline} goLabel={name ? t.declineFor(name) : undefined} goValue="DENIED" />;
+  if (open || (pending && decision === "DENIED")) return <LeaveDeclineAsk className="tod-ask" titleRef={titleRef} groupLabel={t.declineForAsk(who)} question={ASK.question} consequence={name ? ASK.consequence(firstName(name)) : ASK.consequenceAnyone}
+    keep={ASK.keep} keepLabel={name ? t.keepFor(name) : undefined} onKeep={keep} go={ASK.decline} goLabel={name ? t.declineFor(name) : undefined} />;
   // Release 1 (board O-RequestDetail): Decline (outline) and Approve (teal) side by side, full width, 44px.
   if (corp) return <div className="c-btns" aria-busy={pending}>
     <button ref={openerRef} className="c-btn c-btn--secondary b-rowact b-rowact--quiet" type="button" onClick={ask} disabled={pending} aria-label={name && !pending ? t.declineFor(name) : undefined}>{pending && decision === "DENIED" ? t.declining : t.decline}</button>

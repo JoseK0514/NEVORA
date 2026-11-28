@@ -2,14 +2,16 @@
 
 import { FormDiscardGuard } from "./kit/discard-dialog";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { ConfigurationForm, type ConfigurationResult } from "./configuration-form";
 import { designatedLeadAfterEmployeeChange, positionAfterEmployeeChange } from "./shift-assignment-fields";
-import { addDays, formatTime, isValidIsoDate } from "../lib/date-utils";
+import { shiftFieldName, shiftFormEntry } from "../lib/scheduling/shift-form-entry";
+import { addDays, isValidIsoDate } from "../lib/date-utils";
+import { timeChoices } from "../lib/scheduling/shift-time-choices";
 import type { Position } from "../lib/domain";
 import type {ShiftFormEmployee} from '../lib/scheduling/shift-form-employee';
 import { CorpFormFooter } from "./corp/corp";
-import { BCallout } from "./owner-b/b-kit";
+import { BBusyLabel, BCallout } from "./owner-b/b-kit";
 import "./schedule-shift-form.css";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
 import { scheduleCopy } from "./schedule-copy";
@@ -30,16 +32,6 @@ import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 
 
 const initialsOf = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
-const QUARTERS = Array.from({ length: 96 }, (_, index) => `${String(Math.floor(index / 4)).padStart(2, "0")}:${String((index % 4) * 15).padStart(2, "0")}`);
-
-/** Quarter hours, plus a saved time that isn't on a quarter so it stays as it was. */
-function timeChoices(current: string, time: (value: string) => string = formatTime) {
-  const list = current && !QUARTERS.includes(current) ? [...QUARTERS, current].sort() : QUARTERS;
-  // Review B2 (NV-227): the list starts at 6:00 AM (the working day), so 9:00 AM is 12 steps away, not 36; it wraps to the
-  // night hours at the end. Typeahead still works.
-  const first = list.findIndex(value => value >= "06:00");
-  return [...list.slice(first), ...list.slice(0, first)].map(value => ({ value, label: time(value) }));
-}
 /** Start plus eight hours, on the 24-hour clock ("09:00" → "17:00", "20:00" → "04:00"). */
 function eightHoursAfter(start: string) {
   const [hours, minutes] = start.split(":").map(Number);
@@ -52,6 +44,7 @@ export type ShiftFormChoice = ShiftFormEmployee & { locationIds?: string[] };
 export type ScheduleShiftFormProps = {
   mode: "add" | "edit";
   formId: string;
+  allowBatch?: boolean;
   action: (data: FormData) => Promise<ConfigurationResult>;
   employees: ShiftFormChoice[];
   positions: Pick<Position, "id" | "name" | "active">[];
@@ -90,13 +83,10 @@ export type ScheduleShiftFormProps = {
   footer?: ReactNode;
 };
 
-export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
-  const { mode, formId, employees, positions, weekStart } = props;
-  const lang = usePortalLang();
-  // English flag A2 (Nov 26, 2026): Edit shift says "Saving…" in its button, at its resting width, in both languages.
-  const editFeedback = mode === "edit";
-  const [saving, setSaving] = useState(false);
-  const words = scheduleCopy(lang), w = words.shiftForm, dayText = words.dayText;
+function ShiftFields({ props, row, focusDate }: { props: ScheduleShiftFormProps; row: number; focusDate: boolean }) {
+  const { formId, employees, positions, weekStart } = props;
+  const words = scheduleCopy(usePortalLang()), w = words.shiftForm, dayText = words.dayText;
+  const field = (name: string) => shiftFieldName(row, name);
   const everyone = employees.filter(item => item.active);
   const [person, setPerson] = useState(props.employeeId ?? "");
   const [position, setPosition] = useState(props.positionId ?? "");
@@ -116,15 +106,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
   const days = Array.from({ length: 7 }, (_, index) => addDays(weekStart, index));
   const overnight = !!start && !!end && end < start;
   const nextDay = overnight && isValidIsoDate(day) ? dayText(addDays(day, 1)) : null;
-  const title = mode === "edit" ? w.editShift : w.addShift;
   const id = (field: string) => `${formId}-${field}`;
   const midnightKept = !!props.keepMidnightEnd && props.endTime === "24:00" && end === "00:00";
   const fixedHelp = props.fixedLocationHelp === undefined ? w.fixedHelp : props.fixedLocationHelp;
-
-  const saveLabel = (resting: string) => editFeedback ? <span className="c-shift__save-label">
-    <span aria-hidden="true">{resting}</span><span aria-hidden="true">{w.saving}</span>
-    <span>{saving ? w.saving : resting}</span>
-  </span> : resting;
 
   const changePerson = (next: string) => {
     setPerson(next);
@@ -137,29 +121,13 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
     if (person && !everyone.some(item => item.id === person && worksAt(item, next))) changePerson("");
   };
 
-  return <div className="c-shift">
-    {/* A sheet covers the tab bar (the shell hides it while a sheet page is open). */}
-    <span className="q-page" data-q-sheet="" hidden />
-    <header className="c-shift__head">
-      <Link className="c-shift__cancel c-only-phone" href={props.cancelHref}>{w.cancel}</Link>
-      {/* Nov 1 upscale: the shift's state is the title's subtitle (no pill alone above the form). */}
-      {props.subtitle ? <span className="c-shift__titles"><h1 className="c-shift__title">{title}</h1><span className="c-shift__sub">{props.subtitle}</span></span>
-        : <h1 className="c-shift__title">{title}</h1>}
-      <button type="submit" form={formId} className="c-shift__save c-only-phone" disabled={!!props.blocked || saving}>{saveLabel(w.save)}</button>
-    </header>
-    <ConfigurationForm pendingFeedback={editFeedback ? {label: w.saving, onChange: setSaving, lang} : undefined} action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form" holdAfterUnconfirmed={props.holdAfterUnconfirmed}>
-      {Object.entries(props.hidden).map(([field, value]) => <input key={field} type="hidden" name={field} value={value} />)}
-      {/* Premium pass (Nov 21, 2026; Jose's board pick 3A): the kit's red note, not a pink box. Words and alert role unchanged. */}
-      {props.blocked ? <BCallout tone="red" role="alert">{props.blocked}</BCallout> : null}
-      {props.error ? <BCallout tone="red" role="alert" title={props.error.title}>{props.error.body}</BCallout> : null}
-      {props.status ?? null}
-
+  return <>
       <div className="c-field">
         <label className="c-field__label" htmlFor={id("person")}>{w.person}</label>
         <span className="c-shift__control c-shift__person">
           {/* Review B2 (NV-325): before a person is chosen, a person glyph (an empty grey disc read as a broken image). */}
           <span className={name ? "c-av" : "c-av c-av--grey"} aria-hidden="true">{name ? initialsOf(name) : <UserIcon size={16} weight="bold" />}</span>
-          <select id={id("person")} className="c-in" name="employeeId" value={person} required autoComplete="off" onChange={event => { changePerson(event.target.value); }}>
+          <select id={id("person")} className="c-in" name={field("employeeId")} value={person} required autoComplete="off" onChange={event => { changePerson(event.target.value); }}>
             <option value="" disabled>{w.chooseSomeone}</option>
             {active.map(item => <option key={item.id} value={item.id}>{`${item.firstName} ${item.lastName}`}</option>)}
           </select>
@@ -180,26 +148,26 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
               <span className="c-readonly"><input id={id("location")} className="c-in c-shift__fixed" value={props.fixedLocation} readOnly tabIndex={-1} aria-describedby={fixedHelp ? id("location-help") : undefined} /><LockSimpleIcon className="c-readonly__lock" size={16} weight="bold" aria-hidden="true" /></span>
               {fixedHelp ? <span className="c-field__help" id={id("location-help")}>{fixedHelp}</span> : null}
             </>
-            : <><select id={id("location")} className={location ? "c-in" : "c-in c-shift__empty"} name="locationId" value={location} required onChange={event => { changeLocation(event.target.value); }}>
+            : <><select id={id("location")} className={location ? "c-in" : "c-in c-shift__empty"} name={field("locationId")} value={location} required onChange={event => { changeLocation(event.target.value); }}>
               <option value="" disabled></option>
               {(props.locations ?? []).map(item => <option key={item.id} value={item.id}>{item.shortName}</option>)}
             </select></>}
         </div>
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("position")}>{w.position}</label>
-          <select id={id("position")} className="c-in" name="positionId" value={position} onChange={event => setPosition(event.target.value)}>
+          <select id={id("position")} className="c-in" name={field("positionId")} value={position} onChange={event => setPosition(event.target.value)}>
             <option value="">{w.none}</option>
             {choices.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
             {retained ? <option value={position} disabled>{w.unavailable(positions.find(item => item.id === position)?.name)}</option> : null}
           </select>
-          {retained ? <input type="hidden" name="positionId" value={position} /> : null}
+          {retained ? <input type="hidden" name={field("positionId")} value={position} /> : null}
         </div>
       </div>
 
       <div className="c-field">
         <label className="c-field__label" htmlFor={id("date")}>{w.date}</label>
         <span className="c-shift__control c-shift__date">
-          <select id={id("date")} className="c-in" name="date" value={day} required onChange={event => { setDay(event.target.value); }}>
+          <select autoFocus={focusDate} id={id("date")} className="c-in" name={field("date")} value={day} required onChange={event => { setDay(event.target.value); }}>
             {!days.includes(day) ? <option value={day} disabled>{isValidIsoDate(day) ? dayText(day) : w.choose}</option> : null}
             {days.map(value => <option key={value} value={value}>{dayText(value)}</option>)}
           </select>
@@ -209,37 +177,104 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
       <div className="c-shift__pair">
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("start")}>{w.start}</label>
-          <select id={id("start")} className={start ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name="startTime" value={start} required onChange={event => { const next = event.target.value; setStart(next); if (!end && next) setEnd(eightHoursAfter(next)); }}>
+          <select id={id("start")} className={start ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name={field("startTime")} value={start} required onChange={event => { const next = event.target.value; setStart(next); if (!end && next) setEnd(eightHoursAfter(next)); }}>
             <option value="" disabled></option>
             {timeChoices(start, words.time).map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </div>
         <div className="c-field">
           <label className="c-field__label" htmlFor={id("end")}>{w.end}</label>
-          <select id={id("end")} className={end ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name={midnightKept ? undefined : "endTime"} value={end} required aria-describedby={nextDay ? id("next-day") : undefined} onChange={event => { setEnd(event.target.value); }}>
+          <select id={id("end")} className={end ? "c-in c-shift__time" : "c-in c-shift__time c-shift__empty"} name={midnightKept ? undefined : field("endTime")} value={end} required aria-describedby={nextDay ? id("next-day") : undefined} onChange={event => { setEnd(event.target.value); }}>
             <option value="" disabled></option>
             {timeChoices(end, words.time).map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
-          {midnightKept ? <input type="hidden" name="endTime" value="24:00" /> : null}
+          {midnightKept ? <input type="hidden" name={field("endTime")} value="24:00" /> : null}
         </div>
       </div>
       {nextDay ? <p className="c-field__help c-shift__next" id={id("next-day")} aria-live="polite">{w.ends(nextDay)}</p> : null}
 
       <label className="c-shift__lead">
         <span className="c-shift__lead-text"><b>{w.shiftLead}</b><span>{w.leadHelp}</span></span>
-        <input type="checkbox" role="switch" className="c-switch" name="isDesignatedLead" checked={lead} onChange={event => setLead(event.target.checked)} />
+        <input type="checkbox" role="switch" className="c-switch" name={field("isDesignatedLead")} checked={lead} onChange={event => setLead(event.target.checked)} />
       </label>
 
       <div className="c-field">
         <label className="c-field__label" htmlFor={id("note")}>{w.note}</label>
-        <textarea id={id("note")} className="c-in c-shift__note" name="notes" rows={1} defaultValue={props.notes ?? ""} enterKeyHint="done" autoComplete="off"
+        <textarea id={id("note")} className="c-in c-shift__note" name={field("notes")} rows={1} defaultValue={props.notes ?? ""} enterKeyHint="done" autoComplete="off"
           placeholder={w.optional} />
       </div>
+
+  </>;
+}
+
+type RowDefaults = Pick<ScheduleShiftFormProps, "date" | "employeeId" | "locationId" | "startTime" | "endTime" | "positionId" | "isDesignatedLead" | "notes">;
+
+export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
+  const { mode, formId } = props;
+  const lang = usePortalLang();
+  const w = scheduleCopy(lang).shiftForm;
+  const [saving, setSaving] = useState(false);
+  const nextKey = useRef(1);
+  const [rows, setRows] = useState<{ key: number; defaults?: RowDefaults }[]>([{ key: 0 }]);
+  const batch = rows.length > 1;
+  const title = mode === "edit" ? w.editShift : w.addShift;
+  function addRow(form: HTMLFormElement | null) {
+    if (!form?.reportValidity()) return;
+    const last = shiftFormEntry(new FormData(form), rows.length - 1);
+    const tomorrow = addDays(last.date, 1);
+    const hasNextDay = tomorrow <= addDays(props.weekStart, 6);
+    const defaults = { ...last, notes: "", date: hasNextDay ? tomorrow : last.date,
+      startTime: hasNextDay ? last.startTime : "", endTime: hasNextDay ? last.endTime : "" };
+    setRows([...rows, { key: nextKey.current++, defaults }]);
+  }
+
+  return <div className="c-shift">
+    {/* A sheet covers the tab bar (the shell hides it while a sheet page is open). */}
+    <span className="q-page" data-q-sheet="" hidden />
+    <header className="c-shift__head">
+      <Link className="c-shift__cancel c-only-phone" href={props.cancelHref}>{w.cancel}</Link>
+      {/* Nov 1 upscale: the shift's state is the title's subtitle (no pill alone above the form). */}
+      {props.subtitle ? <span className="c-shift__titles"><h1 className="c-shift__title">{title}</h1><span className="c-shift__sub">{props.subtitle}</span></span>
+        : <h1 className="c-shift__title">{title}</h1>}
+      <button type="submit" form={formId} className="c-shift__save c-only-phone" disabled={!!props.blocked || saving} aria-busy={saving || undefined}>
+        <BBusyLabel busy={saving} busyLabel={w.saving}>{batch ? w.saveShifts(rows.length) : w.save}</BBusyLabel>
+      </button>
+    </header>
+    <ConfigurationForm pendingFeedback={{ label: w.saving, onChange: setSaving, lang }} action={props.action} reviewedShiftVersion={props.reviewedShiftVersion} id={formId} className="c-shift__form" holdAfterUnconfirmed={props.holdAfterUnconfirmed || batch}
+      unconfirmedCheck={batch ? { title: w.checkBatch, label: w.checkWeek, href: `/app/schedule?week=${props.weekStart}` } : undefined}>
+      {Object.entries(props.hidden).map(([field, value]) => <input key={field} type="hidden" name={field} value={value} />)}
+      {/* Premium pass (Nov 21, 2026; Jose's board pick 3A): the kit's red note, not a pink box. Words and alert role unchanged. */}
+      {props.blocked ? <BCallout tone="red" role="alert">{props.blocked}</BCallout> : null}
+      {props.error ? <BCallout tone="red" role="alert" title={props.error.title}>{props.error.body}</BCallout> : null}
+      {props.status ?? null}
+
+      {batch && <><input type="hidden" name="shiftCount" value={rows.length} /><input type="hidden" name="batchLanguage" value={lang} /></>}
+      {rows.map((row, index) => {
+        const rowId = row.key ? `${formId}-${row.key}` : formId;
+        const fields = <ShiftFields key={row.key} props={{ ...props, ...row.defaults, formId: rowId }} row={index} focusDate={row.key !== 0} />;
+        if (!props.allowBatch) return fields;
+        return <div key={row.key} className="c-shift__batch-row" role={batch ? "group" : undefined} aria-labelledby={batch ? `${rowId}-heading` : undefined}>
+          {batch && <div className="c-shift__batch-heading">
+            <h2 id={`${rowId}-heading`}>{w.shiftNumber(index + 1)}</h2>
+            <button type="button" className="c-btn c-btn--secondary" aria-label={w.removeShift(index + 1)}
+              onClick={() => {
+                const neighbor = rows[index + 1] ?? rows[index - 1];
+                setRows(rows.filter(item => item.key !== row.key));
+                requestAnimationFrame(() => document.getElementById(neighbor.key ? `${formId}-${neighbor.key}-date` : `${formId}-date`)?.focus());
+              }}>{w.remove}</button>
+          </div>}
+          {fields}
+        </div>;
+      })}
+      {props.allowBatch && !props.blocked && <button type="button" className="c-btn c-btn--secondary c-shift__add-another"
+        onClick={event => addRow(event.currentTarget.form)}>{w.addAnother}</button>}
 
       {/* Tablets and desktop: the one Save, with Cancel, in the card's footer (phones use the header's). */}
       <CorpFormFooter>
         <Link className="c-btn c-btn--secondary b-rowact b-rowact--quiet" href={props.cancelHref}>{w.cancel}</Link>
-        <button type="submit" className="c-btn c-shift__submit" disabled={!!props.blocked || saving}>{saveLabel(mode === "edit" ? w.saveChanges : w.saveShift)}</button>
+        <button type="submit" className="c-btn c-shift__submit" disabled={!!props.blocked || saving} aria-busy={saving || undefined}>
+          <BBusyLabel busy={saving} busyLabel={w.saving}>{mode === "edit" ? w.saveChanges : batch ? w.saveShifts(rows.length) : w.saveShift}</BBusyLabel>
+        </button>
       </CorpFormFooter>
     </ConfigurationForm>
     {/* Leaving with a shift that is not saved asks first (Nov 21, 2026). A save leaves through the server's redirect, which

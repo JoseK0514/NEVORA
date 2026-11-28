@@ -107,7 +107,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
   const open = {
     deadline: Boolean(params.deadlineSaved || params.open === "deadline" || ["INVALID_DEADLINE", "DEADLINE_WORKSPACE_CHANGED", "INVALID_SHIFT"].includes(params.error ?? "")),
     staffing: params.error === "invalid_staffing",
-    hours: params.error === "invalid_hours" || Boolean(params.employeeId),
+    hours: params.open === "hours" || params.error === "invalid_hours" || Boolean(params.employeeId),
     coverage: Boolean(params.windowSaved || params.windowDeleted || ["duplicate_window", "invalid_window"].includes(params.error ?? "")),
   };
 

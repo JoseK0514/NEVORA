@@ -349,3 +349,24 @@
     .c-rules[lang="es"] #coverage-staffing .c-rf-check { justify-content: flex-start; }
   }
 }
+
+:is(#c-root, html) .c-tpl .tpl-open { align-self: flex-start; display: inline-flex; align-items: center; min-height: 44px; }
+:is(#c-root, html) .c-tpl :is(.tpl-tools, .tpl-buttons, .tpl-line) { display: flex; align-items: center; gap: 8px; }
+:is(#c-root, html) .c-tpl .tpl-tools { flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+:is(#c-root, html) .c-tpl .tpl-buttons { flex-wrap: wrap; justify-content: flex-end; }
+:is(#c-root, html) .c-tpl .tpl-scope { margin: 0 0 14px; color: var(--c-ink2); }
+:is(#c-root, html) .c-tpl :is(.tpl-row, .tpl-notice) { padding: 12px var(--b-inset, 16px); overflow-wrap: anywhere; }
+:is(#c-root, html) .c-tpl .tpl-row + .tpl-row { border-top: 1px solid var(--c-line); }
+:is(#c-root, html) .c-tpl .tpl-line { justify-content: space-between; align-items: start; }
+:is(#c-root, html) .c-tpl .tpl-line > button { flex: none; }
+:is(#c-root, html) .c-tpl .tpl-line p { font-size: .875rem; line-height: 1.3rem; margin: 2px 0 0; color: var(--c-ink2); }
+:is(#c-root, html) .c-tpl .tpl-note { white-space: pre-wrap; }
+:is(#c-root, html) .c-tpl .tpl-editor { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--c-line); }
+:is(#c-root, html) .c-tpl .tpl-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-width: 0; border: 0; margin: 0 0 16px; padding: 0; }
+:is(#c-root, html) .c-tpl .tpl-fields[hidden] { display: none; }
+:is(#c-root, html) .c-tpl .tpl-fields legend { padding: 0 0 12px; font-weight: 600; }
+:is(#c-root, html) .c-tpl .tpl-fields .c-in { min-width: 0; width: 100%; min-height: 44px; font-size: 1rem; }
+:is(#c-root, html) .c-tpl .tpl-lead { align-self: center; }
+@media (max-width: 480px) {
+  :is(#c-root, html) .c-tpl .tpl-fields { grid-template-columns: minmax(0, 1fr); }
+}

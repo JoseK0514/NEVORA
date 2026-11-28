@@ -1,6 +1,7 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
+import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { CorpCard, CorpRow, CorpRows } from "@/components/corp/corp";
 import { BCallout, BChip, BState } from "@/components/owner-b/b-kit";
 import { durationSentence } from "@/lib/duration-format";
@@ -16,10 +17,25 @@ import { costCopy, type CostLang } from "./cost-copy";
 
 type Row = { id: string; name: string; state: "loading" } | { id: string; name: string; state: "ready"; cost: LaborCost } | { id: string; name: string; state: "unavailable" };
 
-export function LaborCostCard({ weekStart, locations, lang = "en" }: { weekStart: string; locations: { id: string; name: string }[]; lang?: CostLang }) {
+export function LaborCostCard({ preferenceScope, weekStart, locations, lang = "en" }: { preferenceScope: string; weekStart: string; locations: { id: string; name: string }[]; lang?: CostLang }) {
   const t = costCopy(lang);
   const [rows, setRows] = useState<Row[]>(locations.map(location => ({ ...location, state: "loading" as const })));
   const [hidden, setHidden] = useState(false);
+  const dismissalKey = `nevora:schedule:no-pay-rates:${preferenceScope}`;
+  const [dismissedKey, setDismissedKey] = useState<string | null>(null);
+  const basisSummary = useRef<HTMLElement>(null);
+  useEffect(() => {
+    try {
+      setDismissedKey(localStorage.getItem(dismissalKey) === "1" ? dismissalKey : null);
+    } catch { /* Storage can be blocked on shared devices. */ }
+  }, [dismissalKey]);
+
+  function dismissWarning() {
+    setDismissedKey(dismissalKey);
+    try { localStorage.setItem(dismissalKey, "1"); } catch { /* Still dismiss for this view. */ }
+    basisSummary.current?.focus({ preventScroll: true });
+  }
+
   const [refreshing, setRefreshing] = useState(false);
   const key = locations.map(location => location.id).join(",");
 
@@ -83,10 +99,15 @@ export function LaborCostCard({ weekStart, locations, lang = "en" }: { weekStart
     {failed ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ label: t.tryAgain, busy: refreshing, busyLabel: t.checking, onClick: refresh }} />
       : <div className="lc">
         <div role="status" aria-busy={loading || undefined} className="lc-sr">{loading ? t.loading : ""}</div>
-        {noRatesAnywhere ? <div className="lc-none"><BCallout tone="amber" icon="check" title={t.noRatesTitle} action={{ label: t.openTeam, href: "/app/employees" }}>{t.noRatesBody}</BCallout></div>
-          : <CorpRows label={t.title}>{rows.map(line)}</CorpRows>}
+        {noRatesAnywhere && dismissedKey !== dismissalKey && <div className="lc-none">
+          <BCallout tone="amber" icon="check" title={t.noRatesTitle} action={{ label: t.openTeam, href: "/app/employees" }}>{t.noRatesBody}</BCallout>
+          <button type="button" className="lc-dismiss" aria-label={t.dismissWarning} title={t.dismissWarning} onClick={dismissWarning}>
+            <XIcon size={18} weight="bold" aria-hidden="true" />
+          </button>
+        </div>}
+        {!noRatesAnywhere && <CorpRows label={t.title}>{rows.map(line)}</CorpRows>}
         <div className="lc-foot">
-          <details className="lc-basis"><summary>{t.included}</summary><p>{t.basis}</p></details>
+          <details className="lc-basis"><summary ref={basisSummary}>{t.included}</summary><p>{t.basis}</p></details>
           <p className="lc-meta">{observed && zone ? t.observed(new Intl.DateTimeFormat(t.locale, { timeZone: zone, hour: "numeric", minute: "2-digit" }).format(new Date(observed))) : null}
             <button type="button" className="lc-refresh" onClick={refresh} disabled={refreshing || loading} aria-busy={refreshing || undefined}>
               <ArrowClockwiseIcon size={14} weight="bold" aria-hidden="true" />{refreshing ? t.checking : t.refresh}</button></p>

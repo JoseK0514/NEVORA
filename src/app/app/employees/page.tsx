@@ -7,10 +7,7 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
 import {requireSessionMutationProof} from '@/lib/auth/session';
 import { EmployeeDirectory } from "@/components/employee-directory";
-import {readWorkspaceRoutingConfig} from '@/lib/workspace-routing/config.server';
-/** The import page answers "not available" unless company workspaces are routed (the roster routes read the same
- * configuration first), so Team offers the link only where the page can work. */
-function rosterImportAvailable(){try{readWorkspaceRoutingConfig();return true;}catch{return false;}}
+import {rosterImportAvailable} from '@/lib/onboarding/roster-import-available.server';
 import { currentPresentation } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";

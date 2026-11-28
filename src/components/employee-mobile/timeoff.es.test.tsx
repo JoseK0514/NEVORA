@@ -50,6 +50,9 @@ it('the shared parts speak Spanish when asked and English by default',()=>{
  expect(timeOffDecision(decided,'America/New_York').detail?.replace(/ /g,' ')).toBe('Nov 3, 1:00 PM');
  const card=renderToStaticMarkup(<TimeOffRequestCard request={decided} zone="America/New_York" lang="es"/>).replace(/ /g,' ');
  expect(card).toContain('jue, 12 nov');expect(card).toContain('Aprobada por Ana Ficticia');expect(card).not.toContain('Approved');
+ const declinedCard=renderToStaticMarkup(<TimeOffRequestCard request={{...decided,status:'DENIED',declineNote:'Ya hay dos personas de vacaciones.'}} zone="America/New_York" lang="es"/>);
+ expect(declinedCard).toContain('Motivo del rechazo');
+ expect(declinedCard).toContain('Ya hay dos personas de vacaciones.');
  const row=renderToStaticMarkup(<TimeOffListRow request={{...decided,status:'CANCELLED'}} href="/x" lang="es"/>);
  expect(row).toContain('>Retirada<');
  expect(renderToStaticMarkup(<TimeOffListRow request={{...decided,status:'CANCELLED'}} href="/x"/>)).toContain('>Withdrawn<');

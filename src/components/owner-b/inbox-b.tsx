@@ -11,7 +11,7 @@ import { PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr/PencilSimple";
 import { CalendarMinusIcon } from "@phosphor-icons/react/dist/ssr/CalendarMinus";
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
-import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { LeaveDeclineAsk } from "@/components/leave-decline-ask";
 import { CorpCount } from "@/components/corp/corp";
 import { ASK, firstName } from "@/components/time-off-waiting-list";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
@@ -281,8 +281,8 @@ function Decide({ name, approve, reviewHref, c, lang }: { name: string; approve:
   useEffect(() => { if (confirming !== null) (confirming ? ask : pair).current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
   // Final polish (confirmations A #6, #7): the question in words, in the block Cancel time off uses (decision-parts.tsx).
   const ask_ = lang === "es" ? ASK_ES : ASK;
-  if (confirming && !pending) return <DecisionAsk groupRef={ask} groupLabel={c.declineAsk(name)} question={ask_.question} consequence={ask_.consequence(firstName(name))}
-    keep={ask_.keep} keepLabel={c.keepFor(name)} onKeep={() => setConfirming(false)} go={ask_.decline} goLabel={c.declineFor(name)} goValue="DENIED" />;
+  if (confirming || (pending && decision === "DENIED")) return <LeaveDeclineAsk lang={lang} groupRef={ask} groupLabel={c.declineAsk(name)} question={ask_.question} consequence={ask_.consequence(firstName(name))}
+    keep={ask_.keep} keepLabel={c.keepFor(name)} onKeep={() => setConfirming(false)} go={ask_.decline} goLabel={c.declineFor(name)} />;
   return <span ref={pair} className="b-decide" aria-busy={pending}>
     <BButton kind="quiet" onClick={() => setConfirming(true)} disabled={pending} busy={pending && decision === "DENIED"} busyLabel={c.declining} label={pending ? undefined : c.declineFor(name)}>{c.decline}</BButton>
     {/* Approve only once the schedule check came back with no overlap; otherwise its page shows the shifts first. */}

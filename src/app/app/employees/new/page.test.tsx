@@ -6,8 +6,9 @@ const access=rs.hoisted(()=>({denied:false}));
 rs.mock('@/lib/company-access/operational-scope.server',()=>({withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>access.denied?{state:'unavailable',reason:'access_denied'}:{state:'ready',data:await load(),coverage:{kind:'COMPANY',locationIds:[]},authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000}}));
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'reviewer',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 
-const m = rs.hoisted(() => ({ role: "MANAGER", noLocations: false }));
-beforeEach(() => { m.role = "MANAGER"; m.noLocations = false; access.denied=false; });
+const m = rs.hoisted(() => ({ role: "MANAGER", noLocations: false, importAvailable: false }));
+rs.mock("@/lib/onboarding/roster-import-available.server", () => ({ rosterImportAvailable: () => m.importAvailable }));
+beforeEach(() => { m.importAvailable = false; m.role = "MANAGER"; m.noLocations = false; access.denied=false; });
 
 rs.mock("next/link", () => ({
   default: ({ href, children, ...props }: React.ComponentProps<"a">) =>
@@ -112,4 +113,14 @@ it("offers the three optional employment dates on step 1, none required", async 
   }
   expect(html).toContain("Termination date (optional)");
   expect(html).toContain("It doesn’t deactivate anyone.");
+});
+
+
+it.each([
+  ["OWNER", true, true], ["MANAGER", true, false], ["OWNER", false, false],
+] as const)("shows the roster import shortcut for role %s and availability %s", async (role, available, visible) => {
+  m.role = role;
+  m.importAvailable = available;
+  const html = renderToStaticMarkup(await NewEmployeePage({ searchParams: Promise.resolve({}) }));
+  expect(html.includes('href="/app/employees/import"')).toBe(visible);
 });

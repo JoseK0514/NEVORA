@@ -29,7 +29,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .lc { display: block; }
 :is(#c-root, html) .app-shell[data-nv-b] #schedule-labor-cost .lc-head { display: inline-flex; align-items: center; gap: var(--b-space-8); }
 :is(#c-root, html) .app-shell[data-nv-b] #schedule-labor-cost .lc-total { font-size: var(--b-fs-title, 20px); line-height: 1.2; font-weight: 700; color: var(--b-ink); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
-:is(#c-root, html) .app-shell[data-nv-b] .lc .lc-none { padding: var(--b-space-4) var(--b-inset) var(--b-space-4); }
+:is(#c-root, html) .app-shell[data-nv-b] .lc .lc-none { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--b-space-8); padding: var(--b-space-4) var(--b-inset) var(--b-space-4); }
 :is(#c-root, html) .app-shell[data-nv-b] .lc details.lc-basis > summary { display: inline-flex; align-items: center; min-height: 44px; color: var(--b-teal); font-size: var(--b-fs-body-sm); font-weight: 600; cursor: pointer; list-style: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .lc details.lc-basis > summary::-webkit-details-marker { display: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .lc details.lc-basis > summary:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: var(--b-radius-small); }
@@ -44,9 +44,13 @@
 :is(#c-root, html) .app-shell[data-nv-b] .lc .lc-skel__bar { display: block; width: 40%; height: 12px; border-radius: var(--b-radius-pill); background: var(--b-line); }
 :is(#c-root, html) .app-shell[data-nv-b] .lc .lc-skel__bar--v { width: 18%; }
 @layer nv-b {
-  html body .app-shell[data-nv-b] .lc button.lc-refresh { display: inline-flex !important; align-items: center !important; gap: 6px !important; min-height: 44px !important; margin: 0 !important; padding: 0 var(--b-space-8) !important;
+  html body .app-shell[data-nv-b] .lc :is(button.lc-refresh, button.lc-dismiss) { display: inline-flex !important; align-items: center !important; gap: 6px !important; min-height: 44px !important; margin: 0 !important; padding: 0 var(--b-space-8) !important;
     border: 0 !important; border-radius: var(--b-radius-small) !important; background: none !important; box-shadow: none !important; color: var(--b-teal) !important; font: 600 var(--b-fs-body-sm)/var(--b-lh-body-sm) Inter, system-ui, sans-serif !important; cursor: pointer !important; }
-  html body .app-shell[data-nv-b] .lc button.lc-refresh:focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  html body .app-shell[data-nv-b] .lc :is(button.lc-refresh, button.lc-dismiss):focus-visible { outline: var(--b-focus-width) solid var(--b-focus) !important; outline-offset: var(--b-focus-offset) !important; }
+  html body .app-shell[data-nv-b] .lc button.lc-dismiss { width: var(--b-target); min-width: var(--b-target); justify-content: center; }
+  @media (hover: hover) {
+    html body .app-shell[data-nv-b] .lc button.lc-dismiss:hover { background: var(--b-hover) !important; }
+  }
   html body .app-shell[data-nv-b] .lc button.lc-refresh:disabled { color: var(--b-disabled-ink) !important; cursor: default !important; }
 }
 @media (min-width: 768px) {

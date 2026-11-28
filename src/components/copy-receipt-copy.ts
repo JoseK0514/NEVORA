@@ -6,7 +6,7 @@ export type ReceiptLang = 'en' | 'es';
 const en = {
   weekCopied: 'Week copied', templateApplied: 'Template applied', nothingCopied: 'Nothing copied',
   shifts: (n: number) => `${n} ${n === 1 ? 'shift' : 'shifts'}`,
-  reviewSchedule: 'Review schedule', withWarnings: 'With warnings', allWithWarnings: 'All with warnings', notCopied: 'Not copied',
+  reviewHours: 'Review weekly limits', reviewSchedule: 'Review schedule', withWarnings: 'With warnings', allWithWarnings: 'All with warnings', notCopied: 'Not copied',
   schedule: 'Schedule', result: 'Result', openShift: 'Open shift', shift: 'Shift', allDay: 'All day',
   templateNoShifts: 'The template has no shifts', previousWeekNoShifts: 'The previous week has no shifts',
   templateChanged: 'The template changed while copying', previousWeekChanged: 'The previous week changed while copying',
@@ -34,7 +34,7 @@ const en = {
 const es: typeof en = {
   weekCopied: 'Semana copiada', templateApplied: 'Plantilla aplicada', nothingCopied: 'No se copió nada',
   shifts: (n: number) => `${n} ${n === 1 ? 'turno' : 'turnos'}`,
-  reviewSchedule: 'Revisar horario', withWarnings: 'Con advertencias', allWithWarnings: 'Todos con advertencias', notCopied: 'No copiados',
+  reviewHours: 'Revisar límites semanales', reviewSchedule: 'Revisar horario', withWarnings: 'Con advertencias', allWithWarnings: 'Todos con advertencias', notCopied: 'No copiados',
   schedule: 'Horario', result: 'Resultado', openShift: 'Turno disponible', shift: 'Turno', allDay: 'Todo el día',
   templateNoShifts: 'La plantilla no tiene turnos', previousWeekNoShifts: 'La semana anterior no tiene turnos',
   templateChanged: 'La plantilla cambió mientras se copiaba', previousWeekChanged: 'La semana anterior cambió mientras se copiaba',

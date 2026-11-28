@@ -13,6 +13,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { christmasBonusApplies } from "@/lib/reports/christmas-bonus";
 import { createEmployeeFormAction } from "@/app/app/employees/actions";
 
+import {rosterImportAvailable} from '@/lib/onboarding/roster-import-available.server';
 import {NewEmployeeForm} from "@/components/company-access/new-employee-form";
 import {readPageLang} from "@/lib/i18n/page-lang.server";
 import {EMPLOYEES_COPY} from "../employees-copy";
@@ -39,7 +40,7 @@ export default async function NewEmployeePage({
   return (
     <ScopedReadFrame observation={scopedObservation(source)}><CorpPage className="c-addemp c-sheetpage" labelledBy="new-employee-title">
       <SheetMarker />
-      <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction} bonusApplies={bonusApplies} notice={<>
+      <NewEmployeeForm canImport={session.role === "OWNER" && rosterImportAvailable()} actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction} bonusApplies={bonusApplies} notice={<>
         {params.error ? <p className="c-error" role="alert">{t.addErrors[params.error] ?? t.addIncomplete}</p> : null}
         {!activeLocations.length ? <p className="c-note" role="status">{session.role === "OWNER" ? <span>{t.addLocationFirst}{" "}<Link className="c-link c-link--l" href="/app/settings/locations">{t.locations}</Link></span> : t.askOwnerLocation}</p> : null}
       </>}/>

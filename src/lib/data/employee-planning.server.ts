@@ -32,7 +32,7 @@ export async function readEmployeePlanning(proof:SessionMutationProof,executor:S
   if(view==='timeoff'){
    const presentation=await readActivePresentation(workspace.id,guarded,{strict:true});enabled=presentation.modules.timeOff;
    const rows=enabled&&selection!=='new'?await listEmployeeTimeOffRequests(proof.employee.id,guarded,selection==='list'?undefined:selection):[];
-   const requests:PlanningRequest[]=rows.map(r=>({id:r.id,startDate:r.startDate,endDate:r.endDate,startTime:r.startTime??null,endTime:r.endTime??null,note:r.reason??null,status:r.status,createdAt:r.createdAt,reviewedAt:r.reviewedAt??null,reviewer:r.reviewerName??null,...(r.ptoPolicyId?{ptoPolicyId:r.ptoPolicyId,ptoMinutes:r.ptoMinutes}:{}),...(r.cancelledAt?{cancelledAt:r.cancelledAt}:{}),...(r.enteredBy?{enteredBy:r.enteredBy}:{})}));
+   const requests:PlanningRequest[]=rows.map(r=>({id:r.id,startDate:r.startDate,endDate:r.endDate,startTime:r.startTime??null,endTime:r.endTime??null,note:r.reason??null,...(r.declineNote?{declineNote:r.declineNote}:{}),status:r.status,createdAt:r.createdAt,reviewedAt:r.reviewedAt??null,reviewer:r.reviewerName??null,...(r.ptoPolicyId?{ptoPolicyId:r.ptoPolicyId,ptoMinutes:r.ptoMinutes}:{}),...(r.cancelledAt?{cancelledAt:r.cancelledAt}:{}),...(r.enteredBy?{enteredBy:r.enteredBy}:{})}));
    if((await readActivePresentation(workspace.id,guarded,{strict:true})).revision!==presentation.revision)throw Error('Modules changed');data={requests};
   }else{
    const [{basis}]=await guarded.query<{basis:string}>(planningBasis(proof.employee.id,selection));

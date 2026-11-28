@@ -139,6 +139,8 @@ it('time off request page: Decline asks first; the commit is the same decision=D
  expect(button(named('Approve time off for Ana Colon')).props).toMatchObject({type:'submit',name:'decision',value:'APPROVED'});
  tap('Decline time off for Ana Colon');
  expect(text()).toContain('Decline this request?');expect(text()).toContain('Ana is told it was declined.');expect(sends.leave).toHaveLength(0);
+ expect(all().find(n=>n.type==='textarea')?.props).toMatchObject({name:'declineNote',maxLength:500});
+ expect(text()).toContain('Note for the employee (optional)');
  expect(focused.at(-1)).toBe('Decline this request?');expect(buttons().map(n=>words(n))).toEqual(['Keep request','Decline']);
  tap('Keep time off request for Ana Colon');
  expect(asks()).toHaveLength(0);expect(sends.leave).toHaveLength(0);expect(focused.at(-1)).toBe('Decline time off for Ana Colon');

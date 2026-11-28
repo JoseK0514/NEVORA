@@ -74,10 +74,10 @@ describe('WagesScreen', () => {
 
 describe('LaborCostCard', () => {
   it('opens with its loading shape and the basis is named once loaded', () => {
-    const html = renderToStaticMarkup(<LaborCostCard weekStart="2026-11-16" locations={[{ id: 'loiza', name: 'Calle Loíza' }]} />);
+    const html = renderToStaticMarkup(<LaborCostCard preferenceScope="workspace:owner" weekStart="2026-11-16" locations={[{ id: 'loiza', name: 'Calle Loíza' }]} />);
     expect(html).toContain('Base scheduled pay');
     expect(html).toContain('Estimate');
     expect(html).toContain('aria-busy="true"');
-    expect(renderToStaticMarkup(<LaborCostCard lang="es" weekStart="2026-11-16" locations={[{ id: 'loiza', name: 'Calle Loíza' }]} />)).toContain('Pago base programado');
+    expect(renderToStaticMarkup(<LaborCostCard preferenceScope="workspace:owner" lang="es" weekStart="2026-11-16" locations={[{ id: 'loiza', name: 'Calle Loíza' }]} />)).toContain('Pago base programado');
   });
 });

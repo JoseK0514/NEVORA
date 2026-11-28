@@ -176,7 +176,7 @@ export default async function NewShiftPage({
   const blocked = !locations.length ? t.locationFirst : !employees.some(item => item.active) ? t.employeeFirst : undefined;
   return (<ScopedReadFrame observation={scopedObservation(source)}>
     <CorpPage className="c-shift-page" label={t.titleWithWeek(keepWhole(weekRange(weekStart, lang)))} lang={pageLang}>
-      <ScheduleShiftForm mode="add" formId={CREATE_SHIFT_FORM_ID} action={createShiftAction} employees={shiftFormEmployees(employees)} positions={positions}
+      <ScheduleShiftForm mode="add" formId={CREATE_SHIFT_FORM_ID} action={createShiftAction} allowBatch={proof.employee.role === "OWNER"} employees={shiftFormEmployees(employees)} positions={positions}
         locations={locations} weekStart={weekStart} date={date} employeeId={params.employeeId} positionId={params.positionId} locationId={locationId}
         startTime={params.start} endTime={params.end} isDesignatedLead={params.lead === "1"} hidden={{ weekStart }} cancelHref={cancelHref} blocked={blocked} />
     </CorpPage>

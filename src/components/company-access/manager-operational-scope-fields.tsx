@@ -1,5 +1,6 @@
 'use client';
 
+import { AllLocationsCheckbox } from "@/components/team/all-locations-checkbox";
 import {useId} from 'react';
 import type {OwnerScopeContext,ScopeSelection} from '@/lib/company-access/model';
 import styles from './company-access.module.css';
@@ -20,6 +21,8 @@ export function OperationalScopeSelectionFields({locations,value,onChange,disabl
   <label className={styles.choice}><input type="radio" name={id} checked={value?.mode==='COMPANY'} onChange={()=>onChange({mode:'COMPANY',locationIds:[]})}/><span><strong>{t.company}</strong><small>{t.companyHelp}</small></span></label>
   <label className={styles.choice}><input type="radio" name={id} checked={value?.mode==='LOCATIONS'} onChange={()=>onChange({mode:'LOCATIONS',locationIds:[]})}/><span><strong>{t.selected}</strong><small>{t.selectedHelp}</small></span></label>
   {value?.mode==='LOCATIONS'&&<div className={styles.locations} role="group" aria-label={t.group}>
+   <AllLocationsCheckbox lang={lang} ids={locations.map(location => location.id)} selected={value.locationIds} className={styles.choice}
+    onToggle={all => onChange({mode:'LOCATIONS',locationIds:all ? locations.map(location => location.id) : []})} />
    {locations.length?locations.map(location=><label key={location.id} className={styles.choice}><input type="checkbox" checked={value.locationIds.includes(location.id)} onChange={event=>onChange({mode:'LOCATIONS',locationIds:event.target.checked?[...value.locationIds,location.id]:value.locationIds.filter(id=>id!==location.id)})}/><span>{location.name}</span></label>):<p role="status">{t.noLocations}</p>}
   </div>}
   {error&&<p id={errorId} className="form-error" role="alert">{error}</p>}

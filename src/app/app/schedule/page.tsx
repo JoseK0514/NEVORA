@@ -620,7 +620,7 @@ export default async function SchedulePage({
           </CorpCard> : null}
           {planningWindow ? <PlanningWindowCard window={planningWindow} viewingWeek={weekStart} owner={session.role === "OWNER"} locationQuery={locationQuery} lang={costLang} /> : null}
           {/* SCRUM-214: the Owner's draft labor cost for the locations in view (base scheduled pay, an estimate). */}
-          {session.role === "OWNER" && !reviewDay ? <LaborCostCard key={`${weekStart}:${selectedLocation}`} weekStart={weekStart} lang={costLang}
+          {session.role === "OWNER" && !reviewDay ? <LaborCostCard key={`${workspace.id}:${session.id}:${weekStart}:${selectedLocation}`} preferenceScope={`${workspace.id}:${session.id}`} weekStart={weekStart} lang={costLang}
             locations={inView.map(location => ({ id: location.id, name: location.shortName }))} /> : null}
           {publicationReview || params.publishCheck || params.plan === "1" ? <section className="c-card c-sched-plan mws-planning manager-issue-target" id="schedule-planning" tabIndex={-1} aria-labelledby="schedule-planning-title">
             <div className="c-card__head"><h2 className="c-card__label" id="schedule-planning-title">{t.buildAndPublish}</h2></div>

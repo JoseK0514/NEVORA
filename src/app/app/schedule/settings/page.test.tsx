@@ -65,6 +65,12 @@ beforeEach(() => {
   );
 });
 
+it("opens weekly hour targets from the copy receipt", async () => {
+  const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({week: "2026-12-07", open: "hours"})}));
+  const hours = html.split("<details").find(group => group.includes('id="target-hours"'));
+  expect(hours?.split(">")[0]).toContain('open=""');
+});
+
 it("keeps every rule group and native fragment destination available from section navigation", async () => {
   const html = renderToStaticMarkup(await ScheduleSettingsPage({searchParams: Promise.resolve({})}));
   expect(html).toMatch(/<h1[^>]*>Scheduling rules<\/h1>/);

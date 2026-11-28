@@ -3,6 +3,7 @@ import {scopedObservation} from '@/lib/company-access/observation';
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import { ConfirmedCopy } from "@/components/schedule-copy-form";
 import { CopyNotFound, CopyReceiptView, CopyUnconfirmed } from "@/components/copy-receipt";
 import { requireSessionMutationProof } from "@/lib/auth/session";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
@@ -39,6 +40,7 @@ export default async function CopyReceiptPage({
   const {receipt,command}=source.data;
   // The scoped frame wraps the Corp page, so the phone band rules find the page's own title (one title, not two).
   return <ScopedReadFrame observation={scopedObservation(source)}>
+    {receipt && <ConfirmedCopy actorId={proof.employee.id} operationId={receipt.operationId} />}
     {receipt ? <CopyReceiptView receipt={receipt} lang={lang} /> : <CopyUnconfirmed command={command} actorId={proof.employee.id} lang={lang} />}
   </ScopedReadFrame>;
 }

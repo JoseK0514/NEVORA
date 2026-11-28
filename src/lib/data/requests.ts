@@ -25,6 +25,7 @@ export type TimeOffListItem = {
   startTime?: string;
   endTime?: string;
   reason?: string;
+  declineNote?: string;
   status: RequestStatus;
   createdAt: string;
   /** When the request was decided or withdrawn (the employee's own requests only). */
@@ -54,6 +55,7 @@ function mapRequest(row: unknown): TimeOffListItem {
     startTime: timeValue(item.start_time),
     endTime: timeValue(item.end_time),
     reason: item.reason ? String(item.reason) : undefined,
+    ...(item.status === 'DENIED' && item.decline_note ? { declineNote: String(item.decline_note) } : {}),
     status: item.status as RequestStatus,
     createdAt:Temporal.Instant.from(item.created_at instanceof Date?item.created_at.toISOString():String(item.created_at)).toString(),
     ...(item.requested_by_employee_id ? { submittedByEmployeeId: String(item.requested_by_employee_id) } : {}),
@@ -88,7 +90,7 @@ export async function listEmployeeTimeOffRequests(employeeId: string, executor?:
        r.reason,
        r.status,
        r.created_at,
-       r.reviewed_at, r.cancelled_at, r.pto_policy_id, r.pto_minutes,
+       r.decline_note, r.reviewed_at, r.cancelled_at, r.pto_policy_id, r.pto_minutes,
        to_jsonb(r)->>'requested_by_employee_id' AS requested_by_employee_id,
        CASE WHEN submitter.id<>r.employee_id THEN concat_ws(' ',submitter.first_name,submitter.last_name) END AS entered_by_name,
        (to_jsonb(r)->>'owner_review_required')::boolean AS owner_review_required,
@@ -153,12 +155,16 @@ export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "
   return rows.map(mapRequest);
 }
 
+type LeaveRead = OperationalRead<TimeOffListItem[]>;
+type LeaveListRead = Extract<LeaveRead, {state: 'unavailable'}>
+  | (Extract<LeaveRead, {state: 'ready'}> & {waitingCount: number; timeZone: string});
+
 /** The review queue uses the same complete location footprint as decisions. */
 export async function listWorkforceLeave(
   proof: SessionMutationProof,
   status: RequestStatus,
   executor: SqlExecutor = neonNotificationExecutor(),
-): Promise<OperationalRead<TimeOffListItem[]>> {
+): Promise<LeaveListRead> {
   try {
     const { access, permissions } = await listWorkforcePermissions(proof, executor);
     const { workspace, authority, observedAt } = access;
@@ -171,29 +177,35 @@ export async function listWorkforceLeave(
       {text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},
       ...permission,
     ];
+    const visibleRequests = `FROM time_off_requests r JOIN employees e ON e.id=r.employee_id JOIN locations home ON home.id=e.primary_location_id
+          LEFT JOIN employees rv ON rv.id=r.reviewed_by
+          LEFT JOIN employees submitter ON submitter.id=to_jsonb(r)->>'requested_by_employee_id'
+          WHERE home.workspace_id=$1 AND r.status=$2 AND r.employee_id<>$3 AND submitter.id IS DISTINCT FROM $3
+            AND ($4::text[] IS NULL OR NOT COALESCE((to_jsonb(r)->>'owner_review_required')::boolean,false))
+            AND ($4::text[] IS NULL OR ($4::text[] @> (${workforceLeaveFootprintSql})))`;
     const result = await executor.transaction([
       ...guards,
       {
         text: `SELECT r.*,concat_ws(' ',e.first_name,e.last_name) AS employee_name,
           CASE WHEN submitter.id<>r.employee_id THEN concat_ws(' ',submitter.first_name,submitter.last_name) END AS entered_by_name,
           CASE WHEN r.reviewed_by<>r.employee_id THEN concat_ws(' ',rv.first_name,rv.last_name) END AS reviewer_name
-          FROM time_off_requests r JOIN employees e ON e.id=r.employee_id JOIN locations home ON home.id=e.primary_location_id
-          LEFT JOIN employees rv ON rv.id=r.reviewed_by
-          LEFT JOIN employees submitter ON submitter.id=to_jsonb(r)->>'requested_by_employee_id'
-          WHERE home.workspace_id=$1 AND r.status=$2 AND r.employee_id<>$3 AND submitter.id IS DISTINCT FROM $3
-            AND ($4::text[] IS NULL OR NOT COALESCE((to_jsonb(r)->>'owner_review_required')::boolean,false))
-            AND ($4::text[] IS NULL OR ($4::text[] @> (${workforceLeaveFootprintSql})))
+          ${visibleRequests}
           ORDER BY CASE WHEN $2='PENDING' THEN r.start_date END,
             CASE WHEN $2<>'PENDING' THEN r.start_date END DESC,r.created_at DESC,r.id LIMIT 1001`,
         values: [workspace.id, status, proof.employee.id, ids],
       },
+      ...(status === 'PENDING' ? [] : [{
+        text: `SELECT count(*)::int AS total ${visibleRequests}`,
+        values: [workspace.id, 'PENDING', proof.employee.id, ids],
+      }]),
       ...permission,
     ]);
     const rows = result[guards.length];
     if (rows.length > 1000) return {state:'unavailable',reason:'source_limit'};
     const validForMs = Math.floor(access.validForMs - Math.max(0, Date.now() - Date.parse(observedAt)));
     if (validForMs <= 0) return {state:'unavailable',reason:'source_changed'};
-    return { state:'ready',data:rows.map(mapRequest),authority,observedAt,validForMs,
+    const waitingCount = status === 'PENDING' ? rows.length : Number((result[guards.length + 1][0] as {total: number}).total);
+    return { state:'ready',data:rows.map(mapRequest),authority,observedAt,validForMs,waitingCount,timeZone:workspace.timeZone,
       coverage: ids ? {kind:'LOCATIONS',locationIds:ids} : {kind:'COMPANY',locationIds:[]} };
   } catch (error) {
     return {state:'unavailable',reason:error instanceof Error && /operational_authorization|management_authorization/.test(error.message)
@@ -295,8 +307,11 @@ export async function reviewTimeOffRequest(input: {
   managerId: string;
   proof: SessionMutationProof;
   status: "APPROVED" | "DENIED" | "CANCELLED";
+  declineNote?: string;
 }, executor: SqlExecutor = neonNotificationExecutor()) {
   assertManagementProof(input.proof,input.managerId);
+  const note = input.status === 'DENIED' ? input.declineNote?.trim() : undefined;
+  if (note && (note.length > 500 || note.includes('\0'))) return false;
   const admission = await admitLeaveReview(input.proof, input.requestId, executor);
   if (!admission) return false;
   const [row] = await executor.query<Record<string, unknown>>({ text: 'SELECT * FROM time_off_requests WHERE id=$1 AND employee_id=$2', values: [input.requestId, admission.employeeId] });
@@ -315,9 +330,9 @@ export async function reviewTimeOffRequest(input: {
       text: cancelling
         ? `UPDATE time_off_requests SET status=$3,cancelled_by=$2,cancelled_at=clock_timestamp()
             WHERE id=$1 AND status='APPROVED' AND employee_id=$4 RETURNING id`
-        : `UPDATE time_off_requests SET status=$3,reviewed_by=$2,reviewed_at=clock_timestamp()
+        : `UPDATE time_off_requests SET status=$3,reviewed_by=$2,reviewed_at=clock_timestamp(),decline_note=$5
             WHERE id=$1 AND status='PENDING' AND employee_id=$4 RETURNING id`,
-      values: [input.requestId,input.managerId,input.status,before.employeeId],
+      values: [input.requestId,input.managerId,input.status,before.employeeId, ...(cancelling ? [] : [note || null])],
     },
   }, executor);
 }

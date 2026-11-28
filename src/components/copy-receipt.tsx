@@ -147,8 +147,12 @@ export function CopyReceiptView({ receipt, lang = "en" }: { receipt: CopyReceipt
     {/* When nothing was copied the band already says so: the list keeps its reasons, without a second "Not copied". */}
     {reasons.length ? <CorpCard id="copy-skipped" label={copied.length ? W.notCopied : undefined} ariaLabel={copied.length ? undefined : W.notCopied} aside={copied.length ? count(skipped.length) : undefined}>
       {reasons.map((reason, index) => <section className="c-copy__group" key={reason.id} aria-labelledby={`copy-reason-${index}`}>
-        <Kind level={copied.length ? 3 : 2} id={`copy-reason-${index}`}><span>{reason.label}</span></Kind>
+        <Kind level={copied.length ? 3 : 2} id={`copy-reason-${index}`}>
+          {reason.id === "MAX_WEEKLY_HOURS" && <WarningIcon className="c-copy__warn c-copy__warn--limit" weight="fill" aria-hidden="true" />}
+          <span>{reason.label}</span>
+        </Kind>
         <PersonRows rows={reason.rows} withPlace={withPlace} lang={lang} />
+        {reason.id === "MAX_WEEKLY_HOURS" && <CorpBody><CorpButtonLink kind="secondary" href={`/app/schedule/settings?week=${command.weekStart}&open=hours#target-hours`}>{W.reviewHours}</CorpButtonLink></CorpBody>}
       </section>)}
     </CorpCard> : null}
   </Frame>;
@@ -166,7 +170,7 @@ export function CopyUnconfirmed({ command, actorId, lang = "en" }: { command: Co
         line={`${W.dontStartNew}${command ? ` ${W.retryNeverTwice}` : ""}`}>
         <div className="c-copy__buttons">
           <CorpButtonLink href={back}>{W.reviewSchedule}</CorpButtonLink>
-          {command ? <ScheduleCopyForm actorId={actorId} command={command} label={W.retryThisCopy} className="c-btn c-btn--secondary c-copy__retry" /> : null}
+          {command ? <ScheduleCopyForm actorId={actorId} command={command} retryReceipt label={W.retryThisCopy} className="c-btn c-btn--secondary c-copy__retry" /> : null}
         </div>
       </BState>
     </CorpCard>

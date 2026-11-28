@@ -57,6 +57,49 @@ async function reviewedForm(f:Awaited<ReturnType<typeof setup>>,shiftId:string,f
  return form({shiftId,expectedReviewVersion:review.data.shift.reviewVersion,...fields});
 }
 async function close(f:Awaited<ReturnType<typeof setup>>){ctx.proof=null;ctx.ex=null;await f.db.dispose();}
+it('saves the owner’s shifts together and keeps a rejected batch out of the schedule', async () => {
+ const f = await setup();
+ try {
+  const data = form({ shiftCount: '2', 'shift-1-employeeId': 'TARGET', 'shift-1-locationId': 'loc-1',
+   'shift-1-date': '2026-10-13', 'shift-1-startTime': '14:00', 'shift-1-endTime': '18:00',
+   'shift-1-notes': 'Close the shop' });
+  const additions = () => f.q("SELECT date::text, notes FROM shifts WHERE employee_id='TARGET' ORDER BY date");
+  expect(await createShiftAction(data)).toMatchObject({issueCode:'ACCESS_DENIED'});
+  ctx.proof = f.owner;
+  data.set('endTime', '15:00');
+  data.set('shift-1-date', '2026-10-12');
+  expect(await createShiftAction(data)).toMatchObject({issueCode:'SHIFT_OVERLAP'});
+  expect(await additions()).toEqual([]);
+  data.set('shift-1-date', '2026-10-13');
+  await f.q(`CREATE FUNCTION reject_second_shift() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+    IF NEW.date=date '2026-10-13' THEN RAISE EXCEPTION 'second shift failed'; END IF; RETURN NEW; END $$;
+    CREATE TRIGGER reject_second BEFORE INSERT ON shifts FOR EACH ROW EXECUTE FUNCTION reject_second_shift()`);
+  await expect(createShiftAction(data)).rejects.toThrow('second shift failed');
+  expect(await additions()).toEqual([]);
+  expect(await f.q("SELECT id FROM schedules WHERE location_id='loc-1'")).toEqual([]);
+  await f.q('DROP TRIGGER reject_second ON shifts');
+  await expect(createShiftAction(data)).rejects.toMatchObject({ destination: expect.stringMatching(/^\/app\/schedule\?week=2026-10-12/) });
+  expect(await additions()).toEqual([{date:'2026-10-12',notes:null},{date:'2026-10-13',notes:'Close the shop'}]);
+  expect(await createShiftAction(data)).toMatchObject({issueCode:'SHIFT_OVERLAP'});
+  expect(await additions()).toHaveLength(2);
+ } finally { await close(f); }
+});
+
+it('holds the published location’s addition while saving the draft location in the same owner batch', async () => {
+ const f = await setup();
+ try {
+  ctx.proof = f.owner;
+  await f.q("UPDATE schedules SET status='PUBLISHED' WHERE id='action-b'");
+  const data = form({ shiftCount: '2', 'shift-1-employeeId': 'FOREIGN', 'shift-1-locationId': 'loc-2',
+    'shift-1-date': '2026-10-13', 'shift-1-startTime': '10:00', 'shift-1-endTime': '11:00' });
+  await expect(createShiftAction(data)).rejects.toMatchObject({ destination: expect.stringContaining('/app/schedule?week=') });
+  expect(await f.q("SELECT count(*)::int AS count FROM shifts WHERE employee_id='TARGET'")).toEqual([{count:1}]);
+  expect(await f.q("SELECT kind FROM schedule_pending_edits")).toEqual([{kind:'CREATE'}]);
+  expect(await f.q('SELECT id FROM schedule_publication_revisions')).toEqual([]);
+  expect(await f.q('SELECT id FROM notifications')).toEqual([]);
+ } finally { await close(f); }
+});
+
 it('normal create action rolls its new parent back when assignment creation fails',async()=>{
  const f=await setup();try{
   await f.q(`CREATE FUNCTION test_owned_action_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.employee_id='TARGET' THEN RAISE EXCEPTION 'Owned action failure';END IF;RETURN NEW;END $$;CREATE TRIGGER test_owned_action_failure BEFORE INSERT ON shifts FOR EACH ROW EXECUTE FUNCTION test_owned_action_failure()`);

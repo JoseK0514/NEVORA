@@ -31,6 +31,12 @@ const en = {
     position: 'Position', none: 'None', unavailable: (name: string | undefined) => `${name ?? 'Existing position'} (unavailable)`,
     date: 'Date', choose: 'Choose', start: 'Start', end: 'End', ends: (day: string) => `Ends ${day}`,
     shiftLead: 'Shift lead', leadHelp: 'Must be an Owner, Manager or Lead.', note: 'Note', optional: 'Optional',
+    addAnother: 'Add another shift', shiftNumber: (n: number) => `Shift ${n}`, remove: 'Remove',
+    removeShift: (n: number) => `Remove shift ${n}`, saveShifts: (n: number) => `Save ${n} shifts`,
+    invalidBatch: 'Check the shifts and their dates before saving.',
+    missingFields: 'Choose a person, location and date in this week.', invalidTimes: 'Check the start and end times.',
+    unavailableAssignment: 'The person or location is unavailable.',
+    checkBatch: 'Check the schedule to see whether these shifts were saved.', checkWeek: 'Check this week',
     saving: "Saving…", saveChanges: 'Save changes', saveShift: 'Save shift',
   },
   change: {
@@ -65,7 +71,7 @@ const en = {
     draftOnly: 'Build changes Draft locations only.', excludedCount: (n: number) => `Manager excluded · Automatic fill off (${n})`, fillAllowed: 'Automatic fill allowed',
   },
   copy: {
-    copyPrevious: 'Copy previous week',
+    copyPrevious: 'Copy previous week', copying: 'Copying shifts…',
     storageUnavailable: 'Local recovery storage is unavailable. Enable browser storage before copying.',
     notRetained: 'Could not retain the operation for retry. No copy was sent.', checking: 'Checking the original operation…',
     didntGoThrough: 'The original copy didn’t go through. You can start a new copy when ready.',
@@ -93,6 +99,12 @@ const es: typeof en = {
     position: 'Puesto', none: 'Ninguno', unavailable: (name: string | undefined) => `${name ?? 'Puesto existente'} (no disponible)`,
     date: 'Fecha', choose: 'Elegir', start: 'Inicio', end: 'Fin', ends: (day: string) => `Termina ${day}`,
     shiftLead: 'Líder del turno', leadHelp: 'Debe ser Dueño, Gerente o Líder.', note: 'Nota', optional: 'Opcional',
+    addAnother: 'Añadir otro turno', shiftNumber: (n: number) => `Turno ${n}`, remove: 'Quitar',
+    removeShift: (n: number) => `Quitar el turno ${n}`, saveShifts: (n: number) => `Guardar ${n} turnos`,
+    invalidBatch: 'Revisa los turnos y sus fechas antes de guardar.',
+    missingFields: 'Elige una persona, una localidad y una fecha de esta semana.', invalidTimes: 'Revisa las horas de inicio y fin.',
+    unavailableAssignment: 'La persona o la localidad no está disponible.',
+    checkBatch: 'Revisa el horario para ver si se guardaron estos turnos.', checkWeek: 'Revisar esta semana',
     saving: "Guardando…", saveChanges: 'Guardar cambios', saveShift: 'Guardar turno',
   },
   change: {
@@ -127,7 +139,7 @@ const es: typeof en = {
     draftOnly: 'Crear solo cambia localidades en borrador.', excludedCount: (n: number) => `Excluido por el gerente · Llenado automático apagado (${n})`, fillAllowed: 'Llenado automático permitido',
   },
   copy: {
-    copyPrevious: 'Copiar semana anterior',
+    copyPrevious: 'Copiar semana anterior', copying: 'Copiando turnos…',
     storageUnavailable: 'El almacenamiento local no está disponible. Activa el almacenamiento del navegador antes de copiar.',
     notRetained: 'No pudimos guardar la operación para reintentarla. No se envió ninguna copia.', checking: 'Revisando la operación original…',
     didntGoThrough: 'La copia original no se completó. Puedes empezar otra copia cuando quieras.',

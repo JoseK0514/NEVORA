@@ -89,9 +89,13 @@ export async function reviewTimeOffAction(formData: FormData) {
     redirect("/app/requests?tab=pending&error=review");
   }
 
+  const note = decision === "DENIED" ? formData.get("declineNote") : null;
+  if (note !== null && (typeof note !== "string" || note.trim().length > 500 || note.includes("\0"))) {
+    redirect("/app/requests?tab=pending&error=review");
+  }
   let reviewed:boolean;
   try {
-    reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
+    reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision,...(note?.trim() ? {declineNote:note.trim()} : {})});
   } catch(error) {
     if (error instanceof Error && error.message === "pto_insufficient_balance") redirect("/app/requests?tab=pending&error=pto-balance");
     const reviewTab = decision === "CANCELLED" ? "approved" : "team";

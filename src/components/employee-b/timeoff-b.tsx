@@ -10,6 +10,7 @@ import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, 
 import {Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
+import { DeclineNote } from "../leave-decline-note";
 import {sentDay, timeOffDates, timeOffDecision, timeOffLength, type TimeOffView} from '../employee-mobile/timeoff-parts';
 import {formatTime} from '@/lib/date-utils';
 import {keepWhole} from '@/lib/keep-whole';
@@ -80,6 +81,7 @@ function RequestCardB({request, zone}: {request: TimeOffView; zone: string}) {
       <p className="eb-tof-req__l"><Dotted text={[keepWhole(timeOffLength(request, lang)), sent ? keepWhole(copy.sent(sent)) : null, request.note || null].filter(Boolean).join(' · ')}/></p>
     </div>
     <BList><BRow lead={by ? <BAvatar name={by}/> : undefined} title={keepWhole(title)} sub={detail ?? undefined}/></BList>
+    {request.declineNote && <div className="eb-tof-req"><DeclineNote note={request.declineNote} lang={lang} /></div>}
   </BCard>;
 }
 

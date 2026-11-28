@@ -14,6 +14,7 @@ const en = {
   checkExpired: 'Schedule check expired',
   checkPaused: 'Schedule check paused',
   couldntCheck: 'Couldn’t check the schedule',
+  noteToEmployee: 'Note for the employee (optional)',
   ask: {
     question: 'Decline this request?',
     consequence: (first: string) => `${first} is told it was declined.`,
@@ -83,6 +84,7 @@ const es: typeof en = {
   checkExpired: 'La revisión del horario venció',
   checkPaused: 'Revisión del horario en pausa',
   couldntCheck: 'No pudimos revisar el horario',
+  noteToEmployee: 'Nota para el empleado (opcional)',
   ask: {
     question: '¿Rechazar esta solicitud?',
     consequence: (first: string) => `Le avisaremos a ${first} que se rechazó.`,

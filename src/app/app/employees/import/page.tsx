@@ -8,7 +8,7 @@ import {requireSession, requireSessionMutationProof} from '@/lib/auth/session';
 import {isManagerRole} from '@/lib/auth/permissions';
 import {commerceEnabled} from '@/lib/commerce/access';
 import {listEmployees, listLocations} from '@/lib/data/employees';
-import {readWorkspaceRoutingConfig} from '@/lib/workspace-routing/config.server';
+import {rosterImportAvailable} from '@/lib/onboarding/roster-import-available.server';
 import {CorpPage} from '@/components/corp/corp';
 import {SheetMarker} from '@/components/team/team-forms';
 import {OwnerOnlyNotice} from '@/components/owner-only-notice';
@@ -19,13 +19,6 @@ import {headcountsOf} from '@/components/roster-import/contract';
 export async function generateMetadata() { return { title: rosterImportCopy[await readPageLang()].title }; }
 
 const TEAM_BACK = (lang: 'en' | 'es') => ({href: '/app/employees', label: EMPLOYEES_COPY[lang].team});
-
-/** The roster routes (POST /api/onboarding/roster and /preview) answer only where company workspaces are routed: they
- * read the same configuration first and answer "unavailable" (HTTP 503) without it. The page asks the same question
- * before it draws a form, so a deployment without the import says so instead of failing on the first check. */
-function rosterImportAvailable() {
-  try { readWorkspaceRoutingConfig(); return true; } catch { return false; }
-}
 
 /** Owner roster import (docs/handoffs/2026-11-14-owner-simplicity.md): add your list, check it, import. Owners only, as
  * the routes are. The page's words follow the person's language (es-rest). */

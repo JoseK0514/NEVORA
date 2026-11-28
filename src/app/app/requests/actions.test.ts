@@ -25,6 +25,20 @@ it.each([false,'outbox failure'] as const)('failed_decision_has_no_success_inten
  if(result===false)rs.mocked(reviewTimeOffRequest).mockResolvedValue(false);else rs.mocked(reviewTimeOffRequest).mockRejectedValue(new Error(result));
  const data=new FormData();data.set('requestId','r1');data.set('decision','APPROVED');await expect(reviewTimeOffAction(data)).rejects.toThrow(result===false?'error=review':result);
 });
+it.each(['', '   ', '  Minimum staffing that afternoon  '])('allows an optional employee-facing decline note', async value => {
+  rs.mocked(reviewTimeOffRequest).mockResolvedValue(true);
+  const form = new FormData();
+  form.set('requestId', 'r1'); form.set('decision', 'DENIED'); form.set('declineNote', value);
+  await expect(reviewTimeOffAction(form)).rejects.toThrow('decided=timeoff-declined');
+  expect(rs.mocked(reviewTimeOffRequest).mock.calls[0][0].declineNote).toBe(value.trim() || undefined);
+});
+it('rejects an oversized decline note before making a decision', async () => {
+  const form = new FormData();
+  form.set('requestId', 'r1'); form.set('decision', 'DENIED'); form.set('declineNote', 'a'.repeat(501));
+  await expect(reviewTimeOffAction(form)).rejects.toThrow('error=review');
+  expect(reviewTimeOffRequest).not.toHaveBeenCalled();
+});
+
 it('denies review before persistence when role authorization fails',async()=>{
  rs.mocked(requireRoles).mockRejectedValue(new Error('forbidden'));await expect(reviewTimeOffAction(new FormData())).rejects.toThrow('forbidden');expect(reviewTimeOffRequest).not.toHaveBeenCalled();
 });

@@ -19,3 +19,9 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-row__acts form:has(> .tod-unknown):not(#nvd-none):not(#nvd-none2):not(#tod-a) { flex: 1 1 100% !important; }
   }
 }
+
+.tod-note-field { display: grid; gap: 6px; margin-block: 8px; min-width: 0; font-size: .875rem; }
+.tod-note-field textarea { box-sizing: border-box; width: 100%; min-height: 3.5rem; resize: vertical; font: inherit; }
+.tod-decline-note { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tod-decline-note strong { display: block; }
+.tod-tab-label { display: inline-flex; align-items: center; justify-content: center; gap: 4px; }

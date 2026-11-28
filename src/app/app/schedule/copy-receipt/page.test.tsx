@@ -8,7 +8,7 @@ rs.mock('next/link',()=>({default:({children,prefetch:_prefetch,...props}:Compon
 rs.mock('@/lib/auth/permissions',()=>({MANAGER_ROLES:['OWNER','MANAGER'],requireRoles:async()=>({id:'manager',role:'MANAGER'})}));
 rs.mock('@/lib/auth/session',()=>({requireSessionMutationProof:async()=>({employee:{id:'manager',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)})}));
 rs.mock('@/lib/data/schedule-copy',()=>({readScheduleCopyReceipt:async()=>fixtures.receipt,readScheduleCopyCommand:async()=>fixtures.command}));
-rs.mock('@/components/schedule-copy-form',()=>({ScheduleCopyForm:({label}:{label:string})=>createElement('button',{type:'button'},label)}));
+rs.mock('@/components/schedule-copy-form',()=>({ConfirmedCopy:()=>null,ScheduleCopyForm:({label}:{label:string})=>createElement('button',{type:'button'},label)}));
 // G98: the person's language (saved choice, else the nv-lang cookie or the browser's); a failed read is English.
 const language=rs.hoisted(()=>({value:'en' as 'en'|'es',fail:false,cookie:'en' as 'en'|'es'}));
 rs.mock('@/lib/activation/language.server',()=>({readPortalLanguage:async()=>{if(language.fail)throw Error('language_source_unavailable');return {state:'ready',savedLanguage:null,language:language.value};}}));

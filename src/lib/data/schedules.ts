@@ -1,6 +1,7 @@
 import {shiftReviewSql,shiftReviewGuards,requireShiftReview,ShiftReviewConflictError,withShiftReviewConflict} from './shift-review';
 import { databaseDate as dateValue } from './database-date';
-import {assertOperationalAccess} from '../company-access/operational-scope.server';
+import {assertOperationalAccess, OperationalAuthorizationError} from '../company-access/operational-scope.server';
+import { ManualAssignmentConflictError } from './manual-assignment-validation';
 import { currentCalloutReleaseSql } from './shift-change-release';
 import { resolveOperationalRuleProfile } from '../shift-changes/policy';
 import type { AssignmentOrigin } from '../domain';
@@ -11,14 +12,14 @@ import { randomUUID } from "node:crypto";
 import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
 import { commitPublishedWeekChange, neonNotificationExecutor, type GuardedWeekState } from "./notification-transactions";
-import type { SqlExecutor } from "../notifications/types";
-import { addDays, weekStartFor } from "../date-utils";
+import type { SqlExecutor, SqlStatement } from "../notifications/types";
+import { addDays, isDateInWeek, weekStartFor } from "../date-utils";
 import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
 import { readAvailabilityInputs } from "./availability-inputs";
 import type { ScheduleStatus, UserRole, Position } from "@/lib/domain";
 
 import type { SessionMutationProof } from '../shift-changes/types';
-import { assertManagementProof } from './management-session';
+import { assertManagementProof, managementSessionCheck } from './management-session';
 import { decodeCoverageRepairReview } from './coverage-repair.server';
 import { CoverageRepairConflictError } from '../scheduling/coverage-repair';
 
@@ -317,26 +318,53 @@ export async function insertShift(input: {
   return id;
 }
 
-/** Normal manual creation owns the parent and assignment in ONE transaction.
- * In a published week the new assignment is held until Publish changes. */
-export async function insertShiftAtLocation(input:{
- locationId:string;weekStart:string;employeeId:string;date:string;startTime:string;endTime:string;
- notes?:string;positionId?:string|null;isDesignatedLead?:boolean;actorEmployeeId:string;proof:SessionMutationProof;
-},executor:SqlExecutor=neonNotificationExecutor()) {
- assertManagementProof(input.proof,input.actorEmployeeId);
- await assertOperationalAccess(input.proof,{kind:'LOCATIONS',locationIds:[input.locationId]},executor);
- const id=randomUUID(),parentId=randomUUID();
- const result=await commitPublishedWeekChange({weekStarts:[input.weekStart],actorEmployeeId:input.actorEmployeeId,proof:input.proof,sourceType:'MANAGER_MUTATION',sourceId:id,build:state=>{
-  const existing=state.schedules.find(s=>s.locationId===input.locationId&&s.weekStart===input.weekStart);
-  const scheduleId=existing?.id??parentId;
-  return {statements:[
-   ...(!existing?[{text:'INSERT INTO schedules(id,location_id,week_start,created_by) VALUES($1,$2,$3,$4)',values:[scheduleId,input.locationId,input.weekStart,input.actorEmployeeId]}]:[]),
-   {text:'INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead,position_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',values:[id,scheduleId,input.employeeId,input.date,input.startTime,input.endTime,input.notes??null,input.isDesignatedLead??false,input.positionId||null]}],
-   afterSchedules:existing?state.schedules:[...state.schedules,{id:scheduleId,locationId:input.locationId,weekStart:input.weekStart,status:'DRAFT' as const,updatedAt:''}],
-   afterShifts:[...state.shifts,{sourceShiftId:id,scheduleId,weekStart:input.weekStart,locationId:input.locationId,employeeId:input.employeeId,date:input.date,startTime:input.startTime,endTime:input.endTime,notes:input.notes,positionId:input.positionId||undefined,isDesignatedLead:input.isDesignatedLead??false,isCalloutApproved:false,hasExchangeHistory:false}],deferPublication:true};
- }},executor);
- if(!result.committed)throw new Error('Schedule no longer exists.');
- return id;
+type ManualShiftInput = {
+  employeeId: string; locationId: string; date: string; startTime: string; endTime: string;
+  notes?: string; positionId?: string | null; isDesignatedLead?: boolean;
+};
+type ManualShiftSession = { weekStart: string; actorEmployeeId: string; proof: SessionMutationProof };
+
+/** The parent schedules, shifts and any held publication edits commit together.
+ * The guarded writer validates the complete proposed ledger on every attempt. */
+export async function insertManualShifts(input: ManualShiftSession, shifts: readonly ManualShiftInput[], executor: SqlExecutor = neonNotificationExecutor()) {
+  const { proof, actorEmployeeId, weekStart } = input;
+  assertManagementProof(proof, actorEmployeeId);
+  if (!shifts.length || shifts.some(shift => !isDateInWeek(shift.date, weekStart))) throw new Error("Invalid shift week.");
+  const batch = shifts.length > 1;
+  if (batch && proof.employee.role !== "OWNER") throw new OperationalAuthorizationError();
+  await assertOperationalAccess(proof, batch ? { kind: "COMPANY" } : { kind: "LOCATIONS", locationIds: [shifts[0].locationId] }, executor);
+  const ids = shifts.map(() => randomUUID());
+  const result = await commitPublishedWeekChange({ weekStarts: [weekStart], actorEmployeeId, proof,
+    sourceType: "MANAGER_MUTATION", sourceId: ids[0], build: state => {
+      const afterSchedules = [...state.schedules], afterShifts = [...state.shifts];
+      const statements: SqlStatement[] = batch ? [managementSessionCheck(proof, actorEmployeeId, ["OWNER"])] : [];
+      for (const [index, shift] of shifts.entries()) {
+        let parent = afterSchedules.find(record => record.locationId === shift.locationId && record.weekStart === weekStart);
+        if (batch && parent?.status === "ARCHIVED") {
+          throw new ManualAssignmentConflictError("INVALID_SCHEDULING_INPUT", "One of these schedules is archived. Choose an active schedule.");
+        }
+        if (!parent) {
+          parent = { id: randomUUID(), locationId: shift.locationId, weekStart, status: "DRAFT", updatedAt: "" };
+          afterSchedules.push(parent);
+          statements.push({ text: "INSERT INTO schedules(id,location_id,week_start,created_by) VALUES($1,$2,$3,$4)",
+            values: [parent.id, shift.locationId, weekStart, actorEmployeeId] });
+        }
+        const id = ids[index];
+        statements.push({ text: "INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes,is_designated_lead,position_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+          values: [id, parent.id, shift.employeeId, shift.date, shift.startTime, shift.endTime, shift.notes ?? null, shift.isDesignatedLead ?? false, shift.positionId || null] });
+        afterShifts.push({ sourceShiftId: id, scheduleId: parent.id, weekStart, locationId: shift.locationId, employeeId: shift.employeeId,
+          date: shift.date, startTime: shift.startTime, endTime: shift.endTime, notes: shift.notes, positionId: shift.positionId || undefined,
+          isDesignatedLead: shift.isDesignatedLead ?? false, isCalloutApproved: false, hasExchangeHistory: false });
+      }
+      return { statements, afterSchedules, afterShifts, deferPublication: true };
+    } }, executor);
+  if (!result.committed) throw new Error("Schedule no longer exists.");
+  return ids;
+}
+
+export async function insertShiftAtLocation(input: ManualShiftSession & ManualShiftInput, executor: SqlExecutor = neonNotificationExecutor()) {
+  const [id] = await insertManualShifts(input, [input], executor);
+  return id;
 }
 
 /** Ensure the exact location/week and insert the reviewed replacement atomically. */

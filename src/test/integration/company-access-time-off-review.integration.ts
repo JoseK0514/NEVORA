@@ -6,7 +6,7 @@ import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import {companyAccessFixture,grantFixtureWorkforcePermission} from './company-access-fixture';
 import {assignOperationalScope,readOwnerOperationalScope,isOperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
-import {createTimeOffRequest,reviewTimeOffRequest,withdrawTimeOffRequest,getTimeOffRequest,listWorkforceLeave} from '../../lib/data/requests';
+import {createTimeOffRequest,reviewTimeOffRequest,withdrawTimeOffRequest,getTimeOffRequest,listEmployeeTimeOffRequests,listWorkforceLeave} from '../../lib/data/requests';
 import {commitRequestTransition,requestSnapshot} from '../../lib/data/request-notifications';
 import {withdrawalIdentity} from '../../lib/time-off-withdrawal';
 const ctx=rs.hoisted(()=>({ex:null as SqlExecutor|null,proof:null as SessionMutationProof|null}));
@@ -93,8 +93,14 @@ const form=(f:Fixture)=>{const body=new FormData();body.set('requestId',f.reques
 it('normal time-off review action denies a partially scoped Manager with a leave-scope redirect and no writes',async()=>{const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=team&error=leave_scope'});expect(await snapshot(f)).toEqual(before);}finally{await close(f);}});
 it.each([{decision:'APPROVED',code:'timeoff-approved'},{decision:'DENIED',code:'timeoff-declined'}] as const)('normal Company $decision action retains its session actor and exact known-decision redirect',async({decision,code})=>{
  const f=await setup();try{const body=form(f);body.set('decision',decision);
+  body.set('declineNote', '  We need coverage for the afternoon.  ');
   await expect(reviewTimeOffAction(body)).rejects.toMatchObject({destination:'/app/requests?tab=pending&reviewed=1&decided='+code});
-  expect(await f.q('SELECT status,reviewed_by FROM time_off_requests WHERE id=$1',[f.requestId])).toEqual([{status:decision,reviewed_by:'manager'}]);
+  const note = decision === 'DENIED' ? 'We need coverage for the afternoon.' : null;
+  expect(await f.q('SELECT status,reviewed_by,decline_note FROM time_off_requests WHERE id=$1',[f.requestId])).toEqual([{status:decision,reviewed_by:'manager',decline_note:note}]);
+  const employeeRows = await listEmployeeTimeOffRequests('target',f.db.executor,f.requestId);
+  expect(employeeRows[0].reason).toBe('Owned private request');
+  expect(employeeRows[0].declineNote ?? null).toBe(note);
+  expect(await listWorkforceLeave(f.manager,decision,f.db.executor)).toMatchObject({state:'ready',waitingCount:0,data:[{id:f.requestId,...(note?{declineNote:note}:{})}]});
  }finally{await close(f);}
 });
 it.each(['EMPLOYEE','LEAD'] as const)('%s own submission/withdrawal/replay remains identity-based after Manager restriction',async role=>{

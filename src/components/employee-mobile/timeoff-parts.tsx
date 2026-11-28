@@ -1,3 +1,4 @@
+import { DeclineNote } from "../leave-decline-note";
 import {CorpRow} from '../corp/corp';
 import {formatTime} from '@/lib/date-utils';
 import {keepWhole} from '@/lib/keep-whole';
@@ -9,7 +10,7 @@ import {timeoffPartsCopy} from './copy/timeoff-parts';
 
 export type TimeOffView = {
  id:string;status:string;startDate:string;endDate:string;startTime?:string|null;endTime?:string|null;
- note?:string|null;createdAt?:string|null;reviewedAt?:string|null;reviewer?:string|null;
+ declineNote?:string;note?:string|null;createdAt?:string|null;reviewedAt?:string|null;reviewer?:string|null;
 };
 
 const v4=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -68,6 +69,7 @@ export function TimeOffRequestCard({request,zone,headingId,lang='en'}:{request:T
    <span className="c-line2 tof-what">{keepWhole(timeOffLength(request,lang))}{request.note?' · '+request.note:''}</span>
   </div>
   <Decision request={request} zone={zone} lang={lang}/>
+  {request.declineNote && <div className="c-card__body"><DeclineNote note={request.declineNote} lang={lang} /></div>}
  </section>;
 }
 

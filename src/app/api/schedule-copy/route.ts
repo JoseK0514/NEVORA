@@ -1,7 +1,7 @@
+import { isCopyOperationId, parseCopyCommand } from "@/lib/scheduling/copy-command";
 import { getSession, requireSessionMutationProof } from "@/lib/auth/session";
 import {
   executeScheduleCopy,
-  parseCopyCommand,
   readScheduleCopyCommand,
 } from "@/lib/data/schedule-copy";
 import {
@@ -20,6 +20,7 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   const boundary = correctionBoundary(request, true, "x-nevora-schedule-copy");
   if (boundary) return correctionJson({ state: "unavailable" }, boundary);
+  let operationId: string | undefined;
   try {
     const session = await getSession();
     if (!session) return correctionJson({ state: "unavailable" }, 401);
@@ -29,28 +30,30 @@ export async function POST(request: Request) {
     )
       return correctionJson({ state: "unavailable" }, 403);
     const proof = await requireSessionMutationProof();
-    const body = (await readCorrectionJson(request)) as { recover?: unknown };
+    const body = await readCorrectionJson(request);
     let command;
-    try {
-      command =
-        typeof body.recover === "string"
-          ? await readScheduleCopyCommand(proof, body.recover)
-          : parseCopyCommand(body);
-    } catch {
-      return correctionJson({ state: "invalid" }, 400);
+    if (body && typeof body === "object" && "recover" in body) {
+      if (!isCopyOperationId(body.recover)) return correctionJson({ state: "invalid" }, 400);
+      command = await readScheduleCopyCommand(proof, body.recover);
+      if (!command) return correctionJson({ state: "unconfirmed" }, 404);
+    } else {
+      try {
+        command = parseCopyCommand(body);
+      } catch {
+        const id = body && typeof body === "object" && "operationId" in body ? body.operationId : undefined;
+        return correctionJson({ state: "invalid", ...(isCopyOperationId(id) ? { operationId: id } : {}) }, 400);
+      }
     }
-    if (!command) return correctionJson({ state: "unconfirmed" }, 404);
+    operationId = command.operationId;
     const receipt = await executeScheduleCopy(proof, command);
     return correctionJson({
       state: "complete",
       operationId: receipt.operationId,
     });
   } catch (error) {
-    return correctionJson(
-      {
-        state: String(error).includes("CONFLICT") ? "conflict" : "unconfirmed",
-      },
-      String(error).includes("CONFLICT") ? 409 : 503,
-    );
+    if (operationId && error instanceof Error && error.message === "COPY_COMMAND_CONFLICT") {
+      return correctionJson({ state: "conflict", operationId }, 409);
+    }
+    return correctionJson({ state: "unconfirmed" }, 503);
   }
 }

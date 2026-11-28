@@ -6,7 +6,7 @@ import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { QuietRow } from "@/components/quiet/quiet";
 import { RequestFace } from "@/components/request-face";
-import { DecisionAsk } from "@/components/owner-b/decision-parts";
+import { LeaveDeclineAsk } from "@/components/leave-decline-ask";
 import { useKeptResult } from "@/components/owner-b/kept-result";
 import { BSegs, BState, BWhen } from "@/components/owner-b/b-kit";
 import { useLeaveStaffing } from "@/components/leave-staffing/use-leave-staffing";
@@ -92,8 +92,8 @@ function WaitingDecide({ name, approve, reviewHref }: { name: string; approve: b
   useEffect(() => { if (confirming !== null) pair.current?.querySelector<HTMLButtonElement>("button")?.focus(); }, [confirming]);
   // Final polish (confirmations A #6, #7, #23): the question is asked in words, in the block Cancel time off uses: the
   // quiet way out on the left, the red-edged commit on the right. Still one question and the same two taps.
-  if (confirming && !pending) return <DecisionAsk groupRef={pair} groupLabel={t.declineForAsk(name)} question={t.ask.question} consequence={t.ask.consequence(firstName(name))}
-    keep={t.ask.keep} keepLabel={t.keepFor(name)} onKeep={() => setConfirming(false)} go={t.ask.decline} goLabel={t.declineFor(name)} goValue="DENIED" />;
+  if (confirming || (pending && decision === "DENIED")) return <LeaveDeclineAsk groupRef={pair} groupLabel={t.declineForAsk(name)} question={t.ask.question} consequence={t.ask.consequence(firstName(name))}
+    keep={t.ask.keep} keepLabel={t.keepFor(name)} onKeep={() => setConfirming(false)} go={t.ask.decline} goLabel={t.declineFor(name)} />;
   return <div ref={pair} className="q-acts" aria-busy={pending}>
     <button type="button" className="q-bs b-rowact b-rowact--quiet" onClick={() => setConfirming(true)} disabled={pending} aria-label={pending ? undefined : t.declineFor(name)}>{pending && decision === "DENIED" ? t.declining : t.decline}</button>
     {approve ? <button type="submit" className="q-bs q-bs--go b-rowact b-rowact--go" name="decision" value="APPROVED" disabled={pending} aria-label={pending ? undefined : t.approveFor(name)}>{pending && decision === "APPROVED" ? t.approving : t.approve}</button>

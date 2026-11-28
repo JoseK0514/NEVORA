@@ -1,4 +1,5 @@
 "use client";
+import { AllLocationsCheckbox } from "@/components/team/all-locations-checkbox";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
@@ -176,6 +177,8 @@ function MapEditor({ ctx, problem, from, onCancel }: { ctx: BusinessCtx; problem
               <CorpField label={t.firstDay} htmlFor={`be-cell-first-${index}`}><input className="c-in" id={`be-cell-first-${index}`} type="date" value={cell.first} aria-invalid={error && (!cell.first || !cell.last) ? true : undefined} onChange={event => patchCell(index, { first: event.target.value })} /></CorpField>
               <CorpField label={t.lastDay} htmlFor={`be-cell-last-${index}`}><input className="c-in" id={`be-cell-last-${index}`} type="date" value={cell.last} min={cell.first || undefined} onChange={event => patchCell(index, { last: event.target.value })} /></CorpField>
               <fieldset className="be-picks"><legend className="c-field__label">{sales ? t.entryLocations : t.entryAccounts}</legend>
+                {sales && <AllLocationsCheckbox lang={ctx.lang} ids={catalog.activeLocations.map(place => place.id)} selected={cell.locationIds} className="be-pick"
+                  disabled={catalog.activeLocations.length > 200} onToggle={all => patchCell(index, { locationIds: all ? catalog.activeLocations.map(place => place.id) : [] })} />}
                 {(sales ? catalog.activeLocations.map(place => ({ value: place.id, label: place.name })) : names.map(ref => ({ value: ref, label: ref }))).map(option => <label key={option.value} className="be-pick">
                   <input type="checkbox" checked={(sales ? cell.locationIds : cell.accountRefs).includes(option.value)} onChange={() => patchCell(index, sales ? { locationIds: toggle(cell.locationIds, option.value) } : { accountRefs: toggle(cell.accountRefs, option.value) })} /><span>{option.label}</span></label>)}
                 {!sales && !names.length ? <span className="c-field__help">{t.noAccounts}</span> : null}</fieldset>
@@ -271,6 +274,7 @@ export function FiguresPanel({ ctx, problem, initialResult = null }: { ctx: Busi
   if (!ask.first || !ask.last) errors.days = t.error.days; else if (!period) errors.days = t.error.dayOrder;
   if (ask.use === "one" && !records.some(source => source.sourceId === ask.sourceId)) errors.record = t.figuresError.record;
   if (ask.places === "SELECTED" && !ask.locationIds.length) errors.places = t.figuresError.places;
+  const displayedIds = ask.places === "ALL" ? catalog.activeLocations.map(place => place.id) : ask.locationIds;
   const shown = tried ? errors : {};
   const set = (change: Partial<Ask>) => setAsk(old => ({ ...old, ...change }));
   const submit = (event: FormEvent) => {
@@ -308,10 +312,10 @@ export function FiguresPanel({ ctx, problem, initialResult = null }: { ctx: Busi
       </div>
       {ask.use === "one" ? <CorpField label={t.places} htmlFor="be-q-places"><select className="c-in" id="be-q-places" value={ask.places} onChange={event => set({ places: event.target.value as Ask["places"] })}>
         <option value="ALL">{t.allPlaces}</option><option value="SELECTED">{t.chooseLocations}</option></select></CorpField> : null}
-      {ask.places === "SELECTED" ? <fieldset className="be-picks"><legend className="c-field__label">{t.chooseLocations}</legend>
-        {catalog.activeLocations.slice(0, 200).map(place => <label key={place.id} className="be-pick"><input type="checkbox" checked={ask.locationIds.includes(place.id)} disabled={!ask.locationIds.includes(place.id) && ask.locationIds.length >= 20}
-          aria-invalid={shown.places ? true : undefined} onChange={() => set({ locationIds: ask.locationIds.includes(place.id) ? ask.locationIds.filter(id => id !== place.id) : [...ask.locationIds, place.id] })} /><span>{place.name}</span></label>)}
-        {shown.places ? <span className="c-error" role="alert"><ErrorText>{shown.places}</ErrorText></span> : null}</fieldset> : null}
+      <fieldset className="be-picks"><legend className="c-field__label">{t.places}</legend>
+        {catalog.activeLocations.slice(0, 200).map(place => <label key={place.id} className="be-pick"><input type="checkbox" checked={displayedIds.includes(place.id)} disabled={ask.places === "ALL" ? displayedIds.length > 21 : !ask.locationIds.includes(place.id) && ask.locationIds.length >= 20}
+          aria-invalid={shown.places ? true : undefined} onChange={() => set({ places: "SELECTED", locationIds: displayedIds.includes(place.id) ? displayedIds.filter(id => id !== place.id) : [...displayedIds, place.id] })} /><span>{place.name}</span></label>)}
+        {shown.places ? <span className="c-error" role="alert"><ErrorText>{shown.places}</ErrorText></span> : null}</fieldset>
       <div className="be-actions"><CorpButton type="submit" kind="primary" size="md" disabled={state.kind === "loading"}>{state.kind === "loading" ? t.reading : t.showFiguresNow}</CorpButton></div>
     </form></CorpBody></CorpCard>
     <div id="be-figures" className="be-results" aria-live="polite">

@@ -1,4 +1,5 @@
 'use client';
+import { AllLocationsCheckbox } from "@/components/team/all-locations-checkbox";
 import { createContext, useContext, useId, type ReactNode } from 'react';
 import { Temporal } from '@js-temporal/polyfill';
 import { minorToDollars } from './money';
@@ -16,7 +17,24 @@ export function Input({name,label,value='',type='text',required=true,help,min,ma
 }
 export function Select({name,label,value='',options,required=true,help}:{name:string;label:string;value?:string;options:[string,string][];required?:boolean;help?:string}){const entries=useContext(DraftContext),id=useId(),{native:{fields:t}}=usePayrollCopy();return <label><span id={id}>{label}</span><select aria-labelledby={id} aria-describedby={help?`${id}-help`:undefined} name={name} defaultValue={savedValue(entries,name,value)} required={required}><option value="">{required?t.choose:t.notMapped}</option>{options.map(([v,l])=><option key={v} value={v}>{l}</option>)}</select>{help&&<small id={`${id}-help`}>{help}</small>}</label>;}
 export function Check({name,label,value=false,required=false,onChange}:{name:string;label:string;value?:boolean;required?:boolean;onChange?:(value:boolean)=>void}){const entries=useContext(DraftContext);return <label className="pw-check"><input type="checkbox" name={name} required={required} defaultChecked={entries===null?value:entries.some(([k])=>k===name)} onChange={e=>onChange?.(e.target.checked)}/><span>{label}</span></label>;}
-export function LocationFields({name,locations,selected=[]}:{name:string;locations:{id:string;name:string;active:boolean}[];selected?:string[]}){const entries=useContext(DraftContext),{native:{fields:t}}=usePayrollCopy();const values=entries===null?selected:entries.filter(([k])=>k===name).map(([,v])=>v);return <fieldset className="pw-location-options"><legend>{t.locations}</legend>{locations.map(l=><label className="pw-check" key={l.id}><input type="checkbox" name={name} value={l.id} defaultChecked={values.includes(l.id)}/><span>{l.name}{!l.active?t.inactive:''}</span></label>)}{!locations.length&&<p className="pw-small">{t.noLocations}</p>}</fieldset>;}
+export function LocationFields({ name, locations, selected = [] }: { name: string; locations: {id: string; name: string; active: boolean}[]; selected?: string[] }) {
+  const entries = useContext(DraftContext), { native: { fields: t }, lang } = usePayrollCopy();
+  const values = entries === null ? selected : entries.filter(([key]) => key === name).map(([, value]) => value);
+  return <fieldset className="pw-location-options"><legend>{t.locations}</legend>
+    <AllLocationsCheckbox lang={lang} ids={locations.map(location => location.id)} selected={values} className="pw-check"
+      onToggle={(all, input) => {
+        // The parent captures FormData as this change bubbles. Update its named controls before that capture.
+        for (const box of input.closest("fieldset")!.querySelectorAll<HTMLInputElement>("input[type=checkbox][name]")) {
+          if (box.name === name && !box.disabled) box.checked = all;
+        }
+      }} />
+    {locations.map(location => <label className="pw-check" key={location.id}>
+      <input type="checkbox" name={name} value={location.id} defaultChecked={values.includes(location.id)} />
+      <span>{location.name}{!location.active ? t.inactive : ""}</span>
+    </label>)}
+    {!locations.length && <p className="pw-small">{t.noLocations}</p>}
+  </fieldset>;
+}
 export function localInstant(value:string|undefined|null){if(!value)return '';try{return Temporal.Instant.from(value).toZonedDateTimeISO('America/Puerto_Rico').toPlainDateTime().toString();}catch{return '';}}
 export const usd=(v:string|undefined|null)=>v==null?'':minorToDollars(v);
 export function hourlyDollars(v:string|undefined){if(!v)return '';const [whole,sub='']=v.split('.'); const n=BigInt(whole);return `${n/BigInt(100)}.${(n%BigInt(100)).toString().padStart(2,'0')}${sub}`;}

@@ -99,7 +99,11 @@ describe('every state, drawn', () => {
   it('idle: three inline radios, the locations under "Only these locations" with where they work, Save off', () => {
     const html = view();
     expect(html.match(/type="radio"/g)).toHaveLength(3);
-    expect(html.match(/type="checkbox"/g)).toHaveLength(3);
+    expect(html.match(/type="checkbox"/g)).toHaveLength(4);
+    expect(html).toContain('<span>All</span>');
+    const all = view({ mode: 'ALL' }).match(/<input[^>]*type="checkbox"[^>]*>/g) ?? [];
+    expect(all).toHaveLength(3);
+    expect(all.every(input => input.includes('checked=""'))).toBe(true);
     expect(html.indexOf('Only these locations')).toBeLessThan(html.indexOf('value="loc-1"'));
     expect(html.indexOf('value="loc-3"')).toBeLessThan(html.indexOf('Every location'));
     expect(html).toContain('Works here · Main');

@@ -384,6 +384,7 @@ function PlanForm({ week, setWeek, currentWeek, mode, setMode, scopeKind, setSco
   const lang = useAdvisorLang(), t = WEEKLY_COPY[lang];
   const [tried, setTried] = useState(false);
   const missing = scopeKind === "SELECTED" && !chosen.length;
+  const displayedIds = scopeKind === "ALL" ? locations.map(location => location.id) : chosen;
   const earliest = addDays(currentWeek, -7), latest = addDays(currentWeek, 56);
   return <CorpSection id="wk-plan" label={t.planAWeek}>
     <CorpCard as="div"><CorpBody>
@@ -411,13 +412,16 @@ function PlanForm({ week, setWeek, currentWeek, mode, setMode, scopeKind, setSco
             <label className="c-check"><input type="radio" className="wk-radio" name="wk-scope" checked={scopeKind === "ALL"} onChange={() => setScopeKind("ALL")} /><span className="c-check__text">{t.allLocations}</span></label>
             <label className="c-check"><input type="radio" className="wk-radio" name="wk-scope" checked={scopeKind === "SELECTED"} onChange={() => setScopeKind("SELECTED")} /><span className="c-check__text">{t.chooseLocations}</span></label>
           </div>
-          {scopeKind === "SELECTED" ? <div className="c-checks wk-places" role="group" aria-label={t.locationsToPlan} aria-describedby={tried && missing ? "wk-places-error" : undefined}>
+          <div className="c-checks wk-places" role="group" aria-label={t.locationsToPlan} aria-describedby={tried && missing ? "wk-places-error" : undefined}>
             {locations.map(location => <label key={location.id} className="c-check">
-              <input type="checkbox" className="c-check__box" value={location.id} checked={chosen.includes(location.id)} disabled={!chosen.includes(location.id) && chosen.length >= 20}
-                onChange={event => setChosen(event.target.checked ? [...chosen, location.id] : chosen.filter(id => id !== location.id))} />
+              <input type="checkbox" className="c-check__box" value={location.id} checked={displayedIds.includes(location.id)} disabled={scopeKind === "ALL" ? displayedIds.length > 21 : !chosen.includes(location.id) && chosen.length >= 20}
+                onChange={event => {
+                  setScopeKind("SELECTED");
+                  setChosen(event.target.checked ? [...displayedIds, location.id] : displayedIds.filter(id => id !== location.id));
+                }} />
               <span className="c-check__text">{location.name}</span>
             </label>)}
-          </div> : null}
+          </div>
           {tried && missing ? <p className="c-error" id="wk-places-error" role="alert"><WarningCircleIcon weight="bold" className="wk-error__ic" aria-hidden="true" />{t.chooseOneLocation}</p> : null}
         </fieldset>
         <div className="wk-submit">

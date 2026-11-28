@@ -6,7 +6,7 @@ import {companyAccessFixture} from './company-access-fixture';
 import {getWorkspace} from '../../lib/data/workspaces';
 import {assignOperationalScope,readOwnerOperationalScope,isOperationalAuthorizationError} from '../../lib/company-access/operational-scope.server';
 import {isManagementAuthorizationError} from '../../lib/data/management-session';
-import {listScheduleTemplates,listTemplateShifts,createTemplateFromWeek,archiveScheduleTemplate} from '../../lib/data/schedule-templates';
+import {editSavedTemplate,readTemplateDetail,listScheduleTemplates,listTemplateShifts,createTemplateFromWeek,archiveScheduleTemplate} from '../../lib/data/schedule-templates';
 import {readScheduleCopyReceipt,readScheduleCopyCommand,executeScheduleCopy} from '../../lib/data/schedule-copy';
 import {generateWeekDraft} from '../../lib/data/schedule-generation';
 import {setAvailabilityDeadline} from '../../lib/data/week-settings';
@@ -94,4 +94,48 @@ it('Company template reads retain all rows/counts and an authorized no-op genera
   const result=await generateWeekDraft({workspaceId:f.workspace.id,actorEmployeeId:'manager',proof:f.manager,weekStart:week,mode:'BUILD_WEEK',locationScope:{kind:'SELECTED',locationIds:['loc-1']}},f.db.executor);expect(result.changed).toBe(false);
   expect(await archiveScheduleTemplate(template,f.manager,f.db.executor)).toBe(true);
  }finally{await close(f);}
+});
+
+it('inspects and edits only the saved template, detects stale edits, and applies its revised shifts', async () => {
+ const f = await setup();
+ try {
+  const id = 'global-template', ex = f.db.executor;
+  const read = () => readTemplateDetail(id, f.owner, ex);
+  const edit = (revision: string, fields: Record<string, string>) => {
+   const form = new FormData();
+   for (const [name, value] of Object.entries(fields)) form.set(name, value);
+   return editSavedTemplate(id, revision, form, f.owner, ex);
+  };
+  await denied(() => readTemplateDetail(id, f.manager, ex));
+  const template = (await read())!;
+  expect(template.shifts[0]).toMatchObject({id:'global-template-b',day:0,location:'loc-2',employee:'target',start:'12:00'});
+  expect(template.employees.find(p=>p.id==='target')?.name).toBeTruthy();
+  const rename = new FormData(); rename.set('kind','rename'); rename.set('name','Other name');
+  await denied(() => editSavedTemplate(id,template.revision,rename,f.manager,ex));
+  const original = await f.q('SELECT * FROM shifts ORDER BY id');
+  const shift = {kind:'edit',shiftId:'global-template-b',day:'1',location:'loc-1',employee:'target',start:'19:00',end:'02:00',notes:'Evening coverage'};
+  expect(await edit(template.revision,shift)).toBe('saved');
+  expect(await edit(template.revision,{kind:'remove',shiftId:shift.shiftId})).toBe('stale');
+  const updated = (await read())!;
+  expect(updated.shifts[0]).toMatchObject({day:1,start:'19:00',end:'02:00',notes:'Evening coverage'});
+  expect(await edit(updated.revision,{...shift,location:'missing'})).toBe('stale');
+  expect(await edit(updated.revision,{...shift,start:shift.end})).toBe('invalid');
+  expect(await edit(updated.revision,{kind:'rename',name:'Night shifts'})).toBe('saved');
+  expect((await read())!.name).toBe('Night shifts');
+  expect(await edit((await read())!.revision,{...shift,kind:'add',employee:'',start:'16:10',end:'24:00'})).toBe('saved');
+  const added = (await read())!;
+  expect(added.shifts).toHaveLength(2);
+  const open = added.shifts.find(s => !s.employee)!;
+  expect(open).toMatchObject({start:'16:10',end:'24:00'});
+  expect(await edit(added.revision,{kind:'remove',shiftId:open.id})).toBe('saved');
+  expect(await f.q('SELECT * FROM shifts ORDER BY id')).toEqual(original);
+  const receipt = await executeScheduleCopy(f.owner,{operationId:randomUUID(),kind:'TEMPLATE',weekStart:'2026-10-19',templateId:id},ex);
+  expect(receipt.rows).toHaveLength(1);
+  expect(receipt.rows[0].status).toBe('COMMITTED');
+  expect(await f.q("SELECT date::text,notes FROM shifts WHERE notes='Evening coverage'")).toEqual([{date:'2026-10-20',notes:'Evening coverage'}]);
+  const revision = (await read())!.revision;
+  await archiveScheduleTemplate(id,f.owner,ex);
+  expect(await read()).toBeNull();
+  expect(await edit(revision,shift)).toBe('stale');
+ } finally { await close(f); }
 });

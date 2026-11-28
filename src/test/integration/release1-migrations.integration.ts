@@ -41,7 +41,7 @@ it('refuses an actual interrupted concurrent index without silently dropping or 
 
 it.each([
  ['release 1 indexes', ['0038_read_path_indexes.sql','0039_native_payroll_setup_records.sql']],
- ['Development through 0078', ['0079_timecard_missing_shift_disposition.sql']],
+ ['Development through 0078', ['0079_timecard_missing_shift_disposition.sql','0080_time_off_decline_note.sql']],
  ['current Development through 0071', ['0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql','0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql']],
  ['published 30-day Development through 0069', ['0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql','0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql']],
  ['Development through 0067', ['0068_employee_employment_dates.sql','0069_clocker_early_grace.sql','0070_scheduling_authority_pto.sql','0071_user_language_preferences.sql','0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql','0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql']],
@@ -116,6 +116,7 @@ it('upgrades the recorded Development schema and restores both its rollback back
    '0072_delegated_time_off.sql','0073_pto_timecard_accrual.sql',
    '0074_puerto_rico_pto.sql','0075_manager_open_shifts.sql','0076_location_addresses.sql',
    '0077_clocker_face_verification.sql','0078_clocker_picker.sql','0079_timecard_missing_shift_disposition.sql',
+  '0080_time_off_decline_note.sql',
   ]);
   for(const file of additions)await client.query(await readFile('db/migrations/'+file,'utf8'));
   expect(await state(client)).toEqual(before);

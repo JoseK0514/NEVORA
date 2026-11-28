@@ -20,8 +20,10 @@ import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank"
 import { businessDate } from "@/lib/business-time";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { isValidWeekStart, weekStartFor } from "@/lib/date-utils";
-import { listScheduleTemplates } from "@/lib/data/schedule-templates";
+import { SavedTemplate } from "./saved-template";
+import { readTemplateDetail, listScheduleTemplates } from "@/lib/data/schedule-templates";
 import {
+  editTemplateAction,
   archiveTemplateAction,
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
@@ -41,6 +43,7 @@ export default async function ScheduleTemplatesPage({
     skipped?: string;
     warnings?: string;
     archived?: string;
+    template?: string;
   }>;
 }) {
   const session=await requireRoles(MANAGER_ROLES);
@@ -52,6 +55,20 @@ export default async function ScheduleTemplatesPage({
   let lang:ScheduleLang='en';try{lang=(await readPortalLanguage(proof)).language;}catch{/* English */}
   const t=scheduleWords(lang).templates;
   const weekLabel = weekRange(weekStart, lang);
+  if (params.template) {
+    const id = params.template;
+    const back = `/app/schedule/templates?week=${weekStart}`;
+    const source = await withOperationalCompany(proof, () => readTemplateDetail(id, proof));
+    if (source.state === "unavailable") return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason} />;
+    return <ScopedReadFrame observation={scopedObservation(source)} lang={lang}>
+      <CorpPage className="c-tpl c-page--narrow" lang={lang}>
+        <CorpNav back={{ href: back, label: t.savedWeeks }} title={source.data?.name ?? t.title} phoneOnly />
+        <CorpTitle title={source.data?.name ?? t.title} wide sub={<Link className="c-link" href={back}>{t.savedWeeks}</Link>} />
+        {source.data ? <SavedTemplate key={id} template={source.data} lang={lang} action={editTemplateAction} />
+          : <CorpCard><p className="tpl-notice" role="alert">{t.errorUnavailable} <Link href={back}>{t.savedWeeks}</Link></p></CorpCard>}
+      </CorpPage>
+    </ScopedReadFrame>;
+  }
   const source=await withOperationalCompany(proof,()=>listScheduleTemplates(proof));
   if(source.state==='unavailable')return <OperationalUnavailable lang={lang} title={t.unavailable} reason={source.reason}/>;
   const templates=source.data;
@@ -85,7 +102,9 @@ export default async function ScheduleTemplatesPage({
       {templates.length ? <CorpCard id="st-library" label={t.savedWeeks} count={templates.length}>
         <ul className="c-rows c-tpl__list" aria-labelledby="st-library-label">
           {templates.map((template, index) => <li className="c-tpl__item" key={template.id}>
-            <div className="c-tpl__text"><span className="c-tpl__name">{template.name}</span><span className="c-tpl__count"><b>{t.shifts(template.shiftCount)}</b></span></div>
+            <div className="c-tpl__text"><span className="c-tpl__name">{template.name}</span><span className="c-tpl__count"><b>{t.shifts(template.shiftCount)}</b></span>
+              <Link prefetch={false} className="c-link tpl-open" aria-label={`${t.viewEdit} · ${template.name}`} href={`/app/schedule/templates?week=${weekStart}&template=${encodeURIComponent(template.id)}`}>{t.viewEdit}</Link>
+            </div>
             <div className="c-tpl__acts">
               <ActionForm action={archiveTemplateAction} className="c-tpl__form" failure={t.archiveFailure} confirm={{ prompt: t.archivePrompt(template.name), keepLabel: t.keep }} submit={{ label: t.archive, pendingLabel: t.archiving, ariaLabel: t.archiveAria(template.name), className: "c-btn c-btn--secondary", kind: "danger" }}>
                 <input type="hidden" name="weekStart" value={weekStart} />

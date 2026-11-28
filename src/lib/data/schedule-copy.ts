@@ -21,17 +21,13 @@ import {
 import { loadWorkspaceNotificationConfig } from "../notifications/config";
 import { mapSchedulingSourceFacts } from "./scheduling-source-facts";
 import { validateShift } from "../scheduling/validate-shift";
-import { addDays, isValidWeekStart } from "../date-utils";
+import { parseCopyCommand, type CopyCommand } from "../scheduling/copy-command";
+export { parseCopyCommand, type CopyCommand } from "../scheduling/copy-command";
+import { addDays } from "../date-utils";
 import { shiftBoundaryInstants } from "../business-time";
 import { stableExportJson } from "../payroll-export/json";
 const digest = (v: unknown) =>
   createHash("sha256").update(stableExportJson(v)).digest("hex");
-export type CopyCommand = {
-  operationId: string;
-  weekStart: string;
-  kind: "PREVIOUS_WEEK" | "TEMPLATE";
-  templateId?: string;
-};
 export type CopyOutcome = {
   sourceId: string;
   status: "COMMITTED" | "SKIPPED";
@@ -69,37 +65,6 @@ type Operation = {
   command: CopyCommand;
   source: CopySource;
 };
-export function parseCopyCommand(value: unknown): CopyCommand {
-  if (!value || typeof value !== "object") throw Error("Invalid copy command");
-  const v = value as Record<string, unknown>;
-  if (
-    typeof v.operationId !== "string" ||
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      v.operationId,
-    ) ||
-    typeof v.weekStart !== "string" ||
-    !isValidWeekStart(v.weekStart) ||
-    !["PREVIOUS_WEEK", "TEMPLATE"].includes(String(v.kind)) ||
-    Object.keys(v).some(
-      (k) => !["operationId", "weekStart", "kind", "templateId"].includes(k),
-    )
-  )
-    throw Error("Invalid copy command");
-  if (
-    (v.kind === "TEMPLATE" &&
-      (typeof v.templateId !== "string" ||
-        !v.templateId ||
-        v.templateId.length > 200)) ||
-    (v.kind === "PREVIOUS_WEEK" && v.templateId !== undefined)
-  )
-    throw Error("Invalid template");
-  return {
-    operationId: v.operationId.toLowerCase(),
-    weekStart: v.weekStart,
-    kind: v.kind as CopyCommand["kind"],
-    ...(v.kind === "TEMPLATE" ? { templateId: String(v.templateId) } : {}),
-  };
-}
 const templateSql = `jsonb_build_object('parent',(SELECT to_jsonb(t) FROM schedule_templates t WHERE id=$1 AND workspace_id=$2),'children',COALESCE((SELECT jsonb_agg(to_jsonb(s) ORDER BY id COLLATE "C") FROM schedule_template_shifts s WHERE template_id=$1 AND workspace_id=$2),'[]'::jsonb))`;
 async function capture(
   command: CopyCommand,

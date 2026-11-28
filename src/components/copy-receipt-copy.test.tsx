@@ -39,3 +39,16 @@ it('writes Spanish dates and times the voice guide way', () => {
   expect(esTimes('6:00\u00a0AM – 2:00\u00a0PM')).toBe('6:00 a. m. – 2:00 p. m.');
   expect(text(renderToStaticMarkup(<CopyNotFound lang="es" />))).toContain('No encontramos la copia');
 });
+
+it.each(['en', 'es'] as const)('marks the weekly maximum before its heading and links to its settings in %s', lang => {
+  const skipped = row('b', {status: 'SKIPPED', reason: 'MAX_WEEKLY_HOURS'});
+  for (const rows of [[skipped], [row('a'), skipped]]) {
+    const html = renderToStaticMarkup(<CopyReceiptView receipt={receipt(rows)} lang={lang} />);
+    expect(html).toMatch(/id="copy-reason-0"><svg[^>]+aria-hidden="true"[^>]*>[\s\S]*?<\/svg><span>/);
+    expect(html).toContain(RECEIPT_WORDS[lang].skips.MAX_WEEKLY_HOURS);
+    expect(html).toContain('href="/app/schedule/settings?week=2026-12-07&amp;open=hours#target-hours"');
+  }
+  const other = renderToStaticMarkup(<CopyReceiptView receipt={receipt([{...skipped, reason: 'APPROVED_TIME_OFF'}])} lang={lang} />);
+  expect(other).not.toContain('c-copy__warn--limit');
+  expect(other).not.toContain('open=hours');
+});

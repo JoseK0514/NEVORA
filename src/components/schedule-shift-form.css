@@ -169,7 +169,14 @@
  * same 15/20px in rem here, so the sheet's buttons grow with the reader's text size. */
 :is(#c-root, html) .c-shift-page .c-btn { font-size: 0.9375rem; line-height: 1.25rem; }
 
-/* Both labels reserve the same space while the confirmed edit request is in flight. */
-.c-shift__save-label { display: inline-grid; }
-.c-shift__save-label > span { grid-area: 1 / 1; }
-.c-shift__save-label > [aria-hidden] { visibility: hidden; }
+.c-shift-page .c-shift__batch-row { display: flex; flex-direction: column; min-width: 0; gap: inherit; }
+.c-shift-page .c-shift__batch-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--b-space-12);
+  padding-top: var(--b-space-12);
+  border-top: 1px solid var(--b-line);
+}
+.c-shift-page .c-shift__batch-heading h2 { margin: 0; font-size: var(--b-fs-title-sm); }
+.c-shift-page .c-shift__add-another { align-self: flex-start; }

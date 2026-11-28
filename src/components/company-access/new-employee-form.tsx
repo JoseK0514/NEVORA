@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {useRef,useState,type ReactNode} from 'react';
+import {UploadSimpleIcon} from '@phosphor-icons/react/dist/ssr/UploadSimple';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import type {Location,Position,UserRole} from '@/lib/domain';
 import type {ScopeSelection} from '@/lib/company-access/model';
@@ -15,12 +16,13 @@ import {OperationalScopeSelectionFields} from './manager-operational-scope-field
 import {EmploymentDateFields} from '../employment-date-fields';
 import {revealField} from '../form-validation';
 import {accessCopy,type AccessLang} from './access-copy';
+import {employeeTeamCopy} from '../employee-team-copy';
 import {usePortalLang} from '@/lib/i18n/portal-lang';
 
 /** Add employee (Release 1, boards O-AddEmployee and O-AddEmployeePay): two steps in one form. Step 1 is who they are
  * (name, mobile phone, optional email, role and location, then the optional employment dates); step 2 is their Employee ID
  * (the server requires one), the positions they can work and where. "Add" submits the same create command as before; nothing about access changes. */
-export function NewEmployeeForm({actorRole,locations:activeLocations,positions,action,notice,bonusApplies=true,lang:langProp}:{actorRole:UserRole;locations:Location[];positions:Position[];action:(data:FormData)=>Promise<unknown>;notice?:ReactNode;
+export function NewEmployeeForm({actorRole,canImport=false,locations:activeLocations,positions,action,notice,bonusApplies=true,lang:langProp}:{actorRole:UserRole;canImport?:boolean;locations:Location[];positions:Position[];action:(data:FormData)=>Promise<unknown>;notice?:ReactNode;
  /** Review 30 (D38): the workspace is in Puerto Rico, so the hire date's line names Christmas bonus hours. */bonusApplies?:boolean;
  /** The person's language; usePortalLang() unless the caller names one (Signed-in Spanish, Nov 23, 2026). */lang?:AccessLang}){
  const portalLang=usePortalLang(),lang=langProp??portalLang,t=accessCopy(lang).newEmployee;
@@ -62,7 +64,8 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
    <ReturnToNext/>
    <input type="hidden" name="active" value="true"/>
    <div className="c-step" ref={stepOne} hidden={step!==1}>
-    <div className="c-field__row">
+    {canImport && <Link className="c-link c-link--l employment-import-link" href="/app/employees/import"><UploadSimpleIcon size={18} aria-hidden="true"/>{employeeTeamCopy(lang).importList}</Link>}
+     <div className="c-field__row">
      <CorpField label={t.firstName} htmlFor="new-first"><input id="new-first" className="c-in" name="firstName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing={t.firstMissing}/></CorpField>
      <CorpField label={t.lastName} htmlFor="new-last"><input id="new-last" className="c-in" name="lastName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing={t.lastMissing}/></CorpField>
     </div>
@@ -86,7 +89,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
    <div className="c-step" hidden={step!==2}>
     <CorpField label={t.id} htmlFor="new-id" help={t.idHelp}><input id="new-id" className="c-in" name="id" placeholder={t.idPlaceholder} autoComplete="off" autoCapitalize="characters" autoCorrect="off" spellCheck={false} enterKeyHint="done" required maxLength={128} data-missing={t.idMissing}/></CorpField>
     <ChoiceField label={t.positions} name="positionIds" none={t.choosePositions} empty={t.noPositions} choices={activePositions.map(position=>({value:position.id,label:position.name}))}/>
-    <ChoiceField key={primary} label={t.workAt} name="eligibleLocationIds" choices={activeLocations.map(location=>({value:location.id,label:location.shortName,checked:location.id===primary,
+    <ChoiceField key={primary} label={t.workAt} name="eligibleLocationIds" allLocations choices={activeLocations.map(location=>({value:location.id,label:location.shortName,checked:location.id===primary,
      help:location.id===primary?t.primary:undefined}))}/>
     {role==='MANAGER'&&actorRole==='OWNER'?<OperationalScopeSelectionFields locations={activeLocations.map(l=>({id:l.id,name:l.name}))} value={scope} onChange={setScope} error={null} lang={lang}/>:null}
    </div>

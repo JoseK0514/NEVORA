@@ -1,4 +1,5 @@
 "use client";
+import { AllLocationsCheckbox } from "@/components/team/all-locations-checkbox";
 import "./team-forms.css";
 import Link from "next/link";
 import { usePortalLang } from "@/lib/i18n/portal-lang";
@@ -58,7 +59,7 @@ export type Choice = { value: string; label: string; help?: string; checked?: bo
 
 /** A field that opens a checklist ("Positions › Cashier, Barista"). The checkboxes stay in the form while it's closed. */
 /** `listed`: the checklist is the page (its own sheet), so it shows without the picker button. */
-export function ChoiceField({ label, name, choices, empty, none: noneWord, listed = false }: { label: string; name: string; choices: Choice[]; empty?: string; none?: string; listed?: boolean }) {
+export function ChoiceField({ label, name, choices, empty, none: noneWord, listed = false, allLocations = false }: { label: string; name: string; choices: Choice[]; empty?: string; none?: string; listed?: boolean; allLocations?: boolean }) {
   const id = useId().replace(/:/g, "");
   const lang = usePortalLang();
   const none = noneWord ?? TEAM_COPY[lang].none;
@@ -73,9 +74,15 @@ export function ChoiceField({ label, name, choices, empty, none: noneWord, liste
       <CaretDownIcon className="c-ic c-ic--s c-pick__caret" weight="bold" aria-hidden="true" />
     </button>}
     <fieldset className="c-checks" id={`${id}-list`} hidden={!open} aria-labelledby={`${id}-label`}>
+      {allLocations && <AllLocationsCheckbox lang={lang} ids={choices.filter(choice => !choice.disabled || chosen.has(choice.value)).map(choice => choice.value)}
+        selected={[...chosen]} className="c-check" inputClassName="c-check__box" disabled={choices.every(choice => choice.disabled)}
+        onToggle={all => setChosen(new Set(choices.filter(choice => choice.disabled ? chosen.has(choice.value) : all).map(choice => choice.value)))} />}
       {choices.map(choice => <label key={choice.value} className="c-check">
-        <input type="checkbox" className="c-check__box" name={name} value={choice.value} defaultChecked={choice.checked} disabled={choice.disabled}
-          onChange={event => setChosen(current => { const next = new Set(current); if (event.target.checked) next.add(choice.value); else next.delete(choice.value); return next; })} />
+        <input type="checkbox" className="c-check__box" name={name} value={choice.value} {...(allLocations ? { checked: chosen.has(choice.value) } : { defaultChecked: choice.checked })} disabled={choice.disabled}
+          onChange={event => {
+            const checked = event.currentTarget.checked;
+            setChosen(current => { const next = new Set(current); if (checked) next.add(choice.value); else next.delete(choice.value); return next; });
+          }} />
         <span className="c-check__text"><span>{choice.label}</span>{choice.help ? <small>{choice.help}</small> : null}</span>
       </label>)}
     </fieldset>

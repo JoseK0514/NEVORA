@@ -16,12 +16,14 @@ import { listWorkforceLeave, type TimeOffListItem } from "@/lib/data/requests";
 import { TimeOffDecisionForm } from "@/components/time-off-decision-form";
 import { formatTimeRange, weekStartFor } from "@/lib/date-utils";
 import { CorpPill } from "@/components/corp/corp";
-import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
+import { agoLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
 import { LeaveConflictCheck } from "@/components/leave-staffing/conflict-check";
-import { getWorkspace } from "@/lib/data/workspaces";
+import { LeaveTabLabel } from "./leave-tab-label";
+import { countLabel } from "./corp/corp";
+import { DeclineNote } from "./leave-decline-note";
 import { TimeOffWaitingList } from "@/components/time-off-waiting-list";
 import { RequestFace } from "@/components/request-face";
 import { WholeParts } from "@/components/time-off-waiting-list";
@@ -58,7 +60,8 @@ const backTo = ({ from, filter, item }: Origin, lang: PortalLang) => {
 };
 
 function requestDay(date: string, lang: PortalLang) {
-  return lang === "en" ? dayLabel(date) : dateText(date, lang, { weekday: "short", month: "short", day: "numeric" }).replace(",", "");
+  const day = dateText(date, lang, { weekday: "short", month: "short", day: "numeric" });
+  return lang === "es" ? day.replace(",", "") : day;
 }
 
 function whenLabel(request: PendingRequest, lang: PortalLang) {
@@ -176,7 +179,7 @@ function DecidedReview({ origin, decided, timeZone, lang }: { origin: Origin; de
     <QuietList label={t.thisRequest} style={{ marginTop: 16 }}>
       {decided ? <QuietRow avatar={<RequestFace name={decided.request.employeeName} initials={initialsOf(decided.request.employeeName)} />}
         title={<span className="q-decided__name">{decided.request.employeeName}<BChip tone={approved ? "green" : "grey"}>{approved ? t.approvedOne : t.declinedOne}</BChip></span>}
-        detail={<><WholeParts text={whenLabel(decided.request, lang)} />{line ? <span className="q-rt__line"><WholeParts text={line} /></span> : null}</>} /> : null}
+        detail={<><WholeParts text={whenLabel(decided.request, lang)} />{line ? <span className="q-rt__line"><WholeParts text={line} /></span> : null}<DeclineNote note={decided.request.declineNote} lang={lang} /></>} /> : null}
       <li className="q-decided__back"><BButtonLink href={backTo(origin, lang).href} kind="ghost">{timeOffText(t.backTo, { page: backTo(origin, lang).label })}</BButtonLink></li>
     </QuietList>
   </QuietPage>;
@@ -190,10 +193,11 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
   await requireRoles(MANAGER_ROLES);
   const selected = tabs.find(item => item.id === tab) ?? tabs[0];
   const proof = await requireSessionMutationProof();
-  let lang: PortalLang = "en";
-  try { lang = (await readPortalLanguage(proof)).language; } catch { /* English */ }
+  const [lang, source] = await Promise.all([
+    readPortalLanguage(proof).then(result => result.language).catch(() => "en" as const),
+    listWorkforceLeave(proof, selected.status),
+  ]);
   const t = managerTimeOffCopy[lang];
-  const source=await listWorkforceLeave(proof, selected.status);
   if(source.state==='unavailable'){
     // SCRUM-215: a Manager refused here lacks the Approve time off grant at every location they manage; say so and who decides.
     let closed:{title:string;line:string;lang:'en'|'es'}|undefined;
@@ -205,34 +209,29 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
     // "your schedule" of places); a read that failed keeps the location Manager's schedule step.
     return <OperationalUnavailable title={t.unavailable} lang={lang} reason={source.reason} scoped={!closed} closed={closed}/>;
   }
-  const requests=source.data;
+  const {data: requests, timeZone: zone, waitingCount: waiting, authority, observedAt, validForMs} = source;
+  const observation = {authority, observedAt, validForMs};
 
   const focused = selected.status === "PENDING" && requestId ? requests.find(request => request.id === requestId) : undefined;
   const origin: Origin = { from: from === "home" ? "home" : "inbox", filter: inboxFilter(filter ?? "requests"), item: inboxItem(item) };
   if (focused) {
     // Who else is off then: the approved time off this page already reads for its Approved tab, under the same access.
     const approved = await listWorkforceLeave(proof, "APPROVED").catch(() => null);
-    const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
-    return <ScopedReadFrame observation={source}><FocusedReview request={focused as PendingRequest} origin={origin} error={error}
+    return <ScopedReadFrame observation={observation}><FocusedReview request={focused as PendingRequest} origin={origin} error={error}
       others={approved?.state === "ready" ? approved.data : null} timeZone={zone} lang={lang} /></ScopedReadFrame>;
   }
   if (selected.status === "PENDING" && requestId && !error) {
     // Audit NV-AUDIT-05: find the decision in the Approved and Declined lists, under the same access.
-    const [approvedRead, declinedRead, zone] = await Promise.all([
+    const [approvedRead, declinedRead] = await Promise.all([
       listWorkforceLeave(proof, "APPROVED").catch(() => null),
-      listWorkforceLeave(proof, "DENIED").catch(() => null),
-      getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC")]);
+      listWorkforceLeave(proof, "DENIED").catch(() => null)]);
     const find = (read: typeof approvedRead) => read?.state === "ready" ? read.data.find(request => request.id === requestId) : undefined;
     const approvedOne = find(approvedRead), declinedOne = approvedOne ? undefined : find(declinedRead);
     const decided = approvedOne ? { status: "APPROVED" as const, request: approvedOne } : declinedOne ? { status: "DENIED" as const, request: declinedOne } : null;
-    return <ScopedReadFrame observation={source}><DecidedReview origin={origin} decided={decided} timeZone={zone} lang={lang} /></ScopedReadFrame>;
+    return <ScopedReadFrame observation={observation}><DecidedReview origin={origin} decided={decided} timeZone={zone} lang={lang} /></ScopedReadFrame>;
   }
 
   // Quiet (v4, approved Oct 23): the segments carry the waiting count on every tab.
-  const waiting = selected.status === "PENDING" ? requests.length
-    : await listWorkforceLeave(proof, "PENDING").then(read => read.state === "ready" ? read.data.length : 0).catch(() => 0);
-  const zone = selected.status === "PENDING" ? "UTC" : await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
-  const decidedLine = (request: object) => selected.status === "PENDING" ? null : decisionLine(selected.status, request, zone, lang);
   const limited = source.coverage?.kind === "LOCATIONS";
 
   // Final polish (confirmations A #8): what the last decision left, named. Approved is the done state; a declined or
@@ -247,13 +246,13 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
       : <DecisionResult tone="closed" icon={closedIcon} title={words.savedTitle} line={requests.length ? undefined : nothingWaiting} />
     : selected.id === "approved" && cancelled ? <DecisionResult tone="closed" icon={closedIcon} title={words.cancelledTitle} line={words.cancelledLine} /> : null;
 
-  return (<ScopedReadFrame observation={source}>
+  return (<ScopedReadFrame observation={observation}>
     <QuietPage className="q-timeoff">
       <QuietNav back={backTo(origin, lang)} />
       <QuietHeader title={t.title} />
       {/* R12: the kit's segmented control (its thumb slides once the round-2 kit lands). */}
       <CorpSegments label={t.sections} items={tabs.map(item => ({ href: `/app/requests?tab=${item.id}`, current: selected.id === item.id,
-        label: item.id === "pending" ? waiting ? timeOffText(t.count, { count: waiting }) : t.waiting : t[item.id] }))} />
+        label: <LeaveTabLabel>{countLabel(item.id === "pending" ? waiting ? timeOffText(t.count, { count: waiting }) : t.waiting : t[item.id])}</LeaveTabLabel> }))} />
       {error ? <p className="q-error q-first" role="alert">{error === "pto-balance" ? t.ptoBalance : t.refused}</p> : null}
       {/* Closing F1 (NV-077): each waiting row carries the staffing check and the compact Decline / Approve, as on Things to
         do (this replaces Release 1's "no decision in the list"; the row still opens the request with its shifts).
@@ -269,10 +268,12 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
       : requests.length || result ? <QuietList label={selected.id === "approved" ? t.approvedList : t.declinedList} style={{ marginTop: 16 }}><KeptResultRow result={result} lang={lang} />{requests.map(request => {
           // Final polish (confirmations A #17): the tab already says Approved or Declined, so no chip repeats it on every
           // row; the lines wrap whole (BSegs, BWhen).
+          const when = whenLabel(request, lang);
+          const line = decisionLine(selected.id === "approved" ? "APPROVED" : "DENIED", request, zone, lang);
           const row = <QuietRow key={request.id} bare={selected.id === "approved"} avatar={<RequestFace name={request.employeeName} initials={initialsOf(request.employeeName)} />} title={request.employeeName}
-            detail={<><WholeParts text={whenLabel(request, lang)} />{decidedLine(request) ? <span className="q-rt__line"><WholeParts text={decidedLine(request)!} /></span> : null}</>} />;
+            detail={<><WholeParts text={when} />{line ? <span className="q-rt__line"><WholeParts text={line} /></span> : null}<DeclineNote note={request.declineNote} lang={lang} /></>} />;
           // PTO screens: an approval can be cancelled; the server gives the paid time back and decides who may do it.
-          return selected.id === "approved" ? <li key={request.id} className="pto-approved">{row}<CancelApproval requestId={request.id} name={request.employeeName} when={whenLabel(request, lang)} lang={lang} /></li> : row;
+          return selected.id === "approved" ? <li key={request.id} className="pto-approved">{row}<CancelApproval requestId={request.id} name={request.employeeName} when={when} lang={lang} /></li> : row;
         })}</QuietList>
       : <div className="q-list q-emptycard"><BState kind="empty" title={selected.id === "approved" ? t.noApproved : t.noDeclined} line={selected.id === "approved" ? t.approvedEmpty : t.declinedEmpty} /></div>}
     </QuietPage>

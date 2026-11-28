@@ -2,7 +2,7 @@ import { isWorkforceUuid } from './workforce/contracts';
 import {isValidIsoDate,isValidWeekStart} from './date-utils';
 export type PlanningView='timeoff'|'availability';
 export type PlanningHours={dayOfWeek:number;startTime:string;endTime:string};
-export type PlanningRequest={id:string;startDate:string;endDate:string;startTime:string|null;endTime:string|null;note:string|null;status:'PENDING'|'APPROVED'|'DENIED'|'CANCELLED';createdAt:string;reviewedAt:string|null;reviewer:string|null;ptoPolicyId?:string;ptoMinutes?:number;cancelledAt?:string;enteredBy?:string};
+export type PlanningRequest={id:string;startDate:string;endDate:string;startTime:string|null;endTime:string|null;note:string|null;status:'PENDING'|'APPROVED'|'DENIED'|'CANCELLED';createdAt:string;reviewedAt:string|null;reviewer:string|null;declineNote?:string;ptoPolicyId?:string;ptoMinutes?:number;cancelledAt?:string;enteredBy?:string};
 type Lifetime={state:'ready';kind:'planning';authority:string;observedAt:string;validForMs:number;timeZone:string;enabled:boolean;selection:string};
 export type TimeOffPlanning=Lifetime&{view:'timeoff';data:{requests:PlanningRequest[]}};
 export type AvailabilityPlanning=Lifetime&{view:'availability';data:{basis:string;windows:PlanningHours[];deadline:string|null;submitted:boolean;locked:boolean;nextWeek:string}};
@@ -57,8 +57,10 @@ export function parseEmployeePlanning(v:unknown):EmployeePlanningSnapshot{
  if(v.view==='timeoff'){
   if(!(v.selection==='list'||v.selection==='new'||planningId(v.selection))||!keys(d,['requests'])||!Array.isArray(d.requests)||d.requests.length>10000||!v.enabled&&d.requests.length||v.selection==='new'&&d.requests.length)return failed();
   for(const row of d.requests){if(!object(row)||!keys(row,['id','startDate','endDate','startTime','endTime','note','status','createdAt','reviewedAt','reviewer',
+    ...(Object.hasOwn(row,'declineNote')?['declineNote']:[]),
     ...(Object.hasOwn(row,'ptoPolicyId')?['ptoPolicyId','ptoMinutes']:[]),...(Object.hasOwn(row,'cancelledAt')?['cancelledAt']:[]),...(Object.hasOwn(row,'enteredBy')?['enteredBy']:[])])
     || (Object.hasOwn(row,'ptoPolicyId')&&(!isWorkforceUuid(row.ptoPolicyId)||!Number.isInteger(row.ptoMinutes)||Number(row.ptoMinutes)<1||Number(row.ptoMinutes)>525600))
+    || (Object.hasOwn(row,'declineNote')&&(row.status!=='DENIED'||!str(row.declineNote,500)))
     || (Object.hasOwn(row,'enteredBy')&&!str(row.enteredBy,300))
     || (Object.hasOwn(row,'cancelledAt')&&(row.status!=='CANCELLED'||!instant(row.cancelledAt)))||!planningId(row.id)||typeof row.startDate!=='string'||!isValidIsoDate(row.startDate)||typeof row.endDate!=='string'||!isValidIsoDate(row.endDate)||row.startDate>row.endDate||!(row.startTime===null&&row.endTime===null||clock(row.startTime)&&(clock(row.endTime)||row.endTime==='24:00')&&row.startTime<row.endTime&&row.startDate===row.endDate)||!(row.note===null||str(row.note,10000))||!['PENDING','APPROVED','DENIED','CANCELLED'].includes(String(row.status))||!instant(row.createdAt)||!(row.reviewedAt===null||instant(row.reviewedAt))||!(row.reviewer===null||str(row.reviewer,300))||v.selection!=='list'&&row.id!==v.selection)return failed();}
   if(v.selection!=='list'&&d.requests.length>1)return failed();
