@@ -40,20 +40,29 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     const fileChooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'Choose a file',exact:true}).click();await (await fileChooser).setFiles({name:'fictional-payroll.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
     await page.getByLabel('Payroll system',{exact:true}).fill('Fictional accountant');await page.getByLabel('Report or reference',{exact:true}).fill('JOINED-'+engine);
     await page.getByRole('button',{name:'Match people',exact:true}).click();await page.getByRole('button',{name:'Review amounts',exact:true}).click();
+    const hasFocus = (target: typeof page) => target.evaluate((element: HTMLElement) => element === document.activeElement);
+    const waitForAmountsHeading = () => expect.poll(() => hasFocus(page.getByRole('heading', { name: 'Check each amount', exact: true }))).toBe(true);
+    const enterAmount = async (value: string) => {
+      const amountInput = page.locator('input.pim-amt__in');
+      await amountInput.fill(value);
+      await expect.poll(() => hasFocus(amountInput)).toBe(true);
+      // React replaces the field with the amount button as soon as Enter commits.
+      await page.keyboard.press('Enter');
+      await amountInput.waitFor({ state: 'detached' });
+    };
+    await waitForAmountsHeading();
     const amount = page.locator('button.pim-amt__btn').first();
     const initialAmount = await amount.innerText();
     await amount.focus();
     await page.keyboard.press('Enter');
-    const amountInput = page.locator('input.pim-amt__in');
-    await amountInput.fill('12.34');
-    await amountInput.press('Enter');
-    expect(await amount.evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
+    await enterAmount('12.34');
+    await expect.poll(() => hasFocus(amount)).toBe(true);
     const undo = page.getByRole('button', { name: /undo/i });
     await undo.focus();
     await page.keyboard.press('Enter');
     await undo.waitFor({ state: 'hidden' });
     expect(await amount.innerText()).toBe(initialAmount);
-    expect(await amount.evaluate((el: HTMLElement) => el === document.activeElement)).toBe(true);
+    await expect.poll(() => hasFocus(amount)).toBe(true);
     await page.getByRole('button',{name:'Check and save',exact:true}).click();
     const imported=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST');
     await page.getByRole('button',{name:'Save amounts',exact:true}).click();const saved=await imported;expect(saved.status(),await saved.text()).toBe(200);
@@ -75,7 +84,8 @@ it.each(['chromium','webkit'])('%s joins the delivered payroll UI to real import
     await page.getByRole('option',{name:new RegExp(fixture.ids.a)}).waitFor();await expect.poll(()=>page.getByRole('option').count()).toBe(1);await personPicker.press('Enter');await expect.poll(()=>personPicker.inputValue()).toBe('María José Fictional QA');
     const zeroChoices=page.getByRole('radio',{name:'Not paid this period',exact:true});expect(await zeroChoices.count()).toBe(roster.length-1);for(const choice of await zeroChoices.all())await choice.check();
     await page.getByRole('button',{name:'Review amounts',exact:true}).click();
-    for(const [field,amount] of [['gross','1001.00'],['net','877.60']]){await page.getByRole('button',{name:new RegExp('^Correct '+field+' for')}).click();await page.locator('.pim-amt__in').fill(amount);await page.locator('.pim-amt__in').press('Enter');}
+    await waitForAmountsHeading();
+    for(const [field,amount] of [['gross','1001.00'],['net','877.60']]){await page.getByRole('button',{name:new RegExp('^Correct '+field+' for')}).click();await enterAmount(amount);}
     await page.getByRole('button',{name:'Check and save',exact:true}).click();
     const rematched=page.waitForResponse((r:any)=>r.url()===app.url+'/api/payroll/runs'&&r.request().method()==='POST');await page.getByRole('button',{name:'Save amounts',exact:true}).click();const revised=await rematched;expect(revised.status(),await revised.text()).toBe(200);
     const reviewed=revised.request().postDataJSON().amounts;expect(reviewed.schema).toBe('NEVORA_PAYROLL_IMPORT_V1');expect(reviewed.sourceDocument).toBeUndefined();expect(reviewed.rows.find((r:{employeeId:string})=>r.employeeId===fixture.ids.a)).toMatchObject({grossMinor:'100100',netMinor:'87760'});

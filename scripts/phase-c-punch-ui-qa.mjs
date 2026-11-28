@@ -10,7 +10,7 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app.ts';
 import {seedOwnedApp,TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {assertPrivateClockInRecovery} from './clocker-recovery-privacy.ts';
-import {archiveBreak} from './clocker-break-editor.mjs';
+import {archiveBreak,breakTypeRow} from './clocker-break-editor.mjs';
 import {observePinReadiness,installPinReadinessObserver,runPinDiagnosticObservation} from './clocker-pin-readiness-diagnostic.mjs';
 const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/visualizations/2026/10/05/nevora-punch-integration'));
 await mkdir(evidence,{recursive:true});
@@ -39,8 +39,8 @@ async function enroll(owner,p,name){
  await goto(p,'/clocker/2');await p.getByRole('heading',{name:'Set up this tablet',exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);await shot(p,name.includes('Second')?'second-tablet-setup':name.split(' ')[0]+'-setup');await p.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await p.getByRole('button',{name:'Connect tablet',exact:true}).click();await idle(p);
 }
 async function editBreak(owner,name,category,minutes){
- await goto(owner,'/app/settings/breaks');const row=owner.getByRole('list',{name:'Configured break types',exact:true}).locator('button[data-break-type="ui-rest"]');
- assert.match(await row.getAttribute('aria-label'),/^Edit /);await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
+ await goto(owner,'/app/settings/breaks');const row=breakTypeRow(owner.getByRole('list',{name:'Configured break types',exact:true}));
+ await row.click();const d=owner.getByRole('dialog');await d.getByRole('heading',{name:'Edit break type',exact:true}).waitFor();
  await d.getByLabel('Break name',{exact:true}).fill(name);await d.getByRole('combobox',{name:'Classification',exact:true}).selectOption(category);await d.getByLabel(/^Reference time/).fill(String(minutes));
  await d.getByRole('button',{name:'Save changes',exact:true}).click();await d.waitFor({state:'hidden'});
 }

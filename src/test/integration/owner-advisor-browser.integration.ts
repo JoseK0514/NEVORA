@@ -238,7 +238,7 @@ it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI again
               expect(await page.locator('input[name="publicationConsent"]').count()).toBe(0);
               await page.getByRole('button', { name: 'Save draft', exact: true }).click();
               await page.waitForURL(/saved=1/);
-              await page.getByText(/^Replacement saved\. /).waitFor();
+              await page.getByText('Replacement saved.', { exact: true }).waitFor();
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM shifts WHERE date=$1", values: [coverageDate] })).toEqual([{ n: 1 }]);
               expect(await app.database.executor.query({ text: "SELECT status FROM schedules WHERE week_start=$1", values: [coverageDate] })).toEqual([{ status: 'DRAFT' }]);
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM notifications", values: [] })).toEqual(beforeNotifications);
@@ -258,7 +258,7 @@ it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI again
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM schedule_publication_revisions WHERE week_start=$1", values: [publishedDate] })).toEqual([{ n: 0 }]);
               await publish.focus(); await page.keyboard.press('Enter');
               await page.waitForURL(/saved=1/);
-              await page.getByText(/^Replacement saved\. /).waitFor();
+              await page.getByText('Replacement saved.', { exact: true }).waitFor();
               expect(await app.database.executor.query({ text: "SELECT count(*)::int n FROM schedule_publication_revisions WHERE week_start=$1", values: [publishedDate] })).toEqual([{ n: 1 }]);
               checks.push(engine + ': published replacement waits for explicit Publish change confirmation with notification disclosure; keyboard confirmation and canonical revision receipt');
               await page.goto(origin + '/app/ai-manager');

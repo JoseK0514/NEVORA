@@ -5,16 +5,20 @@ import {fileURLToPath} from 'node:url';
 import {prioritizeUbuntuArchive} from './ci-ubuntu-mirrors.mjs';
 
 const runnerMirrors='http://azure.archive.ubuntu.com/ubuntu/\tpriority:1\nhttps://archive.ubuntu.com/ubuntu/\tpriority:2\nhttps://security.ubuntu.com/ubuntu/\tpriority:3\n';
-test('prefers the existing official HTTPS archive while retaining both runner fallbacks',()=>{
+test('prefers the existing official HTTPS archive while retaining the Azure fallback',()=>{
  const result=prioritizeUbuntuArchive(runnerMirrors);
  assert.equal(result,'https://archive.ubuntu.com/ubuntu/\tpriority:1\nhttps://security.ubuntu.com/ubuntu/\tpriority:2\nhttp://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n');
  assert.equal(prioritizeUbuntuArchive(result),result);
 });
-test('retains the exact observed AWS Ubuntu fallback while preferring the same signed official archives',()=>{
- const source=runnerMirrors.replace('http://azure.archive.ubuntu.com','http://us-east-2.ec2.archive.ubuntu.com');
- const result=prioritizeUbuntuArchive(source);assert.equal(result,source.split('\n').slice(1,3).map((line,i)=>line.replace(/priority:[1-3]/,'priority:'+(i+1))).join('\n')+'\nhttp://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:3\n');
- assert.equal(prioritizeUbuntuArchive(result),result);
- for(const value of ['http://us-east-2.ec2.archive.ubuntu.com.evil.invalid','http://us-east-1.ec2.archive.ubuntu.com'])assert.throws(()=>prioritizeUbuntuArchive(source.replace('http://us-east-2.ec2.archive.ubuntu.com',value)),/Unexpected Ubuntu mirror inventory/);
+test('retains only the observed AWS Ubuntu fallbacks while preferring the same signed official archives',()=>{
+ for(const region of ['us-east-2','us-west-2']){
+  const host=`http://${region}.ec2.archive.ubuntu.com`;
+  const source=runnerMirrors.replace('http://azure.archive.ubuntu.com',host);
+  const result=prioritizeUbuntuArchive(source);
+  assert.equal(result,`https://archive.ubuntu.com/ubuntu/\tpriority:1\nhttps://security.ubuntu.com/ubuntu/\tpriority:2\n${host}/ubuntu/\tpriority:3\n`);
+  assert.equal(prioritizeUbuntuArchive(result),result);
+  for(const value of [host+'.evil.invalid','http://us-east-1.ec2.archive.ubuntu.com'])assert.throws(()=>prioritizeUbuntuArchive(source.replace(host,value)),/Unexpected Ubuntu mirror inventory/);
+ }
 });
 test('refuses an unexpected mirror inventory instead of changing package trust',()=>{
  for(const source of ['',runnerMirrors.replace('https://archive.ubuntu.com','https://unexpected.invalid'),runnerMirrors+runnerMirrors.split('\n')[0]+'\n'])assert.throws(()=>prioritizeUbuntuArchive(source),/Unexpected Ubuntu mirror inventory/);

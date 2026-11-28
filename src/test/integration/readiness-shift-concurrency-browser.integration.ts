@@ -81,7 +81,8 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         if (engine !== 'webkit') await observeWindowExceptions(context, (_page: unknown, kind: string) => errors.push({ engine, index, kind, type: 'window-javascript-error' }));
         runtimeExecutions.push(execution);
       }
-      const p0 = await c0.newPage(), p1 = await c1.newPage(), p2 = await c2.newPage(), page = (n: number) => n === 2 ? p2 : n ? p1 : p0;
+      const contexts = [c0, c1, c2], pages = await Promise.all(contexts.map(context => context.newPage()));
+      const p0 = pages[0], page = (n: number) => pages[n];
       // A pending submit has a different accessible name. The form's stable
       // identity must survive that label change, including after outcome loss.
       const deletionForm = (target: typeof p0) => target.locator('form.c-shift__delete');
@@ -117,12 +118,12 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
       const pendingRouterReads = [new Set<object>(), new Set<object>(), new Set<object>()];
       // Development (31d32fa9): each page's own operational-authority reads, finished before it is left.
       const pendingAuthorityReads = [new Set<object>(), new Set<object>(), new Set<object>()];
-      const documentRequests = [0, 0, 0], drainReceipts: { page: number; pending: number }[] = [];
-      for (const n of [0, 1, 2]) {
+      const documentRequests = [0, 0, 0], requestSerials = [0, 0, 0], drainReceipts: { page: number; pending: number }[] = [];
+      const trackPage = async (n: number) => {
         const p = page(n); p.setDefaultTimeout(20000);
-        const requestIds = new WeakMap<object, number>(); let requestSerial = 0;
+        const requestIds = new WeakMap<object, number>();
         const kind = (address: string) => { const url = new URL(address); if (url.origin !== base) return null; const paths: Record<string, string> = { '/login': 'login', '/app': 'manager-home', '/app/schedule': 'schedule', '/app/schedule/edit': 'schedule-edit', '/api/manager/today': 'manager-today', '/api/company-access/operational-authority': 'authority', '/api/notifications': 'notifications', '/__nextjs_original-stack-frames': 'framework-frames' }; return paths[url.pathname] ?? null; };
-        const requestMetadata = (request: TracedRequest) => { const resource = kind(request.url()); if (!resource) return null; if (!requestIds.has(request)) requestIds.set(request, ++requestSerial); return { resource, requestId: requestIds.get(request), method: request.method(), document: request.isNavigationRequest(), rsc: request.headers().rsc === '1', serverAction: typeof request.headers()['next-action'] === 'string' }; };
+        const requestMetadata = (request: TracedRequest) => { const resource = kind(request.url()); if (!resource) return null; if (!requestIds.has(request)) requestIds.set(request, ++requestSerials[n]); return { resource, requestId: requestIds.get(request), method: request.method(), document: request.isNavigationRequest(), rsc: request.headers().rsc === '1', serverAction: typeof request.headers()['next-action'] === 'string' }; };
         p.on('request', (request: TracedRequest) => { const metadata = requestMetadata(request); if (metadata) { if (metadata.document) documentRequests[n]++; if (metadata.method === 'GET' && metadata.rsc && ['manager-home', 'schedule', 'schedule-edit'].includes(metadata.resource)) pendingRouterReads[n].add(request); trace({ engine, index: n, event: 'request', ...metadata }); } });
         p.on('response', (response: { request(): TracedRequest; status(): number }) => { const metadata = requestMetadata(response.request()); if (metadata) trace({ engine, index: n, event: 'response', status: response.status(), ...metadata }); });
         p.on('requestfinished', (request: TracedRequest) => { pendingRouterReads[n].delete(request); const metadata = requestMetadata(request); if (metadata) trace({ engine, index: n, event: 'finished', ...metadata }); });
@@ -131,10 +132,14 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         for (const done of ['requestfinished', 'requestfailed']) p.on(done, (request: TracedRequest) => { pendingAuthorityReads[n].delete(request); });
         p.on('framenavigated', (frame: { url(): string }) => { if (frame === p.mainFrame()) trace({ engine, index: n, event: 'document', resource: kind(frame.url()) }); });
         p.on('pageerror', () => { trace({ engine, index: n, event: 'pageerror' }); if (runtimeFailureTraces.length < 8) runtimeFailureTraces.push({ engine, index: n, events: [...runtimeTrace] }); else failureTracesOmitted++; });
-        stage = 'login';
         // Development (f24e2002): only foreign requests are routed (and aborted).
         await p.route((url: URL) => ['http:', 'https:'].includes(url.protocol) && url.origin !== base,
           (route: { abort(): Promise<void> }) => route.abort());
+      };
+      for (const n of [0, 1, 2]) {
+        stage = 'login';
+        await trackPage(n);
+        const p = page(n);
         await p.goto(base + '/login'); await p.getByLabel('Employee ID', { exact: true }).fill(n === 2 ? 'MATRIX-SECOND' : n ? 'MATRIX-LOCAL' : 'MATRIX-COMPANY'); await p.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD); await p.getByRole('button', { name: 'Sign in', exact: true }).click(); await p.waitForURL(base + '/app');
         // Development (f24e2002): Home drawn and loaded before the scenario starts.
         await p.locator('main h1').filter({ visible: true }).first().waitFor();
@@ -149,17 +154,30 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await expect.poll(() => pendingRouterReads[n].size, { timeout: 20000 }).toBe(0);
         trace({ engine, index: n, event: 'router-reads-drained', pendingAtStart: receipt.pending });
       };
-      // Development (31d32fa9, 7cf538fb, f24e2002): the source page drawn with its authority reads finished, a refresh
-      // queued by retiring private polling settled and drained, and the edit form hydrated (its React submit handler
-      // attached) before the scenario submits it.
-      const open = async (n: number, id: string) => {
+      // Retire private polling and drain any refresh already queued before leaving a live document.
+      const retireDocument = async (n: number) => {
         const p = page(n);
         await drainRouterReads(n);
-        await p.locator('main h1').filter({ visible: true }).first().waitFor();
         await expect.poll(() => pendingAuthorityReads[n].size, { timeout: 20000 }).toBe(0);
         await p.evaluate(() => window.dispatchEvent(new Event('pagehide')));
         await p.waitForLoadState('networkidle');
         await drainRouterReads(n);
+      };
+      // Close completed scenario documents before deleting their shifts. A new page in each existing context keeps its
+      // real authenticated session without inheriting old polling, redirects, or incomplete request events.
+      const leaveScenario = async (...participants: number[]) => {
+        await Promise.all(participants.map(async n => {
+          await page(n).evaluate(() => window.dispatchEvent(new Event('pagehide')));
+          await page(n).close();
+          pendingRouterReads[n].clear();
+          pendingAuthorityReads[n].clear();
+          pages[n] = await contexts[n].newPage();
+          await trackPage(n);
+        }));
+      };
+      const open = async (n: number, id: string) => {
+        const p = page(n);
+        if (p.url() !== 'about:blank') await retireDocument(n);
         await p.goto(base + '/app/schedule/edit?shiftId=' + id);
         await form(n).locator('[name="expectedReviewVersion"]').waitFor({ state: 'attached' });
         await expect.poll(() => form(n).evaluate((element: HTMLFormElement) =>
@@ -195,7 +213,10 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         expect(documentRequests[0]).toBeGreaterThan(before);
         routerReadControls.push({ engine, pendingAfterOldIdle, documentRequestsWhileHeld: before, documentRequestsAfterRelease: documentRequests[0], events: runtimeTrace.filter(value => value.engine === engine && value.index === 0).slice(-30) });
         checks.push(`${engine}: held real RSC read blocks next hard navigation until response completion`);
-      } finally { if (probeTimer) clearTimeout(probeTimer); holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]); }
+      } finally { if (probeTimer) clearTimeout(probeTimer); holdProbe = false; releaseProbe(); await nextProbe?.catch(() => {}); await p0.unroute(probePattern); }
+      await leaveScenario(0);
+      await q('DELETE FROM shifts WHERE id=ANY($1::text[])', [[probeSource, probeDestination]]);
+      await leaveScenario(2);
       const edit = async (n: number, note: string, reassign = false) => { if (reassign) await form(n).locator('select[name="employeeId"]').selectOption('MATRIX-OTHER'); await form(n).locator('[name="notes"]').fill(note); await form(n).evaluate((element: HTMLFormElement) => element.requestSubmit()); };
       const remove = async (n: number) => { const p = page(n); await p.getByRole('button', { name: 'Delete shift', exact: true }).click(); await p.getByRole('button', { name: 'Delete', exact: true }).click(); };
       const refused = async (n: number, version: string, unavailable = false) => { await page(n).getByRole('alert').filter({ hasText: unavailable ? 'You don’t have access to make this change' : 'changed since you opened' }).first().waitFor(); expect(await form(n).locator('[name="expectedReviewVersion"]').inputValue()).toBe(version); await page(n).getByRole('button', { name: 'Reload current shift', exact: true }).first().waitFor(); };
@@ -240,14 +261,15 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
           expect(await form(stale).locator('[name="notes"]').inputValue()).toBe('Retained losing draft');
           expect(await q('SELECT employee_id,notes,updated_at::text FROM shifts WHERE id=$1', [id])).toEqual(committed);
           checks.push(`${engine}: stale ${stale ? 'location' : 'Company'} Manager ${first}/${second}; two real sessions; winning row exact, draft/token retained`);
+          await leaveScenario(winner, stale);
           await q('DELETE FROM shifts WHERE id=$1', [id]);
         }
         for (const generated of [true, false]) {
           const id = await seed(generated);
           if (generated && stale === 1) {
-            await page(1).evaluate(() => window.dispatchEvent(new Event('pagehide'))); await page(1).waitForLoadState('networkidle'); await page(1).goto(base + '/app/schedule/edit?shiftId=' + id);
+            await page(1).goto(base + '/app/schedule/edit?shiftId=' + id);
             await page(1).getByText('You can’t change a shift made by Build and publish.', { exact: false }).filter({ visible: true }).waitFor();
-            expect(await form(1).count()).toBe(0); await q('DELETE FROM shifts WHERE id=$1', [id]); checks.push(`${engine}: location Manager cannot edit a current generated shift`); continue;
+            expect(await form(1).count()).toBe(0); await leaveScenario(1); await q('DELETE FROM shifts WHERE id=$1', [id]); checks.push(`${engine}: location Manager cannot edit a current generated shift`); continue;
           }
           const generationWriter = generated ? 2 : winner;
           await open(generationWriter, id); await open(stale, id);
@@ -256,6 +278,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
           else await q("UPDATE shifts SET assignment_origin='GENERATED',generated_claims=$2::jsonb,updated_at=clock_timestamp() WHERE id=$1", [id, JSON.stringify(claims)]);
           await edit(stale, 'Stale provenance edit'); await refused(stale, version, !generated && stale === 1);
           expect(await q('SELECT assignment_origin FROM shifts WHERE id=$1', [id])).toEqual([{ assignment_origin: generated ? 'MANAGER' : 'GENERATED' }]);
+          await leaveScenario(stale, generationWriter);
           await q('DELETE FROM shifts WHERE id=$1', [id]);
           checks.push(`${engine}: ${stale ? 'location' : 'Company'} Manager stale ${generated ? 'generated-to-manual UI save' : 'manual-to-generated fixture transition'} rejected`);
         }
@@ -275,7 +298,7 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         if (n === 0) { await edit(n, 'Lost response saved once'); await refused(n, version); }
         else { expect(await form(n).locator('fieldset[disabled]').count()).toBeGreaterThan(0); await page(n).getByRole('link', { name: 'Check the schedule', exact: true }).waitFor(); }
         expect(await q('SELECT notes,updated_at::text FROM shifts WHERE id=$1', [id])).toEqual(committed);
-        await page(n).unroute(lost.pattern); await q('DELETE FROM shifts WHERE id=$1', [id]);
+        await page(n).unroute(lost.pattern); await leaveScenario(n); await q('DELETE FROM shifts WHERE id=$1', [id]);
         checks.push(`${engine}: ${n ? 'location unknown-outcome lock' : 'Company original-review retry'} after committed lost response; row unchanged`);
       }
       for (const n of [0, 1]) {
@@ -296,16 +319,17 @@ it('preserves reviewed intent across two real Manager sessions, generation and l
         await deletion.getByRole('alert').filter({ hasText: 'Deletion outcome unknown' }).waitFor();
         expect(await q('SELECT id FROM shifts WHERE id=$1', [id])).toEqual([]); await page(n).unroute(lost.pattern);
         checks.push(`${engine}: ${n ? 'location' : 'Company'} unknown-outcome lock and copy-before-review after lost successful deletion; draft retained and no replay effects`);
+        await leaveScenario(n);
       }
       stage = 'offline';
-      const offlineId = await seed(); await open(0, offlineId); await p0.waitForLoadState('networkidle');
+      const offlineId = await seed(); await open(0, offlineId); await page(0).waitForLoadState('networkidle');
       await c0.setOffline(true);
-      await p0.waitForFunction(() => !document.querySelector('form [name="expectedReviewVersion"]'), undefined, { timeout: 17000 });
+      await page(0).waitForFunction(() => !document.querySelector('form [name="expectedReviewVersion"]'), undefined, { timeout: 17000 });
       expect(await form(0).count()).toBe(0); await c0.setOffline(false);
       checks.push(`${engine}: real offline event cannot extend a scoped frame beyond its original 15-second authority`);
-      await q('DELETE FROM shifts WHERE id=$1', [offlineId]);
-      for (const p of [p0, p1, p2]) { await p.evaluate(() => window.dispatchEvent(new Event('pagehide'))); await p.waitForLoadState('networkidle'); }
+      await leaveScenario(0);
       await c0.close(); await c1.close(); await c2.close();
+      await q('DELETE FROM shifts WHERE id=$1', [offlineId]);
     }
     expect(await q('SELECT id FROM schedule_publication_revisions')).toEqual([]);
     expect(await q('SELECT id FROM notifications')).toEqual([]);

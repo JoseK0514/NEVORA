@@ -4,7 +4,11 @@ import {pathToFileURL} from 'node:url';
 export function prioritizeUbuntuArchive(source){
  // Preserve only a runner fallback observed in actual hosted evidence. Canonical
  // cloud-init documents the <region>.ec2.archive.ubuntu.com Ubuntu mirror family.
- const fallbacks=['http://azure.archive.ubuntu.com/ubuntu/','http://us-east-2.ec2.archive.ubuntu.com/ubuntu/'];
+ const fallbacks=[
+  'http://azure.archive.ubuntu.com/ubuntu/',
+  'http://us-east-2.ec2.archive.ubuntu.com/ubuntu/',
+  'http://us-west-2.ec2.archive.ubuntu.com/ubuntu/',
+ ];
  const lines=source.trim().split(/\r?\n/).map(line=>line.trim().split(/\s+/));
  const fallback=lines.find(([url])=>fallbacks.includes(url))?.[0];
  const approved=['https://archive.ubuntu.com/ubuntu/','https://security.ubuntu.com/ubuntu/',fallback];
