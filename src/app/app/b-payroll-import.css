@@ -233,7 +233,8 @@
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-table :is(.pim-row, .pim-total) > th { display: block; padding-bottom: 2px; }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-cap { display: inline; margin-right: auto; font-size: var(--b-fs-meta); line-height: var(--b-lh-meta); color: var(--b-grey); }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-amt__btn { min-height: 44px; margin: 0 -8px 0 0; }
-  :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-amt__was { flex-basis: 100%; margin-top: 0; padding-bottom: var(--b-space-4); }
+  /* Room for Undo's 44px hit area (QA on f1ed3fa4), so it never covers the next amount button. */
+  :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-amt__was { flex-basis: 100%; margin-top: 0; padding-bottom: var(--b-space-12); }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-amt__in { margin: 0; }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-row__who { min-width: 0; }
   :is(#c-root, html) body .app-shell[data-nv-b] .pim .pim-row__gap { max-width: none; }
