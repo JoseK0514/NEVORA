@@ -429,3 +429,8 @@
     text-underline-offset: var(--b-space-2);
   }
 }
+
+/* QA on 5b8dce75 (Nov 28, 2026): at 1024 a long update put "Confirm I read it" at the window's bottom edge when
+ * keyboard focus scrolled to it, 0.34 px past the edge, so the bottom of its focus ring was cut. The reading-status
+ * actions keep a 16px gap from the edges when focus brings them into view. */
+.app-shell[data-nv-b] #b-update-status .eb-status :is(button, a[href]) { scroll-margin-block: var(--b-space-16); }
