@@ -306,7 +306,8 @@ it.sequential.each(["chromium", "webkit"] as const)("checks Owner Rondo AI again
               await app.database.executor.query({ text: "UPDATE location_staffing_settings SET minimum_staff_per_shift=2 WHERE location_id='loc-1'", values: [] });
               await attention.getByRole("button", { name: "Check again", exact: true }).click();
               await attention.getByText("Evidence changed. This issue is shown for review again.", { exact: true }).waitFor();
-              expect(await attention.locator("ol > li").count()).toBe(2);
+              // One entry per place: a lone item, or each place inside a grouped item.
+              expect(await attention.locator("ol.oa-items > li:not(:has(.oa-subitem)), ol.oa-items .oa-subitem").count()).toBe(2);
               await attention.getByRole("button", { name: "Restore to briefing", exact: true }).first().click();
               await page.getByText("Briefing choice saved. Current records were checked again.", { exact: true }).waitFor();
               await app.database.executor.query({ text: "UPDATE location_staffing_settings SET minimum_staff_per_shift=1 WHERE location_id='loc-1'; DELETE FROM location_coverage_windows WHERE location_id='loc-1'", values: [] });
