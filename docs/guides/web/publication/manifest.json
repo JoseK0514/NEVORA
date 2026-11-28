@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "date": "2026-11-27",
   "scope": "Development web source only. Module availability and hosted services require separate acceptance. Native and production deployment are separate.",
-  "sourceSha": "2f8b31bc959ada518a138896d1828934bad8e47a",
-  "applicationHash": "9d3296c312b4209ad44cc573b33526192442788b8fbd94f1b6260e2b00362290",
+  "sourceSha": "eb7d800daf365a4e71e53576ab6c63f6a64c0f08",
+  "applicationHash": "2ab1c7e590b871c01f191d1cd65c0049097094b6ff693a55c9faddc4351b3140",
   "sourceIndex": {
     "path": "docs/guides/web/sources.json",
     "sha256": "11e7e3865b4f123805c664967ef91d2e050caa3e85fe0fbfe6000a7842176b56"
@@ -31,15 +31,15 @@
         },
         {
           "path": "src/app/app/employees/page.tsx",
-          "sha256": "bc63eb1494540d2e43180f93a0ba468b31e0365f95e3c9db5f5fd9d00f988c25"
+          "sha256": "267888f06f86b4e700828b356608e137f4fa237a00a4470c6542f89315ddcd65"
         },
         {
           "path": "src/app/app/employees/new/page.tsx",
-          "sha256": "4cbc32e9b1e20ba286393cfb8a89aff87356b9affed087b849df70a3cc83d4a6"
+          "sha256": "6c65b59c8c81ae0531871528192f89d165054a6be4d8cd05b8be67608240fce2"
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "bd27d68ae8622ed64f8e786c328a27e2179d20481b54dc4c479007743359755a"
+          "sha256": "db2c020b301b1b5a995b1427ed33b40adb4cef1af42f7d05e7a1de63255e4534"
         },
         {
           "path": "src/components/company-access/employee-invitation-panel.tsx",
@@ -51,7 +51,7 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "e4acdc4f09e086da656461d85cdca4b656be7046d653c4956f301361082b6450"
+          "sha256": "2d9454106db6da96655852c70cf6cb7f608c66e6c1ea1b1af0ae0f85a230a5b5"
         },
         {
           "path": "src/app/app/schedule/publish/page.tsx",
@@ -59,7 +59,7 @@
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
-          "sha256": "496fe54cc3c0b981e376bcba3dcde2701597991cd3bb831510318bd03053b59c"
+          "sha256": "543159b88ea86270c7a283590c83847da3cc3eae80454e8dee1e0e71379611d4"
         },
         {
           "path": "src/app/app/reports/page.tsx",
@@ -179,7 +179,7 @@
         },
         {
           "path": "src/components/employment-date-fields.tsx",
-          "sha256": "586e15cb153780ec75d5aacd8870fdf4d858430d02d412f799df5b3008397f59"
+          "sha256": "3b9700b9283cdf44495b4870b870f774e6dc126102e608b32c731be48b7877a2"
         },
         {
           "path": "src/app/app/reports/christmas-bonus/page.tsx",
@@ -264,7 +264,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/owner.pdf",
-        "sha256": "346b3cb0ed0f77681d9be88c1f5cb49d03a8b562526c4119f0d2c4cf186c8e67",
+        "sha256": "48a6aac578d83d9b4e05810b8a87c5fd118210af88d27dda914b857fdc0c9622",
         "pageCount": 9
       }
     },
@@ -298,15 +298,15 @@
         },
         {
           "path": "src/app/app/schedule/new/page.tsx",
-          "sha256": "91bdd86a4284cfdb9f892560fb021894c3066a851ca2589bf7a65667e1ea2c64"
+          "sha256": "79788c96a4c7638ce692eb5256005c66429660c6b87fc2b916df12d74dabcfe2"
         },
         {
           "path": "src/app/app/employees/[employeeId]/page.tsx",
-          "sha256": "bd27d68ae8622ed64f8e786c328a27e2179d20481b54dc4c479007743359755a"
+          "sha256": "db2c020b301b1b5a995b1427ed33b40adb4cef1af42f7d05e7a1de63255e4534"
         },
         {
           "path": "src/app/app/schedule/settings/page.tsx",
-          "sha256": "496fe54cc3c0b981e376bcba3dcde2701597991cd3bb831510318bd03053b59c"
+          "sha256": "543159b88ea86270c7a283590c83847da3cc3eae80454e8dee1e0e71379611d4"
         },
         {
           "path": "src/lib/payroll/service.ts",
@@ -399,7 +399,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/manager-lead.pdf",
-        "sha256": "c8a9141817c5d68e618ee156e5fb09fd88043db5530526a04c8bdad7dc84423a",
+        "sha256": "b347894bb95ba7670cb53f6e45fe383e8deb37a27298a7b5598b44d1c6b5aa93",
         "pageCount": 4
       }
     },
@@ -425,7 +425,7 @@
         },
         {
           "path": "src/app/app/schedule/page.tsx",
-          "sha256": "e4acdc4f09e086da656461d85cdca4b656be7046d653c4956f301361082b6450"
+          "sha256": "2d9454106db6da96655852c70cf6cb7f608c66e6c1ea1b1af0ae0f85a230a5b5"
         },
         {
           "path": "src/app/app/availability/page.tsx",
@@ -437,7 +437,7 @@
         },
         {
           "path": "src/app/app/requests/page.tsx",
-          "sha256": "4f19c9129ee2722f6331c9d7fe0802069f5f4fc35619a1c929e23ca6b2e12d41"
+          "sha256": "df0f86038192e8ecf594edc3c23bd653329657707ed33d3d01a8abacb204320a"
         },
         {
           "path": "src/app/app/exchange/page.tsx",
@@ -518,7 +518,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/employee.pdf",
-        "sha256": "8057d39475b7b1a175a8749d9d16a1f51349b54a0b9e0f3804b9dc9eab7654a4",
+        "sha256": "0730bc090b5e99cacab91d94cca0780f9bbc52163fb3fd39a3bfd1752730b1f9",
         "pageCount": 3
       }
     },
@@ -620,7 +620,7 @@
         },
         {
           "path": "src/components/owner-advisor/weekly/weekly-page.tsx",
-          "sha256": "375d9f96a629ccebfa124b6455b52d6b87e08c2a90d5a58d6d0b8749b7fe70e9"
+          "sha256": "8a81b4bd1e8cd8b110a392e488fe32aba03486bf959690ae108367609a1e7c22"
         },
         {
           "path": "src/lib/owner-advisor/weekly-contracts.ts",
@@ -664,7 +664,7 @@
         },
         {
           "path": "src/components/owner-advisor/business/business-map.tsx",
-          "sha256": "de884d7030fa385f1d5dbcb6016d27e776d50fb418832e55bcb48dde63f35298"
+          "sha256": "71d8c3c937dfdbca18b04150ac1923ed2c82ee745854432c469f95dc4730dd66"
         },
         {
           "path": "src/components/owner-advisor/business/business-client.ts",
@@ -693,7 +693,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/rondo.pdf",
-        "sha256": "2dcb7e8a6f7fbed3f71d34c0e1bfc4ef52291bc6f22650a5c3ecc7e728f043d2",
+        "sha256": "97e0f2b070d26b2579d5c835314303788a767c38f192099298ed1e4d6ac3d45b",
         "pageCount": 5
       }
     },
@@ -763,7 +763,7 @@
         },
         {
           "path": "db/migrations/order.ts",
-          "sha256": "3eaebf2bc4fac4c0d6b5751d133e6a85f42cc50bfa858bf423b3613032b8cbb9"
+          "sha256": "02647fac0998f1e5c44af4c4487c57f2d95604806489acfa6e7317f9d2113c12"
         },
         {
           "path": "scripts/release-build.mjs",
@@ -947,7 +947,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "805f4074d02a6634f5800b8f934bc69c6043e2126642485337ddba0aa62d09ed"
+          "sha256": "3d91ac71ff9ff83243242d698a9cbec0ce8fd4646ad8bbd2a55583f190ffbe05"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -956,7 +956,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/developer.pdf",
-        "sha256": "748e699332359e1ab3706778a7717b0ffefdf0d2639ef55cf374a08b324d3a72",
+        "sha256": "c2482eecf413588e971920f37c4222522f758120fc1ceecba03638ec1fa094bb",
         "pageCount": 7
       }
     },
@@ -1130,7 +1130,7 @@
         },
         {
           "path": "src/test/integration/release1-migrations.integration.ts",
-          "sha256": "805f4074d02a6634f5800b8f934bc69c6043e2126642485337ddba0aa62d09ed"
+          "sha256": "3d91ac71ff9ff83243242d698a9cbec0ce8fd4646ad8bbd2a55583f190ffbe05"
         },
         {
           "path": "scripts/rehearsal/2026-11-18-development-baseline.json",
@@ -1159,7 +1159,7 @@
       ],
       "pdf": {
         "path": "docs/guides/web/publication/operations.pdf",
-        "sha256": "80a7bf912e3e3287c8f0daea2e797f1576e2fe4cbd0309ffba95dbb0e1b95ce2",
+        "sha256": "da20455505c4e76e4983a8b4925337c6e6fa329a52c2ed9e30ec20b6c1dbe5d9",
         "pageCount": 7
       }
     }
