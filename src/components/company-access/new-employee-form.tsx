@@ -64,7 +64,7 @@ export function NewEmployeeForm({actorRole,canImport=false,locations:activeLocat
    <ReturnToNext/>
    <input type="hidden" name="active" value="true"/>
    <div className="c-step" ref={stepOne} hidden={step!==1}>
-    {canImport && <Link className="c-link c-link--l employment-import-link" href="/app/employees/import"><UploadSimpleIcon size={18} aria-hidden="true"/>{employeeTeamCopy(lang).importList}</Link>}
+    {canImport && <Link className="c-link c-link--l employment-import-link" href="/app/employees/import"><UploadSimpleIcon size={18} weight="bold" aria-hidden="true"/>{employeeTeamCopy(lang).importList}</Link>}
      <div className="c-field__row">
      <CorpField label={t.firstName} htmlFor="new-first"><input id="new-first" className="c-in" name="firstName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing={t.firstMissing}/></CorpField>
      <CorpField label={t.lastName} htmlFor="new-last"><input id="new-last" className="c-in" name="lastName" autoComplete="off" autoCapitalize="words" autoCorrect="off" enterKeyHint="next" required maxLength={160} data-missing={t.lastMissing}/></CorpField>

@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 import { CorpCard, CorpRow, CorpRows } from "@/components/corp/corp";
@@ -15,6 +15,16 @@ import { costCopy, type CostLang } from "./cost-copy";
  * made, so no unsaved changes are sent. A null total is "Incomplete" and says why (shifts with no rate, a shift on a
  * clock change); "0" is a real zero. It is base scheduled pay and says what it leaves out. */
 
+const DISMISSAL_EVENT = "nevora-pay-rate-reminder";
+function subscribeDismissals(changed: () => void) {
+  window.addEventListener("storage", changed);
+  window.addEventListener(DISMISSAL_EVENT, changed);
+  return () => { window.removeEventListener("storage", changed); window.removeEventListener(DISMISSAL_EVENT, changed); };
+}
+function readDismissal(key: string) {
+  try { return localStorage.getItem(key) === "1"; } catch { return false; }
+}
+
 type Row = { id: string; name: string; state: "loading" } | { id: string; name: string; state: "ready"; cost: LaborCost } | { id: string; name: string; state: "unavailable" };
 
 export function LaborCostCard({ preferenceScope, weekStart, locations, lang = "en" }: { preferenceScope: string; weekStart: string; locations: { id: string; name: string }[]; lang?: CostLang }) {
@@ -22,17 +32,15 @@ export function LaborCostCard({ preferenceScope, weekStart, locations, lang = "e
   const [rows, setRows] = useState<Row[]>(locations.map(location => ({ ...location, state: "loading" as const })));
   const [hidden, setHidden] = useState(false);
   const dismissalKey = `nevora:schedule:no-pay-rates:${preferenceScope}`;
+  // The saved dismissal is read as an external store: the server and the first client render show the reminder, and a
+  // dismissal saved in this browser (or another tab) hides it without setting state from an effect.
+  const savedDismissal = useSyncExternalStore(subscribeDismissals, () => readDismissal(dismissalKey), () => false);
   const [dismissedKey, setDismissedKey] = useState<string | null>(null);
   const basisSummary = useRef<HTMLElement>(null);
-  useEffect(() => {
-    try {
-      setDismissedKey(localStorage.getItem(dismissalKey) === "1" ? dismissalKey : null);
-    } catch { /* Storage can be blocked on shared devices. */ }
-  }, [dismissalKey]);
 
   function dismissWarning() {
     setDismissedKey(dismissalKey);
-    try { localStorage.setItem(dismissalKey, "1"); } catch { /* Still dismiss for this view. */ }
+    try { localStorage.setItem(dismissalKey, "1"); window.dispatchEvent(new Event(DISMISSAL_EVENT)); } catch { /* Still dismiss for this view. */ }
     basisSummary.current?.focus({ preventScroll: true });
   }
 
@@ -99,7 +107,7 @@ export function LaborCostCard({ preferenceScope, weekStart, locations, lang = "e
     {failed ? <BState alert kind="failed" title={t.failedTitle} line={t.failedBody} action={{ label: t.tryAgain, busy: refreshing, busyLabel: t.checking, onClick: refresh }} />
       : <div className="lc">
         <div role="status" aria-busy={loading || undefined} className="lc-sr">{loading ? t.loading : ""}</div>
-        {noRatesAnywhere && dismissedKey !== dismissalKey && <div className="lc-none">
+        {noRatesAnywhere && !savedDismissal && dismissedKey !== dismissalKey && <div className="lc-none">
           <BCallout tone="amber" icon="check" title={t.noRatesTitle} action={{ label: t.openTeam, href: "/app/employees" }}>{t.noRatesBody}</BCallout>
           <button type="button" className="lc-dismiss" aria-label={t.dismissWarning} title={t.dismissWarning} onClick={dismissWarning}>
             <XIcon size={18} weight="bold" aria-hidden="true" />

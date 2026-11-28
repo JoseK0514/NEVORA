@@ -32,7 +32,7 @@ export function EmploymentDateFields({ idPrefix, value, bonusApplies = true, foc
   return <>{fields.map(field => {
     const id = idPrefix + "-" + field.id;
     return <CorpField key={id} label={<span id={id + "-label"}>{field.label}</span>} htmlFor={id + "-button"} help={<span id={id + "-help"}>{field.help}</span>}>
-      <EmploymentDatePicker id={id} label={field.label} name={field.key} inputRef={field.ref} initial={value?.[field.key] ?? ""} checkOrder={order} />
+      <EmploymentDatePicker id={id} label={field.label} name={field.key} inputRef={field.ref} initial={value?.[field.key] ?? ""} checkOrder={field.key === "birthDate" ? undefined : order} />
     </CorpField>;
   })}</>;
 }

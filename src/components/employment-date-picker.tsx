@@ -17,7 +17,8 @@ const utc = (year: number, month: number, day = 1) => new Date(Date.UTC(year, mo
 
 /** Keep the form's named, validatable date input. The visible button opens the same calendar for pointer and keyboard. */
 export function EmploymentDatePicker({ id, label, name, initial, inputRef, checkOrder }: {
-  id: string; label: string; name: string; initial: string; inputRef: RefObject<HTMLInputElement | null>; checkOrder: () => void;
+  id: string; label: string; name: string; initial: string; inputRef: RefObject<HTMLInputElement | null>;
+  /** The hire/termination order rule; a date outside that rule passes none. */ checkOrder?: () => void;
 }) {
   const lang = usePortalLang(), t = EMPLOYMENT_DATES_COPY[lang], locale = lang === "es" ? "es-PR" : "en-US";
   const trigger = useRef<HTMLButtonElement>(null);
@@ -45,7 +46,7 @@ export function EmploymentDatePicker({ id, label, name, initial, inputRef, check
   }
   function changed(field: HTMLInputElement) {
     field.setCustomValidity("");
-    if (name !== "birthDate") checkOrder();
+    checkOrder?.();
     setValue(field.value);
   }
   function pick(next: string) {
@@ -78,7 +79,7 @@ export function EmploymentDatePicker({ id, label, name, initial, inputRef, check
       <button type="button" ref={trigger} id={id + "-button"} className="employment-date__trigger" aria-haspopup="dialog"
         aria-expanded={!!view} aria-labelledby={id + "-label " + id + "-value"} data-invalid={errorId ? true : undefined}
         aria-describedby={[id + "-help", errorId].filter(Boolean).join(" ")} onClick={open} data-empty={!value || undefined}>
-        <span id={id + "-value"}>{visibleText}</span><CalendarBlankIcon size={20} aria-hidden="true" />
+        <span id={id + "-value"}>{visibleText}</span><CalendarBlankIcon size={20} weight="bold" aria-hidden="true" />
       </button>
       <input ref={inputRef} id={id} aria-label={label} type="date" name={name} defaultValue={initial} min={EARLIEST_EMPLOYMENT_DATE}
         data-underflow={t.floor} autoComplete="off" tabIndex={-1} aria-hidden="true" aria-describedby={id + "-help"}
@@ -89,7 +90,7 @@ export function EmploymentDatePicker({ id, label, name, initial, inputRef, check
         <header><h2>{label.replace(/ \((optional|opcional)\)$/, "")}</h2><button type="button" onClick={close}>{t.cancel}</button></header>
         <div className="employment-calendar__nav">
           <button type="button" aria-label={t.previous} disabled={year === firstYear && month === 0}
-            onClick={() => changeView(utc(year, month - 1))}><CaretLeftIcon size={18} /></button>
+            onClick={() => changeView(utc(year, month - 1))}><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></button>
           <select aria-label={t.month} value={month} onChange={e => changeView(utc(year, Number(e.target.value)))}>
             {Array.from({length: 12}, (_, i) => <option key={i} value={i}>{monthName(i)}</option>)}
           </select>
@@ -98,7 +99,7 @@ export function EmploymentDatePicker({ id, label, name, initial, inputRef, check
               if (/^\d{4}$/.test(next) && Number(next) >= firstYear) setView(utc(Number(next), month)); }}
             aria-invalid={!validYear || undefined} aria-describedby={!validYear ? id + "-year-floor" : undefined} />
           <button type="button" aria-label={t.next} disabled={year === 9999 && month === 11}
-            onClick={() => changeView(utc(year, month + 1))}><CaretRightIcon size={18} /></button>
+            onClick={() => changeView(utc(year, month + 1))}><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></button>
         </div>
         {!validYear && <p role="status" id={id + "-year-floor"}>{t.floor}</p>}
         <div className="employment-calendar__days">
