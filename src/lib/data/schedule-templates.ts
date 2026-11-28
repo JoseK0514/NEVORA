@@ -230,8 +230,9 @@ export async function readTemplateDetail(id: string, proof: SessionMutationProof
         FROM shifts ORDER BY day_offset,start_time,location_id,id)) AS shifts,
       to_jsonb(ARRAY(SELECT jsonb_build_object('id',id,'name',name,'active',active) FROM locations
         WHERE workspace_id=$2 AND (active OR id IN (SELECT location_id FROM shifts)) ORDER BY name,id)) AS locations,
-      to_jsonb(ARRAY(SELECT jsonb_build_object('id',id,'name',concat_ws(' ',first_name,last_name),'active',active,'canLead',role IN ('OWNER','MANAGER','LEAD'))
-        FROM employees WHERE workspace_id=$2 AND (active OR id IN (SELECT employee_id FROM shifts)) ORDER BY first_name,last_name,id)) AS employees,
+      to_jsonb(ARRAY(SELECT jsonb_build_object('id',e.id,'name',concat_ws(' ',e.first_name,e.last_name),'active',e.active,'canLead',e.role IN ('OWNER','MANAGER','LEAD'))
+        FROM employees e JOIN locations home ON home.id=e.primary_location_id
+        WHERE home.workspace_id=$2 AND (e.active OR e.id IN (SELECT employee_id FROM shifts)) ORDER BY e.first_name,e.last_name,e.id)) AS employees,
       to_jsonb(ARRAY(SELECT jsonb_build_object('id',id,'name',name,'active',active) FROM positions
         WHERE workspace_id=$2 AND (active OR id IN (SELECT position_id FROM shifts)) ORDER BY name,id)) AS positions
     FROM schedule_templates t WHERE t.id=$1 AND t.workspace_id=$2 AND t.active`,
@@ -278,12 +279,16 @@ function templateChangeStatement(workspace: string, id: string, revision: string
     const { shift } = change;
     values.push(shift.id, shift.day, shift.start, shift.end, shift.location, shift.employee, shift.position, shift.lead, shift.notes);
     // Keep existing inactive assignments inspectable and editable. New references must belong to this workspace.
+    // employees has no workspace_id: a person belongs to the workspace of their primary location (QA on 342af7eb found
+    // the unqualified column bound to the outer row, so every assigned add read as stale).
     source = `, eligible AS (SELECT p.id FROM parent p
       LEFT JOIN schedule_template_shifts old ON old.workspace_id=$1 AND old.template_id=p.id AND old.id=$4
       WHERE EXISTS (SELECT 1 FROM locations WHERE workspace_id=$1 AND id=$8 AND (active OR id=old.location_id))
-        AND ($9::text IS NULL OR EXISTS (SELECT 1 FROM employees WHERE workspace_id=$1 AND id=$9 AND (active OR id=old.employee_id)))
+        AND ($9::text IS NULL OR EXISTS (SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id
+          WHERE home.workspace_id=$1 AND e.id=$9 AND (e.active OR e.id=old.employee_id)))
         AND ($10::text IS NULL OR EXISTS (SELECT 1 FROM positions WHERE workspace_id=$1 AND id=$10 AND (active OR id=old.position_id)))
-        AND (NOT $11::boolean OR EXISTS (SELECT 1 FROM employees WHERE workspace_id=$1 AND id=$9 AND role IN ('OWNER','MANAGER','LEAD'))
+        AND (NOT $11::boolean OR EXISTS (SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id
+          WHERE home.workspace_id=$1 AND e.id=$9 AND e.role IN ('OWNER','MANAGER','LEAD'))
           OR (old.is_designated_lead AND old.employee_id IS NOT DISTINCT FROM $9)))`;
     write = change.kind === 'add'
       ? `INSERT INTO schedule_template_shifts(workspace_id,template_id,id,day_offset,start_time,end_time,location_id,employee_id,position_id,is_designated_lead,notes)

@@ -128,6 +128,11 @@ it('inspects and edits only the saved template, detects stale edits, and applies
   const open = added.shifts.find(s => !s.employee)!;
   expect(open).toMatchObject({start:'16:10',end:'24:00'});
   expect(await edit(added.revision,{kind:'remove',shiftId:open.id})).toBe('saved');
+  // QA on 342af7eb: an add with a person assigned was always 'stale' (employees has no workspace_id).
+  expect(await edit((await read())!.revision,{...shift,kind:'add',day:'3',start:'06:00',end:'07:00'})).toBe('saved');
+  const assigned = (await read())!.shifts.find(s => s.day===3 && s.start==='06:00')!;
+  expect(assigned).toMatchObject({employee:'target'});
+  expect(await edit((await read())!.revision,{kind:'remove',shiftId:assigned.id})).toBe('saved');
   expect(await f.q('SELECT * FROM shifts ORDER BY id')).toEqual(original);
   const receipt = await executeScheduleCopy(f.owner,{operationId:randomUUID(),kind:'TEMPLATE',weekStart:'2026-10-19',templateId:id},ex);
   expect(receipt.rows).toHaveLength(1);
