@@ -70,7 +70,23 @@ it('retains the current receipt and authority on duplicate active window focus',
  expect(fixture.pause).not.toHaveBeenCalled();
 });
 
-it.each(['blur','pagehide','offline'])('clears the child on %s and rechecks when focus returns',event=>{
+it('keeps the current view on screen while another window has focus',()=>{
+ Object.assign(document,{hasFocus:()=>false});
+ window.dispatchEvent(new Event('blur'));
+ expect(fixture.states[0]).toBe(receipt);
+ expect(fixture.pause).not.toHaveBeenCalled();
+ Object.assign(document,{hasFocus:()=>true});
+ window.dispatchEvent(new Event('focus'));
+ expect(fixture.start).not.toHaveBeenCalled();
+});
+
+it('clears the view if the window loses focus while offline',()=>{
+ Object.assign(navigator,{onLine:false});
+ window.dispatchEvent(new Event('blur'));
+ expect(fixture.states[0]).toEqual({authority:null,phase:'paused',content:null});
+});
+
+it.each(['pagehide','offline'])('clears the child on %s and rechecks when focus returns',event=>{
  window.dispatchEvent(new Event(event));
  expect(fixture.states[0]).toEqual({authority:null,phase:'paused',content:null});
  expect(fixture.states[1]).toEqual({required:true,view:null});
@@ -88,9 +104,10 @@ it.each(['storage','pageshow','online'])('requires a fresh check on %s even whil
 });
 
 it('clears hidden content and rechecks after visibility is restored',()=>{
- Object.assign(document,{visibilityState:'hidden'});
+ Object.assign(document,{visibilityState:'hidden',hasFocus:()=>false});
  document.dispatchEvent(new Event('visibilitychange'));
- expect(fixture.states[0]).toEqual({authority:null,phase:'paused',content:null});
+ expect(fixture.states[0]).toEqual({authority:null,phase:'hidden',content:null});
+ expect(fixture.start).not.toHaveBeenCalled();
  Object.assign(document,{visibilityState:'visible'});
  document.dispatchEvent(new Event('visibilitychange'));
  expect(fixture.states[0]).toEqual({authority:null,phase:'expired',content:null});

@@ -212,7 +212,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   stage='pagehide-pageshow';await mp.evaluate(()=>window.dispatchEvent(new Event('pagehide')));await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('pagehide','.c-route-state [data-b-state]');
   await mp.evaluate(()=>window.dispatchEvent(new Event('pageshow')));await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   stage='hidden-visible';await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
-  await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();await safePause('hidden','.c-route-state [data-b-state]');
+  await mp.locator('.manager-correction-row').first().waitFor({state:'detached'});await safePause('hidden','main');assert.equal(await mp.getByRole('heading',{name:'View paused',exact:true}).count(),0);
   await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});document.dispatchEvent(new Event('visibilitychange'));});
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
 

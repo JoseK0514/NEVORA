@@ -216,10 +216,10 @@ try{
     currentPage=mp;
     // Exercise the real protected return even where headless windows keep focus.
     // This is an explicit lifecycle regression, not physical OS certification.
-    const returnDeadline=performance.now()+15000,returnReceipt={engine,lifecycle:'explicit blur/focus',stage:'starting',responseStatus:null,bodyFinished:false};(report.managerReturn??=[]).push(returnReceipt);
+    const returnDeadline=performance.now()+15000,returnReceipt={engine,lifecycle:'explicit hidden/visible',stage:'starting',responseStatus:null,bodyFinished:false};(report.managerReturn??=[]).push(returnReceipt);
     await runBeforeRecoveryDeadline(async()=>{
-      await mp.evaluate(()=>window.dispatchEvent(new Event('blur')));
-      await mp.getByRole('heading',{name:'View paused',exact:true}).waitFor();
+      await mp.evaluate(()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
+      await mp.locator('#timecard-D3-E').waitFor({state:'detached'});
       assert.equal(await mp.locator('#timecard-D3-E').count(),0,'Retired manager cards stay hidden before a fresh authority/page read');assert.equal(await timecardOpener().count(),0,'The actual phone or desktop employee control is absent while the manager view is retired');returnReceipt.stage='fresh-read';
       const [response]=await Promise.all([
         mp.waitForResponse(response=>{
@@ -229,7 +229,7 @@ try{
         },{timeout:15000}),
         (async()=>{
           const rsc=mp.waitForRequest(request=>{const target=new URL(request.url());return target.origin===app.url&&target.pathname==='/app/timecards'&&request.headers().rsc==='1';},{timeout:15000});
-          await mp.bringToFront();await mp.evaluate(()=>window.dispatchEvent(new FocusEvent('focus')));await rsc;
+          await mp.bringToFront();await mp.evaluate(()=>{delete document.visibilityState;document.dispatchEvent(new Event('visibilitychange'));});await rsc;
           // The existing RSC recovery owns this return to the selected period.
         })(),
       ]);

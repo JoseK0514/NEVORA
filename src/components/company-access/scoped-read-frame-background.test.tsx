@@ -119,10 +119,22 @@ it('lapse then deny: an access_denied answer drops the held page',async()=>{
  expect((denied[1] as ReactElement<{ref?:unknown}>).props.ref).toBeUndefined();
 });
 
+// View focus (Codex handoff, Nov 28, 2026): clicking another window while online keeps the page; an offline blur still
+// clears it, and a hidden tab clears it without the paused prompt.
 it('stepping away still clears the page, held or shown (privacy fence unchanged)',async()=>{
  await historyOnScreen();
+ const shown=body();
+ window.dispatchEvent(new Event('blur'));
+ expect(body()).toEqual(shown);
+ (navigator as {onLine:boolean}).onLine=false;
  window.dispatchEvent(new Event('blur'));
  expect(body()).toEqual({authority:null,phase:'paused',content:null});
+});
+it('a hidden tab clears the page without the paused prompt',async()=>{
+ await historyOnScreen();
+ (document as unknown as {visibilityState:string}).visibilityState='hidden';
+ document.dispatchEvent(new Event('visibilitychange'));
+ expect(body()).toEqual({authority:null,phase:'hidden',content:null});
 });
 
 function renderWith(state:Body,recovery:unknown={required:true,view:null}){

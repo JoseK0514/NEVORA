@@ -53,6 +53,8 @@ afterEach(()=>{while(disposers.length)disposers.pop()!();rs.unstubAllGlobals();}
 
 it('a later page rendered after the tab cutoff, same authority, opens without a second check or render',async()=>{
  await fenceAt(10);
+ Object.assign(document,{hasFocus:()=>false});
+ window.dispatchEvent(new Event('blur'));
  await mount({authority:'fictional-authority-A',observedAt:at(12),validForMs:15000});
  expect(fixture.start).not.toHaveBeenCalled();
  expect(fixture.router.refresh).not.toHaveBeenCalled();
@@ -60,7 +62,7 @@ it('a later page rendered after the tab cutoff, same authority, opens without a 
  expect(fixture.states[1]).toEqual({required:false,view:null});
 });
 
-it.each(['blur','pagehide','offline','storage','pageshow','online'])('after %s anywhere in the tab, the next page fences again',async event=>{
+it.each(['pagehide','offline','storage','pageshow','online'])('after %s anywhere in the tab, the next page fences again',async event=>{
  await fenceAt(10);
  window.dispatchEvent(new Event(event));
  rs.clearAllMocks();

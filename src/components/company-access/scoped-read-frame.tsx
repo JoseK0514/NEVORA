@@ -21,7 +21,7 @@ type Recovery={required:boolean;view:CurrentAuthority|null};
 /** How long a check may run behind the quiet page shape before the frame shows its words and Refresh current view. */
 export const STUCK_MS=2500;
 /** `kept`: the last page this frame showed, held hidden while its window lapses in the foreground (see `lapse`). */
-type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode;kept?:ReactNode};
+type Body={authority:string|null;phase:'ready'|'expired'|'paused'|'hidden';content:ReactNode;kept?:ReactNode};
 /** WebKit period history, second route (QA, Nov 23, 2026): when the page's 15 s window ran out before the renewal landed,
  * the frame dropped its children and the page re-mounted later with its client state gone (Payroll export's loaded
  * history pages and open sheet). A lapse in the foreground now keeps the last page mounted, with its effects running,
@@ -46,12 +46,14 @@ function holdHidden(status:HTMLElement|null){
   page.inert=false;page.removeAttribute('aria-hidden');
  };
 }
-const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
+/** View focus (Codex handoff, Nov 28, 2026): a visible, online page stays current while the person works in another window;
+ * focus no longer decides it. A hidden tab, a page hide and an offline blur still retire it. */
+const visibleAndOnline=()=>document.visibilityState!=='hidden'&&navigator.onLine;
 /** A frame holding its page offline keeps it while the device is still offline and the person is still here. */
 const keepOffline=(held:{current:boolean})=>held.current&&!navigator.onLine&&!steppedAway();
 
 /** One browser tab's fence, shared by every frame instance (inspection Oct 24). Any instance's retirement (hidden,
- * blur, pagehide, offline, storage, pageshow, online, expiry) is recorded here synchronously, so a frame that mounts
+ * offline blur, pagehide, offline, storage, pageshow, online, expiry) is recorded here synchronously, so a frame that mounts
  * later knows about it. `cutoff` is the SERVER observation of the first authority read after the latest retirement;
  * `fence` is the latest such read (it anchors elapsed time and carries the authority). While no retirement has happened
  * since that cutoff, a page rendered after the cutoff with the same authority is current without a second check and a
@@ -136,7 +138,7 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
  useEffect(()=>{
   let active=true,foreground=false,requestStartedAt=0,lastRefresh='';
   // tabWide: a real retirement event clears the tab's fence; a frame's own mount or navigation barrier does not.
-  function retire(phase:'paused'|'expired',tabWide=true){
+  function retire(phase:Exclude<Body['phase'],'ready'>,tabWide=true){
    if(tabWide)retireTab();required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
    // A frame's own barrier in the foreground (its window lapsed, or its page arrived too old) keeps the page hidden; a
    // real retirement (stepping away, offline expiry, an explicit fresh check) clears it as before.
@@ -172,8 +174,29 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
    if(Date.parse(result.observedAt)<latest.current)throw Error('Authority observation moved backwards');
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
-  function pause(){if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=false;retire('paused');controller.pause();}
-  function recover(tabWide=true){if(keepOffline(held))return;setCheckFailed(false);if(offlineExpiry.current)clearTimeout(offlineExpiry.current);offlineExpiry.current=null;held.current=false;foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  function clearOfflineHold(){
+   if(offlineExpiry.current)clearTimeout(offlineExpiry.current);
+   offlineExpiry.current=null;
+   held.current=false;
+  }
+  // A hidden tab clears its private content without the paused prompt; it comes back with a fresh check.
+  function pause(){
+   clearOfflineHold();
+   foreground=false;
+   retire(document.visibilityState==='hidden'?'hidden':'paused');
+   controller.pause();
+  }
+  function recover(tabWide=true){
+   if(document.visibilityState==='hidden'){pause();return;}
+   if(keepOffline(held))return;
+   clearOfflineHold();
+   setCheckFailed(false);
+   foreground=visibleAndOnline();
+   retire('expired',tabWide);
+   lastRefresh='';
+   controller.pause();
+   if(foreground)controller.start();
+  }
   // Offline: stop checking (the controller's own pause publishes nothing here while the page is current), record the
   // retirement for the tab, and require a fresh check when the person reconnects. Nothing on screen changes.
   function hold(){
@@ -184,23 +207,26 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
    const page=observationRef.current;if(page)announceOfflineHeld(page.observedAt);
    offlineExpiry.current=setTimeout(pause,Math.max(0,viewDeadline.current-performance.now()));
   }
+  // A visible online window can keep renewing access while someone works beside it.
+  const blur=()=>{if(!navigator.onLine)pause();};
   const recoverTab=()=>recover();
-  const focus=(event:Event)=>{if(event.target!==window||(foreground&&online()))return;recover();};
+  const focus=(event:Event)=>{if(event.target!==window||(foreground&&visibleAndOnline()))return;recover();};
   function complete(current:CurrentAuthority){
    anchor.current=current;required.current=false;controller.pause();setRecovery({required:false,view:null});
   }
   controls.current={recover,pause,complete};
-  const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router);}});
+  const resume=navigation?.subscribe(()=>{if(!active||!visibleAndOnline())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router);}});
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
-  for(const event of ['blur','pagehide'])window.addEventListener(event,pause);
+  window.addEventListener('blur',blur);
+  window.addEventListener('pagehide',pause);
   window.addEventListener('offline',hold);
   window.addEventListener('focus',focus);
   for(const event of ['pageshow','online','storage'])window.addEventListener(event,recoverTab);
   // A page rendered after this tab's current cutoff, with the fence's authority, needs no second check or render.
   function adoptTabFence(){
    const fence=tab.fence,page=observationRef.current;
-   if(!fence||tab.cutoff===null||fence.requestStartedAt<=tab.retiredAt||!page||page.authority!==fence.authority||!online())return false;
+   if(!fence||tab.cutoff===null||fence.requestStartedAt<=tab.retiredAt||!page||page.authority!==fence.authority||!visibleAndOnline())return false;
    const observedAt=Date.parse(page.observedAt);
    if(!Number.isFinite(observedAt)||!(observedAt>Date.parse(tab.cutoff)))return false;
    // Inside its own validity window, with a second to spare; an older page (a prefetch left in the cache) re-checks.
@@ -209,14 +235,14 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
    foreground=true;complete(fence);return true;
   }
   queueMicrotask(()=>{if(active&&!adoptTabFence())recover(false);});
-  return()=>{active=false;if(offlineExpiry.current)clearTimeout(offlineExpiry.current);resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide'])window.removeEventListener(event,pause);window.removeEventListener('offline',hold);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
+  return()=>{active=false;if(offlineExpiry.current)clearTimeout(offlineExpiry.current);resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);window.removeEventListener('blur',blur);window.removeEventListener('pagehide',pause);window.removeEventListener('offline',hold);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
  },[router,navigation]);
 
  useEffect(()=>{
   let active=true,early:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
   queueMicrotask(()=>{
    if(!active)return;
-   if(!online()){if(!keepOffline(held))controls.current?.pause();return;}
+   if(!visibleAndOnline()){if(!keepOffline(held))controls.current?.pause();return;}
    if(required.current&&!recovery.view)return;
    const current=recovery.view??anchor.current;
    // A known server observation anchors elapsed time to the monotonic request
@@ -238,7 +264,7 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
    if(required.current&&recovery.view)controls.current?.complete(recovery.view);
    setBody({authority:observation!.authority,phase:'ready',content:children,kept:null});
    viewDeadline.current=performance.now()+remaining;
-   early=setTimeout(()=>{if(!online())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router);}},remaining*.65);
+   early=setTimeout(()=>{if(!visibleAndOnline())return;if(proactiveVersion.current!==version){proactiveVersion.current=version;if(navigation?.pending())deferredRefresh.current=true;else refreshPage(router);}},remaining*.65);
    expiry=setTimeout(()=>controls.current?.recover(false),remaining);
   });
   return()=>{active=false;if(early)clearTimeout(early);if(expiry)clearTimeout(expiry);};
@@ -258,16 +284,17 @@ export function ScopedReadFrame({observation,children,unavailable,lang}:{observa
  // check still unresolved after STUCK_MS (or begun while a page change waits) shows its words and Refresh current view.
  const [stuck,setStuck]=useState(false);
  useEffect(()=>{
-  if(ready)return;
+  if(ready||body.phase==='hidden')return;
   // A check that starts while a page change is still waiting is the stuck case: its way back shows at once.
   const timer=setTimeout(()=>setStuck(true),navigation?.pending()?0:STUCK_MS);
   // The check ended (or the frame left): the next check starts quiet again.
   return()=>{clearTimeout(timer);setStuck(false);};
- },[ready,navigation]);
+ },[ready,body.phase,navigation]);
 
  // The page sits in one place in the tree in every state, so a lapse and its renewal keep its client state.
  const page=ready?body.content:body.kept??null;
  const hold=!ready&&!!body.kept?holdHidden:undefined;
+ if(body.phase==='hidden')return null;
  if(ready)return <>{page}{null}</>;
  // Phase 2 (package D): the state the page handed over draws its own "Refresh current view" inside its card (it reads
  // this frame's fresh check from the context), so the page has one card with all its actions.
